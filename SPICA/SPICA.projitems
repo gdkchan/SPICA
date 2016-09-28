@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>e9079f5d-f690-4c0e-a7ac-028fc701d8a2</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SPICA</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Animation\H3DAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Camera\H3DCamera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Fog\H3DFog.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DAnimations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DBoundingBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DCameras.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DFogs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DLights.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DLUTs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DMaterials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DMetaData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DMetaDataType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DMetaDataValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DModels.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DScenes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DShaders.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DTextures.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DTreeNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Light\H3DLight.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\LUT\H3DLUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Material\H3DMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DSkeletonBone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DFace.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DSkinningMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DVertex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Material\H3DMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Material\H3DMaterialParams.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Material\H3DMaterialLUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Material\H3DMaterialShader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Texture\H3DTextureCoord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Texture\H3DTextureMagFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Texture\H3DTextureMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Texture\H3DTextureMinFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\Texture\H3DTextureWrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Scene\H3DScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Shader\H3DShader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Texture\H3DTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DContents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DRelocator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Matrix3x3.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Matrix3x4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\RGBA.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Vector2D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Vector3D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\Vector4D.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICAAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICAAttributeFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICAAttributeName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommandReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICARegister.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\AlignAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\SectionPointerOfAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\TargetSectionAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\CountOfAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\FixedCountAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\SectionLengthOfAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\PointerOfAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\SectionAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryDeserializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinarySerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomDeserializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Utils\IOUtils.cs" />
+  </ItemGroup>
+</Project>
