@@ -35,13 +35,13 @@ namespace SPICA.Formats.H3D.Contents.Texture
         private uint NameAddress;
 
         [TargetSection("CommandsSection"), CustomSerialization]
-        public uint[] Texture0Commands;
+        private uint[] Texture0Commands;
 
         [TargetSection("CommandsSection"), CustomSerialization]
-        public uint[] Texture1Commands;
+        private uint[] Texture1Commands;
 
         [TargetSection("CommandsSection"), CustomSerialization]
-        public uint[] Texture2Commands;
+        private uint[] Texture2Commands;
 
         [TargetSection("StringsSection")]
         public string Name;
@@ -112,8 +112,6 @@ namespace SPICA.Formats.H3D.Contents.Texture
         {
             PICACommandWriter Writer = new PICACommandWriter();
 
-            Serializer.AddPointer(RawBuffer, Serializer.BaseStream.Position + 0x10, typeof(uint));
-
             switch (FName)
             {
                 case "Texture0Commands":
@@ -122,12 +120,14 @@ namespace SPICA.Formats.H3D.Contents.Texture
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_ADDR1, 0);
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_TYPE, (uint)Format);
                     break;
+
                 case "Texture1Commands":
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_DIM, Height | (Width << 16));
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_LOD, MipmapSize);
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_ADDR, 0);
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_TYPE, (uint)Format);
                     break;
+
                 case "Texture2Commands":
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_DIM, Height | (Width << 16));
                     Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_LOD, MipmapSize);
@@ -138,6 +138,9 @@ namespace SPICA.Formats.H3D.Contents.Texture
 
             Writer.SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
             Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
+
+            Serializer.AddPointer(RawBuffer, Serializer.BaseStream.Position + 0x10, typeof(uint));
+            Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x10, (int)H3DRelocationType.RawDataTexture);
 
             return Writer.GetBuffer();
         }

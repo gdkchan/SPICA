@@ -6,12 +6,12 @@ namespace SPICA.Serialization.BinaryAttributes
     class TargetSectionAttribute : Attribute
     {
         public string Name;
-        public int Prio;
+        public int Order;
 
-        public TargetSectionAttribute(string Name, int Prio = 0)
+        public TargetSectionAttribute(string Name, int Order = 0)
         {
             this.Name = Name;
-            this.Prio = Prio;
+            this.Order = Order;
         }
     }
 }

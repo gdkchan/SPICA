@@ -94,7 +94,6 @@ void main(void)
 
                 Mdl[Index] = new Mesh(H3DMesh.Attributes, H3DMesh.RawBuffer, Indices, H3DMesh.VertexStride, shaderProgramHandle);
             }
-
             // Other state
             GL.Enable(EnableCap.DepthTest);
             GL.ClearColor(System.Drawing.Color.MidnightBlue);

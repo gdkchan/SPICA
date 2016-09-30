@@ -23,16 +23,16 @@ namespace SPICA.PICA
             Commands.Add((uint)Register | (Mask << 16));
         }
 
-        public void SetCommand(PICARegister Register, float Param)
+        public void SetCommand(PICARegister Register, float Param, uint Mask = 0xf)
         {
             Commands.Add(IOUtils.ToUInt(Param));
-            Commands.Add((uint)Register | (0xf << 16));
+            Commands.Add((uint)Register | (Mask << 16));
         }
 
-        public void SetCommand(PICARegister Register, bool Param)
+        public void SetCommand(PICARegister Register, bool Param, uint Mask = 0xf)
         {
             Commands.Add(Param ? 1u : 0u);
-            Commands.Add((uint)Register | (0xf << 16));
+            Commands.Add((uint)Register | (Mask << 16));
         }
 
         public void SetCommand(PICARegister Register, bool Consecutive = false, uint Mask = 0xf, params uint[] Params)

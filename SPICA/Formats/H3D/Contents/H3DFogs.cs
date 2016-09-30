@@ -8,19 +8,19 @@ namespace SPICA.Formats.H3D.Contents
         [PointerOf("PointerTable")]
         private uint PointerTableAddress;
 
-        [CountOf("NameTree", 1), CountOf("Fogs")]
+        [CountOf("Fogs"), CountOf("NameTree", 1)]
         private uint Count;
 
         [PointerOf("NameTree")]
         private uint NameTreeAddress;
 
-        [TargetSection("DescriptorsSection")]
+        [TargetSection("DescriptorsSection", 1)]
         public H3DTreeNode[] NameTree;
 
-        [TargetSection("DescriptorsSection"), PointerOf("Fogs")]
+        [TargetSection("DescriptorsSection", 1), PointerOf("Fogs")]
         private uint[] PointerTable;
 
-        [TargetSection("DescriptorsSection", 1)]
+        [TargetSection("DescriptorsSection", 4)]
         public H3DFog[] Fogs;
 
         public H3DFog this[int Index]

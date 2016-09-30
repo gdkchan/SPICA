@@ -27,8 +27,11 @@ namespace SPICA.Formats.H3D.Contents.Model
         [TargetSection("CommandsSection"), CustomSerialization]
         private uint[] IndicesBufferCommands;
 
-        [TargetSection("RawDataSection")]
+        [TargetSection("RawDataSection", 1)]
         private byte[] RawBuffer;
+
+        [NonSerialized]
+        public ushort BoolUniforms;
 
         [NonSerialized]
         public ushort[] Indices;
@@ -57,6 +60,7 @@ namespace SPICA.Formats.H3D.Contents.Model
 
                 switch (Cmd.Register)
                 {
+                    case PICARegister.GPUREG_VSH_BOOLUNIFORM: BoolUniforms = (ushort)Param; break;
                     case PICARegister.GPUREG_INDEXBUFFER_CONFIG: BufferAddress = Param; break;
                     case PICARegister.GPUREG_NUMVERTICES: BufferCount = Param; break;
                 }
@@ -111,7 +115,27 @@ namespace SPICA.Formats.H3D.Contents.Model
                 }
             }
 
-            return null; //TODO
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_BOOLUNIFORM, BoolUniforms | 0x7fff0000u);
+            Writer.SetCommand(PICARegister.GPUREG_RESTART_PRIMITIVE, true);
+            Writer.SetCommand(PICARegister.GPUREG_INDEXBUFFER_CONFIG, 0);
+            Writer.SetCommand(PICARegister.GPUREG_NUMVERTICES, (uint)Indices.Length);
+            Writer.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, false, 1);
+            Writer.SetCommand(PICARegister.GPUREG_DRAWELEMENTS, true);
+            Writer.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, true, 1);
+            Writer.SetCommand(PICARegister.GPUREG_VTX_FUNC, true);
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
+            Writer.SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
+            Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
+
+            H3DRelocationType RType = Format ? H3DRelocationType.RawDataIndex16 : H3DRelocationType.RawDataIndex8;
+
+            Serializer.AddPointer(RawBuffer, Serializer.BaseStream.Position + 0x10, typeof(uint));
+            Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x10, (int)RType);
+
+            return Writer.GetBuffer();
         }
     }
 }

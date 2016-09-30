@@ -21,35 +21,36 @@ namespace SPICA.Serialization
 
         private bool IsSelfRel;
 
-        //Those are Pointers to a Pointer or Count, using a Reference or Name to identify the Element
-        private struct NamePointer
-        {
-            public string Name;
-            public long Position;
-            public Type Type;
-        }
-
         private struct RefPointer
         {
             public object ObjRef;
             public long Position;
+            public long Increment;
             public Type Type;
         }
 
-        private List<NamePointer> SecLen;
-        private List<NamePointer> SecPtr;
+        private struct NamePointer
+        {
+            public string Name;
+            public long Position;
+            public long Increment;
+            public Type Type;
+        }
+
+        private List<RefPointer> Counts;
         private List<RefPointer> Pointers;
-        private List<RefPointer> PtrTable;
+        private List<NamePointer> SectLen;
+        private List<NamePointer> SectPtr;
 
         private struct SectionField
         {
             public string Name;
-            public int Prio;
+            public int Order;
             public object Data;
             public FieldInfo FInfo;
         }
 
-        private List<SectionField> SecFlds;
+        private List<SectionField> SectFlds;
 
         private Dictionary<string, long> StrTable;
 
@@ -68,12 +69,12 @@ namespace SPICA.Serialization
 
             Writer = new BinaryWriter(BaseStream);
             
-            SecLen = new List<NamePointer>();
-            SecPtr = new List<NamePointer>();
+            SectLen = new List<NamePointer>();
+            SectPtr = new List<NamePointer>();
+            Counts = new List<RefPointer>();
             Pointers = new List<RefPointer>();
-            PtrTable = new List<RefPointer>();
 
-            SecFlds = new List<SectionField>();
+            SectFlds = new List<SectionField>();
 
             StrTable = new Dictionary<string, long>();
         }
@@ -99,15 +100,10 @@ namespace SPICA.Serialization
                 Writer.Write(BufferedUInt);
             }
 
-            CheckSection(DataType);
-        }
-
-        private void CheckSection(MemberInfo Info)
-        {
             //This check and writes all Sections for the Class, Struct or Field
-            if (Info.IsDefined(typeof(SectionAttribute)))
+            if (DataType.IsDefined(typeof(SectionAttribute)))
             {
-                foreach (SectionAttribute Attr in Info.GetCustomAttributes<SectionAttribute>())
+                foreach (SectionAttribute Attr in DataType.GetCustomAttributes<SectionAttribute>())
                 {
                     WriteSection(Attr.Name, Attr.Align);
                 }
@@ -118,20 +114,20 @@ namespace SPICA.Serialization
         {
             long Position = BaseStream.Position;
 
-            for (int Prio = 0; ; Prio++)
+            for (int Order = 0; ; Order++)
             {
-                Predicate<SectionField> SFldCurr = SFld => SFld.Name == Name && SFld.Prio == Prio;
-                Predicate<SectionField> SFldNext = SFld => SFld.Name == Name && SFld.Prio > Prio;
+                Predicate<SectionField> SFldCurr = x => x.Name == Name && x.Order == Order;
+                Predicate<SectionField> SFldNext = x => x.Name == Name && x.Order > Order;
 
-                List<SectionField> SFlds = SecFlds.FindAll(SFldCurr);
+                List<SectionField> SFlds = SectFlds.FindAll(SFldCurr);
 
                 foreach (SectionField SFld in SFlds)
                 {
                     WriteField(SFld.Data, SFld.FInfo, Name);
-                    SecFlds.Remove(SFld);
+                    SectFlds.Remove(SFld);
                 }
 
-                if (!SecFlds.Exists(SFldNext)) break;
+                if (!SectFlds.Exists(SFldNext)) break;
             }
 
             //Writes total length of the Section in bytes and Pointers to this Section
@@ -141,19 +137,19 @@ namespace SPICA.Serialization
 
             while ((BaseStream.Position % Align) != 0) BaseStream.WriteByte(0);
 
-            FindWrite(SecLen, Name, Length);
-            FindWrite(SecPtr, Name, Position);
+            FindWrite(SectLen, Name, Length);
+            FindWrite(SectPtr, Name, Position);
         }
 
         private void FindWrite(List<NamePointer> Ptrs, string Name, long Value)
         {
-            Predicate<NamePointer> Pred = NP => NP.Name == Name;
+            Predicate<NamePointer> Pred = x => x.Name == Name;
 
-            if (Ptrs.Exists(Pred))
+            while (Ptrs.Exists(Pred))
             {
                 NamePointer Ptr = Ptrs.Find(Pred);
 
-                WriteValue(Value, Ptr.Position, Ptr.Type);
+                WriteValue(Value + Ptr.Increment, Ptr.Position, Ptr.Type);
                 Ptrs.Remove(Ptr);
             }
         }
@@ -161,8 +157,12 @@ namespace SPICA.Serialization
         private void WriteField(object Data, FieldInfo FInfo, string Section = null)
         {
             Type FType = FInfo.FieldType;
+
             object Value = FInfo.GetValue(Data);
-            bool IsPtrTable = FInfo.IsDefined(typeof(PointerOfAttribute)) && FType.IsArray;
+            object OldValue = Value;
+
+            bool IsPointer = FInfo.IsDefined(typeof(PointerOfAttribute));
+            bool IsPtrTable = IsPointer && FType.IsArray;
 
             if (FInfo.IsDefined(typeof(NonSerializedAttribute)))
             {
@@ -175,10 +175,10 @@ namespace SPICA.Serialization
 
                 if (Section != Attr.Name)
                 {
-                    SecFlds.Add(new SectionField
+                    SectFlds.Add(new SectionField
                     {
                         Name = Attr.Name,
-                        Prio = Attr.Prio,
+                        Order = Attr.Order,
                         Data = Data,
                         FInfo = FInfo
                     });
@@ -202,22 +202,22 @@ namespace SPICA.Serialization
             //Writes all pointers that points to this Object
             bool WriteVal = Value != null;
 
-            Predicate<RefPointer> PtrPred = Ptr => Ptr.ObjRef == Value;
+            Predicate<RefPointer> RefPred = x => x.ObjRef == OldValue && !x.Type.IsArray;
+            Predicate<RefPointer> TblPred = x => x.ObjRef == OldValue && x.Type.IsArray;
 
-            while (Pointers.Exists(PtrPred))
+            while (Pointers.Exists(RefPred))
             {
-                RefPointer Ptr = Pointers.Find(PtrPred);
+                RefPointer Ptr = Pointers.Find(RefPred);
 
                 long Address = 0;
-                long BaseOffs = IsSelfRel ? Ptr.Position : 0;
 
                 if (WriteVal || IsPtrTable)
                 {
-                    Address = BaseStream.Position - BaseOffs;
+                    Address = BaseStream.Position + Ptr.Increment;
 
                     if (Value is string && StrTable.ContainsKey((string)Value))
                     {
-                        Address = StrTable[(string)Value] - BaseOffs;
+                        Address = StrTable[(string)Value] + Ptr.Increment;
                         WriteVal = false;
                     }
                 }
@@ -233,26 +233,25 @@ namespace SPICA.Serialization
 
                 FieldInfo TargetFld = Data.GetType().GetField(Attr.ArrName, Binding);
 
-                if (TargetFld != null && TargetFld.FieldType.IsArray)
+                RefPointer Cnt = new RefPointer()
                 {
-                    Array TargetArr = (Array)TargetFld.GetValue(Data);
+                    ObjRef = TargetFld.GetValue(Data),
+                    Position = BaseStream.Position,
+                    Increment = Attr.Increment,
+                    Type = FType
+                };
 
-                    if (TargetArr != null)
-                    {
-                        long Length = TargetArr.Length - Attr.Increment;
-                        WriteValue(Length, BaseStream.Position, FType);
-                    }
-                }
+                Counts.Add(Cnt);
             }
             else if (FInfo.IsDefined(typeof(SectionLengthOfAttribute)))
             {
-                AddNamePointer(SecLen, FInfo.GetCustomAttribute<SectionLengthOfAttribute>().Name, FType);
+                AddNamePointer(SectLen, FInfo.GetCustomAttribute<SectionLengthOfAttribute>().Name, FType);
             }
             else if (FInfo.IsDefined(typeof(SectionPointerOfAttribute)))
             {
-                AddNamePointer(SecPtr, FInfo.GetCustomAttribute<SectionPointerOfAttribute>().Name, FType);
+                AddNamePointer(SectPtr, FInfo.GetCustomAttribute<SectionPointerOfAttribute>().Name, FType);
             }
-            else if (FInfo.IsDefined(typeof(PointerOfAttribute)))
+            else if (IsPointer)
             {
                 //This is an Object Pointer, so we store it on the to be written Pointer list
                 PointerOfAttribute Attr = FInfo.GetCustomAttribute<PointerOfAttribute>();
@@ -261,14 +260,15 @@ namespace SPICA.Serialization
 
                 if (TargetFld != null)
                 {
-                    RefPointer Ptr = new RefPointer()
+                    Pointers.Add(new RefPointer()
                     {
                         ObjRef = TargetFld.GetValue(Data),
                         Position = BaseStream.Position,
+                        Increment = IsSelfRel ? -BaseStream.Position : 0,
                         Type = FType
-                    };
+                    });
 
-                    if (Relocator != null) Relocator.AddPointer(Ptr.Position);
+                    if (Relocator != null) Relocator.AddPointer(BaseStream.Position);
 
                     if (IsPtrTable)
                     {
@@ -279,12 +279,6 @@ namespace SPICA.Serialization
                             int Length = GetBytesLength(((Array)TargetArr).Length, FType.GetElementType());
                             while (Length-- > 0) BaseStream.WriteByte(0);
                         }
-
-                        PtrTable.Add(Ptr);
-                    }
-                    else
-                    {
-                        Pointers.Add(Ptr);
                     }
                 }
             }
@@ -296,36 +290,48 @@ namespace SPICA.Serialization
                 {
                     Array Array = (Array)Value;
 
-                    RefPointer ArrPtr = PtrTable.Find(PtrPred);
-                    bool HasPtrTable = PtrTable.Exists(PtrPred);
+                    while (Counts.Exists(RefPred))
+                    {
+                        RefPointer Cnt = Counts.Find(RefPred);
 
-                    if (!HasPtrTable && Array is byte[])
+                        WriteValue(Array.Length + Cnt.Increment, Cnt.Position, Cnt.Type);
+                        Counts.Remove(Cnt);
+                    }
+
+                    List<RefPointer> PtrTable = Pointers.FindAll(TblPred);
+                    if (PtrTable.Count > 0) Pointers.RemoveAll(TblPred);
+
+                    if (PtrTable.Count == 0 && Array is byte[])
                     {
                         Writer.Write((byte[])Array);
                     }
                     else
                     {
-                        foreach (object Elem in Array)
+                        for (int Index = 0; Index < Array.Length; Index++)
                         {
+                            object Elem = Array.GetValue(Index);
+
                             WriteVal = Elem != null;
 
-                            if (HasPtrTable)
+                            foreach (RefPointer Ptr in PtrTable)
                             {
                                 long Address = 0;
-                                long BaseOffs = IsSelfRel ? ArrPtr.Position : 0;
 
                                 if (WriteVal)
                                 {
-                                    Address = BaseStream.Position - BaseOffs;
+                                    Address = BaseStream.Position + Ptr.Increment;
 
                                     if (Elem is string && StrTable.ContainsKey((string)Elem))
                                     {
-                                        Address = StrTable[(string)Elem] - BaseOffs;
+                                        Address = StrTable[(string)Elem] + Ptr.Increment;
                                         WriteVal = false;
                                     }
                                 }
 
-                                ArrPtr.Position = WriteValue(Address, ArrPtr.Position, ArrPtr.Type.GetElementType());
+                                int PtrStride = GetBytesLength(1, Ptr.Type.GetElementType());
+                                int PtrOffset = Index * PtrStride;
+
+                                WriteValue(Address, Ptr.Position + PtrOffset, Ptr.Type.GetElementType());
                             }
 
                             if (WriteVal) WriteValue(Elem);
@@ -339,16 +345,12 @@ namespace SPICA.Serialization
                             while (DiffBytes-- > 0) BaseStream.WriteByte(0);
                         }
                     }
-
-                    if (HasPtrTable) PtrTable.Remove(ArrPtr);
                 }
             }
             else if (WriteVal)
             {
                 WriteValue(Value);
             }
-
-            CheckSection(FInfo);
         }
 
         //Helper functions
@@ -383,7 +385,13 @@ namespace SPICA.Serialization
 
         private void AddNamePointer(List<NamePointer> Target, string Name, Type Type)
         {
-            Target.Add(new NamePointer { Name = Name, Position = BaseStream.Position, Type = Type });
+            Target.Add(new NamePointer
+            {
+                Name = Name,
+                Position = BaseStream.Position,
+                Increment = IsSelfRel ? -BaseStream.Position : 0,
+                Type = Type
+            });
         }
 
         public void AddPointer(object ObjRef, long Position, Type Type)

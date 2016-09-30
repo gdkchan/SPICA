@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.H3D.Contents
 {
-    [Section("MetaDataSection1")]
+    [Section("MetaDataSection")]
     class H3DMetaData
     {
         [PointerOf("Values")]

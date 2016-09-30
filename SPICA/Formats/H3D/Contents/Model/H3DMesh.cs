@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Contents.Model
 {
-    class H3DMesh : ICustomDeserializer
+    class H3DMesh : ICustomDeserializer, ICustomSerializer
     {
         public ushort MaterialId;
         public byte Flags;
@@ -43,10 +43,10 @@ namespace SPICA.Formats.H3D.Contents.Model
         [PointerOf("MetaData")]
         private uint MetaDataAddress;
 
-        [TargetSection("DescriptorsSection", 2)]
+        [TargetSection("DescriptorsSection", 3)]
         public H3DFace[] Faces;
 
-        [TargetSection("DescriptorsSection", 2)]
+        [TargetSection("DescriptorsSection", 3)]
         public H3DMetaData MetaData;
 
         [TargetSection("CommandsSection"), CustomSerialization]
@@ -55,7 +55,7 @@ namespace SPICA.Formats.H3D.Contents.Model
         [TargetSection("CommandsSection"), CustomSerialization]
         private uint[] DisableCommands;
 
-        [TargetSection("RawDataSection")]
+        [TargetSection("RawDataSection", 1)]
         public byte[] RawBuffer;
 
         [NonSerialized]
@@ -245,6 +245,22 @@ namespace SPICA.Formats.H3D.Contents.Model
         private float ToFloat(uint Value)
         {
             return BitConverter.ToSingle(BitConverter.GetBytes(Value), 0);
+        }
+
+        public object Serialize(BinarySerializer Serializer, string FName)
+        {
+            Serializer.AddPointer(RawBuffer, Serializer.BaseStream.Position + 0x30, typeof(uint));
+            Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x20, (int)H3DRelocationType.BaseAddress);
+            Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x30, (int)H3DRelocationType.RawDataVertex);
+
+            //TODO: Recreate those commands
+            switch (FName)
+            {
+                case "EnableCommands": return EnableCommands;
+                case "DisableCommands": return DisableCommands;
+            }
+
+            return null;
         }
     }
 }

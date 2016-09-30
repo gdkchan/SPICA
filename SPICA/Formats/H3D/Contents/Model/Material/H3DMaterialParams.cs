@@ -93,7 +93,6 @@ namespace SPICA.Formats.H3D.Contents.Model.Material
         [TargetSection("StringsSection")]
         public string ModelReference;
 
-        [TargetSection("MetaDataSection")]
         public H3DMetaData MetaData;
     }
 }

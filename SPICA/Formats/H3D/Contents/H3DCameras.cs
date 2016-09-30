@@ -8,7 +8,7 @@ namespace SPICA.Formats.H3D.Contents
         [PointerOf("PointerTable")]
         private uint PointerTableAddress;
 
-        [CountOf("NameTree", 1), CountOf("Cameras")]
+        [CountOf("Cameras"), CountOf("NameTree", 1)]
         private uint Count;
 
         [PointerOf("NameTree")]
@@ -20,7 +20,7 @@ namespace SPICA.Formats.H3D.Contents
         [TargetSection("DescriptorsSection"), PointerOf("Cameras")]
         private uint[] PointerTable;
 
-        [TargetSection("DescriptorsSection", 1)]
+        [TargetSection("DescriptorsSection", 4)]
         public H3DCamera[] Cameras;
 
         public H3DCamera this[int Index]

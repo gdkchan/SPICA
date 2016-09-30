@@ -2,7 +2,7 @@
 
 namespace SPICA.Serialization.BinaryAttributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Field, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true)]
     class SectionAttribute : Attribute
     {
         public string Name;

@@ -22,7 +22,7 @@ namespace SPICA.Formats.H3D.Contents
         [TargetSection("StringsSection")]
         public string Name;
 
-        [TargetSection("MetaDataSection1"), CustomSerialization]
+        [TargetSection("MetaDataSection"), CustomSerialization]
         private object[] Values;
 
         public object this[int Index]

@@ -51,6 +51,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Texture\H3DTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DContents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DRelocationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DRelocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math\Matrix3x4.cs" />

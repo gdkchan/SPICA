@@ -18,19 +18,37 @@ namespace SPICA.Formats.H3D
         public byte ForwardCompatibility;
         public ushort ConverterVersion;
 
+        [SectionPointerOf("DescriptorsSection")]
         internal uint DescriptorsAddress;
+
+        [SectionPointerOf("StringsSection")]
         internal uint StringsAddress;
+
+        [SectionPointerOf("CommandsSection")]
         internal uint CommandsAddress;
+
+        [SectionPointerOf("RawDataSection")]
         internal uint RawDataAddress;
+
+        [SectionPointerOf("RawExtSection")]
         internal uint RawExtAddress;
 
         [PointerOf("RelocationTable")]
         internal uint RelocationAddress;
 
+        [SectionLengthOf("DescriptorsSection")]
         internal uint DescriptorsLength;
+
+        [SectionLengthOf("StringsSection")]
         internal uint StringsLength;
+
+        [SectionLengthOf("CommandsSection")]
         internal uint CommandsLength;
+
+        [SectionLengthOf("RawDataSection")]
         internal uint RawDataLength;
+
+        [SectionLengthOf("RawExtSection")]
         internal uint RawExtLength;
 
         [CountOf("RelocationTable")]
@@ -47,6 +65,7 @@ namespace SPICA.Formats.H3D
         [TargetSection("RelocationSection"), CustomSerialization]
         internal byte[] RelocationTable;
 
+        [TargetSection("DescriptorsSection")]
         public H3DContents Contents;
 
         public static H3D Open(string FileName)

@@ -17,7 +17,7 @@ namespace SPICA.Formats.H3D
         private struct Pointer
         {
             public long Position;
-            public string Hint;
+            public int Section;
         }
 
         private struct Section
@@ -59,27 +59,39 @@ namespace SPICA.Formats.H3D
                 while (MS.Position < MS.Length)
                 {
                     uint Value = PtrReader.ReadUInt32();
-
-                    uint TargetSec = Value >> 25;
                     uint PtrAddress = Value & 0x1ffffff;
 
-                    //Those values are version specific
-                    switch (TargetSec)
-                    {
-                        case 0: Accumulate32(Header.DescriptorsAddress + (PtrAddress << 2), Header.DescriptorsAddress); break;
-                        case 1: Accumulate32(Header.DescriptorsAddress + PtrAddress, Header.StringsAddress); break;
-                        case 2: Accumulate32(Header.DescriptorsAddress + (PtrAddress << 2), Header.CommandsAddress); break;
-                        case 7: Accumulate32(Header.DescriptorsAddress + (PtrAddress << 2), Header.RawDataAddress); break;
-                        case 0x25: Accumulate32(Header.CommandsAddress + (PtrAddress << 2), Header.RawDataAddress); break;
-                        case 0x26: Accumulate32(Header.CommandsAddress + (PtrAddress << 2), Header.RawDataAddress); break;
-                        case 0x27: Accumulate32(Header.CommandsAddress + (PtrAddress << 2), Header.RawDataAddress | (1u << 31)); break;
-                        case 0x28: Accumulate32(Header.CommandsAddress + (PtrAddress << 2), Header.RawDataAddress); break;
-                        case 0x2b: Accumulate32(Header.CommandsAddress + (PtrAddress << 2), Header.RawExtAddress); break;
-                        case 0x2c: Accumulate32(Header.CommandsAddress + (PtrAddress << 2), Header.RawExtAddress | (1u << 31)); break;
-                        case 0x2d: Accumulate32(Header.CommandsAddress + (PtrAddress << 2), Header.RawExtAddress); break;
-                    }
+                    H3DRelocationType TargetSect = (H3DRelocationType)((Value >> 25) & 0xf);
+                    H3DRelocationType PointerSect = (H3DRelocationType)(Value >> 29);
+
+                    if (TargetSect != H3DRelocationType.Strings) PtrAddress <<= 2;
+
+                    Accumulate32(GetAddress(PointerSect) + PtrAddress, GetAddress(TargetSect));
                 }
             }
+        }
+
+        private uint GetAddress(H3DRelocationType RType)
+        {
+            switch (RType)
+            {
+                case H3DRelocationType.Descriptors: return Header.DescriptorsAddress;
+                case H3DRelocationType.Strings: return Header.StringsAddress;
+                case H3DRelocationType.Commands: return Header.CommandsAddress;
+                case H3DRelocationType.CommandsSrc: return Header.CommandsAddress;
+                case H3DRelocationType.RawData: return Header.RawDataAddress;
+                case H3DRelocationType.RawDataTexture: return Header.RawDataAddress;
+                case H3DRelocationType.RawDataVertex: return Header.RawDataAddress;
+                case H3DRelocationType.RawDataIndex16: return Header.RawDataAddress | (1u << 31);
+                case H3DRelocationType.RawDataIndex8: return Header.RawDataAddress;
+                case H3DRelocationType.RawExt: return Header.RawExtAddress;
+                case H3DRelocationType.RawExtTexture: return Header.RawExtAddress;
+                case H3DRelocationType.RawExtVertex: return Header.RawExtAddress;
+                case H3DRelocationType.RawExtIndex16: return Header.RawExtAddress | (1u << 31);
+                case H3DRelocationType.RawExtIndex8: return Header.RawExtAddress;
+            }
+
+            return 0;
         }
 
         private void Accumulate32(uint Address, uint Value)
@@ -98,9 +110,9 @@ namespace SPICA.Formats.H3D
             return Value;
         }
 
-        public void AddPointer(long Position, string Hint = null)
+        public void AddPointer(long Position, int Section = -1)
         {
-            Pointers.Add(new Pointer { Position = Position, Hint = Hint });
+            Pointers.Add(new Pointer { Position = Position, Section = Section });
         }
 
         public void AddSection(long Position, long Length, string Name)
@@ -132,39 +144,49 @@ namespace SPICA.Formats.H3D
                     Reader.BaseStream.Seek(Pointer.Position, SeekOrigin.Begin);
 
                     uint TargetAddress = Peek32();
-                    uint PointerAddress = (uint)Pointer.Position;
 
                     Section TargetSect = FindSection(Sects, TargetAddress);
-                    Section PointerSect = FindSection(Sects, PointerAddress);
+                    Section PointerSect = FindSection(Sects, Pointer.Position);
+
+                    uint PointerAddress = (uint)(Pointer.Position - PointerSect.Position);
 
                     Writer.Write((uint)(TargetAddress - TargetSect.Position));
 
-                    uint Flags = 0;
-
-                    if (PointerSect.Name == "CommandsSection")
+                    if (PointerSect.Name != null)
                     {
-                        //TODO
-                    }
-                    else
-                    {
-                        switch (TargetSect.Name)
-                        {
-                            case "DescriptorsSection": Flags = 0; break;
-                            case "StringsSection": Flags = 1; break;
-                            case "CommandsSection": Flags = 2; break;
-                            case "RawDataSection": Flags = 7; break;
-                        }
-                    }
+                        uint Flags;
 
-                    if (TargetSect.Name != "StringsSection") PointerAddress >>= 2;
+                        if (Pointer.Section != -1)
+                            Flags = (uint)Pointer.Section;
+                        else
+                            Flags = (uint)GetRelocationFromName(TargetSect.Name);
 
-                    PtrWriter.Write(PointerAddress | (Flags << 25));
+                        Flags |= (uint)GetRelocationFromName(PointerSect.Name) << 4;
+
+                        if (TargetSect.Name != "StringsSection") PointerAddress >>= 2;
+
+                        PtrWriter.Write(PointerAddress | (Flags << 25));
+                    }
                 }
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
 
                 return MS.ToArray();
             }
+        }
+
+        private H3DRelocationType GetRelocationFromName(string SectionName)
+        {
+            switch (SectionName)
+            {
+                case "DescriptorsSection": return H3DRelocationType.Descriptors;
+                case "StringsSection": return H3DRelocationType.Strings;
+                case "CommandsSection": return H3DRelocationType.Commands;
+                case "RawDataSection": return H3DRelocationType.RawData;
+                case "RawExtSection": return H3DRelocationType.RawExt;
+            }
+
+            return default(H3DRelocationType);
         }
 
         private Section FindSection(IEnumerable<Section> Sects, long Position)
