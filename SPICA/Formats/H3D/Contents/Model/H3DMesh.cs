@@ -34,12 +34,6 @@ namespace SPICA.Formats.H3D.Contents.Model
         [CountOf("DisableCommands")]
         private uint DisableCommandsCount;
 
-        [TargetSection("CommandsSection")]
-        private uint[] EnableCommands;
-
-        [TargetSection("CommandsSection")]
-        private uint[] DisableCommands;
-
         public Vector3D MeshCenter;
 
         private uint ParentAddress;
@@ -55,6 +49,12 @@ namespace SPICA.Formats.H3D.Contents.Model
         [TargetSection("DescriptorsSection", 2)]
         public H3DMetaData MetaData;
 
+        [TargetSection("CommandsSection"), CustomSerialization]
+        private uint[] EnableCommands;
+
+        [TargetSection("CommandsSection"), CustomSerialization]
+        private uint[] DisableCommands;
+
         [TargetSection("RawDataSection")]
         public byte[] RawBuffer;
 
@@ -67,8 +67,10 @@ namespace SPICA.Formats.H3D.Contents.Model
         [NonSerialized]
         public int VertexStride;
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        public void Deserialize(BinaryDeserializer Deserializer, string FName)
         {
+            if (FName != "EnableCommands") return;
+
             PICACommandReader Reader = new PICACommandReader(EnableCommands);
 
             uint BufferAddress = 0;

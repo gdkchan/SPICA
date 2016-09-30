@@ -3,40 +3,15 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 using SPICA.Formats.H3D;
-using SPICA.Serialization;
 using SPICA.Formats.H3D.Contents.Model;
-
-using System;
-using System.IO;
-using System.Diagnostics;
 using SPICA.WinForms.Rendering;
+
+using System.Diagnostics;
 
 namespace SPICA.WinForms
 {
     public partial class Form1 : GameWindow
     {
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            H3D Model = H3D.Open("D:\\may.bch");
-
-            System.Diagnostics.Debug.WriteLine(Model.Magic);
-            System.Diagnostics.Debug.WriteLine(Model.ConverterVersion);
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].Flags.ToString());
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].WorldTransform.ToString());
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.NameTree.Length.ToString());
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.NameTree[0].ReferenceBit.ToString());
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].Meshes[0].MeshCenter.ToString());
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].Meshes[0].Faces[0].MaxIndex.ToString());
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].Materials[1].MaterialName);
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].Materials[1].TextureNames[1]);
-            System.Diagnostics.Debug.WriteLine((float)Model.Contents.Models.Models[0].Meshes[0].MetaData[0][0]);
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].MaterialsNameTree[1].Name);
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].MeshVisibilities[0].ToString());
-            System.Diagnostics.Debug.WriteLine(Model.Contents.Models.Models[0].MeshesNameTree[1].Name);
-
-            
-        }
-
         string vertexShaderSource = @"
 #version 130
 precision highp float;
@@ -84,30 +59,6 @@ void main(void)
 
         H3D Model;
 
-        Vector3[] positionVboData = new Vector3[]{
-            new Vector3(-1.0f, -1.0f,  1.0f),
-            new Vector3( 1.0f, -1.0f,  1.0f),
-            new Vector3( 1.0f,  1.0f,  1.0f),
-            new Vector3(-1.0f,  1.0f,  1.0f),
-            new Vector3(-1.0f, -1.0f, -1.0f),
-            new Vector3( 1.0f, -1.0f, -1.0f),
-            new Vector3( 1.0f,  1.0f, -1.0f),
-            new Vector3(-1.0f,  1.0f, -1.0f) };
-
-        int[] indicesVboData = new int[]{
-             // front face
-                0, 1, 2, 2, 3, 0,
-                // top face
-                3, 2, 6, 6, 7, 3,
-                // back face
-                7, 6, 5, 5, 4, 7,
-                // left face
-                4, 0, 3, 3, 7, 4,
-                // bottom face
-                0, 1, 5, 5, 4, 0,
-                // right face
-                1, 5, 6, 6, 2, 1, };
-
         Matrix4 projectionMatrix, modelviewMatrix;
 
         public Form1()
@@ -126,13 +77,7 @@ void main(void)
             CreateShaders();
 
             H3D H3D = H3D.Open("D:\\may.bch");
-
-            using (FileStream FS = new FileStream("D:\\recreated.bch", FileMode.Create))
-            {
-                BinarySerializer Serializer = new BinarySerializer(FS);
-
-                Serializer.Serialize(H3D);
-            }
+            H3D.Save(H3D, "D:\\recreated.bch");
 
             Mdl = new Mesh[H3D.Contents.Models[0].Meshes.Length];
 

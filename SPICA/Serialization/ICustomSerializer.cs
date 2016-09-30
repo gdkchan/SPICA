@@ -2,6 +2,6 @@
 {
     interface ICustomSerializer
     {
-        void Serialize(BinarySerializer Serializer);
+        object Serialize(BinarySerializer Serializer, string FName);
     }
 }

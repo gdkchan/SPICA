@@ -15,10 +15,11 @@ namespace SPICA.Serialization
     {
         private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
-        private bool IsSelfRel;
-
         public Stream BaseStream;
         public BinaryWriter Writer;
+        public IRelocator Relocator;
+
+        private bool IsSelfRel;
 
         //Those are Pointers to a Pointer or Count, using a Reference or Name to identify the Element
         private struct NamePointer
@@ -45,7 +46,6 @@ namespace SPICA.Serialization
             public string Name;
             public int Prio;
             public object Data;
-            public object Value;
             public FieldInfo FInfo;
         }
 
@@ -60,10 +60,11 @@ namespace SPICA.Serialization
         ///     Creates a new instance of the Binary Serializer.
         /// </summary>
         /// <param name="BaseStream">The Base Stream where the Data will be serialized</param>
-        public BinarySerializer(Stream BaseStream, bool IsSelfRel = false)
+        public BinarySerializer(Stream BaseStream, IRelocator Relocator = null, bool IsSelfRel = false)
         {
-            this.IsSelfRel = IsSelfRel;
             this.BaseStream = BaseStream;
+            this.Relocator = Relocator;
+            this.IsSelfRel = IsSelfRel;
 
             Writer = new BinaryWriter(BaseStream);
             
@@ -85,16 +86,10 @@ namespace SPICA.Serialization
         {
             Type DataType = Data.GetType();
 
-            //Call Custom Serialization if existent
-            if (Data is ICustomSerializer)
-            {
-                ((ICustomSerializer)Data).Serialize(this);
-            }
-
             //Write all Fields for this Object
             foreach (FieldInfo FInfo in DataType.GetFields(Binding))
             {
-                WriteField(Data, FInfo.GetValue(Data), FInfo);
+                WriteField(Data, FInfo);
             }
 
             //Make sure Booleans has been written
@@ -114,30 +109,37 @@ namespace SPICA.Serialization
             {
                 foreach (SectionAttribute Attr in Info.GetCustomAttributes<SectionAttribute>())
                 {
-                    WriteSection(Attr.Name);
+                    WriteSection(Attr.Name, Attr.Align);
                 }
             }
         }
 
-        private void WriteSection(string Name)
+        private void WriteSection(string Name, uint Align)
         {
             long Position = BaseStream.Position;
 
             for (int Prio = 0; ; Prio++)
             {
-                List<SectionField> SFlds = SecFlds.FindAll(SFld => SFld.Name == Name && SFld.Prio == Prio);
+                Predicate<SectionField> SFldCurr = SFld => SFld.Name == Name && SFld.Prio == Prio;
+                Predicate<SectionField> SFldNext = SFld => SFld.Name == Name && SFld.Prio > Prio;
 
-                if (SecFlds.Where(SFld => SFld.Name == Name && SFld.Prio >= Prio).Count() == 0) break;
+                List<SectionField> SFlds = SecFlds.FindAll(SFldCurr);
 
                 foreach (SectionField SFld in SFlds)
                 {
-                    WriteField(SFld.Data, SFld.Value, SFld.FInfo, Name);
+                    WriteField(SFld.Data, SFld.FInfo, Name);
                     SecFlds.Remove(SFld);
                 }
+
+                if (!SecFlds.Exists(SFldNext)) break;
             }
 
             //Writes total length of the Section in bytes and Pointers to this Section
             long Length = BaseStream.Position - Position;
+
+            if (Relocator != null) Relocator.AddSection(Position, Length, Name);
+
+            while ((BaseStream.Position % Align) != 0) BaseStream.WriteByte(0);
 
             FindWrite(SecLen, Name, Length);
             FindWrite(SecPtr, Name, Position);
@@ -156,10 +158,11 @@ namespace SPICA.Serialization
             }
         }
 
-        private void WriteField(object Data, object Value, FieldInfo FInfo, string Section = null)
+        private void WriteField(object Data, FieldInfo FInfo, string Section = null)
         {
             Type FType = FInfo.FieldType;
-            bool IsPtrTable = false;
+            object Value = FInfo.GetValue(Data);
+            bool IsPtrTable = FInfo.IsDefined(typeof(PointerOfAttribute)) && FType.IsArray;
 
             if (FInfo.IsDefined(typeof(NonSerializedAttribute)))
             {
@@ -177,12 +180,16 @@ namespace SPICA.Serialization
                         Name = Attr.Name,
                         Prio = Attr.Prio,
                         Data = Data,
-                        Value = Value,
                         FInfo = FInfo
                     });
 
                     return;
                 }
+            }
+
+            if (Data is ICustomSerializer && FInfo.IsDefined(typeof(CustomSerializationAttribute)))
+            {
+                Value = ((ICustomSerializer)Data).Serialize(this, FInfo.Name);
             }
 
             //Make sure that all Booleans are written if next type is not a bool
@@ -197,7 +204,7 @@ namespace SPICA.Serialization
 
             Predicate<RefPointer> PtrPred = Ptr => Ptr.ObjRef == Value;
 
-            if (Pointers.Exists(PtrPred))
+            while (Pointers.Exists(PtrPred))
             {
                 RefPointer Ptr = Pointers.Find(PtrPred);
 
@@ -261,7 +268,9 @@ namespace SPICA.Serialization
                         Type = FType
                     };
 
-                    if (IsPtrTable = FType.IsArray)
+                    if (Relocator != null) Relocator.AddPointer(Ptr.Position);
+
+                    if (IsPtrTable)
                     {
                         object TargetArr;
 
@@ -339,12 +348,6 @@ namespace SPICA.Serialization
                 WriteValue(Value);
             }
 
-            //Write Padding if needed
-            if (FInfo.IsDefined(typeof(AlignAttribute)))
-            {
-                while ((BaseStream.Position & 0xf) != 0) BaseStream.WriteByte(0);
-            }
-
             CheckSection(FInfo);
         }
 
@@ -381,6 +384,11 @@ namespace SPICA.Serialization
         private void AddNamePointer(List<NamePointer> Target, string Name, Type Type)
         {
             Target.Add(new NamePointer { Name = Name, Position = BaseStream.Position, Type = Type });
+        }
+
+        public void AddPointer(object ObjRef, long Position, Type Type)
+        {
+            Pointers.Add(new RefPointer { ObjRef = ObjRef, Position = Position, Type = Type });
         }
 
         //Value write functions

@@ -2,6 +2,6 @@
 {
     interface ICustomDeserializer
     {
-        void Deserialize(BinaryDeserializer Deserializer);
+        void Deserialize(BinaryDeserializer Deserializer, string FName);
     }
 }

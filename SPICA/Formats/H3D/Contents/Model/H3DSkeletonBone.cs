@@ -7,7 +7,7 @@ namespace SPICA.Formats.H3D.Contents.Model
     {
         public uint Flags;
         public short ParentIndex;
-        public ushort Padding;
+        private ushort Padding;
         public Vector3D Scale;
         public Vector3D Rotation;
         public Vector3D Translation;

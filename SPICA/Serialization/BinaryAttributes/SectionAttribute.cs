@@ -6,10 +6,12 @@ namespace SPICA.Serialization.BinaryAttributes
     class SectionAttribute : Attribute
     {
         public string Name;
+        public uint Align;
 
-        public SectionAttribute(string Name)
+        public SectionAttribute(string Name, uint Align = 1)
         {
             this.Name = Name;
+            this.Align = Align;
         }
     }
 }

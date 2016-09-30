@@ -29,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\H3DTreeNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Light\H3DLight.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\LUT\H3DLUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\LUT\H3DLUTSampler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Material\H3DMaterial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DSkeletonBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DFace.cs" />
@@ -62,8 +63,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICAAttributeName.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommandReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommandWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICARegister.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\AlignAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\PICATextureFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\CustomSerializationAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\SectionPointerOfAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\TargetSectionAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryAttributes\CountOfAttribute.cs" />
@@ -75,6 +78,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinarySerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomDeserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\IRelocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\IOUtils.cs" />
   </ItemGroup>
 </Project>

@@ -6,38 +6,46 @@ using System.IO;
 namespace SPICA.Formats.H3D
 {
     [Section("DescriptorsSection")]
-    [Section("StringsSection")]
-    [Section("CommandsSection")]
-    [Section("RawDataSection")]
-    [Section("RawExtSection")]
-    class H3D
+    [Section("StringsSection", 0x10)]
+    [Section("CommandsSection", 0x10)]
+    [Section("RawDataSection", 0x80)]
+    [Section("RawExtSection", 0x80)]
+    [Section("RelocationSection")]
+    class H3D : ICustomDeserializer, ICustomSerializer
     {
         public string Magic;
         public byte BackwardCompatibility;
         public byte ForwardCompatibility;
         public ushort ConverterVersion;
 
-        public uint DescriptorsAddress;
-        public uint StringsAddress;
-        public uint CommandsAddress;
-        public uint RawDataAddress;
-        public uint RawExtAddress;
-        public uint RelocationAddress;
+        internal uint DescriptorsAddress;
+        internal uint StringsAddress;
+        internal uint CommandsAddress;
+        internal uint RawDataAddress;
+        internal uint RawExtAddress;
 
-        public uint DescriptorsLength;
-        public uint StringsLength;
-        public uint CommandsLength;
-        public uint RawDataLength;
-        public uint RawExtLength;
-        public uint RelocationLength;
+        [PointerOf("RelocationTable")]
+        internal uint RelocationAddress;
 
-        public uint UnInitDataLength;
-        public uint UnInitCommandsLength;
+        internal uint DescriptorsLength;
+        internal uint StringsLength;
+        internal uint CommandsLength;
+        internal uint RawDataLength;
+        internal uint RawExtLength;
+
+        [CountOf("RelocationTable")]
+        internal uint RelocationLength;
+
+        private uint UnInitDataLength;
+        private uint UnInitCommandsLength;
 
         public byte Flags;
-        public byte Padding;
+        private byte Padding;
 
-        public ushort AddressCount;
+        private ushort AddressCount;
+
+        [TargetSection("RelocationSection"), CustomSerialization]
+        internal byte[] RelocationTable;
 
         public H3DContents Contents;
 
@@ -45,18 +53,26 @@ namespace SPICA.Formats.H3D
         {
             using (MemoryStream MS = new MemoryStream(File.ReadAllBytes(FileName)))
             {
-                H3DRelocator Relocator = new H3DRelocator(MS);
-
-                Relocator.ToAbsolute();
-
-                File.WriteAllBytes("D:\\relocated.bch", MS.ToArray());
-
-                MS.Seek(0, SeekOrigin.Begin);
-
-                BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
-
-                return Deserializer.Deserialize<H3D>();
+                return new BinaryDeserializer(MS).Deserialize<H3D>();
             }
+        }
+
+        public static void Save(H3D Data, string FileName)
+        {
+            using (FileStream FS = new FileStream(FileName, FileMode.Create))
+            {
+                new BinarySerializer(FS, new H3DRelocator(FS)).Serialize(Data);
+            }
+        }
+
+        public void Deserialize(BinaryDeserializer Deserializer, string FName)
+        {
+            new H3DRelocator(this, Deserializer.BaseStream).ToAbsolute();
+        }
+
+        public object Serialize(BinarySerializer Serializer, string FName)
+        {
+            return ((H3DRelocator)Serializer.Relocator).GetPointerTable();
         }
     }
 }

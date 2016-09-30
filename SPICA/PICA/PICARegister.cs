@@ -2,6 +2,7 @@
 {
     enum PICARegister
     {
+        GPUREG_DUMMY = 0x0000,
         GPUREG_FINALIZE = 0x0010,
         GPUREG_FACECULLING_CONFIG = 0x0040,
         GPUREG_VIEWPORT_WIDTH = 0x0041,

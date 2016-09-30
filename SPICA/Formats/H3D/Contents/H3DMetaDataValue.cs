@@ -22,7 +22,7 @@ namespace SPICA.Formats.H3D.Contents
         [TargetSection("StringsSection")]
         public string Name;
 
-        [TargetSection("MetaDataSection1")]
+        [TargetSection("MetaDataSection1"), CustomSerialization]
         private object[] Values;
 
         public object this[int Index]
@@ -31,7 +31,7 @@ namespace SPICA.Formats.H3D.Contents
             set { Values[Index] = value; }
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        public void Deserialize(BinaryDeserializer Deserializer, string FName)
         {
             long Position = Deserializer.BaseStream.Position;
 

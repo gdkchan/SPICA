@@ -13,10 +13,10 @@ namespace SPICA.Serialization
     /// </summary>
     class BinaryDeserializer
     {
-        private bool IsSelfRel;
-
         public Stream BaseStream;
         public BinaryReader Reader;
+
+        private bool IsSelfRel;
 
         //This is used to read Booleans
         private long BufferedPos = 0;
@@ -200,19 +200,13 @@ namespace SPICA.Serialization
                     FInfo.SetValue(Data, ReadValue(Reader, FInfo.FieldType));
                 }
 
-                //Check for Padding
-                if (FInfo.IsDefined(typeof(AlignAttribute)))
+                if (Data is ICustomDeserializer && FInfo.IsDefined(typeof(CustomSerializationAttribute)))
                 {
-                    while ((BaseStream.Position & 0xf) != 0) BaseStream.ReadByte();
+                    ((ICustomDeserializer)Data).Deserialize(this, FInfo.Name);
                 }
 
                 //If we used a Pointer, then Seek back to where we was
                 if (HasPointer) BaseStream.Seek(Position, SeekOrigin.Begin);
-            }
-
-            if (Data is ICustomDeserializer)
-            {
-                ((ICustomDeserializer)Data).Deserialize(this);
             }
 
             BufferedShift = 0;

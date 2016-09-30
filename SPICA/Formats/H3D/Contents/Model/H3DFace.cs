@@ -24,7 +24,7 @@ namespace SPICA.Formats.H3D.Contents.Model
         [CountOf("IndicesBufferCommands")]
         private uint IndicesBufferCommandsCount;
 
-        [TargetSection("CommandsSection")]
+        [TargetSection("CommandsSection"), CustomSerialization]
         private uint[] IndicesBufferCommands;
 
         [TargetSection("RawDataSection")]
@@ -42,7 +42,7 @@ namespace SPICA.Formats.H3D.Contents.Model
             set { Indices[Index] = value; }
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        public void Deserialize(BinaryDeserializer Deserializer, string FName)
         {
             PICACommandReader Reader = new PICACommandReader(IndicesBufferCommands);
 
@@ -83,7 +83,7 @@ namespace SPICA.Formats.H3D.Contents.Model
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public void Serialize(BinarySerializer Serializer)
+        public object Serialize(BinarySerializer Serializer, string FName)
         {
             bool Format = false;
 
@@ -110,6 +110,8 @@ namespace SPICA.Formats.H3D.Contents.Model
                     RawBuffer[Index] = (byte)Indices[Index];
                 }
             }
+
+            return null; //TODO
         }
     }
 }

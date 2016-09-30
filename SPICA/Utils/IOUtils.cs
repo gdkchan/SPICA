@@ -11,43 +11,9 @@ namespace SPICA.Utils
             return BitConverter.ToSingle(BitConverter.GetBytes(Value), 0);
         }
 
-        public static string GetASCIIString(BinaryReader Reader, uint Address)
+        public static uint ToUInt(float Value)
         {
-            using (MemoryStream MS = new MemoryStream())
-            {
-                long Position = Reader.BaseStream.Position;
-                Reader.BaseStream.Seek(Address, SeekOrigin.Begin);
-
-                byte Chr;
-                while ((Chr = Reader.ReadByte()) != 0)
-                {
-                    MS.WriteByte(Chr);
-                }
-
-                Reader.BaseStream.Seek(Position, SeekOrigin.Begin);
-
-                return Encoding.ASCII.GetString(MS.ToArray());
-            }
-        }
-
-        public static string GetUnicodeString(BinaryReader Reader, uint Address)
-        {
-            using (MemoryStream MS = new MemoryStream())
-            {
-                long Position = Reader.BaseStream.Position;
-                Reader.BaseStream.Seek(Address, SeekOrigin.Begin);
-
-                ushort Chr;
-                while ((Chr = Reader.ReadUInt16()) != 0)
-                {
-                    MS.WriteByte((byte)Chr);
-                    MS.WriteByte((byte)(Chr >> 8));
-                }
-
-                Reader.BaseStream.Seek(Position, SeekOrigin.Begin);
-
-                return Encoding.Unicode.GetString(MS.ToArray());
-            }
+            return BitConverter.ToUInt32(BitConverter.GetBytes(Value), 0);
         }
     }
 }
