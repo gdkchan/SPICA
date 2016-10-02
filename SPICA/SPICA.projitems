@@ -30,7 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Light\H3DLight.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\LUT\H3DLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\LUT\H3DLUTSampler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Material\H3DMaterial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DSkeletonBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DFace.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Contents\Model\H3DMesh.cs" />

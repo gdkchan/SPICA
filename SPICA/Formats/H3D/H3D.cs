@@ -1,6 +1,8 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.Formats.H3D.Contents.Model;
+using SPICA.Formats.H3D.Contents.Model.Material;
+using SPICA.Serialization;
 using SPICA.Serialization.BinaryAttributes;
-
+using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.Formats.H3D
@@ -65,7 +67,7 @@ namespace SPICA.Formats.H3D
         [TargetSection("RelocationSection"), CustomSerialization]
         internal byte[] RelocationTable;
 
-        [TargetSection("DescriptorsSection")]
+        [TargetSection("DescriptorsSection"), CustomSerialization]
         public H3DContents Contents;
 
         public static H3D Open(string FileName)
@@ -86,12 +88,18 @@ namespace SPICA.Formats.H3D
 
         public void Deserialize(BinaryDeserializer Deserializer, string FName)
         {
-            new H3DRelocator(this, Deserializer.BaseStream).ToAbsolute();
+            if (FName == "RelocationTable") new H3DRelocator(this, Deserializer.BaseStream).ToAbsolute();
         }
 
         public object Serialize(BinarySerializer Serializer, string FName)
         {
-            return ((H3DRelocator)Serializer.Relocator).GetPointerTable();
+            switch (FName)
+            {
+                case "RelocationTable": return ((H3DRelocator)Serializer.Relocator).GetPointerTable();
+                case "Contents": return (Contents.Materials.ParentRef = Contents);
+            }
+
+            return null;
         }
     }
 }

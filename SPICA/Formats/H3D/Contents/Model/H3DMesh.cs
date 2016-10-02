@@ -36,9 +36,11 @@ namespace SPICA.Formats.H3D.Contents.Model
 
         public Vector3D MeshCenter;
 
+        [PointerOf("H3DModel")]
         private uint ParentAddress;
 
-        public uint UserDefinedAddress;
+        //Should be zero
+        private uint UserDefinedAddress;
 
         [PointerOf("MetaData")]
         private uint MetaDataAddress;
@@ -249,7 +251,7 @@ namespace SPICA.Formats.H3D.Contents.Model
 
         public object Serialize(BinarySerializer Serializer, string FName)
         {
-            Serializer.AddPointer(RawBuffer, Serializer.BaseStream.Position + 0x30, typeof(uint));
+            Serializer.AddPointer("RawBuffer", this, Serializer.BaseStream.Position + 0x30, typeof(uint));
             Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x20, (int)H3DRelocationType.BaseAddress);
             Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x30, (int)H3DRelocationType.RawDataVertex);
 

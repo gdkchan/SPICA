@@ -152,7 +152,7 @@ namespace SPICA.Formats.H3D
 
                     Writer.Write((uint)(TargetAddress - TargetSect.Position));
 
-                    if (PointerSect.Name != null)
+                    if (PointerSect.Name != null && TargetAddress != 0)
                     {
                         uint Flags;
 

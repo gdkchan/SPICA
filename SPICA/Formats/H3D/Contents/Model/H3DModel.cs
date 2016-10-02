@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.H3D.Contents.Model.Material;
-
 using SPICA.Math;
 using SPICA.Serialization.BinaryAttributes;
 
@@ -10,7 +9,6 @@ namespace SPICA.Formats.H3D.Contents.Model
         public byte Flags;
         public byte SkeletonScalingType;
         public ushort SilhouetteMaterialEntries;
-
         public Matrix3x4 WorldTransform;
 
         [PointerOf("Materials")]
@@ -55,8 +53,8 @@ namespace SPICA.Formats.H3D.Contents.Model
         [PointerOf("MeshesNameTree")]
         private uint MeshesNameTreeAddress;
 
-        //Should be zero (set by the Program on 3DS?)
-        public uint UserDefinedAddress;
+        //Should be zero
+        private uint UserDefinedAddress;
 
         [PointerOf("MetaData")]
         private uint MetaDataAddress;

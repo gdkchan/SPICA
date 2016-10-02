@@ -1,9 +1,13 @@
-﻿using SPICA.Formats.H3D.Contents.Material;
+﻿using SPICA.Formats.H3D.Contents.Model;
+using SPICA.Formats.H3D.Contents.Model.Material;
+using SPICA.Serialization;
 using SPICA.Serialization.BinaryAttributes;
+
+using System;
 
 namespace SPICA.Formats.H3D.Contents
 {
-    class H3DMaterials
+    class H3DMaterials : ICustomSerializer
     {
         [PointerOf("PointerTable")]
         private uint PointerTableAddress;
@@ -17,16 +21,30 @@ namespace SPICA.Formats.H3D.Contents
         [TargetSection("DescriptorsSection", 1)]
         public H3DTreeNode[] NameTree;
 
-        [TargetSection("DescriptorsSection", 1), PointerOf("Materials")]
+        [TargetSection("DescriptorsSection", 1), CustomSerialization]
         private uint[] PointerTable;
 
-        [TargetSection("DescriptorsSection", 4)]
-        public H3DMaterial[] Materials;
+        [NonSerialized]
+        public H3DContents ParentRef;
 
-        public H3DMaterial this[int Index]
+        public object Serialize(BinarySerializer Serializer, string FName)
         {
-            get { return Materials[Index]; }
-            set { Materials[Index] = value; }
+            int Count = 0;
+
+            for (int MdlIndex = 0; MdlIndex < ParentRef.Models.Count; MdlIndex++)
+            {
+                H3DModel Model = ParentRef.Models[MdlIndex];
+
+                foreach (H3DMaterial Mat in Model.Materials)
+                {
+                    long Position = Serializer.BaseStream.Position + Count++ * 4;
+
+                    Serializer.AddPointer("MaterialParams", Mat, Position, typeof(uint));
+                    Serializer.Relocator.AddPointer(Position);
+                }
+            }
+
+            return new uint[Count];
         }
     }
 }

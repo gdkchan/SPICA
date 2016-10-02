@@ -14,10 +14,10 @@ namespace SPICA.Formats.H3D.Contents
         [PointerOf("NameTree")]
         private uint NameTreeAddress;
 
-        [TargetSection("DescriptorsSection")]
+        [TargetSection("DescriptorsSection", 1)]
         public H3DTreeNode[] NameTree;
 
-        [TargetSection("DescriptorsSection"), PointerOf("Cameras")]
+        [TargetSection("DescriptorsSection", 1), PointerOf("Cameras")]
         private uint[] PointerTable;
 
         [TargetSection("DescriptorsSection", 4)]

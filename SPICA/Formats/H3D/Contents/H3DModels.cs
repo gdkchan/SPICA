@@ -9,7 +9,7 @@ namespace SPICA.Formats.H3D.Contents
         private uint PointerTableAddress;
 
         [CountOf("Models"), CountOf("NameTree", 1)]
-        private uint Count;
+        public uint Count;
 
         [PointerOf("NameTree")]
         private uint NameTreeAddress;

@@ -139,7 +139,7 @@ namespace SPICA.Formats.H3D.Contents.Texture
             Writer.SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
             Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
 
-            Serializer.AddPointer(RawBuffer, Serializer.BaseStream.Position + 0x10, typeof(uint));
+            Serializer.AddPointer("RawBuffer", this, Serializer.BaseStream.Position + 0x10, typeof(uint));
             Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x10, (int)H3DRelocationType.RawDataTexture);
 
             return Writer.GetBuffer();

@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.H3D.Contents.Model.Texture;
-
 using SPICA.Serialization.BinaryAttributes;
 
 namespace SPICA.Formats.H3D.Contents.Model.Material

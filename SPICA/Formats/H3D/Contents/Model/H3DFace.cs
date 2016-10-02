@@ -132,7 +132,7 @@ namespace SPICA.Formats.H3D.Contents.Model
 
             H3DRelocationType RType = Format ? H3DRelocationType.RawDataIndex16 : H3DRelocationType.RawDataIndex8;
 
-            Serializer.AddPointer(RawBuffer, Serializer.BaseStream.Position + 0x10, typeof(uint));
+            Serializer.AddPointer("RawBuffer", this, Serializer.BaseStream.Position + 0x10, typeof(uint));
             Serializer.Relocator.AddPointer(Serializer.BaseStream.Position + 0x10, (int)RType);
 
             return Writer.GetBuffer();

@@ -141,57 +141,60 @@ namespace SPICA.Serialization
                             }
                         }
 
-                        Type ArrType = FInfo.FieldType.GetElementType();
-                        Array Array = Array.CreateInstance(ArrType, Length);
-
-                        if (PtrTable.ContainsKey(FInfo.Name))
+                        if (Length > 0)
                         {
-                            Array Ptr = PtrTable[FInfo.Name];
-                            Type PtrType = Ptr.GetType().GetElementType();
+                            Type ArrType = FInfo.FieldType.GetElementType();
+                            Array Array = Array.CreateInstance(ArrType, Length);
 
-                            long OldPosition = BaseStream.Position;
-
-                            for (int Index = 0; Index < Length; Index++)
+                            if (PtrTable.ContainsKey(FInfo.Name))
                             {
-                                object Address = Ptr.GetValue(Index);
+                                Array Ptr = PtrTable[FInfo.Name];
+                                Type PtrType = Ptr.GetType().GetElementType();
 
-                                switch (Type.GetTypeCode(PtrType))
+                                long OldPosition = BaseStream.Position;
+
+                                for (int Index = 0; Index < Length; Index++)
                                 {
-                                    case TypeCode.UInt32: BaseStream.Seek((uint)Address, SeekOrigin.Begin); break;
-                                    case TypeCode.UInt16: BaseStream.Seek((ushort)Address, SeekOrigin.Begin); break;
-                                    case TypeCode.Byte: BaseStream.Seek((byte)Address, SeekOrigin.Begin); break;
-                                    case TypeCode.Int32: BaseStream.Seek((int)Address, SeekOrigin.Begin); break;
-                                    case TypeCode.Int16: BaseStream.Seek((short)Address, SeekOrigin.Begin); break;
-                                    case TypeCode.SByte: BaseStream.Seek((sbyte)Address, SeekOrigin.Begin); break;
+                                    object Address = Ptr.GetValue(Index);
+
+                                    switch (Type.GetTypeCode(PtrType))
+                                    {
+                                        case TypeCode.UInt32: BaseStream.Seek((uint)Address, SeekOrigin.Begin); break;
+                                        case TypeCode.UInt16: BaseStream.Seek((ushort)Address, SeekOrigin.Begin); break;
+                                        case TypeCode.Byte: BaseStream.Seek((byte)Address, SeekOrigin.Begin); break;
+                                        case TypeCode.Int32: BaseStream.Seek((int)Address, SeekOrigin.Begin); break;
+                                        case TypeCode.Int16: BaseStream.Seek((short)Address, SeekOrigin.Begin); break;
+                                        case TypeCode.SByte: BaseStream.Seek((sbyte)Address, SeekOrigin.Begin); break;
+                                    }
+
+                                    if (BaseStream.Position != 0) Array.SetValue(ReadValue(Reader, ArrType), Index);
                                 }
 
-                                if (BaseStream.Position != 0) Array.SetValue(ReadValue(Reader, ArrType), Index);
-                            }
+                                BaseStream.Seek(OldPosition, SeekOrigin.Begin);
 
-                            BaseStream.Seek(OldPosition, SeekOrigin.Begin);
-
-                            PtrTable.Remove(FInfo.Name);
-                        }
-                        else
-                        {
-                            if (ArrType == typeof(byte))
-                            {
-                                Array = Reader.ReadBytes((int)Length);
+                                PtrTable.Remove(FInfo.Name);
                             }
                             else
                             {
-                                for (int Index = 0; Index < Length; Index++)
+                                if (ArrType == typeof(byte))
                                 {
-                                    Array.SetValue(ReadValue(Reader, ArrType), Index);
+                                    Array = Reader.ReadBytes((int)Length);
+                                }
+                                else
+                                {
+                                    for (int Index = 0; Index < Length; Index++)
+                                    {
+                                        Array.SetValue(ReadValue(Reader, ArrType), Index);
+                                    }
                                 }
                             }
-                        }
 
-                        FInfo.SetValue(Data, Array);
+                            FInfo.SetValue(Data, Array);
 
-                        if (IsPtrTable)
-                        {
-                            PtrTable.Add(FInfo.GetCustomAttribute<PointerOfAttribute>().ObjName, Array);
+                            if (IsPtrTable)
+                            {
+                                PtrTable.Add(FInfo.GetCustomAttribute<PointerOfAttribute>().ObjName, Array);
+                            }
                         }
                     }
                 }

@@ -5,7 +5,7 @@ namespace SPICA.Formats.H3D
     class H3DContents
     {
         public H3DModels Models;
-        public H3DMaterials Materials;
+        internal H3DMaterials Materials;
         public H3DShaders Shaders;
         public H3DTextures Textures;
         public H3DLUTs LUTs;
