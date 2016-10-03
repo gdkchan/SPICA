@@ -1,10 +1,12 @@
-﻿using SPICA.Formats.H3D.Contents.Model.Material;
+﻿using System;
+using SPICA.Formats.H3D.Contents.Model.Material;
 using SPICA.Math;
+using SPICA.Serialization;
 using SPICA.Serialization.BinaryAttributes;
 
 namespace SPICA.Formats.H3D.Contents.Model
 {
-    class H3DModel
+    class H3DModel : ICustomSerializer
     {
         public byte Flags;
         public byte SkeletonScalingType;
@@ -26,8 +28,14 @@ namespace SPICA.Formats.H3D.Contents.Model
         [CountOf("Meshes")]
         private uint MeshesCount;
 
-        [FixedCount(10)]
+        [FixedCount(8), CustomSerialization]
         public uint[] Unknown;
+
+        [PointerOf("FaceCulling")]
+        private uint FaceCullingAddress;
+
+        [CountOf("FaceCulling")]
+        private uint FaceCullingCount;
 
         [PointerOf("SkeletonBones")]
         private uint SkeletonAddress;
@@ -64,11 +72,27 @@ namespace SPICA.Formats.H3D.Contents.Model
         public H3DTreeNode[] MaterialsNameTree;
         public H3DMaterial[] Materials;
         public H3DMesh[] Meshes;
+        public H3DFaceCulling[] FaceCulling;
         public H3DTreeNode[] SkeletonNameTree;
         public H3DSkeletonBone[] SkeletonBones;
         public H3DMetaData MetaData;
 
         [TargetSection("StringsSection")]
         public string Name;
+
+        public object Serialize(BinarySerializer Serializer, string FName)
+        {
+            long Position = Serializer.BaseStream.Position;
+
+            for (int Index = 0; Index < 8; Index++)
+            {
+                Serializer.AddPointer("SkeletonNameTree", this, Position, typeof(uint));
+                Serializer.Relocator.AddPointer(Position);
+
+                Position += 4;
+            }
+
+            return new uint[8];
+        }
     }
 }

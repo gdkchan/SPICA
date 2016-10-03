@@ -99,6 +99,8 @@ namespace SPICA.Formats.H3D.Contents.Texture
                     break;
             }
 
+            if ((Length & 0x7f) != 0) Length = (Length & ~0x7fu) + 0x80;
+
             long Position = Deserializer.BaseStream.Position;
 
             Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);

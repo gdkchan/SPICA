@@ -58,8 +58,8 @@ namespace SPICA.Serialization
 
             FieldInfo[] Fields = OType.GetFields(Binding);
 
-            Dictionary<string, long> Counts = new Dictionary<string, long>();
             Dictionary<string, long> Pointers = new Dictionary<string, long>();
+            Dictionary<string, long> Counts = new Dictionary<string, long>();
             Dictionary<string, Array> PtrTable = new Dictionary<string, Array>();
 
             foreach (FieldInfo FInfo in Fields)
@@ -86,16 +86,16 @@ namespace SPICA.Serialization
                     BaseStream.Seek(Address, SeekOrigin.Begin);
                 }
 
-                if (FInfo.IsDefined(typeof(CountOfAttribute)))
+                if (FInfo.IsDefined(typeof(PointerOfAttribute)))
+                {
+                    PeekAdd(Pointers, FInfo.GetCustomAttribute<PointerOfAttribute>().ObjName, FInfo.FieldType);
+                }
+                else if (FInfo.IsDefined(typeof(CountOfAttribute)))
                 {
                     foreach (CountOfAttribute Attr in FInfo.GetCustomAttributes<CountOfAttribute>())
                     {
                         PeekAdd(Counts, Attr.ArrName, FInfo.FieldType, Attr.Increment);
                     }
-                }
-                else if (FInfo.IsDefined(typeof(PointerOfAttribute)))
-                {
-                    PeekAdd(Pointers, FInfo.GetCustomAttribute<PointerOfAttribute>().ObjName, FInfo.FieldType);
                 }
 
                 //Read field value from input
@@ -271,6 +271,8 @@ namespace SPICA.Serialization
 
         private void PeekAdd(Dictionary<string, long> Target, string Key, Type FType, int Increment = 0)
         {
+            if (Target.ContainsKey(Key)) return;
+
             long Position = BaseStream.Position;
 
             switch (Type.GetTypeCode(FType))

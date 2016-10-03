@@ -54,8 +54,8 @@ namespace SPICA.Formats.H3D.Contents.Model.Material
         [CountOf("FragmentShaderCommands")]
         private uint FragmentShaderCommandsCount;
 
-        //???
-        public uint FragmentShaderCommandsSource;
+        [PointerOf("FragmentShaderCommands")]
+        private uint FragmentShaderCommandsSource;
 
         [PointerOf("LUTTableNames")]
         private uint[] LUTTableNamesAddress;
