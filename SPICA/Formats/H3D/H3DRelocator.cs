@@ -8,7 +8,7 @@ namespace SPICA.Formats.H3D
 {
     class H3DRelocator : IRelocator
     {
-        private H3D Header;
+        private H3DHeader Header;
         private Stream BaseStream;
 
         private BinaryReader Reader;
@@ -30,7 +30,7 @@ namespace SPICA.Formats.H3D
         private List<Pointer> Pointers;
         private List<Section> Sections;
 
-        public H3DRelocator(H3D Header, Stream BaseStream)
+        public H3DRelocator(Stream BaseStream, H3DHeader Header)
         {
             this.Header = Header;
             this.BaseStream = BaseStream;
@@ -52,23 +52,24 @@ namespace SPICA.Formats.H3D
 
         public void ToAbsolute()
         {
-            using (MemoryStream MS = new MemoryStream(Header.RelocationTable))
+            long Position = BaseStream.Position;
+
+            for (int Offset = 0; Offset < Header.RelocationLength; Offset += 4)
             {
-                BinaryReader PtrReader = new BinaryReader(MS);
+                BaseStream.Seek(Header.RelocationAddress + Offset, SeekOrigin.Begin);
 
-                while (MS.Position < MS.Length)
-                {
-                    uint Value = PtrReader.ReadUInt32();
-                    uint PtrAddress = Value & 0x1ffffff;
+                uint Value = Reader.ReadUInt32();
+                uint PtrAddress = Value & 0x1ffffff;
 
-                    H3DRelocationType TargetSect = (H3DRelocationType)((Value >> 25) & 0xf);
-                    H3DRelocationType PointerSect = (H3DRelocationType)(Value >> 29);
+                H3DRelocationType TargetSect = (H3DRelocationType)((Value >> 25) & 0xf);
+                H3DRelocationType PointerSect = (H3DRelocationType)(Value >> 29);
 
-                    if (TargetSect != H3DRelocationType.Strings) PtrAddress <<= 2;
+                if (TargetSect != H3DRelocationType.Strings) PtrAddress <<= 2;
 
-                    Accumulate32(GetAddress(PointerSect) + PtrAddress, GetAddress(TargetSect));
-                }
+                Accumulate32(GetAddress(PointerSect) + PtrAddress, GetAddress(TargetSect));
             }
+
+            BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
         private uint GetAddress(H3DRelocationType RType)

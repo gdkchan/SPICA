@@ -3,7 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 using SPICA.Formats.H3D;
-using SPICA.Formats.H3D.Contents.Model;
+using SPICA.Formats.H3D.Model.Mesh;
 using SPICA.WinForms.Rendering;
 
 using System.Diagnostics;
@@ -77,23 +77,27 @@ void main(void)
             CreateShaders();
 
             H3D H3D = H3D.Open("D:\\may.bch");
-            H3D.Save(H3D, "D:\\recreated.bch");
 
-            Mdl = new Mesh[H3D.Contents.Models[0].Meshes.Length];
+            Debug.Write(H3D.Models[0].WorldTransform.ToString());
+            Debug.Write(H3D.Models.Tree[1].Name + '\n');
+            Debug.Write(H3D.Models[0].Name + '\n');
+
+            Mdl = new Mesh[H3D.Models[0].Meshes.Count];
 
             for (int Index = 0; Index < Mdl.Length; Index++)
             {
-                H3DMesh H3DMesh = H3D.Contents.Models[0].Meshes[Index];
+                H3DMesh H3DMesh = H3D.Models[0].Meshes[Index];
 
-                ushort[][] Indices = new ushort[H3DMesh.Faces.Length][];
+                ushort[][] Indices = new ushort[H3DMesh.SubMeshes.Count][];
 
-                for (int Face = 0; Face < H3DMesh.Faces.Length; Face++)
+                for (int SM = 0; SM < H3DMesh.SubMeshes.Count; SM++)
                 {
-                    Indices[Face] = H3DMesh.Faces[Face].Indices;
+                    Indices[SM] = H3DMesh.SubMeshes[SM].Indices;
                 }
 
                 Mdl[Index] = new Mesh(H3DMesh.Attributes, H3DMesh.RawBuffer, Indices, H3DMesh.VertexStride, shaderProgramHandle);
             }
+
             // Other state
             GL.Enable(EnableCap.DepthTest);
             GL.ClearColor(System.Drawing.Color.MidnightBlue);
