@@ -78,6 +78,23 @@ namespace SPICA.Formats.H3D.Model.Material
 
         public H3DMetaData MetaData;
 
+        //LookUp Table
+        [NonSerialized]
+        public PICALUTInputAbs LUTInputAbs;
+
+        [NonSerialized]
+        public PICALUTInputSel LUTInputSel;
+
+        [NonSerialized]
+        public PICALUTInputScaleSel LUTInputScaleSel;
+
+        //Fragment Lighting
+        [NonSerialized]
+        public PICAFaceCulling FaceCulling;
+
+        [NonSerialized]
+        public PICAColorOperation ColorOperation;
+
         [NonSerialized]
         public PICATexEnvStage[] TexEnvStages;
 
@@ -102,9 +119,6 @@ namespace SPICA.Formats.H3D.Model.Material
         [NonSerialized]
         public PICADepthColorMask DepthColorMask;
 
-        [NonSerialized]
-        public PICAFaceCulling FaceCulling;
-
         public H3DMaterialParams()
         {
             TexEnvStages = new PICATexEnvStage[6];
@@ -117,7 +131,25 @@ namespace SPICA.Formats.H3D.Model.Material
 
         public void Deserialize(BinaryDeserializer Deserializer)
         {
-            PICACommandReader Reader = new PICACommandReader(FragmentShaderCommands);
+            PICACommandReader Reader;
+
+            Reader = new PICACommandReader(LUTConfigCommands);
+
+            while (Reader.HasCommand)
+            {
+                PICACommand Cmd = Reader.GetCommand();
+
+                uint Param = Cmd.Parameters[0];
+
+                switch (Cmd.Register)
+                {
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS: LUTInputAbs = PICALUTInputAbs.FromParameter(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel = PICALUTInputSel.FromParameter(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE: LUTInputScaleSel = PICALUTInputScaleSel.FromParameter(Param); break;
+                }
+            }
+
+            Reader = new PICACommandReader(FragmentShaderCommands);
 
             while (Reader.HasCommand)
             {
@@ -139,6 +171,8 @@ namespace SPICA.Formats.H3D.Model.Material
 
                 switch (Cmd.Register)
                 {
+                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
+
                     case PICARegister.GPUREG_TEXENV0_SOURCE:
                     case PICARegister.GPUREG_TEXENV1_SOURCE:
                     case PICARegister.GPUREG_TEXENV2_SOURCE:
@@ -180,6 +214,8 @@ namespace SPICA.Formats.H3D.Model.Material
                         TexEnvStages[Stage].Scale = PICATexEnvScale.FromParameter(Param);
                         break;
 
+                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = PICAColorOperation.FromParameter(Param); break;
+
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = PICATexEnvColor.FromParameter(Param); break;
 
                     case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = PICABlendingFunction.FromParameter(Param); break;
@@ -193,8 +229,6 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_STENCIL_OP: StencilOperation = PICAStencilOperation.FromParameter(Param); break;
 
                     case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = PICADepthColorMask.FromParameter(Param); break;
-
-                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
                 }
             }
         }

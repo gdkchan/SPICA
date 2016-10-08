@@ -73,9 +73,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICABlendingEquation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICABlendingFunction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICABlendingFunc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICABlendingMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAColorOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFaceCulling.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICADepthColorMask.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFragmentAlphaTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFragmentOpMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputAbs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputScale.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputScaleSel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputSel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATestFunc.cs" />
