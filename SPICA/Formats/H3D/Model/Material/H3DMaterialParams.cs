@@ -1,9 +1,14 @@
 ﻿using SPICA.Math3D;
+using SPICA.PICA;
+using SPICA.PICA.Commands;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+
+using System;
 
 namespace SPICA.Formats.H3D.Model.Material
 {
-    class H3DMaterialParams
+    class H3DMaterialParams : ICustomDeserializer
     {
         public uint UId;
         public H3DMaterialFlags Flags;
@@ -72,5 +77,126 @@ namespace SPICA.Formats.H3D.Model.Material
         public string ModelReference;
 
         public H3DMetaData MetaData;
+
+        [NonSerialized]
+        public PICATexEnvStage[] TexEnvStages;
+
+        [NonSerialized]
+        public PICATexEnvColor TexEnvBufferColor;
+
+        [NonSerialized]
+        public PICABlendingFunction BlendFunction;
+
+        [NonSerialized]
+        public PICALogicalOperation LogicalOperation;
+
+        [NonSerialized]
+        public PICAFragmentAlphaTest FragmentAlphaTest;
+
+        [NonSerialized]
+        public PICAStencilTest StencilTest;
+
+        [NonSerialized]
+        public PICAStencilOperation StencilOperation;
+
+        [NonSerialized]
+        public PICADepthColorMask DepthColorMask;
+
+        [NonSerialized]
+        public PICAFaceCulling FaceCulling;
+
+        public H3DMaterialParams()
+        {
+            TexEnvStages = new PICATexEnvStage[6];
+
+            for (int Index = 0; Index < TexEnvStages.Length; Index++)
+            {
+                TexEnvStages[Index] = new PICATexEnvStage();
+            }
+        }
+
+        public void Deserialize(BinaryDeserializer Deserializer)
+        {
+            PICACommandReader Reader = new PICACommandReader(FragmentShaderCommands);
+
+            while (Reader.HasCommand)
+            {
+                PICACommand Cmd = Reader.GetCommand();
+
+                uint Param = Cmd.Parameters[0];
+
+                int Stage = 0;
+
+                switch (((int)Cmd.Register) & ~7)
+                {
+                    case 0xc0: Stage = 0; break;
+                    case 0xc8: Stage = 1; break;
+                    case 0xd0: Stage = 2; break;
+                    case 0xd8: Stage = 3; break;
+                    case 0xf0: Stage = 4; break;
+                    case 0xf8: Stage = 5; break;
+                }
+
+                switch (Cmd.Register)
+                {
+                    case PICARegister.GPUREG_TEXENV0_SOURCE:
+                    case PICARegister.GPUREG_TEXENV1_SOURCE:
+                    case PICARegister.GPUREG_TEXENV2_SOURCE:
+                    case PICARegister.GPUREG_TEXENV3_SOURCE:
+                    case PICARegister.GPUREG_TEXENV4_SOURCE:
+                    case PICARegister.GPUREG_TEXENV5_SOURCE:
+                        TexEnvStages[Stage].Source = PICATexEnvSource.FromParameter(Param);
+                        break;
+                    case PICARegister.GPUREG_TEXENV0_OPERAND:
+                    case PICARegister.GPUREG_TEXENV1_OPERAND:
+                    case PICARegister.GPUREG_TEXENV2_OPERAND:
+                    case PICARegister.GPUREG_TEXENV3_OPERAND:
+                    case PICARegister.GPUREG_TEXENV4_OPERAND:
+                    case PICARegister.GPUREG_TEXENV5_OPERAND:
+                        TexEnvStages[Stage].Operand = PICATexEnvOperand.FromParameter(Param);
+                        break;
+                    case PICARegister.GPUREG_TEXENV0_COMBINER:
+                    case PICARegister.GPUREG_TEXENV1_COMBINER:
+                    case PICARegister.GPUREG_TEXENV2_COMBINER:
+                    case PICARegister.GPUREG_TEXENV3_COMBINER:
+                    case PICARegister.GPUREG_TEXENV4_COMBINER:
+                    case PICARegister.GPUREG_TEXENV5_COMBINER:
+                        TexEnvStages[Stage].Combiner = PICATexEnvCombiner.FromParameter(Param);
+                        break;
+                    case PICARegister.GPUREG_TEXENV0_COLOR:
+                    case PICARegister.GPUREG_TEXENV1_COLOR:
+                    case PICARegister.GPUREG_TEXENV2_COLOR:
+                    case PICARegister.GPUREG_TEXENV3_COLOR:
+                    case PICARegister.GPUREG_TEXENV4_COLOR:
+                    case PICARegister.GPUREG_TEXENV5_COLOR:
+                        TexEnvStages[Stage].Color = PICATexEnvColor.FromParameter(Param);
+                        break;
+                    case PICARegister.GPUREG_TEXENV0_SCALE:
+                    case PICARegister.GPUREG_TEXENV1_SCALE:
+                    case PICARegister.GPUREG_TEXENV2_SCALE:
+                    case PICARegister.GPUREG_TEXENV3_SCALE:
+                    case PICARegister.GPUREG_TEXENV4_SCALE:
+                    case PICARegister.GPUREG_TEXENV5_SCALE:
+                        TexEnvStages[Stage].Scale = PICATexEnvScale.FromParameter(Param);
+                        break;
+
+                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = PICATexEnvColor.FromParameter(Param); break;
+
+                    case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = PICABlendingFunction.FromParameter(Param); break;
+
+                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
+
+                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: FragmentAlphaTest = PICAFragmentAlphaTest.FromParameter(Param); break;
+
+                    case PICARegister.GPUREG_STENCIL_TEST: StencilTest = PICAStencilTest.FromParameter(Param); break;
+
+                    case PICARegister.GPUREG_STENCIL_OP: StencilOperation = PICAStencilOperation.FromParameter(Param); break;
+
+                    case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = PICADepthColorMask.FromParameter(Param); break;
+
+                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
+                }
+            }
+        }
     }
 }

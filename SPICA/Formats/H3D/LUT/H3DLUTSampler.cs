@@ -26,8 +26,6 @@ namespace SPICA.Formats.H3D.LUT
             {
                 PICACommand Cmd = Reader.GetCommand();
 
-                uint Param = Cmd.Parameters[0];
-
                 Table = new float[256];
 
                 int Index = 0;

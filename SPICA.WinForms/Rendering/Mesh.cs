@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 
-using SPICA.PICA;
+using SPICA.PICA.Commands;
 
 using System;
 

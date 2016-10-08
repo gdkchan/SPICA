@@ -1,12 +1,10 @@
-﻿using SPICA.Serialization;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace SPICA.Formats.H3D
 {
-    class H3DRelocator : IRelocator
+    class H3DRelocator
     {
         private H3DHeader Header;
         private Stream BaseStream;

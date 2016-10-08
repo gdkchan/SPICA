@@ -1,13 +1,13 @@
 ﻿namespace SPICA.Math3D
 {
-    struct RGBA
+    struct RGBAFloat
     {
-        public byte R;
-        public byte G;
-        public byte B;
-        public byte A;
+        public float R;
+        public float G;
+        public float B;
+        public float A;
 
-        public RGBA(byte R, byte G, byte B, byte A)
+        public RGBAFloat(float R, float G, float B, float A)
         {
             this.R = R;
             this.G = G;

@@ -1,4 +1,5 @@
 ﻿using SPICA.PICA;
+using SPICA.PICA.Commands;
 using SPICA.Serialization;
 
 using System;

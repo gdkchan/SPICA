@@ -1,5 +1,6 @@
 ﻿using SPICA.Math3D;
 using SPICA.PICA;
+using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Utils;
 
@@ -20,13 +21,13 @@ namespace SPICA.Formats.H3D.Model.Mesh
         public H3DMeshType Type
         {
             get { return (H3DMeshType)BitUtils.GetBits(Flags, 0, 2); }
-            set { Flags = BitUtils.SetBits(Flags, (byte)value, 0, 2); }
+            set { Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 0, 2); }
         }
 
         public H3DMeshSkinning Skinning
         {
             get { return (H3DMeshSkinning)BitUtils.GetBits(Flags, 2, 2); }
-            set { Flags = BitUtils.SetBits(Flags, (byte)value, 2, 2); }
+            set { Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 2, 2); }
         }
 
         public uint[] EnableCommands;
@@ -178,6 +179,8 @@ namespace SPICA.Formats.H3D.Model.Mesh
 
                 for (int Index = 0; Index < Output.Length; Index++)
                 {
+                    H3DVertex O = new H3DVertex();
+
                     MS.Seek(Index * VertexStride, SeekOrigin.Begin);
 
                     foreach (PICAAttribute Attrib in Attributes)
@@ -195,33 +198,44 @@ namespace SPICA.Formats.H3D.Model.Mesh
                             }
                         }
 
+                        V *= Attrib.Scale;
+
                         switch (Attrib.Name)
                         {
                             case PICAAttributeName.Position:
-                                float PX = (V.X * Attrib.Scale) + PositionOffset.X;
-                                float PY = (V.Y * Attrib.Scale) + PositionOffset.Y;
-                                float PZ = (V.Z * Attrib.Scale) + PositionOffset.Z;
+                                float PX = V.X + PositionOffset.X;
+                                float PY = V.Y + PositionOffset.Y;
+                                float PZ = V.Z + PositionOffset.Z;
 
-                                Output[Index].Position = new Vector3D(PX, PY, PZ);
+                                O.Position = new Vector3D(PX, PY, PZ);
                                 break;
 
-                            case PICAAttributeName.Normal:
-                                float NX = V.X * Attrib.Scale;
-                                float NY = V.Y * Attrib.Scale;
-                                float NZ = V.Z * Attrib.Scale;
+                            case PICAAttributeName.Normal: O.Normal = new Vector3D(V.X, V.Y, V.Z); break;
 
-                                Output[Index].Normal = new Vector3D(NX, NY, NZ);
+                            case PICAAttributeName.Tangent: O.Tangent = new Vector3D(V.X, V.Y, V.Z); break;
+
+                            case PICAAttributeName.Color: O.Color = new RGBAFloat(V.X, V.Y, V.Z, V.W); break;
+
+                            case PICAAttributeName.TextureCoord0: O.TextureCoord0 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TextureCoord1: O.TextureCoord1 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TextureCoord2: O.TextureCoord2 = new Vector2D(V.X, V.Y); break;
+
+                            case PICAAttributeName.BoneIndex:
+                                for (int Node = 0; Node < Attrib.Elements; Node++)
+                                {
+                                    O.Indices[Node] = (int)V[Node];
+                                }
                                 break;
-
-                            case PICAAttributeName.Tangent:
-                                float TX = V.X * Attrib.Scale;
-                                float TY = V.Y * Attrib.Scale;
-                                float TZ = V.Z * Attrib.Scale;
-
-                                Output[Index].Tangent = new Vector3D(TX, TY, TZ);
+                            case PICAAttributeName.BoneWeight:
+                                for (int Node = 0; Node < Attrib.Elements; Node++)
+                                {
+                                    O.Weights[Node] = V[Node];
+                                }
                                 break;
                         }
                     }
+
+                    Output[Index] = O;
                 }
             }
 

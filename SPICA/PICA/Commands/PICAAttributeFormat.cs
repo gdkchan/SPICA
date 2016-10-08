@@ -1,4 +1,4 @@
-﻿namespace SPICA.PICA
+﻿namespace SPICA.PICA.Commands
 {
     enum PICAAttributeFormat
     {
