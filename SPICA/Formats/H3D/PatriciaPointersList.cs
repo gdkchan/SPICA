@@ -1,11 +1,12 @@
 ﻿using SPICA.Serialization.Attributes;
 
 using System.Collections.Generic;
+using System.Collections;
 
 namespace SPICA.Formats.H3D
 {
     [Inline]
-    class PatriciaPointersList<T>
+    class PatriciaPointersList<T> : IEnumerable<T>
     {
         [Pointers]
         public List<T> Contents;
@@ -15,6 +16,21 @@ namespace SPICA.Formats.H3D
         {
             get { return Contents[Index]; }
             set { Contents[Index] = value; }
+        }
+
+        public int Count
+        {
+            get { return Contents.Count; }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return Contents.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

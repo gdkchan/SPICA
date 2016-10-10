@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SPICA.Formats.H3D
 {
-    class PatriciaTree : ICustomDeserializer
+    class PatriciaTree : ICustomDeserializer, ICustomSerializer
     {
         [NonSerialized]
         public List<PatriciaTreeNode> Nodes;
@@ -37,6 +37,14 @@ namespace SPICA.Formats.H3D
                 MaxIndex = Math.Max(MaxIndex, Node.RightNodeIndex);
 
                 Nodes.Add(Node);
+            }
+        }
+
+        public void Serialize(BinarySerializer Serializer)
+        {
+            foreach (PatriciaTreeNode Node in Nodes)
+            {
+                Serializer.WriteObject(Node);
             }
         }
     }

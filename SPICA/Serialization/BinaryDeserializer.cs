@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -13,6 +14,8 @@ namespace SPICA.Serialization
         public Stream BaseStream;
         public BinaryReader Reader;
 
+        Dictionary<long, object> ObjPointers;
+
         private long BufferedPos = 0;
         private uint BufferedUInt = 0;
         private uint BufferedShift = 0;
@@ -21,6 +24,8 @@ namespace SPICA.Serialization
         {
             BaseStream = Stream;
             Reader = new BinaryReader(Stream);
+
+            ObjPointers = new Dictionary<long, object>();
         }
 
         public T Deserialize<T>()
@@ -61,10 +66,6 @@ namespace SPICA.Serialization
 
                     default: return null;
                 }
-            }
-            else if (Type == typeof(byte[]))
-            {
-                return Reader.ReadBytes(Length);
             }
             else if (typeof(IList).IsAssignableFrom(Type))
             {
@@ -109,13 +110,16 @@ namespace SPICA.Serialization
                     BaseStream.Seek(Reader.ReadUInt32(), SeekOrigin.Begin);
                 }
 
+                long Address = BaseStream.Position;
+                object Value = GetObj(Type, Address, ReadValue(Type));
+
                 if (List.IsFixedSize)
                 {
-                    List[Index] = ReadValue(Type);
+                    List[Index] = Value;
                 }
                 else
                 {
-                    List.Add(ReadValue(Type));
+                    List.Add(Value);
                 }
             }
 
@@ -191,7 +195,7 @@ namespace SPICA.Serialization
             {
                 Length = Reader.ReadInt32();
             }
-
+            
             object Value = null;
 
             if (Address != 0)
@@ -202,7 +206,25 @@ namespace SPICA.Serialization
 
                 Value = ReadValue(Info.FieldType, Info, Length);
 
+                if (Length == 0) Value = GetObj(Info.FieldType, Address, Value);
+
                 BaseStream.Seek(Position, SeekOrigin.Begin);
+            }
+
+            return Value;
+        }
+
+        private object GetObj(Type Type, long Address, object Value)
+        {
+            //Note: Several Bool values may share the same Address (since they use only 1 bit)
+            //So we can't use the Address as Key reliably for Bools
+            if (ObjPointers.ContainsKey(Address))
+            {
+                Value = ObjPointers[Address];
+            }
+            else if (Type != typeof(bool))
+            {
+                ObjPointers.Add(Address, Value);
             }
 
             return Value;

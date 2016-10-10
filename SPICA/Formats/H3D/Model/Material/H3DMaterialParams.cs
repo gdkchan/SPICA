@@ -102,7 +102,7 @@ namespace SPICA.Formats.H3D.Model.Material
         public PICATexEnvColor TexEnvBufferColor;
 
         [NonSerialized]
-        public PICABlendingFunction BlendFunction;
+        public PICABlendingFunction BlendingFunction;
 
         [NonSerialized]
         public PICALogicalOperation LogicalOperation;
@@ -157,17 +157,9 @@ namespace SPICA.Formats.H3D.Model.Material
 
                 uint Param = Cmd.Parameters[0];
 
-                int Stage = 0;
+                int Stage = ((int)Cmd.Register >> 3) & 7;
 
-                switch (((int)Cmd.Register) & ~7)
-                {
-                    case 0xc0: Stage = 0; break;
-                    case 0xc8: Stage = 1; break;
-                    case 0xd0: Stage = 2; break;
-                    case 0xd8: Stage = 3; break;
-                    case 0xf0: Stage = 4; break;
-                    case 0xf8: Stage = 5; break;
-                }
+                if (Stage >= 6) Stage -= 2;
 
                 switch (Cmd.Register)
                 {
@@ -218,7 +210,7 @@ namespace SPICA.Formats.H3D.Model.Material
 
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = PICATexEnvColor.FromParameter(Param); break;
 
-                    case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = PICABlendingFunction.FromParameter(Param); break;
+                    case PICARegister.GPUREG_BLEND_FUNC: BlendingFunction = PICABlendingFunction.FromParameter(Param); break;
 
                     case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
 

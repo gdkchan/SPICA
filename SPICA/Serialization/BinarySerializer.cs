@@ -14,7 +14,7 @@ namespace SPICA.Serialization
         public Stream BaseStream;
         public BinaryWriter Writer;
 
-        private struct ReferenceValue
+        public struct ReferenceValue
         {
             public FieldInfo Info;
             public object Value;
@@ -22,7 +22,19 @@ namespace SPICA.Serialization
             public bool HasLength;
         }
 
-        private Queue<ReferenceValue> ReferencedValues;
+        private class ObjPointer
+        {
+            public uint Position;
+            public int Length;
+        }
+
+        public List<ReferenceValue> Contents;
+
+        public Queue<ReferenceValue> Strings;
+        public Queue<ReferenceValue> Commands;
+        public Queue<ReferenceValue> RawData;
+
+        private Dictionary<object, ObjPointer> ObjPointers;
 
         private bool HasBuffered = false;
         private uint BufferedUInt = 0;
@@ -33,21 +45,34 @@ namespace SPICA.Serialization
             BaseStream = Stream;
             Writer = new BinaryWriter(Stream);
 
-            ReferencedValues = new Queue<ReferenceValue>();
+            Contents = new List<ReferenceValue>();
+
+            Strings = new Queue<ReferenceValue>();
+            Commands = new Queue<ReferenceValue>();
+            RawData = new Queue<ReferenceValue>();
+
+            ObjPointers = new Dictionary<object, ObjPointer>();
         }
 
         public void Serialize(object Value)
         {
             WriteValue(Value);
 
-            while (ReferencedValues.Count > 0) WriteValue(ReferencedValues.Dequeue());
-
-            if (HasBuffered) WriteBool();
+            WriteSection(Strings, 0x10);
+            WriteSection(Commands, 0x80);
+            WriteSection(RawData, 0x80);
         }
 
-        private void WriteValue(object Value, FieldInfo Info = null)
+        private void WriteSection(Queue<ReferenceValue> Section, int Align)
+        {
+            while (Section.Count > 0) WriteValue(Section.Dequeue());
+            while ((BaseStream.Position % Align) != 0) BaseStream.WriteByte(0);
+        }
+
+        private void WriteValue(object Value, FieldInfo Info = null, bool IsElem = false)
         {
             Type Type = Value.GetType();
+            long Position = BaseStream.Position;
 
             if (HasBuffered && !(Value is bool)) WriteBool();
 
@@ -75,10 +100,6 @@ namespace SPICA.Serialization
                         break;
                 }
             }
-            else if (Value is byte[])
-            {
-                Writer.Write((byte[])Value);
-            }
             else if (Value is IList)
             {
                 WriteList((IList)Value, Info);
@@ -89,7 +110,17 @@ namespace SPICA.Serialization
             }
             else
             {
-                WriteObject(Value);
+                WriteObject(Value, IsElem);
+            }
+
+            //Add a reference to this Object and its position to avoid writing it more than once
+            if (!(ObjPointers.ContainsKey(Value) || Type.IsPrimitive || Type.IsEnum))
+            {
+                ObjPointers.Add(Value, new ObjPointer
+                {
+                    Position = (uint)Position,
+                    Length = (int)(BaseStream.Position - Position)
+                });
             }
         }
 
@@ -105,39 +136,41 @@ namespace SPICA.Serialization
         {
             bool Pointers = Info != null && Info.IsDefined(typeof(PointersAttribute));
 
-            long PointersPosition = BaseStream.Position;
-
-            if (Pointers) Skip(List.Count * 4);
-
-            for (int Index = 0; Index < List.Count; Index++)
+            foreach (object Value in List)
             {
                 if (Pointers)
                 {
-                    long Position = BaseStream.Position;
+                    Contents.Add(new ReferenceValue
+                    {
+                        Info = null,
+                        Value = Value,
+                        Position = BaseStream.Position,
+                        HasLength = false
+                    });
 
-                    BaseStream.Seek(PointersPosition + Index * 4, SeekOrigin.Begin);
-
-                    Writer.Write((uint)Position);
-
-                    BaseStream.Seek(Position, SeekOrigin.Begin);
+                    Skip(4);
                 }
-
-                WriteValue(List[Index]);
+                else
+                {
+                    WriteValue(Value, null, true);
+                }
             }
         }
 
         private void WriteValue(ReferenceValue Reference)
         {
-            long Position = BaseStream.Position;
             object Value = Reference.Value;
 
             if (Value != null)
             {
-                bool Range = Reference.Info.IsDefined(typeof(RangeAttribute));
+                FieldInfo Info = Reference.Info;
+                ObjPointer OPtr = GetObjPointer(Value, Info);
+                long Position = BaseStream.Position;
+                bool Range = Info != null && Info.IsDefined(typeof(RangeAttribute));
 
                 BaseStream.Seek(Reference.Position, SeekOrigin.Begin);
 
-                Writer.Write((uint)Position);
+                Writer.Write(OPtr.Position);
 
                 if (Reference.HasLength && !Range)
                 {
@@ -146,7 +179,7 @@ namespace SPICA.Serialization
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
 
-                WriteValue(Value);
+                if (OPtr.Position == Position) WriteValue(Value, Info);
 
                 if (Range)
                 {
@@ -154,16 +187,67 @@ namespace SPICA.Serialization
 
                     BaseStream.Seek(Reference.Position + 4, SeekOrigin.Begin);
 
-                    Writer.Write((uint)Position);
+                    Writer.Write((uint)(OPtr.Length != 0 ? OPtr.Length : Position));
 
                     BaseStream.Seek(Position, SeekOrigin.Begin);
                 }
             }
         }
 
-        private void WriteObject(object Value)
+        private ObjPointer GetObjPointer(object Value, FieldInfo Info)
         {
-            foreach (FieldInfo Info in Value.GetType().GetFields())
+            ObjPointer Output = new ObjPointer
+            {
+                Position = (uint)BaseStream.Position,
+                Length = 0
+            };
+
+            if (ObjPointers.ContainsKey(Value))
+            {
+                Output = ObjPointers[Value];
+            }
+            else if (Value is IList)
+            {
+                uint SPos = 0;
+                int EPos = 0;
+                int Matches = 0;
+
+                foreach (object Elem in ((IList)Value))
+                {
+                    if (ObjPointers.ContainsKey(Elem) && (ObjPointers[Elem].Position == EPos || EPos == 0))
+                    {
+                        if (Matches++ == 0) EPos = (int)(SPos = ObjPointers[Elem].Position);
+
+                        EPos += ObjPointers[Elem].Length;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (Matches > 0 && Matches == ((IList)Value).Count)
+                {
+                    Output.Position = SPos;
+                    Output.Length = EPos;
+                }
+            }
+
+            return Output;
+        }
+
+        public void WriteObject(object Value, bool IsElem = false)
+        {
+            Type ValueType = Value.GetType();
+
+            int Index = Contents.Count;
+
+            if (Value is ICustomSerializer)
+            {
+                ((ICustomSerializer)Value).Serialize(this);
+            }
+
+            foreach (FieldInfo Info in ValueType.GetFields())
             {
                 if (!Info.IsDefined(typeof(NonSerializedAttribute)))
                 {
@@ -176,14 +260,14 @@ namespace SPICA.Serialization
 
                     if (Type.IsValueType || Type.IsEnum || Inline)
                     {
-                        WriteValue(Info.GetValue(Value));
+                        WriteValue(Info.GetValue(Value), Info);
                     }
                     else
                     {
                         bool IsList = typeof(IList).IsAssignableFrom(Type);
                         bool HasLength = !Info.IsDefined(typeof(FixedLengthAttribute)) && IsList;
 
-                        ReferencedValues.Enqueue(new ReferenceValue
+                        Enqueue(new ReferenceValue
                         {
                             Info = Info,
                             Value = Info.GetValue(Value),
@@ -195,9 +279,38 @@ namespace SPICA.Serialization
                     }
                 }
             }
+
+            if (!IsElem && (ValueType.IsClass && !ValueType.IsDefined(typeof(InlineAttribute))))
+            {
+                while (Index < Contents.Count)
+                {
+                    WriteValue(Contents[Index]);
+                    Contents.RemoveAt(Index);
+                }
+            }
+
+            if (HasBuffered) WriteBool();
         }
 
-        private void Skip(int Bytes)
+        private void Enqueue(ReferenceValue Value)
+        {
+            Type Type = Value.Info.FieldType;
+
+            if (Type == typeof(string))
+            {
+                Strings.Enqueue(Value);
+            }
+            else if (Type == typeof(uint[]))
+            {
+                Commands.Enqueue(Value);
+            }
+            else
+            {
+                Contents.Add(Value);
+            }
+        }
+
+        public void Skip(int Bytes)
         {
             while (Bytes-- > 0) BaseStream.WriteByte(0);
         }

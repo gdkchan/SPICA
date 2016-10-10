@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SPICA.Formats.H3D
 {
-    class H3DMetaDataValue : ICustomDeserializer
+    class H3DMetaDataValue : ICustomDeserializer, ICustomSerializer
     {
         public string Name;
         public H3DMetaDataType Type;
@@ -80,6 +80,21 @@ namespace SPICA.Formats.H3D
             }
 
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
+        }
+
+        public void Serialize(BinarySerializer Serializer)
+        {
+            Serializer.Writer.Write((ushort)Values.Length);
+
+            Serializer.Contents.Add(new BinarySerializer.ReferenceValue
+            {
+                Info = null,
+                Value = Values,
+                Position = Serializer.BaseStream.Position,
+                HasLength = false
+            });
+
+            Serializer.Skip(4);
         }
     }
 }

@@ -10,7 +10,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Model.Mesh
 {
-    class H3DMesh : ICustomDeserializer
+    class H3DMesh : ICustomDeserializer, ICustomSerializer
     {
         public ushort MaterialIndex;
         public byte Flags;
@@ -240,6 +240,11 @@ namespace SPICA.Formats.H3D.Model.Mesh
             }
 
             return Output;
+        }
+
+        public void Serialize(BinarySerializer Serializer)
+        {
+
         }
     }
 }

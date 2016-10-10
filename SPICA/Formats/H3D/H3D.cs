@@ -3,8 +3,8 @@ using SPICA.Formats.H3D.Camera;
 using SPICA.Formats.H3D.Fog;
 using SPICA.Formats.H3D.Light;
 using SPICA.Formats.H3D.LUT;
-using SPICA.Formats.H3D.Material;
 using SPICA.Formats.H3D.Model;
+using SPICA.Formats.H3D.Model.Material;
 using SPICA.Formats.H3D.Scene;
 using SPICA.Formats.H3D.Shader;
 using SPICA.Formats.H3D.Texture;
@@ -17,7 +17,7 @@ namespace SPICA.Formats.H3D
     class H3D
     {
         public PatriciaPointersList<H3DModel> Models;
-        public PatriciaPointersList<H3DMaterial> Materials;
+        public PatriciaPointersList<H3DMaterialParams> Materials;
         public PatriciaPointersList<H3DShader> Shaders;
         public PatriciaPointersList<H3DTexture> Textures;
         public PatriciaPointersList<H3DLUT> LUTs;
@@ -44,11 +44,15 @@ namespace SPICA.Formats.H3D
             }
         }
 
-        public static void Save(H3D Data, string FileName)
+        public static void Save(string FileName, H3D Data)
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
-                //TODO
+                FS.Seek(0x44, SeekOrigin.Begin);
+
+                BinarySerializer Serializer = new BinarySerializer(FS);
+
+                Serializer.Serialize(Data);
             }
         }
     }

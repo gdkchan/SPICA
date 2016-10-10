@@ -82,20 +82,22 @@ void main(void)
             Debug.Write(H3D.Models.Tree[1].Name + '\n');
             Debug.Write(H3D.Models[0].Name + '\n');
 
+            //H3D.Save("D:\\recreated.bch", H3D);
+
             Mdl = new Mesh[H3D.Models[0].Meshes.Count];
 
             for (int Index = 0; Index < Mdl.Length; Index++)
             {
-                H3DMesh H3DMesh = H3D.Models[0].Meshes[Index];
+                H3DMesh Mesh = H3D.Models[0].Meshes[Index];
 
-                ushort[][] Indices = new ushort[H3DMesh.SubMeshes.Count][];
+                ushort[][] Indices = new ushort[Mesh.SubMeshes.Count][];
 
-                for (int SM = 0; SM < H3DMesh.SubMeshes.Count; SM++)
+                for (int SM = 0; SM < Mesh.SubMeshes.Count; SM++)
                 {
-                    Indices[SM] = H3DMesh.SubMeshes[SM].Indices;
+                    Indices[SM] = Mesh.SubMeshes[SM].Indices;
                 }
 
-                Mdl[Index] = new Mesh(H3DMesh.Attributes, H3DMesh.RawBuffer, Indices, H3DMesh.VertexStride, shaderProgramHandle);
+                Mdl[Index] = new Mesh(Mesh.Attributes, Mesh.RawBuffer, Indices, Mesh.VertexStride, shaderProgramHandle);
             }
 
             // Other state

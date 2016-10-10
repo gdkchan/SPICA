@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\LUT\H3DLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\LUT\H3DLUTFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\LUT\H3DLUTSampler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Material\H3DMaterial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBillboardMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBoneFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DModelFlags.cs" />
