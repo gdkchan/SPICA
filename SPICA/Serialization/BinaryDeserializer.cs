@@ -174,9 +174,9 @@ namespace SPICA.Serialization
                 }
             }
 
-            if (Value is ICustomDeserializer)
+            if (Value is ICustomSerialization)
             {
-                ((ICustomDeserializer)Value).Deserialize(this);
+                ((ICustomSerialization)Value).Deserialize(this);
             }
 
             return Value;

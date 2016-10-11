@@ -8,7 +8,7 @@ using System;
 
 namespace SPICA.Formats.H3D.Model.Material
 {
-    class H3DMaterialParams : ICustomDeserializer
+    class H3DMaterialParams : ICustomSerialization
     {
         public uint UId;
         public H3DMaterialFlags Flags;
@@ -223,6 +223,11 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = PICADepthColorMask.FromParameter(Param); break;
                 }
             }
+        }
+
+        public void Serialize(BinarySerializer Serializer)
+        {
+            //TODO
         }
     }
 }

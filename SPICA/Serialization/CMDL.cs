@@ -17,11 +17,13 @@ namespace SPICA.Serialization
     {
         #region MODELS
         [XmlRootAttribute("NintendoWareIntermediateFile")]
-        public class CtrModel {
+        public class CtrModel
+        {
             public ctrGraphicsContent GraphicsContentCtr = new ctrGraphicsContent();
         }
 
-        public class ctrGraphicsContent {
+        public class ctrGraphicsContent
+        {
             [XmlAttribute]
             public string Version = "1.3.0";
 
@@ -32,13 +34,15 @@ namespace SPICA.Serialization
             public ctrModels Models = new ctrModels();
         }
 
-        public class ctrModels {
+        public class ctrModels
+        {
             public ctrSkeletalModel SkeletalModel = new ctrSkeletalModel();
         }
         #endregion
 
         #region USERDATA
-        public class ctrUserData {
+        public class ctrUserData
+        {
             [XmlElement("IntegerArrayMetaDataXml")]
             public List<ctrIntArrayMeta> intUserData;
 
@@ -49,7 +53,8 @@ namespace SPICA.Serialization
             public List<ctrStringArrayMeta> strUserData;
         }
 
-        public class ctrIntArrayMeta {
+        public class ctrIntArrayMeta
+        {
             [XmlAttribute]
             public string DataKind;
 
@@ -59,12 +64,14 @@ namespace SPICA.Serialization
             public List<ctrIntSet> Values = new List<ctrIntSet>();
         }
 
-        public class ctrIntSet {
+        public class ctrIntSet
+        {
             [XmlText]
             public string obj;
         }
 
-        public class ctrFloatArrayMeta {
+        public class ctrFloatArrayMeta
+        {
             [XmlAttribute]
             public string DataKind;
 
@@ -74,12 +81,14 @@ namespace SPICA.Serialization
             public List<ctrFloatSet> Values = new List<ctrFloatSet>();
         }
 
-        public class ctrFloatSet {
+        public class ctrFloatSet
+        {
             [XmlText]
             public string obj;
         }
 
-        public class ctrStringArrayMeta {
+        public class ctrStringArrayMeta
+        {
             [XmlAttribute]
             public string DataKind;
 
@@ -91,27 +100,31 @@ namespace SPICA.Serialization
             public List<ctrStringSet> Values = new List<ctrStringSet>();
         }
 
-        public class ctrStringSet {
+        public class ctrStringSet
+        {
             [XmlText]
             public string obj;
         }
         #endregion
 
         #region EDITDATA
-        public class ctrEditData { //This class is used in multiple locations with different elements, so init them manually
+        public class ctrEditData
+        { //This class is used in multiple locations with different elements, so init them manually
             public ctrMetaData MetaData = null;
             public ctrModelDccToolExportOpt ModelDccToolExportOption = null;
             public ctrOptLogArrayMeta OptimizationLogArrayMetaData = null;
             public ctrContentSummaryMeta ContentSummaryMetaData = null;
         }
 
-        public class ctrMetaData {
+        public class ctrMetaData
+        {
             public string Key;
             public ctrCreate Create = new ctrCreate();
             public ctrModify Modify = new ctrModify();
         }
 
-        public class ctrCreate {
+        public class ctrCreate
+        {
             [XmlAttribute]
             public string Author;
 
@@ -127,7 +140,8 @@ namespace SPICA.Serialization
             public ctrToolDesc ToolDescription = new ctrToolDesc();
         }
 
-        public class ctrToolDesc {
+        public class ctrToolDesc
+        {
             [XmlAttribute]
             public string Name;
 
@@ -136,24 +150,28 @@ namespace SPICA.Serialization
         }
 
 
-        public class ctrModify {
+        public class ctrModify
+        {
             [XmlAttribute]
             public string Date;
 
             public ctrToolDesc ToolDescription = new ctrToolDesc();
         }
 
-        public class ctrContentSummaryMeta {
+        public class ctrContentSummaryMeta
+        {
             public string Key;
             public ctrValues Values = new ctrValues();
 
         }
 
-        public class ctrValues {
+        public class ctrValues
+        {
             public ctrContentSummary ContentSummary = new ctrContentSummary();
         }
 
-        public class ctrContentSummary {
+        public class ctrContentSummary
+        {
             [XmlAttribute]
             public string ContentTypeName;
 
@@ -161,7 +179,8 @@ namespace SPICA.Serialization
             public List<ctrObjectSummary> ObjectSummaries = new List<ctrObjectSummary>();
         }
 
-        public class ctrObjectSummary {
+        public class ctrObjectSummary
+        {
             [XmlAttribute]
             public string TypeName;
 
@@ -172,7 +191,8 @@ namespace SPICA.Serialization
             public List<ctrNote> Notes = new List<ctrNote>();
         }
 
-        public class ctrNote {
+        public class ctrNote
+        {
             [XmlAttribute]
             public string Name;
 
@@ -180,7 +200,8 @@ namespace SPICA.Serialization
             public uint Value;
         }
 
-        public class ctrOptLogArrayMeta {
+        public class ctrOptLogArrayMeta
+        {
             [XmlAttribute]
             public uint Size;
 
@@ -190,7 +211,8 @@ namespace SPICA.Serialization
             public List<ctrOptLog> Values = new List<ctrOptLog>();
         }
 
-        public class ctrOptLog {
+        public class ctrOptLog
+        {
             [XmlAttribute]
             public string Date;
 
@@ -204,7 +226,8 @@ namespace SPICA.Serialization
             public string OptimizerIdentifier;
         }
 
-        public class ctrModelDccToolExportOpt {
+        public class ctrModelDccToolExportOpt
+        {
             [XmlAttribute]
             public uint ExportStartFrame;
 
@@ -222,7 +245,8 @@ namespace SPICA.Serialization
         #endregion
 
         #region SKELETON
-        public class ctrSkeletalModel {
+        public class ctrSkeletalModel
+        {
             [XmlAttribute]
             public string Name;
 
@@ -266,7 +290,8 @@ namespace SPICA.Serialization
             public ctrSkeleton Skeleton = new ctrSkeleton();
         }
 
-        public class ctrSkeleton {
+        public class ctrSkeleton
+        {
             [XmlAttribute]
             public string RootBoneName;
 
@@ -280,7 +305,8 @@ namespace SPICA.Serialization
             public List<ctrBone> Bones = new List<ctrBone>();
         }
 
-        public class ctrBone {
+        public class ctrBone
+        {
             [XmlAttribute]
             public string Name;
 
@@ -307,7 +333,8 @@ namespace SPICA.Serialization
         #endregion
 
         #region ANIMATIONS
-        public class ctrGraphicsAnimGroupDesc {
+        public class ctrGraphicsAnimGroupDesc
+        {
             [XmlAttribute]
             public string Name;
 
@@ -318,7 +345,8 @@ namespace SPICA.Serialization
             public List<ctrAnimMemberDesc> MemberInformationSet = new List<ctrAnimMemberDesc>();
         }
 
-        public class ctrAnimMemberDesc {
+        public class ctrAnimMemberDesc
+        {
             [XmlAttribute]
             public string BlendOperationName;
 
@@ -330,13 +358,15 @@ namespace SPICA.Serialization
         #endregion
 
         #region TRANSFORM
-        public class ctrTransform {
+        public class ctrTransform
+        {
             public ctrScale Scale = new ctrScale();
             public ctrRotation Rotation = new ctrRotation();
             public ctrTranslate Translate = new ctrTranslate();
         }
 
-        public class ctrScale {
+        public class ctrScale
+        {
             [XmlAttribute]
             public float X;
 
@@ -347,7 +377,8 @@ namespace SPICA.Serialization
             public float Z;
         }
 
-        public class ctrRotation {
+        public class ctrRotation
+        {
             [XmlAttribute]
             public float X;
 
@@ -358,7 +389,8 @@ namespace SPICA.Serialization
             public float Z;
         }
 
-        public class ctrTranslate {
+        public class ctrTranslate
+        {
             [XmlAttribute]
             public float X;
 
@@ -371,7 +403,8 @@ namespace SPICA.Serialization
         #endregion
 
         #region SHAPES
-        public class ctrSeperateDataShape {
+        public class ctrSeperateDataShape
+        {
             public ctrOBB OrientedBoundingBox = new ctrOBB();
 
             public ctrPositionOff PositionOffset = new ctrPositionOff();
@@ -383,13 +416,15 @@ namespace SPICA.Serialization
             public List<ctrVertAttrib> VertexAttributes = new List<ctrVertAttrib>();
         }
 
-        public class ctrOBB {
+        public class ctrOBB
+        {
             public ctrCenterPos CenterPosition = new ctrCenterPos();
             public ctrMatrix OrientationMatrix = new ctrMatrix();
             public ctrSize Size = new ctrSize();
         }
 
-        public class ctrCenterPos {
+        public class ctrCenterPos
+        {
             [XmlAttribute]
             public float X;
 
@@ -400,7 +435,8 @@ namespace SPICA.Serialization
             public float Z;
         }
 
-        public class ctrMatrix {
+        public class ctrMatrix
+        {
             [XmlAttribute]
             public float M00;
 
@@ -429,7 +465,8 @@ namespace SPICA.Serialization
             public float M22;
         }
 
-        public class ctrSize {
+        public class ctrSize
+        {
             [XmlAttribute]
             public float X;
 
@@ -440,7 +477,8 @@ namespace SPICA.Serialization
             public float Z;
         }
 
-        public class ctrPositionOff {
+        public class ctrPositionOff
+        {
             [XmlAttribute]
             public float X;
 
@@ -451,7 +489,8 @@ namespace SPICA.Serialization
             public float Z;
         }
 
-        public class ctrPrimSet {
+        public class ctrPrimSet
+        {
             [XmlAttribute]
             public string SkinningMode;
 
@@ -461,12 +500,14 @@ namespace SPICA.Serialization
             public List<ctrPrim> Primitives = new List<ctrPrim>();
         }
 
-        public class ctrPrim {
+        public class ctrPrim
+        {
             [XmlArrayItem("UshortIndexStreamCtr")]
             public List<ctrIndexStream> IndexStreams = new List<ctrIndexStream>();
         }
 
-        public class ctrIndexStream {
+        public class ctrIndexStream
+        {
             [XmlAttribute]
             public string PrimitiveMode;
 
@@ -474,7 +515,8 @@ namespace SPICA.Serialization
             public string Size;
         }
 
-        public class ctrVertAttrib {
+        public class ctrVertAttrib
+        {
             [XmlAttribute]
             public string Usage;
 
@@ -493,7 +535,8 @@ namespace SPICA.Serialization
         #endregion
 
         #region MATERIALS
-        public class ctrMaterial {
+        public class ctrMaterial
+        {
             [XmlAttribute]
             public string Name;
 
@@ -538,7 +581,8 @@ namespace SPICA.Serialization
         #endregion
 
         #region MESHES
-        public class ctrMesh {
+        public class ctrMesh
+        {
             [XmlAttribute]
             public bool IsVisible;
 
@@ -552,7 +596,8 @@ namespace SPICA.Serialization
             public string MaterialReference;
         }
 
-        public class ctrMeshVis {
+        public class ctrMeshVis
+        {
             [XmlAttribute]
             public string Name;
 
@@ -567,7 +612,8 @@ namespace SPICA.Serialization
         /// <param name="model">The Model that will be exported</param>
         /// <param name="fileName">The output File Name</param>
         /// <param name="skeletalAnimationIndex">(Optional) Index of the skeletal animation.</param>
-        public static void export(object model, string fileName, int index, int skeletalAnimationIndex = -1) {
+        public static void export(object model, string fileName, int index, int skeletalAnimationIndex = -1)
+        {
             CtrModel ctrMdl = new CtrModel();
             H3DModel mdl = ((H3D)model).Models[index];
 
@@ -602,9 +648,11 @@ namespace SPICA.Serialization
                 skinSmooth = 0,
                 indicies = 0,
                 verts = 0;
-            foreach (var m in mdl.Meshes) {
+            foreach (var m in mdl.Meshes)
+            {
                 verts += m.GetVertices().Count();
-                foreach (var s in m.SubMeshes) {
+                foreach (var s in m.SubMeshes)
+                {
                     prims += s.MaxIndex;
                     indicies += s.MaxIndex;
                     if (s.Skinning == H3DSubMeshSkinning.None) skinNone++;
@@ -832,7 +880,7 @@ namespace SPICA.Serialization
             trans.Translate.X = 0;
             trans.Translate.Y = 0;
             trans.Translate.Z = 0;
-            
+
             //Shapes
             List<ctrSeperateDataShape> shapes = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.Shapes;
             ctrSeperateDataShape shape;
@@ -840,12 +888,17 @@ namespace SPICA.Serialization
             ctrPrimSet primSet = null;
             ctrVertAttrib vertAtt;
             StringBuilder sb;
-            foreach (var sh in mdl.Meshes) {
+            foreach (var sh in mdl.Meshes)
+            {
                 shape = new ctrSeperateDataShape();
-                if(sh.MetaData != null) {
-                    foreach (var md in sh.MetaData.Values) {
-                        switch (md.Type) {
-                            case H3DMetaDataType.BoundingBox: {
+                if (sh.MetaData != null)
+                {
+                    foreach (var md in sh.MetaData.Values)
+                    {
+                        switch (md.Type)
+                        {
+                            case H3DMetaDataType.BoundingBox:
+                                {
                                     H3DBoundingBox obbox = (H3DBoundingBox)md[0];
                                     obb = new ctrOBB();
                                     obb.CenterPosition.X = obbox.Center.X;
@@ -872,9 +925,11 @@ namespace SPICA.Serialization
                 shape.PositionOffset.X = 0;
                 shape.PositionOffset.Y = 0;
                 shape.PositionOffset.Z = 0;
-                foreach (var sub in sh.SubMeshes) {
+                foreach (var sub in sh.SubMeshes)
+                {
                     string skinMode = "";
-                    switch (sub.Skinning) {
+                    switch (sub.Skinning)
+                    {
                         case H3DSubMeshSkinning.None:
                             skinMode = "None";
                             break;
@@ -889,9 +944,11 @@ namespace SPICA.Serialization
                     primSet.SkinningMode = skinMode;
                     primSet.BoneIndexTable = string.Join(" ", sub.BoneIndices);
                 }
-                foreach (var att in sh.Attributes) {
+                foreach (var att in sh.Attributes)
+                {
                     string quantized = "";
-                    switch (att.Format) {
+                    switch (att.Format)
+                    {
                         case PICAAttributeFormat.SignedByte:
                             quantized = "Byte";
                             break;
@@ -911,8 +968,10 @@ namespace SPICA.Serialization
                     vertAtt.Scale = att.Scale;
                     vertAtt.QuantizedMode = quantized;
                     sb = new StringBuilder("\n");
-                    foreach (var vec in sh.GetVertices()) {
-                        switch (att.Name) {
+                    foreach (var vec in sh.GetVertices())
+                    {
+                        switch (att.Name)
+                        {
                             case PICAAttributeName.Position:
                                 sb.Append(
                                     vec.Position.X + " " +
@@ -984,7 +1043,8 @@ namespace SPICA.Serialization
             ctrFloatSet fs;
             ctrIntSet ins;
             ctrStringSet strs;
-            foreach (var mt in mdl.Materials.Contents) {
+            foreach (var mt in mdl.Materials.Contents)
+            {
                 mat = new ctrMaterial();
                 mat.Name = mt.Name;
                 mat.IsCompressible = true;
@@ -1002,17 +1062,23 @@ namespace SPICA.Serialization
                 mat.UserData.intUserData = new List<ctrIntArrayMeta>();
                 mat.UserData.floatUserData = new List<ctrFloatArrayMeta>();
                 mat.UserData.strUserData = new List<ctrStringArrayMeta>();
-                foreach (var ud in mdl.Materials.Contents) {
-                    if (ud.MaterialParams.MetaData != null) {
-                        foreach (var val in ud.MaterialParams.MetaData.Values) {
-                            switch (val.Type) {
+                foreach (var ud in mdl.Materials.Contents)
+                {
+                    if (ud.MaterialParams.MetaData != null)
+                    {
+                        foreach (var val in ud.MaterialParams.MetaData.Values)
+                        {
+                            switch (val.Type)
+                            {
                                 case H3DMetaDataType.ASCIIString:
-                                case H3DMetaDataType.UnicodeString: {
+                                case H3DMetaDataType.UnicodeString:
+                                    {
                                         strArr = new ctrStringArrayMeta();
                                         strArr.DataKind = "StringSet";
                                         strArr.Key = val.Name;
                                         strArr.BinarizeEncoding = "Utf16LittleEndian";
-                                        foreach (var vals in val.Values) {
+                                        foreach (var vals in val.Values)
+                                        {
                                             strs = new ctrStringSet();
                                             strs.obj = vals.ToString();
                                             strArr.Values.Add(strs);
@@ -1020,11 +1086,13 @@ namespace SPICA.Serialization
                                         mat.UserData.strUserData.Add(strArr);
                                         break;
                                     }
-                                case H3DMetaDataType.Integer: {
+                                case H3DMetaDataType.Integer:
+                                    {
                                         intArr = new ctrIntArrayMeta();
                                         intArr.DataKind = "IntSet";
                                         intArr.Key = val.Name;
-                                        foreach (var vals in val.Values) {
+                                        foreach (var vals in val.Values)
+                                        {
                                             ins = new ctrIntSet();
                                             ins.obj = vals.ToString();
                                             intArr.Values.Add(ins);
@@ -1032,11 +1100,13 @@ namespace SPICA.Serialization
                                         mat.UserData.intUserData.Add(intArr);
                                         break;
                                     }
-                                case H3DMetaDataType.Single: {
+                                case H3DMetaDataType.Single:
+                                    {
                                         floatArr = new ctrFloatArrayMeta();
                                         floatArr.DataKind = "FloatSet";
                                         floatArr.Key = val.Name;
-                                        foreach (var vals in val.Values) {
+                                        foreach (var vals in val.Values)
+                                        {
                                             fs = new ctrFloatSet();
                                             fs.obj = vals.ToString();
                                             floatArr.Values.Add(fs);
@@ -1058,7 +1128,8 @@ namespace SPICA.Serialization
             List<ctrMesh> meshes = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.Meshes;
             ctrMesh mesh;
             int i;
-            for (i = 0; i < mdl.Meshes.Count; i++) {
+            for (i = 0; i < mdl.Meshes.Count; i++)
+            {
                 mesh = new ctrMesh();
                 mesh.IsVisible = true;
                 mesh.RenderPriority = mdl.Meshes[i].Key;
@@ -1072,7 +1143,8 @@ namespace SPICA.Serialization
             List<ctrMeshVis> meshVisibilites = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.MeshNodeVisibilities;
             ctrMeshVis meshVisibility;
             i = 0;
-            foreach (var vis in mdl.MeshVisibilities) {
+            foreach (var vis in mdl.MeshVisibilities)
+            {
                 meshVisibility = new ctrMeshVis();
                 meshVisibility.Name = mdl.MeshesTree.Nodes[i++].Name;
                 meshVisibility.IsVisible = vis;
@@ -1087,7 +1159,8 @@ namespace SPICA.Serialization
             skeleton.ScalingRule = mdl.SkeletonScalingType.ToString();
             skeleton.IsTranslateAnimationEnabled = true;
             skeleton.Bones = bones;
-            foreach (var b in mdl.Skeleton) {
+            foreach (var b in mdl.Skeleton)
+            {
                 bone = new ctrBone();
                 bone.Name = b.Name;
                 bone.ParentBoneName = b.ParentIndex == -1 ? "" : mdl.Skeleton[b.ParentIndex].Name;
@@ -1109,7 +1182,8 @@ namespace SPICA.Serialization
             }
 
             //XML Serializer
-            XmlWriterSettings settings = new XmlWriterSettings {
+            XmlWriterSettings settings = new XmlWriterSettings
+            {
                 Encoding = Encoding.UTF8,
                 Indent = true,
                 IndentChars = "\t"

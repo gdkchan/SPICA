@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SPICA.Formats.H3D
 {
-    class H3DMetaDataValue : ICustomDeserializer, ICustomSerializer
+    class H3DMetaDataValue : ICustomSerialization
     {
         public string Name;
         public H3DMetaDataType Type;
@@ -86,7 +86,7 @@ namespace SPICA.Formats.H3D
         {
             Serializer.Writer.Write((ushort)Values.Length);
 
-            Serializer.Contents.Add(new BinarySerializer.ReferenceValue
+            Serializer.Contents.Values.Add(new BinarySerializer.RefValue
             {
                 Info = null,
                 Value = Values,

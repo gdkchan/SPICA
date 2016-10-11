@@ -10,6 +10,7 @@ using SPICA.Formats.H3D.Shader;
 using SPICA.Formats.H3D.Texture;
 using SPICA.Serialization;
 
+using System;
 using System.IO;
 
 namespace SPICA.Formats.H3D
@@ -32,19 +33,27 @@ namespace SPICA.Formats.H3D
         public PatriciaPointersList<H3DAnimation> FogAnimations;
         public PatriciaPointersList<H3DScene> Scenes;
 
+        [NonSerialized]
+        internal H3DHeader Header;
+
         public static H3D Open(string FileName)
         {
             using (MemoryStream MS = new MemoryStream(File.ReadAllBytes(FileName)))
             {
                 BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
+                H3DHeader Header = Deserializer.Deserialize<H3DHeader>();
 
-                new H3DRelocator(MS, Deserializer.Deserialize<H3DHeader>()).ToAbsolute();
+                new H3DRelocator(MS, Header).ToAbsolute();
 
-                return Deserializer.Deserialize<H3D>();
+                H3D Model = Deserializer.Deserialize<H3D>();
+
+                Model.Header = Header;
+
+                return Model;
             }
         }
 
-        public static void Save(string FileName, H3D Data)
+        public static void Save(string FileName, H3D Model)
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
@@ -52,7 +61,28 @@ namespace SPICA.Formats.H3D
 
                 BinarySerializer Serializer = new BinarySerializer(FS);
 
-                Serializer.Serialize(Data);
+                Serializer.Serialize(Model);
+
+                H3DHeader Header = Model.Header;
+
+                Header.ContentsAddress = Serializer.Contents.Info.Position;
+                Header.StringsAddress = Serializer.Strings.Info.Position;
+                Header.CommandsAddress = Serializer.Commands.Info.Position;
+                Header.RawDataAddress = Serializer.RawDataTex.Info.Position;
+                Header.RawExtAddress = Serializer.RawExtTex.Info.Position;
+
+                Header.ContentsLength = Serializer.Contents.Info.Length;
+                Header.StringsLength = Serializer.Strings.Info.Length;
+                Header.CommandsLength = Serializer.Commands.Info.Length;
+                Header.RawDataLength = Serializer.RawDataTex.Info.Length;
+                Header.RawExtLength = Serializer.RawExtTex.Info.Length;
+
+                Header.RawDataLength += Serializer.RawDataVtx.Info.Length;
+                Header.RawExtLength += Serializer.RawExtVtx.Info.Length;
+
+                FS.Seek(0, SeekOrigin.Begin);
+
+                Serializer.Serialize(Header);
             }
         }
         

@@ -17,6 +17,11 @@ namespace SPICA.Formats.H3D
             set { Elems[Index] = value; }
         }
 
+        public RangeList()
+        {
+            Elems = new List<T>();
+        }
+
         public int Count
         {
             get { return Elems.Count; }

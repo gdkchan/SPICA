@@ -7,7 +7,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Model.Mesh
 {
-    class H3DSubMesh : ICustomDeserializer
+    class H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public H3DSubMeshSkinning Skinning;
         public byte Padding;
@@ -83,6 +83,53 @@ namespace SPICA.Formats.H3D.Model.Mesh
             }
 
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
+        }
+
+        public void Serialize(BinarySerializer Serializer)
+        {
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_BOOLUNIFORM, BoolUniforms | 0x7fff0000u);
+            Writer.SetCommand(PICARegister.GPUREG_RESTART_PRIMITIVE, true);
+            Writer.SetCommand(PICARegister.GPUREG_INDEXBUFFER_CONFIG, 0);
+            Writer.SetCommand(PICARegister.GPUREG_NUMVERTICES, (uint)Indices.Length);
+            Writer.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, false, 1);
+            Writer.SetCommand(PICARegister.GPUREG_DRAWELEMENTS, true);
+            Writer.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, true, 1);
+            Writer.SetCommand(PICARegister.GPUREG_VTX_FUNC, true);
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
+            Writer.SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
+            Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
+
+            Commands = Writer.GetBuffer();
+        }
+
+        public void SerializeCmd(BinarySerializer Serializer, object Value)
+        {
+            object Data;
+
+            if (MaxIndex <= byte.MaxValue)
+            {
+                byte[] Buffer = new byte[Indices.Length];
+
+                for (int Index = 0; Index < Indices.Length; Index++)
+                {
+                    Buffer[Index] = (byte)Indices[Index];
+                }
+
+                Data = Buffer;
+            }
+            else
+            {
+                Data = Indices;
+            }
+
+            Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
+            {
+                Value = Data,
+                Position = Serializer.BaseStream.Position + 0x10
+            });
         }
     }
 }

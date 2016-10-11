@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SPICA.Formats.H3D
 {
-    class PatriciaTree : ICustomDeserializer, ICustomSerializer
+    class PatriciaTree : ICustomSerialization
     {
         [NonSerialized]
         public List<PatriciaTreeNode> Nodes;

@@ -10,7 +10,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Model.Mesh
 {
-    class H3DMesh : ICustomDeserializer, ICustomSerializer
+    class H3DMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public ushort MaterialIndex;
         public byte Flags;
@@ -245,6 +245,18 @@ namespace SPICA.Formats.H3D.Model.Mesh
         public void Serialize(BinarySerializer Serializer)
         {
 
+        }
+
+        public void SerializeCmd(BinarySerializer Serializer, object Value)
+        {
+            if (Value == EnableCommands)
+            {
+                Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
+                {
+                    Value = RawBuffer,
+                    Position = Serializer.BaseStream.Position + 0x30
+                });
+            }
         }
     }
 }

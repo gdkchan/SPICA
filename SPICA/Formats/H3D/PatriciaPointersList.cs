@@ -18,6 +18,12 @@ namespace SPICA.Formats.H3D
             set { Contents[Index] = value; }
         }
 
+        public PatriciaPointersList()
+        {
+            Contents = new List<T>();
+            Tree = new PatriciaTree();
+        }
+
         public int Count
         {
             get { return Contents.Count; }

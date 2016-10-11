@@ -10,19 +10,19 @@ namespace SPICA.Formats.H3D
         public byte ForwardCompatibility;
         public ushort ConverterVersion;
 
-        public uint DescriptorsAddress;
+        public uint ContentsAddress;
         public uint StringsAddress;
         public uint CommandsAddress;
         public uint RawDataAddress;
         public uint RawExtAddress;
         public uint RelocationAddress;
 
-        public uint DescriptorsLength;
-        public uint StringsLength;
-        public uint CommandsLength;
-        public uint RawDataLength;
-        public uint RawExtLength;
-        public uint RelocationLength;
+        public int ContentsLength;
+        public int StringsLength;
+        public int CommandsLength;
+        public int RawDataLength;
+        public int RawExtLength;
+        public int RelocationLength;
 
         public uint UnInitDataLength;
         public uint UnInitCommandsLength;

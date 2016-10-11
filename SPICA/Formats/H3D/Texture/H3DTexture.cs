@@ -7,7 +7,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Texture
 {
-    class H3DTexture : ICustomDeserializer
+    class H3DTexture : ICustomSerialization, ICustomSerializeCmd
     {
         public uint[] Texture0Commands;
         public uint[] Texture1Commands;
@@ -79,6 +79,57 @@ namespace SPICA.Formats.H3D.Texture
             RawBuffer = Deserializer.Reader.ReadBytes((int)Length);
 
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
+        }
+
+        public void Serialize(BinarySerializer Serializer)
+        {
+            for (int Unit = 0; Unit < 3; Unit++)
+            {
+                PICACommandWriter Writer = new PICACommandWriter();
+
+                switch (Unit)
+                {
+                    case 0:
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_DIM, Height | (Width << 16));
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_LOD, MipmapSize);
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_ADDR1, 0);
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_TYPE, (uint)Format);
+                        break;
+
+                    case 1:
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_DIM, Height | (Width << 16));
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_LOD, MipmapSize);
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_ADDR, 0);
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_TYPE, (uint)Format);
+                        break;
+
+                    case 2:
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_DIM, Height | (Width << 16));
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_LOD, MipmapSize);
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_ADDR, 0);
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_TYPE, (uint)Format);
+                        break;
+                }
+
+                Writer.SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
+                Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
+
+                switch (Unit)
+                {
+                    case 0: Texture0Commands = Writer.GetBuffer(); break;
+                    case 1: Texture1Commands = Writer.GetBuffer(); break;
+                    case 2: Texture2Commands = Writer.GetBuffer(); break;
+                }
+            }
+        }
+
+        public void SerializeCmd(BinarySerializer Serializer, object Value)
+        {
+            Serializer.RawDataTex.Values.Add(new BinarySerializer.RefValue
+            {
+                Value = RawBuffer,
+                Position = Serializer.BaseStream.Position + 0x10
+            });
         }
     }
 }

@@ -1,7 +1,8 @@
 ﻿namespace SPICA.Serialization
 {
-    interface ICustomSerializer
+    interface ICustomSerialization
     {
+        void Deserialize(BinaryDeserializer Deserializer);
         void Serialize(BinarySerializer Serializer);
     }
 }

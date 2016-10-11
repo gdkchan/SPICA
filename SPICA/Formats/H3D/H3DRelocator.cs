@@ -74,7 +74,7 @@ namespace SPICA.Formats.H3D
         {
             switch (RType)
             {
-                case H3DRelocationType.Descriptors: return Header.DescriptorsAddress;
+                case H3DRelocationType.Descriptors: return Header.ContentsAddress;
                 case H3DRelocationType.Strings: return Header.StringsAddress;
                 case H3DRelocationType.Commands: return Header.CommandsAddress;
                 case H3DRelocationType.CommandsSrc: return Header.CommandsAddress;
