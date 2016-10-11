@@ -111,8 +111,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryDeserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinarySerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\CMDL.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerializeCmd.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerialization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomDeserializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\BitUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\IOUtils.cs" />
   </ItemGroup>
