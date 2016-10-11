@@ -139,9 +139,9 @@ namespace SPICA.Formats.H3D.Model.Mesh
                     case PICAAttributeName.Normal: Attrib.Scale = Uniform[7].Y; break;
                     case PICAAttributeName.Tangent: Attrib.Scale = Uniform[7].Z; break;
                     case PICAAttributeName.Color: Attrib.Scale = Uniform[7].W; break;
-                    case PICAAttributeName.TextureCoord0: Attrib.Scale = Uniform[8].X; break;
-                    case PICAAttributeName.TextureCoord1: Attrib.Scale = Uniform[8].Y; break;
-                    case PICAAttributeName.TextureCoord2: Attrib.Scale = Uniform[8].Z; break;
+                    case PICAAttributeName.TextureCoordinate0: Attrib.Scale = Uniform[8].X; break;
+                    case PICAAttributeName.TextureCoordinate1: Attrib.Scale = Uniform[8].Y; break;
+                    case PICAAttributeName.TextureCoordinate2: Attrib.Scale = Uniform[8].Z; break;
                     case PICAAttributeName.BoneWeight: Attrib.Scale = Uniform[8].W; break;
                 }
 
@@ -216,9 +216,9 @@ namespace SPICA.Formats.H3D.Model.Mesh
 
                             case PICAAttributeName.Color: O.Color = new RGBAFloat(V.X, V.Y, V.Z, V.W); break;
 
-                            case PICAAttributeName.TextureCoord0: O.TextureCoord0 = new Vector2D(V.X, V.Y); break;
-                            case PICAAttributeName.TextureCoord1: O.TextureCoord1 = new Vector2D(V.X, V.Y); break;
-                            case PICAAttributeName.TextureCoord2: O.TextureCoord2 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TextureCoordinate0: O.TextureCoord0 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TextureCoordinate1: O.TextureCoord1 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TextureCoordinate2: O.TextureCoord2 = new Vector2D(V.X, V.Y); break;
 
                             case PICAAttributeName.BoneIndex:
                                 for (int Node = 0; Node < Attrib.Elements; Node++)
