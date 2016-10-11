@@ -55,5 +55,9 @@ namespace SPICA.Formats.H3D
                 Serializer.Serialize(Data);
             }
         }
+        
+        public static void Export(H3D Data, string FileName) {
+            CMDL.export(Data, FileName, 0);
+        }
     }
 }

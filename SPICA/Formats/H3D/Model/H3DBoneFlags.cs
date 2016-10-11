@@ -5,9 +5,9 @@ namespace SPICA.Formats.H3D.Model
     [Flags]
     enum H3DBoneFlags : uint
     {
-        IsMatrixDirty = 1 << 0,
-        IsWorldMatrixUpdated = 1 << 1,
-        IsCallBackEnabled = 1 << 2,
+        IsMatrixDirty = 1 << 1,
+        IsWorldMatrixUpdated = 1 << 2,
+        IsCallBackEnabled = 1 << 4,
         IsSegmentScaleCompensate = 1 << 22,
         IsScaleUniform = 1 << 23,
         IsScaleVolumeOne = 1 << 24,

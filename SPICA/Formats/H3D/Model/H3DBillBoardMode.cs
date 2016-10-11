@@ -2,7 +2,7 @@
 {
     enum H3DBillboardMode
     {
-        None = 0,
+        Off = 0,
         World = 2,
         WorldEye = 3,
         Screen = 4,
