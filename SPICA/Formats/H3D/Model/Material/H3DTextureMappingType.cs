@@ -2,7 +2,7 @@
 {
     enum H3DTextureMappingType : byte
     {
-        UVCoordinates,
+        UvCoordinateMap,
         SkyBox,
         SkyDome,
         Projection,

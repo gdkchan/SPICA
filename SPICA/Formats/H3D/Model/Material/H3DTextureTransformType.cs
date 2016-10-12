@@ -4,6 +4,6 @@
     {
         Maya,
         SoftImage,
-        _3dsMax
+        Dcc3dsMax
     }
 }

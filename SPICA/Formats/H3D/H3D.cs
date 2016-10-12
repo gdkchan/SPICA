@@ -38,6 +38,10 @@ namespace SPICA.Formats.H3D
 
         public static H3D Open(string FileName)
         {
+            if (!File.Exists(FileName)) {
+                System.Windows.Forms.MessageBox.Show("File not found!");
+                return null;
+            }
             using (MemoryStream MS = new MemoryStream(File.ReadAllBytes(FileName)))
             {
                 BinaryDeserializer Deserializer = new BinaryDeserializer(MS);

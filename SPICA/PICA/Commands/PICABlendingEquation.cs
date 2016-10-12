@@ -2,7 +2,7 @@
 {
     enum PICABlendingEquation
     {
-        Add,
+        FuncAdd,
         Subtract,
         ReverseSubtract,
         Minimum,
