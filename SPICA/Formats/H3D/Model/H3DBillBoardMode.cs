@@ -4,10 +4,10 @@
     {
         Off = 0,
         World = 2,
-        WorldEye = 3,
+        WorldViewpoint = 3,
         Screen = 4,
-        ScreenEye = 5,
+        ScreenViewpoint = 5,
         YAxis = 6,
-        YAxisEye = 7,
+        YAxialViewpoint = 7,
     }
 }

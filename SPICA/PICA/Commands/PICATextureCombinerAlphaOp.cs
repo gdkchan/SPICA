@@ -2,13 +2,13 @@
 {
     enum PICATextureCombinerAlphaOp
     {
-        SourceAlpha,
-        OneMinusSourceAlpha,
-        SourceRed,
-        OneMinusSourceRed,
-        SourceGreen,
-        OneMinusSourceGreen,
-        SourceBlue,
-        OneMinusSourceBlue
+        Alpha,
+        OneMinusAlpha,
+        Red,
+        OneMinusRed,
+        Green,
+        OneMinusGreen,
+        Blue,
+        OneMinusBlue
     }
 }

@@ -2,15 +2,15 @@
 {
     enum PICATextureCombinerRGBOp
     {
-        SourceColor = 0,
-        OneMinusSourceColor = 1,
-        SourceAlpha = 2,
-        OneMinusSourceAlpha = 3,
-        SourceRed = 4,
-        OneMinusSourceRed = 5,
-        SourceGreen = 8,
-        OneMinusSourceGreen = 9,
-        SourceBlue = 12,
-        OneMinusSourceBlue = 13
+        Color = 0,
+        OneMinusColor = 1,
+        Alpha = 2,
+        OneMinusAlpha = 3,
+        Red = 4,
+        OneMinusRed = 5,
+        Green = 8,
+        OneMinusGreen = 9,
+        Blue = 12,
+        OneMinusBlue = 13
     }
 }

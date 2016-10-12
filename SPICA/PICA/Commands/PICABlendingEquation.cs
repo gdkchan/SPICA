@@ -3,9 +3,9 @@
     enum PICABlendingEquation
     {
         FuncAdd,
-        Subtract,
-        ReverseSubtract,
-        Minimum,
-        Maximum
+        FuncSubtract,
+        FuncReverseSubtract,
+        Min,
+        Max,
     }
 }

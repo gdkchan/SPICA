@@ -41,13 +41,13 @@ namespace SPICA.Serialization
         #region USERDATA
         public class ctrArrayMetaData {
             [XmlElement("IntegerArrayMetaDataXml")]
-            public List<ctrIntArrayMeta> intUserData;
+            public List<ctrIntArrayMeta> intArrayData;
 
             [XmlElement("FloatArrayMetaDataXml")]
-            public List<ctrFloatArrayMeta> floatUserData;
+            public List<ctrFloatArrayMeta> floatArrayData;
 
             [XmlElement("StringArrayMetaDataXml")]
-            public List<ctrStringArrayMeta> strUserData;
+            public List<ctrStringArrayMeta> strArrayData;
         }
 
         public class ctrIntArrayMeta {
@@ -107,6 +107,8 @@ namespace SPICA.Serialization
             public ctrOptLogArrayMeta OptimizationLogArrayMetaData = null;
 
             public ctrContentSummaryMeta ContentSummaryMetaData = null;
+
+            public ctrDccSrcNode DccToolSourceNodeMetaData = null;
         }
 
         public class ctrMetaData {
@@ -131,6 +133,18 @@ namespace SPICA.Serialization
             public string FullPathOfSource;
 
             public ctrToolDesc ToolDescription = new ctrToolDesc();
+        }
+
+        public class ctrDccSrcNode {
+            public string Key;
+
+            [XmlArrayItem("NodeName")]
+            public List<ctrNodeName> Values = new List<ctrNodeName>();
+        }
+
+        public class ctrNodeName {
+            [XmlText]
+            public string Name;
         }
 
         public class ctrToolDesc {
@@ -208,6 +222,45 @@ namespace SPICA.Serialization
 
             [XmlAttribute]
             public string OptimizerIdentifier;
+
+            public ctrOpt Options = new ctrOpt();
+        }
+
+        public class ctrOpt {
+            [XmlAttribute]
+            public string NodeCompressionMode;
+
+            [XmlAttribute]
+            public bool IsMergeMeshOwnerBoneEnabled;
+
+            [XmlAttribute]
+            public bool IsCombineMeshEnabled;
+
+            [XmlAttribute]
+            public bool IsCompressMaterialEnabled;
+
+            [XmlAttribute]
+            public bool IsOptimizePlygonPrimitiveEnabled;
+
+            [XmlAttribute]
+            public bool IsConvertOneBoneSkeletalModelToModel;
+
+            [XmlAttribute]
+            public bool IsDeleteUnusedVertexEnabled;
+
+            [XmlAttribute]
+            public string PositionQuantizeMode;
+
+            [XmlAttribute]
+            public string NormalQuantizeMode;
+
+            [XmlAttribute]
+            public string TextureQuantizeMode;
+
+            [XmlAttribute]
+            public bool GroupByIndexStream;
+
+            public int OptimizePolygonPrimitiveLevel;
         }
 
         public class ctrModelDccToolExportOpt {
@@ -255,12 +308,12 @@ namespace SPICA.Serialization
             public ctrEditData EditData = null;
 
             [XmlArrayItem("GraphicsAnimationGroupDescription")]
-            public List<ctrGraphicsAnimGroupDesc> AnimationGroupDescription = new List<ctrGraphicsAnimGroupDesc>();
+            public List<ctrGraphicsAnimGroupDesc> AnimationGroupDescriptions = new List<ctrGraphicsAnimGroupDesc>();
 
             public ctrTransform Transform = new ctrTransform();
 
-            [XmlArrayItem("SeperateDataShapeCtr")]
-            public List<ctrSeperateDataShape> Shapes = new List<ctrSeperateDataShape>();
+            [XmlArrayItem("SeparateDataShapeCtr")]
+            public List<ctrSeparateDataShape> Shapes = new List<ctrSeparateDataShape>();
 
             [XmlArrayItem("MaterialCtr")]
             public List<ctrMaterial> Materials = new List<ctrMaterial>();
@@ -383,7 +436,7 @@ namespace SPICA.Serialization
         #endregion
 
         #region SHAPES
-        public class ctrSeperateDataShape {
+        public class ctrSeparateDataShape {
             public ctrOBB OrientedBoundingBox = null;
 
             public ctrPositionOff PositionOffset = new ctrPositionOff();
@@ -476,8 +529,15 @@ namespace SPICA.Serialization
         }
 
         public class ctrPrim {
-            [XmlArrayItem("UshortIndexStreamCtr")]
-            public List<ctrIndexStream> IndexStreams = new List<ctrIndexStream>();
+            public ctrIndexStreams IndexStreams = new ctrIndexStreams();
+        }
+
+        public class ctrIndexStreams {
+            [XmlElement("UshortIndexStreamCtr")]
+            public List<ctrIndexStream> ushortIndexStreams = null;
+
+            [XmlElement("UbyteIndexStreamCtr")]
+            public List<ctrIndexStream> ubyteIndexStreams = null;
         }
 
         public class ctrIndexStream {
@@ -485,7 +545,10 @@ namespace SPICA.Serialization
             public string PrimitiveMode;
 
             [XmlAttribute]
-            public string Size;
+            public int Size;
+
+            [XmlText]
+            public string stream;
         }
 
         public class ctrVertAttrib {
@@ -899,6 +962,8 @@ namespace SPICA.Serialization
             [XmlAttribute]
             public string MeshNodeName;
 
+            public ctrEditData EditData;
+
             public string SeparateShapeReference;
 
             public string MaterialReference;
@@ -1025,7 +1090,7 @@ namespace SPICA.Serialization
 
             //Model UserData
             ctrArrayMetaData modelUserData = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.UserData;
-            getMetaData(modelUserData, mdl.MetaData);
+            addMetaData(ref modelUserData, mdl.MetaData);
 
             //Model EditData
             ctrModelDccToolExportOpt dccExpOpt = skelModel.EditData.ModelDccToolExportOption;
@@ -1043,10 +1108,22 @@ namespace SPICA.Serialization
             optLog.EditorVersion = "1.4.5.44775";
             optLog.OptimizePrimitiveAverageCacheMissRatio = 0.7663249;
             optLog.OptimizerIdentifier = "AlgorithmCombo";
+            optLog.Options.NodeCompressionMode = "CullLeafBone";
+            optLog.Options.IsMergeMeshOwnerBoneEnabled = false;
+            optLog.Options.IsCombineMeshEnabled = true;
+            optLog.Options.IsCompressMaterialEnabled = false;
+            optLog.Options.IsOptimizePlygonPrimitiveEnabled = true;
+            optLog.Options.IsConvertOneBoneSkeletalModelToModel = false;
+            optLog.Options.IsDeleteUnusedVertexEnabled = false;
+            optLog.Options.PositionQuantizeMode = "Byte";
+            optLog.Options.NormalQuantizeMode = "Byte";
+            optLog.Options.TextureQuantizeMode = "Byte";
+            optLog.Options.GroupByIndexStream = false;
+            optLog.Options.OptimizePolygonPrimitiveLevel = 0;
             optLogArr.Values.Add(optLog);
 
             //Skeleton Animation
-            List<ctrGraphicsAnimGroupDesc> animGroups = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.AnimationGroupDescription;
+            List<ctrGraphicsAnimGroupDesc> animGroups = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.AnimationGroupDescriptions;
             ctrGraphicsAnimGroupDesc animGroup;
             ctrAnimMemberDesc animMembDesc;
             animGroup = new ctrGraphicsAnimGroupDesc();
@@ -1192,14 +1269,16 @@ namespace SPICA.Serialization
             trans.Translate.Z = 0;
             
             //Shapes
-            List<ctrSeperateDataShape> shapes = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.Shapes;
-            ctrSeperateDataShape shape;
+            List<ctrSeparateDataShape> shapes = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.Shapes;
+            ctrSeparateDataShape shape;
             ctrOBB obb;
             ctrPrimSet primSet = null;
+            ctrPrim prim;
             ctrVertAttrib vertAtt;
             StringBuilder sb;
+            ctrIndexStream indStream;
             foreach (var sh in mdl.Meshes) {
-                shape = new ctrSeperateDataShape();
+                shape = new ctrSeparateDataShape();
                 if (sh.MetaData != null) {
                     foreach (var md in sh.MetaData.Values) {
                         switch (md.Type) {
@@ -1227,9 +1306,10 @@ namespace SPICA.Serialization
                         }
                     }
                 }
-                shape.PositionOffset.X = 0;
-                shape.PositionOffset.Y = 0;
-                shape.PositionOffset.Z = 0;
+                shape.PositionOffset.X = sh.PositionOffset.X;
+                shape.PositionOffset.Y = sh.PositionOffset.Y;
+                shape.PositionOffset.Z = sh.PositionOffset.Z;
+                //Create each PrimitiveSetCtr from submeshes
                 foreach (var sub in sh.SubMeshes) {
                     string skinMode = "";
                     switch (sub.Skinning) {
@@ -1245,12 +1325,28 @@ namespace SPICA.Serialization
                     }
                     primSet = new ctrPrimSet();
                     primSet.SkinningMode = skinMode;
-                    var boneInd = new List<ushort>(sub.BoneIndices);
-                    for (int bi = sub.BoneIndices.Count() - 1; bi > 0; bi--) {
-                        if (boneInd[bi] == 0) boneInd.RemoveAt(bi); //Remove 0s at the end of the array
-                        else break;
-                    }
+                    var boneInd = new List<ushort>();
+                    for (int bi = 0; bi < sub.BoneIndicesCount; bi++) boneInd.Add(sub.BoneIndices[bi]);
                     primSet.BoneIndexTable = string.Join(" ", boneInd);
+                    //Serialize indices 
+                    prim = new ctrPrim();
+                    if (sub.MaxIndex > 255) {
+                        if (prim.IndexStreams.ushortIndexStreams == null) prim.IndexStreams.ushortIndexStreams = new List<ctrIndexStream>();
+                        indStream = new ctrIndexStream();
+                        indStream.PrimitiveMode = "Triangles";
+                        indStream.Size = sub.Indices.Count();
+                        indStream.stream = string.Join(" ", sub.Indices);
+                        prim.IndexStreams.ushortIndexStreams.Add(indStream);
+                    } else {
+                        if (prim.IndexStreams.ubyteIndexStreams == null) prim.IndexStreams.ubyteIndexStreams = new List<ctrIndexStream>();
+                        indStream = new ctrIndexStream();
+                        indStream.PrimitiveMode = "Triangles";
+                        indStream.Size = sub.Indices.Count();
+                        indStream.stream = string.Join(" ", sub.Indices);
+                        prim.IndexStreams.ubyteIndexStreams.Add(indStream);
+                    }
+                    primSet.Primitives.Add(prim);
+                    shape.PrimitiveSets.Add(primSet);
                 }
                 foreach (var att in sh.Attributes) {
                     string quantized = "";
@@ -1300,7 +1396,7 @@ namespace SPICA.Serialization
                                     }
                                     break;
                                 }
-                            case PICAAttributeName.Color: //TODO Determine if this is correct format
+                            case PICAAttributeName.Color:
                                 sb.Append(
                                     vec.Color.R.ToString(CultureInfo.InvariantCulture) + " " +
                                     vec.Color.G.ToString(CultureInfo.InvariantCulture) + " " +
@@ -1338,7 +1434,6 @@ namespace SPICA.Serialization
                     vertAtt.Vec3Array = sb.ToString();
                     shape.VertexAttributes.Add(vertAtt);
                 }
-                shape.PrimitiveSets.Add(primSet);
                 shapes.Add(shape);
             }
 
@@ -1353,6 +1448,7 @@ namespace SPICA.Serialization
             ctrPixTexMap texMap;
             ctrTexSampler texSamp;
             ctrFragShader fragShade;
+            ctrTexCombine texComb;
             ctrFragOp fragOp;
             foreach (var mt in mdl.Materials.Contents) {
                 mat = new ctrMaterial();
@@ -1369,10 +1465,10 @@ namespace SPICA.Serialization
                 mat.TranslucencyKind = "Layer0";
                 mat.ShaderProgramDescriptionIndex = -1;
                 mat.ShaderBinaryKind = "Default";
-                addSchematicLoc(mat.EditData);
-                getMetaData(mat.UserData, mt.MaterialParams.MetaData);
+                addMetaData(ref mat.UserData, mt.MaterialParams.MetaData);
                 //ShaderReference
-                mat.ShaderReference = mt.MaterialParams.ShaderReference;
+                string shdr = mt.MaterialParams.ShaderReference;
+                mat.ShaderReference = shdr == "0@DefaultShader" ? "" : shdr;
                 //MaterialColor
                 matCol = new ctrMatColor();
                 matCol.VertexColorScale = mt.MaterialParams.ColorScale;
@@ -1469,18 +1565,31 @@ namespace SPICA.Serialization
                 }
                 //FragmentShader
                 fragShade = new ctrFragShader();
-                string bumpMode,
-                       fresnelConf;
-                switch (mt.MaterialParams.BumpMode) { //TODO: Add more options
+                string bumpMode = "",
+                       fresnelConf = "";
+                switch (mt.MaterialParams.BumpMode) {
                     case 0:
-                    default:
                         bumpMode = "NotUsed";
                         break;
+                    case 1:
+                        bumpMode = "AsBump";
+                        break;
+                    case 2:
+                        bumpMode = "AsTangent";
+                        break;
                 }
-                switch (mt.MaterialParams.FresnelConfig) { //TODO: Add more options
+                switch (mt.MaterialParams.FresnelConfig) {
                     case 0:
-                    default:
                         fresnelConf = "No";
+                        break;
+                    case 1:
+                        fresnelConf = "Pri";
+                        break;
+                    case 2:
+                        fresnelConf = "Sec";
+                        break;
+                    case 3:
+                        fresnelConf = "PriSec";
                         break;
                 }
                 fragShade.LayerConfig = "ConfigurationType" + mt.MaterialParams.LayerConfig.ToString();
@@ -1525,6 +1634,30 @@ namespace SPICA.Serialization
                 fragShade.FragmentLightingTable.FresnelSampler.Input = "CosNormalHalf";
                 fragShade.FragmentLightingTable.FresnelSampler.Scale = "One";
                 fragShade.FragmentLightingTable.FresnelSampler.NullLookupTableCtr = "";
+
+                foreach (var comb in mt.MaterialParams.TexEnvStages) {
+                    texComb = new ctrTexCombine();
+                    texComb.CombineRgb = comb.Combiner.RGBCombiner.ToString();
+                    texComb.CombineAlpha = comb.Combiner.AlphaCombiner.ToString();
+                    texComb.ScaleRgb = comb.Scale.RGBScale.ToString();
+                    texComb.ScaleAlpha = comb.Scale.AlphaScale.ToString();
+                    texComb.Constant = "Constant0";
+                    texComb.BufferInputRgb = "PreviousBuffer";
+                    texComb.BufferInputAlpha = "PreviousBuffer";
+                    texComb.SourceRgb.Source0 = comb.Source.RGBSource[0].ToString();
+                    texComb.SourceRgb.Source1 = comb.Source.RGBSource[1].ToString();
+                    texComb.SourceRgb.Source2 = comb.Source.RGBSource[2].ToString();
+                    texComb.SourceAlpha.Source0 = comb.Source.AlphaSource[0].ToString();
+                    texComb.SourceAlpha.Source1 = comb.Source.AlphaSource[1].ToString();
+                    texComb.SourceAlpha.Source2 = comb.Source.AlphaSource[2].ToString();
+                    texComb.OperandRgb.Operand0 = comb.Operand.RGBOp[0].ToString();
+                    texComb.OperandRgb.Operand1 = comb.Operand.RGBOp[1].ToString();
+                    texComb.OperandRgb.Operand2 = comb.Operand.RGBOp[2].ToString();
+                    texComb.OperandAlpha.Operand0 = comb.Operand.AlphaOp[0].ToString();
+                    texComb.OperandAlpha.Operand1 = comb.Operand.AlphaOp[1].ToString();
+                    texComb.OperandAlpha.Operand2 = comb.Operand.AlphaOp[2].ToString();
+                    fragShade.TextureCombiners.Add(texComb);
+                }
 
                 fragShade.AlphaTest.IsTestEnabled = mt.MaterialParams.FragmentAlphaTest.Enabled;
                 fragShade.AlphaTest.TestFunction = mt.MaterialParams.FragmentAlphaTest.Function.ToString();
@@ -1577,6 +1710,7 @@ namespace SPICA.Serialization
                 mesh.MeshNodeName = mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId+1].Name;
                 mesh.SeparateShapeReference = "Shapes[" + i + "]";
                 mesh.MaterialReference = "Materials[\"" + mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId+1].Name + "\"]";
+                addDccToolMeta(ref mesh.EditData, mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId + 1].Name);
                 meshes.Add(mesh);
             }
 
@@ -1610,9 +1744,9 @@ namespace SPICA.Serialization
                 bone.HasSkinningMatrix = b.Name == "Root" ? false : true; //Not used I think
                 bone.BillboardMode = b.BillboardMode.ToString();
                 //EditData
-                addSchematicLoc(bone.EditData);
+                //
                 //UserData
-                getMetaData(bone.UserData, b.MetaData);
+                addMetaData(ref bone.UserData, b.MetaData);
                 //---------
                 bone.Transform.Rotate.X = b.Rotation.X;
                 bone.Transform.Rotate.Y = b.Rotation.Y;
@@ -1640,35 +1774,28 @@ namespace SPICA.Serialization
             output.Close();
         }
 
-        private static void addSchematicLoc(ctrArrayMetaData userData) {
-            ctrFloatArrayMeta fmeta;
-            ctrFloatSet fset;
-            userData = new ctrArrayMetaData();
-            userData.floatUserData = new List<ctrFloatArrayMeta>();
-            fmeta = new ctrFloatArrayMeta();
-            fmeta.DataKind = "FloatSet";
-            fmeta.Key = "3DEditor_SchematicLocation";
-            fset = new ctrFloatSet();
-            fset.obj = "0";
-            fmeta.Values.Add(fset);
-            fset = new ctrFloatSet();
-            fset.obj = "0";
-            fmeta.Values.Add(fset);
-            userData.floatUserData.Add(fmeta);
+        private static void addDccToolMeta(ref ctrEditData editData, string node) {
+            ctrNodeName n;
+            if (editData == null) editData = new ctrEditData();
+            editData.DccToolSourceNodeMetaData = new ctrDccSrcNode();
+            editData.DccToolSourceNodeMetaData.Key = "DccToolSourceNode";
+            n = new ctrNodeName();
+            n.Name = node;
+            editData.DccToolSourceNodeMetaData.Values.Add(n);
         }
 
-        private static void getMetaData(ctrArrayMetaData userData, H3DMetaData metaData) {
+        private static void addMetaData(ref ctrArrayMetaData localMeta, H3DMetaData metaData) {
             ctrIntArrayMeta intArr;
             ctrFloatArrayMeta floatArr;
             ctrStringArrayMeta strArr;
             ctrFloatSet fs;
             ctrIntSet ins;
             ctrStringSet strs;
-            userData = new ctrArrayMetaData();
-            userData.intUserData = new List<ctrIntArrayMeta>();
-            userData.floatUserData = new List<ctrFloatArrayMeta>();
-            userData.strUserData = new List<ctrStringArrayMeta>();
-            if (metaData == null) return;
+            if (localMeta == null) localMeta = new ctrArrayMetaData();
+            if (localMeta.intArrayData == null) localMeta.intArrayData = new List<ctrIntArrayMeta>();
+            if (localMeta.floatArrayData == null) localMeta.floatArrayData = new List<ctrFloatArrayMeta>();
+            if (localMeta.strArrayData == null) localMeta.strArrayData = new List<ctrStringArrayMeta>();
+            if (metaData == null) goto cleanMeta;
             foreach (var val in metaData.Values) {
                 switch (val.Type) {
                     case H3DMetaDataType.ASCIIString:
@@ -1683,7 +1810,7 @@ namespace SPICA.Serialization
                                 strs.obj = vals.ToString();
                                 strArr.Values.Add(strs);
                             }
-                            userData.strUserData.Add(strArr);
+                            localMeta.strArrayData.Add(strArr);
                             break;
                         }
                     case H3DMetaDataType.Integer: 
@@ -1696,7 +1823,7 @@ namespace SPICA.Serialization
                                 ins.obj = vals.ToString();
                                 intArr.Values.Add(ins);
                             }
-                            userData.intUserData.Add(intArr);
+                            localMeta.intArrayData.Add(intArr);
                             break;
                         }
                     case H3DMetaDataType.Single: 
@@ -1709,15 +1836,16 @@ namespace SPICA.Serialization
                                 fs.obj = vals.ToString();
                                 floatArr.Values.Add(fs);
                             }
-                            userData.floatUserData.Add(floatArr);
+                            localMeta.floatArrayData.Add(floatArr);
                             break;
                         }
                 }
             }
-            if (userData.floatUserData.Count == 0) userData.floatUserData = null; //These 4 lines are to make sure there are no stray tags
-            if (userData.intUserData.Count == 0) userData.intUserData = null;
-            if (userData.strUserData.Count == 0) userData.strUserData = null;
-            if (userData.floatUserData.Count == 0 && userData.intUserData.Count == 0 && userData.strUserData.Count == 0) userData = null;
+            cleanMeta:
+            if (localMeta.floatArrayData.Count == 0) localMeta.floatArrayData = null; //These 4 lines are to make sure there are no stray tags
+            if (localMeta.intArrayData.Count == 0) localMeta.intArrayData = null;
+            if (localMeta.strArrayData.Count == 0) localMeta.strArrayData = null;
+            if (localMeta.floatArrayData == null && localMeta.intArrayData == null && localMeta.strArrayData == null) localMeta = null;
         }
     }
 }

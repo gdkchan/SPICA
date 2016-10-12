@@ -3,9 +3,9 @@
     enum H3DTextureMappingType : byte
     {
         UvCoordinateMap,
-        SkyBox,
-        SkyDome,
-        Projection,
+        CameraCubeEnvMap,
+        CameraSphereEnvMap,
+        ProjectionMap,
         Shadow,
         ShadowBox
     }
