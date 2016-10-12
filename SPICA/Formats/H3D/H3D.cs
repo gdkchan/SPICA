@@ -63,11 +63,13 @@ namespace SPICA.Formats.H3D
             {
                 FS.Seek(0x44, SeekOrigin.Begin);
 
-                BinarySerializer Serializer = new BinarySerializer(FS);
+                H3DHeader Header = Model.Header;
+
+                H3DRelocator Relocator = new H3DRelocator(FS, Header);
+
+                BinarySerializer Serializer = new BinarySerializer(FS, Relocator);
 
                 Serializer.Serialize(Model);
-
-                H3DHeader Header = Model.Header;
 
                 Header.ContentsAddress = Serializer.Contents.Info.Position;
                 Header.StringsAddress = Serializer.Strings.Info.Position;
@@ -84,9 +86,11 @@ namespace SPICA.Formats.H3D
                 Header.RawDataLength += Serializer.RawDataVtx.Info.Length;
                 Header.RawExtLength += Serializer.RawExtVtx.Info.Length;
 
+                Relocator.ToRelative(Serializer);
+
                 FS.Seek(0, SeekOrigin.Begin);
 
-                Serializer.Serialize(Header);
+                Serializer.WriteObject(Header);
             }
         }
         

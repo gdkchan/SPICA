@@ -85,7 +85,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public void Serialize(BinarySerializer Serializer)
+        public bool Serialize(BinarySerializer Serializer)
         {
             PICACommandWriter Writer = new PICACommandWriter();
 
@@ -103,14 +103,20 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
 
             Commands = Writer.GetBuffer();
+
+            return false;
         }
 
         public void SerializeCmd(BinarySerializer Serializer, object Value)
         {
+            H3DRelocationType RelocType = H3DRelocationType.RawDataIndex16;
+
             object Data;
 
             if (MaxIndex <= byte.MaxValue)
             {
+                RelocType = H3DRelocationType.RawDataIndex8;
+
                 byte[] Buffer = new byte[Indices.Length];
 
                 for (int Index = 0; Index < Indices.Length; Index++)
@@ -125,11 +131,15 @@ namespace SPICA.Formats.H3D.Model.Mesh
                 Data = Indices;
             }
 
+            long Position = Serializer.BaseStream.Position + 0x10;
+
             Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
             {
                 Value = Data,
-                Position = Serializer.BaseStream.Position + 0x10
+                Position = Position
             });
+
+            Serializer.Relocator.RelocTypes.Add(Position, RelocType);
         }
     }
 }

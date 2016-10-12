@@ -12,6 +12,7 @@ namespace SPICA.Serialization
     class BinaryDeserializer
     {
         public Stream BaseStream;
+
         public BinaryReader Reader;
 
         Dictionary<long, object> ObjPointers;
@@ -20,10 +21,11 @@ namespace SPICA.Serialization
         private uint BufferedUInt = 0;
         private uint BufferedShift = 0;
 
-        public BinaryDeserializer(Stream Stream)
+        public BinaryDeserializer(Stream BaseStream)
         {
-            BaseStream = Stream;
-            Reader = new BinaryReader(Stream);
+            this.BaseStream = BaseStream;
+
+            Reader = new BinaryReader(BaseStream);
 
             ObjPointers = new Dictionary<long, object>();
         }
@@ -124,6 +126,8 @@ namespace SPICA.Serialization
             }
 
             if (Pointers) BaseStream.Seek(Position + Index * 4, SeekOrigin.Begin);
+
+            if (BufferedShift > 0) BufferedShift = 0;
 
             return List;
         }

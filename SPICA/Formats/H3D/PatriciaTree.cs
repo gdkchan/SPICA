@@ -40,12 +40,14 @@ namespace SPICA.Formats.H3D
             }
         }
 
-        public void Serialize(BinarySerializer Serializer)
+        public bool Serialize(BinarySerializer Serializer)
         {
             foreach (PatriciaTreeNode Node in Nodes)
             {
                 Serializer.WriteObject(Node);
             }
+
+            return true;
         }
     }
 }

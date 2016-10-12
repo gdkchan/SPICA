@@ -132,6 +132,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
                 Attrib.Name = (PICAAttributeName)((BufferPermutation >> PermutationIdx * 4) & 0xf);
                 Attrib.Format = (PICAAttributeFormat)(AttributeFmt & 3);
                 Attrib.Elements = (AttributeFmt >> 2) + 1;
+                Attrib.Scale = 1;
 
                 switch (Attrib.Name)
                 {
@@ -198,17 +199,9 @@ namespace SPICA.Formats.H3D.Model.Mesh
                             }
                         }
 
-                        V *= Attrib.Scale;
-
                         switch (Attrib.Name)
                         {
-                            case PICAAttributeName.Position:
-                                float PX = V.X + PositionOffset.X;
-                                float PY = V.Y + PositionOffset.Y;
-                                float PZ = V.Z + PositionOffset.Z;
-
-                                O.Position = new Vector3D(PX, PY, PZ);
-                                break;
+                            case PICAAttributeName.Position: O.Position = new Vector3D(V.X, V.Y, V.Z); break;
 
                             case PICAAttributeName.Normal: O.Normal = new Vector3D(V.X, V.Y, V.Z); break;
 
@@ -242,20 +235,27 @@ namespace SPICA.Formats.H3D.Model.Mesh
             return Output;
         }
 
-        public void Serialize(BinarySerializer Serializer)
+        public bool Serialize(BinarySerializer Serializer)
         {
+            //TODO
 
+            return false;
         }
 
         public void SerializeCmd(BinarySerializer Serializer, object Value)
         {
             if (Value == EnableCommands)
             {
+                long Position = Serializer.BaseStream.Position;
+
                 Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
                 {
                     Value = RawBuffer,
-                    Position = Serializer.BaseStream.Position + 0x30
+                    Position = Position + 0x30
                 });
+
+                Serializer.Relocator.RelocTypes.Add(Position + 0x20, H3DRelocationType.BaseAddress);
+                Serializer.Relocator.RelocTypes.Add(Position + 0x30, H3DRelocationType.RawDataVertex);
             }
         }
     }

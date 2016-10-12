@@ -49,9 +49,11 @@ namespace SPICA.Formats.H3D.LUT
             }
         }
 
-        public void Serialize(BinarySerializer Serializer)
+        public bool Serialize(BinarySerializer Serializer)
         {
             //TODO
+
+            return false;
         }
     }
 }

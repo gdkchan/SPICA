@@ -1,4 +1,5 @@
-﻿using SPICA.Serialization.Attributes;
+﻿using SPICA.Formats.H3D;
+using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections;
@@ -12,7 +13,10 @@ namespace SPICA.Serialization
     class BinarySerializer
     {
         public Stream BaseStream;
+        public H3DRelocator Relocator;
+
         public BinaryWriter Writer;
+        
 
         public delegate void OnSerialize(BinarySerializer Serializer, object Value);
 
@@ -60,14 +64,18 @@ namespace SPICA.Serialization
 
         public Dictionary<object, ObjectInfo> ObjPointers;
 
+        public List<long> Pointers;
+
         private bool HasBuffered = false;
         private uint BufferedUInt = 0;
         private uint BufferedShift = 0;
 
-        public BinarySerializer(Stream Stream)
+        public BinarySerializer(Stream BaseStream, H3DRelocator Relocator = null)
         {
-            BaseStream = Stream;
-            Writer = new BinaryWriter(Stream);
+            this.BaseStream = BaseStream;
+            this.Relocator = Relocator;
+
+            Writer = new BinaryWriter(BaseStream);
 
             Contents = new Section();
 
@@ -80,6 +88,8 @@ namespace SPICA.Serialization
             RawExtVtx = new Section();
 
             ObjPointers = new Dictionary<object, ObjectInfo>();
+
+            Pointers = new List<long>();
         }
 
         public void Serialize(object Value)
@@ -119,8 +129,6 @@ namespace SPICA.Serialization
             Type Type = Value.GetType();
             long Position = BaseStream.Position;
 
-            if (HasBuffered && !(Value is bool)) WriteBool();
-
             if (Type.IsPrimitive || Type.IsEnum)
             {
                 switch (Type.GetTypeCode(Type))
@@ -140,7 +148,7 @@ namespace SPICA.Serialization
                         BufferedUInt <<= 1;
                         BufferedUInt |= (uint)(((bool)Value) ? 1 : 0);
 
-                        if (++BufferedShift == 32) WriteBool();
+                        if (++BufferedShift == 32 || !IsElem) WriteBool();
 
                         break;
                 }
@@ -198,6 +206,8 @@ namespace SPICA.Serialization
                     WriteValue(Value, null, true);
                 }
             }
+
+            if (HasBuffered) WriteBool();
         }
 
         private void WriteValue(RefValue Reference)
@@ -213,10 +223,11 @@ namespace SPICA.Serialization
 
                 Reference.Serialize?.Invoke(this, Value);
 
+                Pointers.Add(Reference.Position);
                 BaseStream.Seek(Reference.Position, SeekOrigin.Begin);
-
+                
                 Writer.Write(OInfo.Position);
-
+                
                 if (Reference.HasLength && !Range)
                 {
                     Writer.Write(((IList)Value).Count);
@@ -230,6 +241,7 @@ namespace SPICA.Serialization
                 {
                     Position = BaseStream.Position;
 
+                    Pointers.Add(Reference.Position + 4);
                     BaseStream.Seek(Reference.Position + 4, SeekOrigin.Begin);
 
                     Writer.Write((uint)(OInfo.Length != 0 ? OInfo.Length : Position));
@@ -289,7 +301,7 @@ namespace SPICA.Serialization
 
             if (Value is ICustomSerialization)
             {
-                ((ICustomSerialization)Value).Serialize(this);
+                if (((ICustomSerialization)Value).Serialize(this)) return;
             }
 
             foreach (FieldInfo Info in ValueType.GetFields())
@@ -325,7 +337,18 @@ namespace SPICA.Serialization
                             Ref.Serialize = ((ICustomSerializeCmd)Value).SerializeCmd;
                         }
 
-                        Enqueue(Ref);
+                        if (Type == typeof(string))
+                        {
+                            Strings.Values.Add(Ref);
+                        }
+                        else if (Type == typeof(uint[]))
+                        {
+                            Commands.Values.Add(Ref);
+                        }
+                        else
+                        {
+                            Contents.Values.Add(Ref);
+                        }
 
                         Skip(HasLength ? 8 : 4);
                     }
@@ -339,26 +362,6 @@ namespace SPICA.Serialization
                     WriteValue(Contents.Values[Index]);
                     Contents.Values.RemoveAt(Index);
                 }
-            }
-
-            if (HasBuffered) WriteBool();
-        }
-
-        private void Enqueue(RefValue Value)
-        {
-            Type Type = Value.Info.FieldType;
-
-            if (Type == typeof(string))
-            {
-                Strings.Values.Add(Value);
-            }
-            else if (Type == typeof(uint[]))
-            {
-                Commands.Values.Add(Value);
-            }
-            else
-            {
-                Contents.Values.Add(Value);
             }
         }
 

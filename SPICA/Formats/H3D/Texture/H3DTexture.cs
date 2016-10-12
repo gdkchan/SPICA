@@ -81,7 +81,7 @@ namespace SPICA.Formats.H3D.Texture
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public void Serialize(BinarySerializer Serializer)
+        public bool Serialize(BinarySerializer Serializer)
         {
             for (int Unit = 0; Unit < 3; Unit++)
             {
@@ -121,15 +121,21 @@ namespace SPICA.Formats.H3D.Texture
                     case 2: Texture2Commands = Writer.GetBuffer(); break;
                 }
             }
+
+            return false;
         }
 
         public void SerializeCmd(BinarySerializer Serializer, object Value)
         {
+            long Position = Serializer.BaseStream.Position + 0x10;
+
             Serializer.RawDataTex.Values.Add(new BinarySerializer.RefValue
             {
                 Value = RawBuffer,
-                Position = Serializer.BaseStream.Position + 0x10
+                Position = Position
             });
+
+            Serializer.Relocator.RelocTypes.Add(Position, H3DRelocationType.RawDataTexture);
         }
     }
 }

@@ -45,11 +45,6 @@ namespace SPICA.Math3D
             }
         }
 
-        public static Vector4D operator *(Vector4D LHS, float RHS)
-        {
-            return new Vector4D(LHS.X * RHS, LHS.Y * RHS, LHS.Z * RHS, LHS.W * RHS);
-        }
-
         public override string ToString()
         {
             return string.Format("X: {0} Y: {1} Z: {2} W: {3}", X, Y, Z, W);

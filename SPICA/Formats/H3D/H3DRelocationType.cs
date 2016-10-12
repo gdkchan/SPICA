@@ -2,7 +2,7 @@
 {
     enum H3DRelocationType
     {
-        Descriptors,
+        Contents,
         Strings,
         Commands,
         CommandsSrc,

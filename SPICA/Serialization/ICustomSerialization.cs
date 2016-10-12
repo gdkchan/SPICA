@@ -3,6 +3,6 @@
     interface ICustomSerialization
     {
         void Deserialize(BinaryDeserializer Deserializer);
-        void Serialize(BinarySerializer Serializer);
+        bool Serialize(BinarySerializer Serializer);
     }
 }

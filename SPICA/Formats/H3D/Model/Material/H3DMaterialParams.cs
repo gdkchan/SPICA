@@ -35,6 +35,7 @@ namespace SPICA.Formats.H3D.Model.Material
         public RGBA Constant4;
         public RGBA Constant5;
         public RGBA BlendColor;
+
         public float ColorScale;
 
         public H3DMaterialLUT Dist0LUT;
@@ -225,9 +226,11 @@ namespace SPICA.Formats.H3D.Model.Material
             }
         }
 
-        public void Serialize(BinarySerializer Serializer)
+        public bool Serialize(BinarySerializer Serializer)
         {
             //TODO
+
+            return false;
         }
     }
 }

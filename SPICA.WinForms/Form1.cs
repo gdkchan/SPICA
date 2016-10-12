@@ -82,13 +82,8 @@ void main(void)
             Debug.Write(H3D.Models.Tree[1].Name + '\n');
             Debug.Write(H3D.Models[0].Name + '\n');
 
-            /*foreach (PatriciaTreeNode Node in H3D.Models[0].MeshesTree.Nodes)
-            {
-                Debug.Write(Node.Name + '\n');
-            }
-
-            H3D.Save("D:\\recreated.bch", H3D);
-            H3D.Export(H3D, "d:\\may.cmdl");*/
+            //H3D.Save("D:\\recreated.bch", H3D);
+            //H3D.Export(H3D, "d:\\may.cmdl");
 
             Mdl = new Mesh[H3D.Models[0].Meshes.Count];
 

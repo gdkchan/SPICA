@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SPICA.Serialization;
+
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace SPICA.Formats.H3D
 {
@@ -12,21 +13,7 @@ namespace SPICA.Formats.H3D
         private BinaryReader Reader;
         private BinaryWriter Writer;
 
-        private struct Pointer
-        {
-            public long Position;
-            public int Section;
-        }
-
-        private struct Section
-        {
-            public long Position;
-            public long Length;
-            public string Name;
-        }
-
-        private List<Pointer> Pointers;
-        private List<Section> Sections;
+        public Dictionary<long, H3DRelocationType> RelocTypes;
 
         public H3DRelocator(Stream BaseStream, H3DHeader Header)
         {
@@ -35,17 +22,8 @@ namespace SPICA.Formats.H3D
 
             Reader = new BinaryReader(BaseStream);
             Writer = new BinaryWriter(BaseStream);
-        }
 
-        public H3DRelocator(Stream BaseStream)
-        {
-            this.BaseStream = BaseStream;
-
-            Reader = new BinaryReader(BaseStream);
-            Writer = new BinaryWriter(BaseStream);
-
-            Pointers = new List<Pointer>();
-            Sections = new List<Section>();
+            RelocTypes = new Dictionary<long, H3DRelocationType>();
         }
 
         public void ToAbsolute()
@@ -74,7 +52,7 @@ namespace SPICA.Formats.H3D
         {
             switch (RType)
             {
-                case H3DRelocationType.Descriptors: return Header.ContentsAddress;
+                case H3DRelocationType.Contents: return Header.ContentsAddress;
                 case H3DRelocationType.Strings: return Header.StringsAddress;
                 case H3DRelocationType.Commands: return Header.CommandsAddress;
                 case H3DRelocationType.CommandsSrc: return Header.CommandsAddress;
@@ -109,96 +87,87 @@ namespace SPICA.Formats.H3D
             return Value;
         }
 
-        public void AddPointer(long Position, int Section = -1)
+        public void ToRelative(BinarySerializer Serializer)
         {
-            Pointers.Add(new Pointer { Position = Position, Section = Section });
-        }
+            Header.RelocationAddress = (uint)BaseStream.Position;
 
-        public void AddSection(long Position, long Length, string Name)
-        {
-            Sections.Add(new Section { Position = Position, Length = Length, Name = Name });
-        }
-
-        public byte[] GetPointerTable()
-        {
-            long Position = BaseStream.Position;
-
-            string[] RSectList = new string[]
+            foreach (long Pointer in Serializer.Pointers)
             {
-                "DescriptorsSection",
-                "StringsSection",
-                "CommandsSection",
-                "RawDataSection",
-                "RawExtSection"
-            };
+                long Position = BaseStream.Position;
 
-            IEnumerable<Section> Sects = Sections.Where(Sect => RSectList.Contains(Sect.Name));
+                BaseStream.Seek(Pointer, SeekOrigin.Begin);
 
-            using (MemoryStream MS = new MemoryStream())
-            {
-                BinaryWriter PtrWriter = new BinaryWriter(MS);
+                uint TargetAddress = Peek32();
 
-                foreach (Pointer Pointer in Pointers)
-                {
-                    Reader.BaseStream.Seek(Pointer.Position, SeekOrigin.Begin);
+                H3DRelocationType Target = GetRelocation(TargetAddress);
+                H3DRelocationType Source = GetRelocation(Pointer);
 
-                    uint TargetAddress = Peek32();
+                uint PointerAddress = ToRelative(Pointer, Source);
 
-                    Section TargetSect = FindSection(Sects, TargetAddress);
-                    Section PointerSect = FindSection(Sects, Pointer.Position);
+                Writer.Write(ToRelative(TargetAddress, Target));
 
-                    uint PointerAddress = (uint)(Pointer.Position - PointerSect.Position);
+                if (RelocTypes.ContainsKey(Pointer)) Target = RelocTypes[Pointer];
 
-                    Writer.Write((uint)(TargetAddress - TargetSect.Position));
+                uint Flags;
 
-                    if (PointerSect.Name != null && TargetAddress != 0)
-                    {
-                        uint Flags;
+                Flags = (uint)Target;
+                Flags |= (uint)Source << 4;
 
-                        if (Pointer.Section != -1)
-                            Flags = (uint)Pointer.Section;
-                        else
-                            Flags = (uint)GetRelocationFromName(TargetSect.Name);
-
-                        Flags |= (uint)GetRelocationFromName(PointerSect.Name) << 4;
-
-                        if (TargetSect.Name != "StringsSection") PointerAddress >>= 2;
-
-                        PtrWriter.Write(PointerAddress | (Flags << 25));
-                    }
-                }
+                if (Target != H3DRelocationType.Strings) PointerAddress >>= 2;
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
 
-                return MS.ToArray();
+                Writer.Write(PointerAddress | (Flags << 25));
+            }
+
+            Header.RelocationLength = (int)(BaseStream.Position - Header.RelocationAddress);
+        }
+
+        private H3DRelocationType GetRelocation(long Position)
+        {
+            if (InRange(Position, Header.ContentsAddress, Header.ContentsLength))
+            {
+                return H3DRelocationType.Contents;
+            }
+            else if (InRange(Position, Header.StringsAddress, Header.StringsLength))
+            {
+                return H3DRelocationType.Strings;
+            }
+            else if (InRange(Position, Header.CommandsAddress, Header.CommandsLength))
+            {
+                return H3DRelocationType.Commands;
+            }
+            else if (InRange(Position, Header.RawDataAddress, Header.RawDataLength))
+            {
+                return H3DRelocationType.RawData;
+            }
+            else if (InRange(Position, Header.RawExtAddress, Header.RawExtLength))
+            {
+                return H3DRelocationType.RawExt;
+            }
+            else
+            {
+                return default(H3DRelocationType);
             }
         }
 
-        private H3DRelocationType GetRelocationFromName(string SectionName)
+        private uint ToRelative(long Position, H3DRelocationType Relocation)
         {
-            switch (SectionName)
+            switch (Relocation)
             {
-                case "DescriptorsSection": return H3DRelocationType.Descriptors;
-                case "StringsSection": return H3DRelocationType.Strings;
-                case "CommandsSection": return H3DRelocationType.Commands;
-                case "RawDataSection": return H3DRelocationType.RawData;
-                case "RawExtSection": return H3DRelocationType.RawExt;
+                case H3DRelocationType.Contents: return (uint)(Position - Header.ContentsAddress);
+                case H3DRelocationType.Strings: return (uint)(Position - Header.StringsAddress);
+                case H3DRelocationType.Commands: return (uint)(Position - Header.CommandsAddress);
+                case H3DRelocationType.RawData: return (uint)(Position - Header.RawDataAddress);
+                case H3DRelocationType.RawExt: return (uint)(Position - Header.RawExtAddress);
             }
 
-            return default(H3DRelocationType);
+            return (uint)Position;
         }
 
-        private Section FindSection(IEnumerable<Section> Sects, long Position)
+        private bool InRange(long Position, uint Start, int Length)
         {
-            foreach (Section Sect in Sects)
-            {
-                long StartPos = Sect.Position;
-                long EndPos = StartPos + Sect.Length;
-
-                if (Position >= StartPos && Position < EndPos) return Sect;
-            }
-
-            return default(Section);
+            return Position >= Start && Position < Start + Length;
         }
     }
 }
