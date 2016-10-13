@@ -16,6 +16,8 @@
         RawExtVertex,
         RawExtIndex16,
         RawExtIndex8,
-        BaseAddress
+        BaseAddress,
+        Total,
+        NotFound
     }
 }

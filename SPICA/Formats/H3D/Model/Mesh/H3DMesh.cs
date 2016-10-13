@@ -2,6 +2,7 @@
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
+using SPICA.Serialization.Serializer;
 using SPICA.Utils;
 
 using System;
@@ -28,6 +29,18 @@ namespace SPICA.Formats.H3D.Model.Mesh
         {
             get { return (H3DMeshSkinning)BitUtils.GetBits(Flags, 2, 2); }
             set { Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 2, 2); }
+        }
+
+        public uint Priority
+        {
+            get { return BitUtils.GetBits(Key, 0, 8); }
+            set { Key = (ushort)BitUtils.SetBits(Key, value, 0, 8); }
+        }
+
+        public uint Layer
+        {
+            get { return BitUtils.GetBits(Key, 8, 2); }
+            set { Key = (ushort)BitUtils.SetBits(Key, value, 8, 2); }
         }
 
         public uint[] EnableCommands;
@@ -248,18 +261,13 @@ namespace SPICA.Formats.H3D.Model.Mesh
             {
                 long Position = Serializer.BaseStream.Position;
 
-                //TODO: Find a better way to do this
-                Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
-                {
-                    Value = new byte[0],
-                    Position = Position + 0x20
-                });
-
-                Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
+                Serializer.RawDataVtx.Values.Add(new RefValue
                 {
                     Value = RawBuffer,
                     Position = Position + 0x30
                 });
+
+                Serializer.Pointers.Add(Position + 0x20);
 
                 Serializer.Relocator.RelocTypes.Add(Position + 0x20, H3DRelocationType.BaseAddress);
                 Serializer.Relocator.RelocTypes.Add(Position + 0x30, H3DRelocationType.RawDataVertex);

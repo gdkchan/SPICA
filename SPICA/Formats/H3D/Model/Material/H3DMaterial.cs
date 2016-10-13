@@ -1,5 +1,7 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.Formats.H3D.Model.Material.Texture;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+using SPICA.Serialization.Serializer;
 
 namespace SPICA.Formats.H3D.Model.Material
 {
@@ -25,7 +27,7 @@ namespace SPICA.Formats.H3D.Model.Material
         public bool Serialize(BinarySerializer Serializer)
         {
             //The original tool seems to add those (usually unused) names with the silhouette suffix
-            Serializer.Strings.Values.Add(new BinarySerializer.RefValue
+            Serializer.Strings.Values.Add(new RefValue
             {
                 Position = -1,
                 Value = Name + "-silhouette"

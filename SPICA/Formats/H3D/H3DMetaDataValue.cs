@@ -1,4 +1,5 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Serializer;
 
 using System;
 using System.IO;
@@ -86,13 +87,13 @@ namespace SPICA.Formats.H3D
         public bool Serialize(BinarySerializer Serializer)
         {
             //FIXME: Strings will not serialize properly
-            Serializer.Strings.Values.Add(new BinarySerializer.RefValue
+            Serializer.Strings.Values.Add(new RefValue
             {
                 Value = Name,
                 Position = Serializer.BaseStream.Position,
             });
 
-            Serializer.Contents.Values.Add(new BinarySerializer.RefValue
+            Serializer.Contents.Values.Add(new RefValue
             {
                 Value = Values,
                 Position = Serializer.BaseStream.Position + 8,

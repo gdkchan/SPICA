@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SPICA.Formats.H3D.Model.Material
+namespace SPICA.Formats.H3D.Model.Material.Texture
 {
     [Flags]
     enum H3DTextureCoordFlags : byte

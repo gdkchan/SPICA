@@ -1,6 +1,7 @@
 ﻿using SPICA.PICA;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+using SPICA.Serialization.Serializer;
 
 using System;
 using System.IO;
@@ -11,6 +12,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
     {
         public H3DSubMeshSkinning Skinning;
         public byte Padding;
+
         public ushort BoneIndicesCount;
 
         [FixedLength(20), Inline]
@@ -133,7 +135,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
 
             long Position = Serializer.BaseStream.Position + 0x10;
 
-            Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
+            Serializer.RawDataVtx.Values.Add(new RefValue
             {
                 Value = Data,
                 Position = Position

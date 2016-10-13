@@ -1,4 +1,4 @@
-﻿namespace SPICA.Formats.H3D.Model.Material
+﻿namespace SPICA.Formats.H3D.Model.Material.Texture
 {
     enum H3DTextureMappingType : byte
     {

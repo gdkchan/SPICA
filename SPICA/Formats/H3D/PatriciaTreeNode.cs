@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D
 {
-    struct PatriciaTreeNode
+    class PatriciaTreeNode
     {
         public int ReferenceBit;
         public short LeftNodeIndex;

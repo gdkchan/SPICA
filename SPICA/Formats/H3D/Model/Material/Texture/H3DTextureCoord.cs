@@ -1,6 +1,6 @@
 ﻿using SPICA.Math3D;
 
-namespace SPICA.Formats.H3D.Model.Material
+namespace SPICA.Formats.H3D.Model.Material.Texture
 {
     class H3DTextureCoord
     {

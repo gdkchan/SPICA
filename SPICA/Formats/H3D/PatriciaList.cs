@@ -1,12 +1,9 @@
-﻿using SPICA.Serialization.Attributes;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections;
 
 namespace SPICA.Formats.H3D
 {
-    [Inline]
-    class PatriciaList<T> : IEnumerable<T>
+    struct PatriciaList<T> : IEnumerable<T>
     {
         public List<T> Contents;
         public PatriciaTree Tree;
@@ -15,12 +12,6 @@ namespace SPICA.Formats.H3D
         {
             get { return Contents[Index]; }
             set { Contents[Index] = value; }
-        }
-
-        public PatriciaList()
-        {
-            Contents = new List<T>();
-            Tree = new PatriciaTree();
         }
 
         public int Count

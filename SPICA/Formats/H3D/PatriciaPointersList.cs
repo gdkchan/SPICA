@@ -5,8 +5,7 @@ using System.Collections;
 
 namespace SPICA.Formats.H3D
 {
-    [Inline]
-    class PatriciaPointersList<T> : IEnumerable<T>
+    struct PatriciaPointersList<T> : IEnumerable<T>
     {
         [Pointers]
         public List<T> Contents;
@@ -16,12 +15,6 @@ namespace SPICA.Formats.H3D
         {
             get { return Contents[Index]; }
             set { Contents[Index] = value; }
-        }
-
-        public PatriciaPointersList()
-        {
-            Contents = new List<T>();
-            Tree = new PatriciaTree();
         }
 
         public int Count

@@ -9,6 +9,7 @@ using SPICA.Formats.H3D.Scene;
 using SPICA.Formats.H3D.Shader;
 using SPICA.Formats.H3D.Texture;
 using SPICA.Serialization;
+using SPICA.Serialization.Serializer;
 
 using System;
 using System.IO;
@@ -34,26 +35,43 @@ namespace SPICA.Formats.H3D
         public PatriciaPointersList<H3DScene> Scenes;
 
         [NonSerialized]
-        internal H3DHeader Header;
+        public ushort ConverterVersion;
+
+        [NonSerialized]
+        public byte BackwardCompatibility;
+
+        [NonSerialized]
+        public byte ForwardCompatibility;
+
+        [NonSerialized]
+        public H3DFlags Flags;
 
         public static H3D Open(string FileName)
         {
-            if (!File.Exists(FileName)) {
-                System.Windows.Forms.MessageBox.Show("File not found!");
-                return null;
-            }
-            using (MemoryStream MS = new MemoryStream(File.ReadAllBytes(FileName)))
+            if (File.Exists(FileName))
             {
-                BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
-                H3DHeader Header = Deserializer.Deserialize<H3DHeader>();
+                using (MemoryStream MS = new MemoryStream(File.ReadAllBytes(FileName)))
+                {
+                    BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
+                    H3DHeader Header = Deserializer.Deserialize<H3DHeader>();
 
-                new H3DRelocator(MS, Header).ToAbsolute();
+                    new H3DRelocator(MS, Header).ToAbsolute();
 
-                H3D Model = Deserializer.Deserialize<H3D>();
+                    H3D Model = Deserializer.Deserialize<H3D>();
 
-                Model.Header = Header;
+                    Model.ConverterVersion = Header.ConverterVersion;
 
-                return Model;
+                    Model.BackwardCompatibility = Header.BackwardCompatibility;
+                    Model.ForwardCompatibility = Header.ForwardCompatibility;
+
+                    Model.Flags = Header.Flags;
+
+                    return Model;
+                }
+            }
+            else
+            {
+                throw new FileNotFoundException(string.Format("The file \"{0}\" was not found!", FileName));
             }
         }
 
@@ -63,13 +81,20 @@ namespace SPICA.Formats.H3D
             {
                 FS.Seek(0x44, SeekOrigin.Begin);
 
-                H3DHeader Header = Model.Header;
+                H3DHeader Header = new H3DHeader();
 
                 H3DRelocator Relocator = new H3DRelocator(FS, Header);
 
                 BinarySerializer Serializer = new BinarySerializer(FS, Relocator);
 
                 Serializer.Serialize(Model);
+
+                Header.Magic = "BCH";
+
+                Header.ConverterVersion = Model.ConverterVersion;
+
+                Header.BackwardCompatibility = Model.BackwardCompatibility;
+                Header.ForwardCompatibility = Model.ForwardCompatibility;
 
                 Header.ContentsAddress = Serializer.Contents.Info.Position;
                 Header.StringsAddress = Serializer.Strings.Info.Position;
@@ -86,6 +111,11 @@ namespace SPICA.Formats.H3D
                 Header.RawDataLength += Serializer.RawDataVtx.Info.Length;
                 Header.RawExtLength += Serializer.RawExtVtx.Info.Length;
 
+                Header.UnInitDataLength = Serializer.PhysicalAddressCount * 4;
+                Header.AddressCount = (ushort)Serializer.PhysicalAddressCount;
+
+                Header.Flags = Model.Flags;
+
                 Relocator.ToRelative(Serializer);
 
                 FS.Seek(0, SeekOrigin.Begin);
@@ -99,7 +129,7 @@ namespace SPICA.Formats.H3D
         public bool Serialize(BinarySerializer Serializer)
         {
             //The original tool seems to this empty name for some reason
-            Serializer.Strings.Values.Add(new BinarySerializer.RefValue
+            Serializer.Strings.Values.Add(new RefValue
             {
                 Position = -1,
                 Value = string.Empty

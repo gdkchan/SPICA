@@ -24,10 +24,10 @@ namespace SPICA.Formats.H3D
         public int RawExtLength;
         public int RelocationLength;
 
-        public uint UnInitDataLength;
-        public uint UnInitCommandsLength;
+        public int UnInitDataLength;
+        public int UnInitCommandsLength;
 
-        public byte Flags;
+        public H3DFlags Flags;
         public byte Padding;
 
         public ushort AddressCount;

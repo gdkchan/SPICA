@@ -1,6 +1,7 @@
 ﻿using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
+using SPICA.Serialization.Serializer;
 
 using System;
 using System.IO;
@@ -129,7 +130,7 @@ namespace SPICA.Formats.H3D.Texture
         {
             long Position = Serializer.BaseStream.Position + 0x10;
 
-            Serializer.RawDataTex.Values.Add(new BinarySerializer.RefValue
+            Serializer.RawDataTex.Values.Add(new RefValue
             {
                 Value = RawBuffer,
                 Position = Position

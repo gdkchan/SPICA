@@ -1,11 +1,12 @@
 ﻿using SPICA.Serialization;
-
+using SPICA.Serialization.Serializer;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace SPICA.Formats.H3D
 {
-    class PatriciaTree : ICustomSerialization
+    struct PatriciaTree : ICustomSerialization
     {
         [NonSerialized]
         public List<PatriciaTreeNode> Nodes;
@@ -16,18 +17,29 @@ namespace SPICA.Formats.H3D
             set { Nodes[Index] = value; }
         }
 
-        public PatriciaTree()
+        public static PatriciaTree Empty
         {
-            Nodes = new List<PatriciaTreeNode>();
-            Nodes.Add(new PatriciaTreeNode());
+            get
+            {
+                PatriciaTree Tree = new PatriciaTree();
+
+                Tree.Nodes = new List<PatriciaTreeNode>();
+                Tree.Nodes.Add(new PatriciaTreeNode());
+
+                return Tree;
+            }
         }
 
         public void Deserialize(BinaryDeserializer Deserializer)
         {
+            long Posiiton = Deserializer.BaseStream.Position + 4;
+
+            Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
+
             int MaxIndex = 0;
             int Index = 0;
 
-            Nodes.Clear();
+            Nodes = new List<PatriciaTreeNode>();
 
             while (Index++ <= MaxIndex)
             {
@@ -38,14 +50,19 @@ namespace SPICA.Formats.H3D
 
                 Nodes.Add(Node);
             }
+
+            Deserializer.BaseStream.Seek(Posiiton, SeekOrigin.Begin);
         }
 
         public bool Serialize(BinarySerializer Serializer)
         {
-            foreach (PatriciaTreeNode Node in Nodes)
+            Serializer.Contents.Values.Add(new RefValue
             {
-                Serializer.WriteObject(Node);
-            }
+                Position = Serializer.BaseStream.Position,
+                Value = Nodes ?? Empty.Nodes
+            });
+
+            Serializer.Skip(4);
 
             return true;
         }

@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Fog\H3DFog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DBoundingBox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DMetaData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DMetaDataType.cs" />
@@ -26,19 +27,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBoneFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DModelFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DSkeletonScalingType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DFragLightFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DFragmentFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialShader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureCoord.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureCoordFlags.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureMagFilter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureMapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureMappingType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureMinFilter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureTransformType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTextureWrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureCoord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureCoordFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureMagFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureMappingType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureMinFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureTransformType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Mesh\H3DVertex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\PatriciaList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\PatriciaTree.cs" />
@@ -114,6 +115,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\CMDL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerializeCmd.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerialization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\RefValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\StringUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\BitUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils\IOUtils.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
-﻿using SPICA.Math3D;
+﻿using SPICA.Formats.H3D.Model.Material.Texture;
+using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
@@ -10,9 +11,11 @@ namespace SPICA.Formats.H3D.Model.Material
 {
     class H3DMaterialParams : ICustomSerialization
     {
-        public uint UId;
+        public uint UniqueId;
+
         public H3DMaterialFlags Flags;
-        public H3DFragLightFlags FragmentLightFlags;
+        public H3DFragmentFlags FragmentFlags;
+
         public byte FrameAccessOffset;
 
         public H3DMaterialShader MaterialShader;
@@ -26,14 +29,14 @@ namespace SPICA.Formats.H3D.Model.Material
         public RGBA EmissionColor;
         public RGBA AmbientColor;
         public RGBA DiffuseColor;
-        public RGBA Specular0;
-        public RGBA Specular1;
-        public RGBA Constant0;
-        public RGBA Constant1;
-        public RGBA Constant2;
-        public RGBA Constant3;
-        public RGBA Constant4;
-        public RGBA Constant5;
+        public RGBA Specular0Color;
+        public RGBA Specular1Color;
+        public RGBA Constant0Color;
+        public RGBA Constant1Color;
+        public RGBA Constant2Color;
+        public RGBA Constant3Color;
+        public RGBA Constant4Color;
+        public RGBA Constant5Color;
         public RGBA BlendColor;
 
         public float ColorScale;
