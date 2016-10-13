@@ -104,7 +104,9 @@ namespace SPICA.Formats.H3D
 
                 uint PointerAddress = ToRelative(Pointer, Source);
 
-                Writer.Write(ToRelative(TargetAddress, Target));
+                bool IsBaseAddr = RelocTypes.ContainsKey(Pointer) && RelocTypes[Pointer] == H3DRelocationType.BaseAddress;
+
+                Writer.Write(IsBaseAddr ? 0u : ToRelative(TargetAddress, Target));
 
                 if (RelocTypes.ContainsKey(Pointer)) Target = RelocTypes[Pointer];
 
