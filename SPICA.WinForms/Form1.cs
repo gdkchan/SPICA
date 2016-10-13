@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-
+using OpenTK.Input;
 using SPICA.Formats.H3D;
 using SPICA.Formats.H3D.Model.Mesh;
 using SPICA.WinForms.Rendering;
@@ -17,14 +17,14 @@ namespace SPICA.WinForms
 precision highp float;
 uniform mat4 projection_matrix;
 uniform mat4 modelview_matrix;
-in vec3 in_position;
-in vec3 in_normal;
+in vec3 in_1;
+in vec3 in_2;
 out vec3 normal;
 void main(void)
 {
-    gl_Position = projection_matrix * modelview_matrix * vec4(in_position, 1);
-  //works only for orthogonal modelview
-  normal = (modelview_matrix * vec4(in_normal, 0)).xyz;
+    gl_Position = projection_matrix * modelview_matrix * vec4(in_1, 1);
+    //works only for orthogonal modelview
+    normal = (modelview_matrix * vec4(in_2, 0)).xyz;
   
   
 }";
@@ -56,6 +56,10 @@ void main(void)
         int[] PositionHandles;
         int[] NormalHandles;
         int[] VAOHandles;
+        Vector3 position,
+                direction,
+                upVec;
+                
 
         H3D Model;
 
@@ -76,14 +80,10 @@ void main(void)
 
             CreateShaders();
 
-            H3D H3D = H3D.Open("D:\\may.bch");
+            H3D H3D = H3D.Open("C:\\dec_25.bch");
+            //CMDL.Export(H3D, "J:\\PokeMaki\\3ds\\bt0003_00_clone.cmdl", 0);
+            CTEX.Export(H3D, "J:\\PokeMaki\\3ds\\bt0003_00_tex.ctex", 2);
 
-            Debug.Write(H3D.Models[0].WorldTransform.ToString());
-            Debug.Write(H3D.Models.Tree[1].Name + '\n');
-            Debug.Write(H3D.Models[0].Name + '\n');
-
-            //H3D.Save("D:\\recreated.bch", H3D);
-            //H3D.Export(H3D, "d:\\may.cmdl");
 
             Mdl = new Mesh[H3D.Models[0].Meshes.Count];
 
@@ -138,7 +138,11 @@ void main(void)
 
             float aspectRatio = ClientSize.Width / (float)(ClientSize.Height);
             Matrix4.CreatePerspectiveFieldOfView((float)System.Math.PI / 4, aspectRatio, 1, 1000, out projectionMatrix);
-            modelviewMatrix = Matrix4.LookAt(new Vector3(0, 60, 180), new Vector3(0, 60, 0), new Vector3(0, 1, 0));
+
+            //Init view matrix
+            position = new Vector3(0, 10, -30);
+            direction = new Vector3(0, 0, 10);
+            upVec = new Vector3(0, 1, 0);
 
             GL.UniformMatrix4(projectionMatrixLocation, false, ref projectionMatrix);
             GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
@@ -146,12 +150,29 @@ void main(void)
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Matrix4 rotation = Matrix4.CreateRotationY((float)e.Time);
-            Matrix4.Mult(ref rotation, ref modelviewMatrix, out modelviewMatrix);
+            modelviewMatrix = Matrix4.LookAt(
+                        position,
+                        position + direction,
+                        upVec
+                        );
             GL.UniformMatrix4(modelviewMatrixLocation, false, ref modelviewMatrix);
 
-            if (Keyboard[OpenTK.Input.Key.Escape])
+            if (Keyboard[Key.Escape])
                 Exit();
+
+            //Camera movement
+            if (Keyboard[Key.W])
+                position.Z++;
+            else if (Keyboard[Key.S])
+                position.Z--;
+            if (Keyboard[Key.A])
+                position.X++;
+            else if (Keyboard[Key.D])
+                position.X--;
+            if (Keyboard[Key.Q])
+                position.Y++;
+            else if (Keyboard[Key.E])
+                position.Y--;
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

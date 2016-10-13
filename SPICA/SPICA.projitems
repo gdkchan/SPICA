@@ -60,6 +60,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Scene\H3DScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Shader\H3DShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Texture\H3DTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CMDL.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\RGBA.cs" />
@@ -112,7 +114,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\RangeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryDeserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinarySerializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\CMDL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerializeCmd.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerialization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\RefValue.cs" />

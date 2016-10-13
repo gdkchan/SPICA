@@ -1,4 +1,3 @@
-using SPICA.Formats.H3D;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +12,7 @@ using SPICA.PICA.Commands;
 using System.Globalization;
 using SPICA.Math3D;
 
-namespace SPICA.Serialization
+namespace SPICA.Formats.H3D
 {
     public class CMDL
     {
@@ -25,10 +24,10 @@ namespace SPICA.Serialization
 
         public class ctrGraphicsContent {
             [XmlAttribute]
-            public string Version = "1.3.0";
+            public string Version;
 
             [XmlAttribute]
-            public string Namespace = "";
+            public string Namespace;
 
             public ctrEditData EditData = new ctrEditData();
             public ctrModels Models = new ctrModels();
@@ -995,9 +994,11 @@ namespace SPICA.Serialization
         /// <param name="model">The Model that will be exported</param>
         /// <param name="fileName">The output File Name</param>
         /// <param name="skeletalAnimationIndex">(Optional) Index of the skeletal animation.</param>
-        public static void export(object model, string fileName, int index, int skeletalAnimationIndex = -1) {
+        public static void Export(object bch, string fileName, int index, int skeletalAnimationIndex = -1) {
             CtrModel ctrMdl = new CtrModel();
-            H3DModel mdl = ((H3D)model).Models[index];
+            H3DModel mdl = ((H3D)bch).Models[index];
+            ctrMdl.GraphicsContentCtr.Version = "1.3.0";
+            ctrMdl.GraphicsContentCtr.Namespace = "";
 
             //EditData
             ctrEditData edit = ctrMdl.GraphicsContentCtr.EditData;
@@ -1005,7 +1006,7 @@ namespace SPICA.Serialization
             edit.MetaData.Key = "MetaData";
             edit.MetaData.Create.Author = Environment.UserName;
             edit.MetaData.Create.Source = "";
-            edit.MetaData.Create.FullPathOfSource = "";
+            edit.MetaData.Create.FullPathOfSource = fileName;
             edit.MetaData.Create.Date = DateTime.Now.ToString("yyyy-MM-ddThh:mm:ss");
             edit.MetaData.Create.ToolDescription.Name = "SPICA";
             edit.MetaData.Create.ToolDescription.Version = "1.0";
