@@ -15,7 +15,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D
 {
-    class H3D
+    class H3D : ICustomSerialization
     {
         public PatriciaPointersList<H3DModel> Models;
         public PatriciaPointersList<H3DMaterialParams> Materials;
@@ -93,7 +93,21 @@ namespace SPICA.Formats.H3D
                 Serializer.WriteObject(Header);
             }
         }
-        
+
+        public void Deserialize(BinaryDeserializer Deserializer) { }
+
+        public bool Serialize(BinarySerializer Serializer)
+        {
+            //The original tool seems to this empty name for some reason
+            Serializer.Strings.Values.Add(new BinarySerializer.RefValue
+            {
+                Position = -1,
+                Value = string.Empty
+            });
+
+            return false;
+        }
+
         public static void Export(H3D Data, string FileName) {
             CMDL.export(Data, FileName, 0);
         }

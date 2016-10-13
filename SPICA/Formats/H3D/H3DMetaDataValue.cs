@@ -85,6 +85,7 @@ namespace SPICA.Formats.H3D
 
         public bool Serialize(BinarySerializer Serializer)
         {
+            //FIXME: Strings will not serialize properly
             Serializer.Strings.Values.Add(new BinarySerializer.RefValue
             {
                 Value = Name,

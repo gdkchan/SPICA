@@ -1600,15 +1600,15 @@ namespace SPICA.Serialization
                 fragShade.FragmentBump.BumpTextureIndex = "Texture" + mt.MaterialParams.BumpTexture;
                 fragShade.FragmentBump.BumpMode = bumpMode;
 
-                H3DFragmentLightingFlags lightFlags = mt.MaterialParams.FragmentLightingFlags;
-                fragShade.FragmentBump.IsBumpRenormalize = (lightFlags & H3DFragmentLightingFlags.IsBumpRenormalizeEnabled) > 0;
+                H3DFragLightFlags lightFlags = mt.MaterialParams.FragmentLightFlags;
+                fragShade.FragmentBump.IsBumpRenormalize = (lightFlags & H3DFragLightFlags.IsBumpRenormalizeEnabled) > 0;
                 fragShade.FragmentLighting.FresnelConfig = fresnelConf;
-                fragShade.FragmentLighting.IsClampHighLight = (lightFlags & H3DFragmentLightingFlags.IsClampHighLightEnabled) > 0;
-                fragShade.FragmentLighting.IsDistribution0Enabled = (lightFlags & H3DFragmentLightingFlags.IsLUTDist0Enabled) > 0;
-                fragShade.FragmentLighting.IsDistribution1Enabled = (lightFlags & H3DFragmentLightingFlags.IsLUTDist1Enabled) > 0;
-                fragShade.FragmentLighting.IsGeometricFactor0Enabled = (lightFlags & H3DFragmentLightingFlags.IsLUTGeoFactor0Enabled) > 0;
-                fragShade.FragmentLighting.IsGeometricFactor1Enabled = (lightFlags & H3DFragmentLightingFlags.IsLUTGeoFactor1Enabled) > 0;
-                fragShade.FragmentLighting.IsReflectionEnabled = (lightFlags & H3DFragmentLightingFlags.IsLUTReflectionEnabled) > 0;
+                fragShade.FragmentLighting.IsClampHighLight = (lightFlags & H3DFragLightFlags.IsClampHighLightEnabled) > 0;
+                fragShade.FragmentLighting.IsDistribution0Enabled = (lightFlags & H3DFragLightFlags.IsLUTDist0Enabled) > 0;
+                fragShade.FragmentLighting.IsDistribution1Enabled = (lightFlags & H3DFragLightFlags.IsLUTDist1Enabled) > 0;
+                fragShade.FragmentLighting.IsGeometricFactor0Enabled = (lightFlags & H3DFragLightFlags.IsLUTGeoFactor0Enabled) > 0;
+                fragShade.FragmentLighting.IsGeometricFactor1Enabled = (lightFlags & H3DFragLightFlags.IsLUTGeoFactor1Enabled) > 0;
+                fragShade.FragmentLighting.IsReflectionEnabled = (lightFlags & H3DFragLightFlags.IsLUTReflectionEnabled) > 0;
 
                 fragShade.FragmentLightingTable.ReflectanceRSampler.IsAbs = true;   //TODO: Fill all this out with real data
                 fragShade.FragmentLightingTable.ReflectanceRSampler.Input = "CosNormalHalf";

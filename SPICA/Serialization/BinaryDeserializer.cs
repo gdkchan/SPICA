@@ -15,7 +15,19 @@ namespace SPICA.Serialization
 
         public BinaryReader Reader;
 
-        Dictionary<long, object> ObjPointers;
+        private struct ObjectInfo
+        {
+            public long Position;
+            public Type ObjectType;
+        }
+
+        private class ObjectRef
+        {
+            public object Value;
+            public int Length;
+        }
+
+        private Dictionary<ObjectInfo, ObjectRef> ObjPointers;
 
         private long BufferedPos = 0;
         private uint BufferedUInt = 0;
@@ -27,7 +39,7 @@ namespace SPICA.Serialization
 
             Reader = new BinaryReader(BaseStream);
 
-            ObjPointers = new Dictionary<long, object>();
+            ObjPointers = new Dictionary<ObjectInfo, ObjectRef>();
         }
 
         public T Deserialize<T>()
@@ -113,7 +125,7 @@ namespace SPICA.Serialization
                 }
 
                 long Address = BaseStream.Position;
-                object Value = GetObj(Type, Address, ReadValue(Type));
+                object Value = ReadValue(Type);
 
                 if (List.IsFixedSize)
                 {
@@ -148,39 +160,63 @@ namespace SPICA.Serialization
         private object ReadObject(Type ObjectType)
         {
             object Value = Activator.CreateInstance(ObjectType);
+            object OldVal = Value;
 
-            foreach (FieldInfo Info in Value.GetType().GetFields())
+            ObjectInfo OInfo = new ObjectInfo
             {
-                if (!Info.IsDefined(typeof(NonSerializedAttribute)))
+                Position = BaseStream.Position,
+                ObjectType = ObjectType
+            };
+
+            if (ObjPointers.ContainsKey(OInfo) && ObjectType.IsClass)
+            {
+                Value = ObjPointers[OInfo].Value;
+
+                BaseStream.Seek(ObjPointers[OInfo].Length, SeekOrigin.Current);
+            }
+            else
+            {
+                ObjectRef ORef = new ObjectRef { Value = Value };
+
+                ObjPointers.Add(OInfo, ORef);
+
+                long Position = BaseStream.Position;
+
+                foreach (FieldInfo Info in Value.GetType().GetFields())
                 {
-                    Type Type = Info.FieldType;
-
-                    bool Inline;
-
-                    Inline = Info.IsDefined(typeof(InlineAttribute));
-                    Inline |= Type.IsDefined(typeof(InlineAttribute));
-
-                    if (Type.IsValueType || Type.IsEnum || Inline)
+                    if (!Info.IsDefined(typeof(NonSerializedAttribute)))
                     {
-                        int Length = 0;
+                        Type Type = Info.FieldType;
 
-                        if (Info.IsDefined(typeof(FixedLengthAttribute)))
+                        bool Inline;
+
+                        Inline = Info.IsDefined(typeof(InlineAttribute));
+                        Inline |= Type.IsDefined(typeof(InlineAttribute));
+
+                        if (Type.IsValueType || Type.IsEnum || Inline)
                         {
-                            Length = Info.GetCustomAttribute<FixedLengthAttribute>().Length;
-                        }
+                            int LLen = 0;
 
-                        Info.SetValue(Value, ReadValue(Type, Info, Length));
-                    }
-                    else
-                    {
-                        Info.SetValue(Value, ReadReference(Info));
+                            if (Info.IsDefined(typeof(FixedLengthAttribute)))
+                            {
+                                LLen = Info.GetCustomAttribute<FixedLengthAttribute>().Length;
+                            }
+
+                            Info.SetValue(Value, ReadValue(Type, Info, LLen));
+                        }
+                        else
+                        {
+                            Info.SetValue(Value, ReadReference(Info));
+                        }
                     }
                 }
-            }
 
-            if (Value is ICustomSerialization)
-            {
-                ((ICustomSerialization)Value).Deserialize(this);
+                if (Value is ICustomSerialization)
+                {
+                    ((ICustomSerialization)Value).Deserialize(this);
+                }
+
+                ORef.Length = (int)(BaseStream.Position - Position);
             }
 
             return Value;
@@ -199,6 +235,8 @@ namespace SPICA.Serialization
             {
                 Length = Reader.ReadInt32();
             }
+
+            if (Info.IsDefined(typeof(RepeatPointerAttribute))) Reader.ReadUInt32();
             
             object Value = null;
 
@@ -210,25 +248,7 @@ namespace SPICA.Serialization
 
                 Value = ReadValue(Info.FieldType, Info, Length);
 
-                if (Length == 0) Value = GetObj(Info.FieldType, Address, Value);
-
                 BaseStream.Seek(Position, SeekOrigin.Begin);
-            }
-
-            return Value;
-        }
-
-        private object GetObj(Type Type, long Address, object Value)
-        {
-            //Note: Several Bool values may share the same Address (since they use only 1 bit)
-            //So we can't use the Address as Key reliably for Bools
-            if (ObjPointers.ContainsKey(Address))
-            {
-                Value = ObjPointers[Address];
-            }
-            else if (Type != typeof(bool))
-            {
-                ObjPointers.Add(Address, Value);
             }
 
             return Value;

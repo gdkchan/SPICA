@@ -110,6 +110,10 @@ namespace SPICA.Formats.H3D
 
                 uint Flags;
 
+                uint Old = PointerAddress;
+
+                
+
                 Flags = (uint)Target;
                 Flags |= (uint)Source << 4;
 
@@ -118,6 +122,8 @@ namespace SPICA.Formats.H3D
                 BaseStream.Seek(Position, SeekOrigin.Begin);
 
                 Writer.Write(PointerAddress | (Flags << 25));
+
+                //System.Diagnostics.Debug.WriteLine(Old.ToString("X8") + " - " + (PointerAddress | (Flags << 25)).ToString("X8"));
             }
 
             Header.RelocationLength = (int)(BaseStream.Position - Header.RelocationAddress);

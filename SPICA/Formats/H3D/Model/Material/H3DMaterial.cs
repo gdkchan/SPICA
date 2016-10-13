@@ -1,8 +1,9 @@
-﻿using SPICA.Serialization.Attributes;
+﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.H3D.Model.Material
 {
-    class H3DMaterial
+    class H3DMaterial : ICustomSerialization
     {
         public H3DMaterialParams MaterialParams;
 
@@ -18,5 +19,19 @@ namespace SPICA.Formats.H3D.Model.Material
         public string Texture1Name;
         public string Texture2Name;
         public string Name;
+
+        public void Deserialize(BinaryDeserializer Deserializer) { }
+
+        public bool Serialize(BinarySerializer Serializer)
+        {
+            //The original tool seems to add those (usually unused) names with the silhouette suffix
+            Serializer.Strings.Values.Add(new BinarySerializer.RefValue
+            {
+                Position = -1,
+                Value = Name + "-silhouette"
+            });
+
+            return false;
+        }
     }
 }

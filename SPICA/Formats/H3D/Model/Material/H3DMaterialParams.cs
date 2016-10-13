@@ -12,7 +12,7 @@ namespace SPICA.Formats.H3D.Model.Material
     {
         public uint UId;
         public H3DMaterialFlags Flags;
-        public H3DFragmentLightingFlags FragmentLightingFlags;
+        public H3DFragLightFlags FragmentLightFlags;
         public byte FrameAccessOffset;
 
         public H3DMaterialShader MaterialShader;
@@ -57,8 +57,8 @@ namespace SPICA.Formats.H3D.Model.Material
 
         public float PolygonOffsetUnit;
 
+        [RepeatPointer]
         public uint[] FragmentShaderCommands;
-        public uint FragmentShaderCommandsSource;
 
         public string LUTDist0TableName;
         public string LUTDist1TableName;

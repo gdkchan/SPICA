@@ -16,18 +16,17 @@ namespace SPICA.Serialization
         public H3DRelocator Relocator;
 
         public BinaryWriter Writer;
-        
 
         public delegate void OnSerialize(BinarySerializer Serializer, object Value);
 
         public struct RefValue
         {
             public OnSerialize Serialize;
-
             public FieldInfo Info;
             public object Value;
             public long Position;
             public bool HasLength;
+            public bool HasTwoPtr;
         }
 
         public struct ObjectInfo
@@ -100,6 +99,9 @@ namespace SPICA.Serialization
 
             Contents.Info.SetEnd(BaseStream.Position);
 
+            Strings.Values.RemoveAll(x => x.Value == null);
+            Strings.Values.Sort(CompareString);
+
             WriteSection(Strings, 0x10);
             WriteSection(Commands, 0x80);
 
@@ -107,6 +109,33 @@ namespace SPICA.Serialization
             WriteSection(RawDataVtx, 0x80);
             WriteSection(RawExtTex, 0x80);
             WriteSection(RawExtVtx, 0x80);
+        }
+
+        private static int CompareString(RefValue x, RefValue y)
+        {
+            string LHS = (string)x.Value;
+            string RHS = (string)y.Value;
+
+            for (int Index = 0; Index < Math.Min(LHS.Length, RHS.Length); Index++)
+            {
+                byte L = (byte)LHS[Index];
+                byte R = (byte)RHS[Index];
+
+                if (L != R) return L < R ? -1 : 1;
+            }
+
+            if (LHS.Length == RHS.Length)
+            {
+                return 0;
+            }
+            else if (LHS.Length < RHS.Length)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         private void WriteSection(Section Section, int Align)
@@ -166,8 +195,13 @@ namespace SPICA.Serialization
                 WriteObject(Value, IsElem);
             }
 
-            //Add a reference to this Object and its position to avoid writing it more than once
-            if (!(ObjPointers.ContainsKey(Value) || Type.IsPrimitive || Type.IsEnum))
+            //Avoid writing the same Object more than once
+            if (!(Type.IsPrimitive || Type.IsEnum)) AddObjPointer(Value, Position);
+        }
+
+        private void AddObjPointer(object Value, long Position)
+        {
+            if (!ObjPointers.ContainsKey(Value))
             {
                 ObjPointers.Add(Value, new ObjectInfo
                 {
@@ -223,27 +257,36 @@ namespace SPICA.Serialization
 
                 Reference.Serialize?.Invoke(this, Value);
 
-                Pointers.Add(Reference.Position);
-                BaseStream.Seek(Reference.Position, SeekOrigin.Begin);
-                
-                Writer.Write(OInfo.Position);
-                
-                if (Reference.HasLength && !Range)
+                if (Reference.Position != -1)
                 {
-                    Writer.Write(((IList)Value).Count);
+                    BaseStream.Seek(Reference.Position, SeekOrigin.Begin);
+
+                    Pointers.Add(BaseStream.Position);
+                    Writer.Write(OInfo.Position);
+
+                    if (Reference.HasLength && !Range) Writer.Write(((IList)Value).Count);
+                    if (Reference.HasTwoPtr)
+                    {
+                        Pointers.Add(BaseStream.Position);
+                        Writer.Write(OInfo.Position);
+                    }
+
+                    BaseStream.Seek(Position, SeekOrigin.Begin);
                 }
 
-                BaseStream.Seek(Position, SeekOrigin.Begin);
-
-                if (OInfo.Position == Position) WriteValue(Value, Info);
+                if (OInfo.Position == Position)
+                {
+                    AddObjPointer(Value, Position);
+                    WriteValue(Value, Info);
+                }
 
                 if (Range)
                 {
                     Position = BaseStream.Position;
 
-                    Pointers.Add(Reference.Position + 4);
                     BaseStream.Seek(Reference.Position + 4, SeekOrigin.Begin);
 
+                    Pointers.Add(BaseStream.Position);
                     Writer.Write((uint)(OInfo.Length != 0 ? OInfo.Length : Position));
 
                     BaseStream.Seek(Position, SeekOrigin.Begin);
@@ -323,13 +366,15 @@ namespace SPICA.Serialization
                     {
                         bool IsList = typeof(IList).IsAssignableFrom(Type);
                         bool HasLength = !Info.IsDefined(typeof(FixedLengthAttribute)) && IsList;
+                        bool HasTwoPtr = Info.IsDefined(typeof(RepeatPointerAttribute));
 
                         RefValue Ref = new RefValue
                         {
                             Info = Info,
                             Value = Info.GetValue(Value),
                             Position = BaseStream.Position,
-                            HasLength = HasLength
+                            HasLength = HasLength,
+                            HasTwoPtr = HasTwoPtr
                         };
 
                         if (Value is ICustomSerializeCmd && Type == typeof(uint[]))
@@ -350,7 +395,7 @@ namespace SPICA.Serialization
                             Contents.Values.Add(Ref);
                         }
 
-                        Skip(HasLength ? 8 : 4);
+                        Skip((HasLength ? 8 : 4) + (HasTwoPtr ? 4 : 0));
                     }
                 }
             }

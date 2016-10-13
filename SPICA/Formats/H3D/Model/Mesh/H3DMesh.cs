@@ -38,7 +38,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
 
         public Vector3D MeshCenter;
 
-        public uint ParentAddress;
+        public H3DModel Parent;
 
         public uint UserDefinedAddress;
 
