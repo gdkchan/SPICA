@@ -2,9 +2,9 @@
 {
     enum PICAAttributeFormat
     {
-        SignedByte,
-        UnsignedByte,
-        SignedShort,
-        Single
+        Byte,
+        Ubyte,
+        Short,
+        Float
     }
 }

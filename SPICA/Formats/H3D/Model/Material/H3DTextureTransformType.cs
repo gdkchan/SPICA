@@ -2,8 +2,8 @@
 {
     enum H3DTextureTransformType : byte
     {
-        Maya,
-        SoftImage,
+        DccMaya,
+        DccSoftImage,
         Dcc3dsMax
     }
 }

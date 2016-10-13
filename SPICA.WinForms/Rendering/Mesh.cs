@@ -37,10 +37,10 @@ namespace SPICA.WinForms.Rendering
 
                 switch (Attrib.Format)
                 {
-                    case PICAAttributeFormat.SignedByte: Type = VertexAttribPointerType.Byte; break;
-                    case PICAAttributeFormat.UnsignedByte: Type = VertexAttribPointerType.UnsignedByte; break;
-                    case PICAAttributeFormat.SignedShort: Type = VertexAttribPointerType.Short; Size <<= 1; break;
-                    case PICAAttributeFormat.Single: Type = VertexAttribPointerType.Float; Size <<= 2; break;
+                    case PICAAttributeFormat.Byte: Type = VertexAttribPointerType.Byte; break;
+                    case PICAAttributeFormat.Ubyte: Type = VertexAttribPointerType.UnsignedByte; break;
+                    case PICAAttributeFormat.Short: Type = VertexAttribPointerType.Short; Size <<= 1; break;
+                    case PICAAttributeFormat.Float: Type = VertexAttribPointerType.Float; Size <<= 2; break;
                 }
 
                 GL.EnableVertexAttribArray(Index);

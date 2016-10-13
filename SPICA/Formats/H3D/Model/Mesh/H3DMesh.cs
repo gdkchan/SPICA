@@ -192,10 +192,10 @@ namespace SPICA.Formats.H3D.Model.Mesh
                         {
                             switch (Attrib.Format)
                             {
-                                case PICAAttributeFormat.SignedByte: V[Elem] = Reader.ReadSByte(); break;
-                                case PICAAttributeFormat.UnsignedByte: V[Elem] = Reader.ReadByte(); break;
-                                case PICAAttributeFormat.SignedShort: V[Elem] = Reader.ReadInt16(); break;
-                                case PICAAttributeFormat.Single: V[Elem] = Reader.ReadSingle(); break;
+                                case PICAAttributeFormat.Byte: V[Elem] = Reader.ReadSByte(); break;
+                                case PICAAttributeFormat.Ubyte: V[Elem] = Reader.ReadByte(); break;
+                                case PICAAttributeFormat.Short: V[Elem] = Reader.ReadInt16(); break;
+                                case PICAAttributeFormat.Float: V[Elem] = Reader.ReadSingle(); break;
                             }
                         }
 

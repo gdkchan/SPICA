@@ -8,9 +8,9 @@
         AddSigned,
         Interpolate,
         Subtract,
-        Dot3RGB,
-        Dot3RGBA,
-        MultiplyAdd,
-        AddMultiply
+        DotProduct3Rgb,
+        DotProduct3Rgba,
+        MultAdd,
+        AddMult
     }
 }

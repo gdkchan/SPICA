@@ -11,6 +11,7 @@ using SPICA.Formats.H3D.Model.Material;
 using SPICA.Formats.H3D.Model.Mesh;
 using SPICA.PICA.Commands;
 using System.Globalization;
+using SPICA.Math3D;
 
 namespace SPICA.Serialization
 {
@@ -444,8 +445,7 @@ namespace SPICA.Serialization
             [XmlArrayItem("PrimitiveSetCtr")]
             public List<ctrPrimSet> PrimitiveSets = new List<ctrPrimSet>();
 
-            [XmlArrayItem("Vector3VertexStreamCtr")]
-            public List<ctrVertAttrib> VertexAttributes = new List<ctrVertAttrib>();
+            public ctrVertAttrib VertexAttributes = new ctrVertAttrib();
         }
 
         public class ctrOBB {
@@ -552,6 +552,17 @@ namespace SPICA.Serialization
         }
 
         public class ctrVertAttrib {
+            [XmlElement("Vector3VertexStreamCtr")]
+            public List<ctrVertStream> Vec3Attributes;
+
+            [XmlElement("Vector2VertexStreamCtr")]
+            public List<ctrVertStream> Vec2Attributes;
+
+            [XmlElement("Vector4VertexStreamCtr")]
+            public List<ctrVertStream> Vec4Attributes;
+        }
+
+        public class ctrVertStream {
             [XmlAttribute]
             public string Usage;
 
@@ -565,7 +576,7 @@ namespace SPICA.Serialization
             public string QuantizedMode;
 
             [XmlText]
-            public string Vec3Array;
+            public string VecArray;
         }
         #endregion
 
@@ -1077,6 +1088,7 @@ namespace SPICA.Serialization
 
             //Model data
             ctrSkeletalModel skelModel = ctrMdl.GraphicsContentCtr.Models.SkeletalModel;
+            addMetaData(ref skelModel.UserData, mdl.MetaData);
             skelModel.EditData = new ctrEditData();
             skelModel.EditData.ModelDccToolExportOption = new ctrModelDccToolExportOpt();
             skelModel.EditData.OptimizationLogArrayMetaData = new ctrOptLogArrayMeta();
@@ -1274,7 +1286,9 @@ namespace SPICA.Serialization
             ctrOBB obb;
             ctrPrimSet primSet = null;
             ctrPrim prim;
-            ctrVertAttrib vertAtt;
+            ctrVertAttrib vertAtt = null;
+            List<ctrVertStream> streams = null;
+            ctrVertStream vertStream = null;
             StringBuilder sb;
             ctrIndexStream indStream;
             foreach (var sh in mdl.Meshes) {
@@ -1309,6 +1323,7 @@ namespace SPICA.Serialization
                 shape.PositionOffset.X = sh.PositionOffset.X;
                 shape.PositionOffset.Y = sh.PositionOffset.Y;
                 shape.PositionOffset.Z = sh.PositionOffset.Z;
+
                 //Create each PrimitiveSetCtr from submeshes
                 foreach (var sub in sh.SubMeshes) {
                     string skinMode = "";
@@ -1348,91 +1363,49 @@ namespace SPICA.Serialization
                     primSet.Primitives.Add(prim);
                     shape.PrimitiveSets.Add(primSet);
                 }
+                //Create each vertex attribute
+                shape.VertexAttributes.Vec2Attributes = new List<ctrVertStream>();
+                shape.VertexAttributes.Vec3Attributes = new List<ctrVertStream>();
+                shape.VertexAttributes.Vec4Attributes = new List<ctrVertStream>();
                 foreach (var att in sh.Attributes) {
-                    string quantized = "";
-                    switch (att.Format) {
-                        case PICAAttributeFormat.SignedByte:
-                            quantized = "Byte";
-                            break;
-                        case PICAAttributeFormat.SignedShort:
-                            quantized = "Short";
-                            break;
-                        case PICAAttributeFormat.Single:
-                            quantized = "Float";
-                            break;
-                        case PICAAttributeFormat.UnsignedByte:
-                            quantized = "Ubyte";
-                            break;
+                    vertStream = new ctrVertStream(); //stream
+                    vertStream.Usage = att.Name.ToString();
+                    vertStream.VertexSize = sh.GetVertices().Count();
+                    vertStream.Scale = att.Scale;
+                    vertStream.QuantizedMode = att.Format.ToString();
+                    switch (att.Name) {
+                        case PICAAttributeName.Position: 
+                            {
+                                vertStream.VecArray = genVec3Array(sh.GetVertices(), att.Format, att.Name);
+                                shape.VertexAttributes.Vec3Attributes.Add(vertStream);
+                                break;
+                            }
+                        case PICAAttributeName.Normal: 
+                            {
+                                vertStream.VecArray = genVec3Array(sh.GetVertices(), att.Format, att.Name);
+                                shape.VertexAttributes.Vec3Attributes.Add(vertStream);
+                                break;
+                            }
+                        case PICAAttributeName.TextureCoordinate0: 
+                            {
+                                vertStream.VecArray = genVec2Array(sh.GetVertices(), att.Format, att.Name);
+                                shape.VertexAttributes.Vec2Attributes.Add(vertStream);
+                                break;
+                            }
+                        case PICAAttributeName.BoneIndex: 
+                            {
+                                vertStream.VecArray = genBoneIndex(sh.GetVertices());
+                                shape.VertexAttributes.Vec4Attributes.Add(vertStream);
+                                break;
+                            }
+                        case PICAAttributeName.BoneWeight:
+                            {
+                                vertStream.VecArray = genBoneWeights(sh.GetVertices());
+                                shape.VertexAttributes.Vec4Attributes.Add(vertStream);
+                                break;
+                            }
                     }
-                    vertAtt = new ctrVertAttrib();
-                    vertAtt.Usage = att.Name.ToString();
-                    vertAtt.VertexSize = verts;
-                    vertAtt.Scale = att.Scale;
-                    vertAtt.QuantizedMode = quantized;
-                    sb = new StringBuilder("\n");
-                    foreach (var vec in sh.GetVertices()) {
-                        switch (att.Name) {
-                            case PICAAttributeName.Position:
-                                sb.Append(
-                                    vec.Position.X.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Position.Y.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Position.Z.ToString(CultureInfo.InvariantCulture) + "\n"
-                                    );
-                                break;
-                            case PICAAttributeName.Normal:
-                                sb.Append(
-                                    vec.Normal.X.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Normal.Y.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Normal.Z.ToString(CultureInfo.InvariantCulture) + "\n"
-                                    );
-                                break;
-                            case PICAAttributeName.BoneIndex:
-                                sb.Append(string.Join(" ", vec.Indices) + "\n");
-                                break;
-                            case PICAAttributeName.BoneWeight: 
-                                {
-                                    for (int w = 0; w < 4; w++) {
-                                        sb.Append(vec.Weights[w].ToString(CultureInfo.InvariantCulture) + (w < 3 ? " " : "\n"));
-                                    }
-                                    break;
-                                }
-                            case PICAAttributeName.Color:
-                                sb.Append(
-                                    vec.Color.R.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Color.G.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Color.B.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Color.A.ToString(CultureInfo.InvariantCulture) + "\n"
-                                    );
-                                break;
-                            case PICAAttributeName.Tangent:
-                                sb.Append(
-                                    vec.Tangent.X.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Tangent.Y.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.Tangent.Z.ToString(CultureInfo.InvariantCulture) + "\n"
-                                    );
-                                break;
-                            case PICAAttributeName.TextureCoordinate0:
-                                sb.Append(
-                                    vec.TextureCoord0.X.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.TextureCoord0.Y.ToString(CultureInfo.InvariantCulture) + "\n"
-                                    );
-                                break;
-                            case PICAAttributeName.TextureCoordinate1:
-                                sb.Append(
-                                    vec.TextureCoord1.X.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.TextureCoord1.Y.ToString(CultureInfo.InvariantCulture) + "\n"
-                                    );
-                                break;
-                            case PICAAttributeName.TextureCoordinate2:
-                                sb.Append(
-                                    vec.TextureCoord2.X.ToString(CultureInfo.InvariantCulture) + " " +
-                                    vec.TextureCoord2.Y.ToString(CultureInfo.InvariantCulture) + "\n"
-                                    );
-                                break;
-                        }
-                    }
-                    vertAtt.Vec3Array = sb.ToString();
-                    shape.VertexAttributes.Add(vertAtt);
+                    
                 }
                 shapes.Add(shape);
             }
@@ -1658,9 +1631,9 @@ namespace SPICA.Serialization
                     texComb.OperandAlpha.Operand2 = comb.Operand.AlphaOp[2].ToString();
                     fragShade.TextureCombiners.Add(texComb);
                 }
-
+                
                 fragShade.AlphaTest.IsTestEnabled = mt.MaterialParams.FragmentAlphaTest.Enabled;
-                fragShade.AlphaTest.TestFunction = mt.MaterialParams.FragmentAlphaTest.Function.ToString();
+                fragShade.AlphaTest.TestFunction = getTestFunc(mt.MaterialParams.FragmentAlphaTest.Function);
                 fragShade.AlphaTest.TestReference = mt.MaterialParams.FragmentAlphaTest.Reference;
 
                 mat.FragmentShader = fragShade;
@@ -1687,7 +1660,7 @@ namespace SPICA.Serialization
                 fragOp.BlendOperation.BlendColor.A = mt.MaterialParams.BlendColor.A;
 
                 fragOp.StencilOperation.IsTestEnabled = mt.MaterialParams.StencilTest.Enabled;
-                fragOp.StencilOperation.TestFunction = mt.MaterialParams.StencilTest.Function.ToString();
+                fragOp.StencilOperation.TestFunction = getTestFunc(mt.MaterialParams.StencilTest.Function);
                 fragOp.StencilOperation.TestReference = mt.MaterialParams.StencilTest.Reference;
                 fragOp.StencilOperation.TestMask = mt.MaterialParams.StencilTest.Mask;
                 fragOp.StencilOperation.FailOperation = mt.MaterialParams.StencilOperation.FailOp.ToString();
@@ -1709,7 +1682,7 @@ namespace SPICA.Serialization
                 mesh.RenderPriority = mdl.Meshes[i].Key;
                 mesh.MeshNodeName = mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId+1].Name;
                 mesh.SeparateShapeReference = "Shapes[" + i + "]";
-                mesh.MaterialReference = "Materials[\"" + mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId+1].Name + "\"]";
+                mesh.MaterialReference = "Materials[\"" + mdl.Materials.Tree[mdl.Meshes[i].NodeId].Name + "\"]";
                 addDccToolMeta(ref mesh.EditData, mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId + 1].Name);
                 meshes.Add(mesh);
             }
@@ -1774,6 +1747,130 @@ namespace SPICA.Serialization
             output.Close();
         }
 
+        private static string genBoneIndex(H3DVertex[] verts) {
+            StringBuilder sb = new StringBuilder("\n");
+            foreach (var v in verts) {
+                sb.Append(string.Join(" ", v.Indices) + "\n");
+            }
+            return sb.ToString();
+        }
+
+        private static string genBoneWeights(H3DVertex[] verts) {
+            StringBuilder sb = new StringBuilder("\n");
+            foreach (var v in verts) {
+                for (int w = 0; w < 4; w++)
+                    sb.Append(string.Join(" ", Convert.ToByte(v.Weights[w]).ToString(CultureInfo.InvariantCulture) + (w < 3 ? " " : "\n")));
+            }
+            return sb.ToString();
+        }
+
+        private static string genVec2Array(H3DVertex[] verts, PICAAttributeFormat format, PICAAttributeName name) {
+            StringBuilder sb = new StringBuilder("\n");
+            Vector2D vector = new Vector2D();
+            foreach (var vec in verts) {
+                switch (name) {
+                    case PICAAttributeName.TextureCoordinate0:
+                        vector = vec.TextureCoord0;
+                        break;
+                }
+                switch (format) {
+                    case PICAAttributeFormat.Byte:
+                        sb.Append(
+                        ((sbyte)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((sbyte)vector.Y).ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                    case PICAAttributeFormat.Ubyte:
+                        sb.Append(
+                        ((byte)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((byte)vector.Y).ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                    case PICAAttributeFormat.Short:
+                        sb.Append(
+                        ((short)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((short)vector.Y).ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                    case PICAAttributeFormat.Float:
+                        sb.Append(
+                        vector.X.ToString(CultureInfo.InvariantCulture) + " " +
+                        vector.Y.ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                }
+            }
+            return sb.ToString();
+        }
+
+        private static string genVec3Array(H3DVertex[] verts, PICAAttributeFormat format, PICAAttributeName name) {
+            StringBuilder sb = new StringBuilder("\n");
+            Vector3D vector = new Vector3D();
+            foreach (var vec in verts) {
+                switch (name) {
+                    case PICAAttributeName.Position: 
+                        vector = vec.Position;
+                        break;
+                    case PICAAttributeName.Normal:
+                        vector = vec.Normal;
+                        break;
+                }
+                switch (format) {
+                    case PICAAttributeFormat.Byte:
+                        sb.Append(
+                        ((sbyte)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((sbyte)vector.Y).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((sbyte)vector.Z).ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                    case PICAAttributeFormat.Ubyte:
+                        sb.Append(
+                        ((byte)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((byte)vector.Y).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((byte)vector.Z).ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                    case PICAAttributeFormat.Short:
+                        sb.Append(
+                        ((short)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((short)vector.Y).ToString(CultureInfo.InvariantCulture) + " " +
+                        ((short)vector.Z).ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                    case PICAAttributeFormat.Float:
+                        sb.Append(
+                        vector.X.ToString(CultureInfo.InvariantCulture) + " " +
+                        vector.Y.ToString(CultureInfo.InvariantCulture) + " " +
+                        vector.Z.ToString(CultureInfo.InvariantCulture) + "\n"
+                        );
+                        break;
+                }
+            }
+            return sb.ToString();
+        }
+
+        private static string getTestFunc(PICATestFunc opt) { //The idea of this function is absurd, but these strings were too bad to add to the enums
+            string func = "";
+            switch (opt) { 
+                case PICATestFunc.LessThan:
+                    func = "Less";
+                    break;
+                case PICATestFunc.LessThanEqu:
+                    func = "Lequal";
+                    break;
+                case PICATestFunc.GreaterThanEqu:
+                    func = "Gequal";
+                    break;
+                case PICATestFunc.GreaterThan:
+                    func = "Greater";
+                    break;
+                default:
+                    func = opt.ToString();
+                    break;
+            }
+            return func;
+        }
+
         private static void addDccToolMeta(ref ctrEditData editData, string node) {
             ctrNodeName n;
             if (editData == null) editData = new ctrEditData();
@@ -1791,12 +1888,12 @@ namespace SPICA.Serialization
             ctrFloatSet fs;
             ctrIntSet ins;
             ctrStringSet strs;
-            if (localMeta == null) localMeta = new ctrArrayMetaData();
-            if (localMeta.intArrayData == null) localMeta.intArrayData = new List<ctrIntArrayMeta>();
-            if (localMeta.floatArrayData == null) localMeta.floatArrayData = new List<ctrFloatArrayMeta>();
-            if (localMeta.strArrayData == null) localMeta.strArrayData = new List<ctrStringArrayMeta>();
-            if (metaData == null) goto cleanMeta;
+            if (metaData == null) return;
             foreach (var val in metaData.Values) {
+                if (localMeta == null) localMeta = new ctrArrayMetaData();
+                if (localMeta.intArrayData == null) localMeta.intArrayData = new List<ctrIntArrayMeta>();
+                if (localMeta.floatArrayData == null) localMeta.floatArrayData = new List<ctrFloatArrayMeta>();
+                if (localMeta.strArrayData == null) localMeta.strArrayData = new List<ctrStringArrayMeta>();
                 switch (val.Type) {
                     case H3DMetaDataType.ASCIIString:
                     case H3DMetaDataType.UnicodeString: 
@@ -1841,7 +1938,6 @@ namespace SPICA.Serialization
                         }
                 }
             }
-            cleanMeta:
             if (localMeta.floatArrayData.Count == 0) localMeta.floatArrayData = null; //These 4 lines are to make sure there are no stray tags
             if (localMeta.intArrayData.Count == 0) localMeta.intArrayData = null;
             if (localMeta.strArrayData.Count == 0) localMeta.strArrayData = null;

@@ -4,19 +4,19 @@
     {
         Clear,
         And,
-        ReverseAnd,
+        AndReverse,
         Copy,
         Set,
-        InvertedCopy,
-        NoOperation,
+        CopyInverted,
+        NoOp,
         Invert,
-        NAnd,
+        Nand,
         Or,
-        NOr,
-        XOr,
-        Equivalent,
-        InvertedAnd,
-        ReverseOr,
-        InvertedOr
+        Nor,
+        Xor,
+        Equiv,
+        AndInverted,
+        OrReverse,
+        OrInverted
     }
 }
