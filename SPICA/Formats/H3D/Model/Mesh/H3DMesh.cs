@@ -248,6 +248,13 @@ namespace SPICA.Formats.H3D.Model.Mesh
             {
                 long Position = Serializer.BaseStream.Position;
 
+                //TODO: Find a better way to do this
+                Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
+                {
+                    Value = new byte[0],
+                    Position = Position + 0x20
+                });
+
                 Serializer.RawDataVtx.Values.Add(new BinarySerializer.RefValue
                 {
                     Value = RawBuffer,
