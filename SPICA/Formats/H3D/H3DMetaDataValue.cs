@@ -78,6 +78,8 @@ namespace SPICA.Formats.H3D
 
                         Values[Index] = Deserializer.Deserialize<H3DBoundingBox>();
                         break;
+
+                    default: throw new NotImplementedException();
                 }
             }
 

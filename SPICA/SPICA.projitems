@@ -19,6 +19,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DMetaData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DMetaDataType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DMetaDataValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DVertexData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DVertexDataAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DVertexDataIndices.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Light\H3DLight.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\LUT\H3DLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\LUT\H3DLUTFlags.cs" />

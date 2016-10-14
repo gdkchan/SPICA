@@ -6,6 +6,7 @@
         Single,
         ASCIIString,
         UnicodeString,
-        BoundingBox
+        BoundingBox,
+        VertexData
     }
 }

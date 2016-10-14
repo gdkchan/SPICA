@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+
 using SPICA.Formats.H3D;
 using SPICA.Formats.H3D.Model.Mesh;
 using SPICA.WinForms.Rendering;
@@ -80,9 +81,10 @@ void main(void)
 
             CreateShaders();
 
+            //H3D H3D = H3D.Open("D:\\may.bch");
             H3D H3D = H3D.Open("C:\\dec_25.bch");
             //CMDL.Export(H3D, "J:\\PokeMaki\\3ds\\bt0003_00_clone.cmdl", 0);
-            CTEX.Export(H3D, "J:\\PokeMaki\\3ds\\bt0003_00_tex.ctex", 2);
+            //CTEX.Export(H3D, "J:\\PokeMaki\\3ds\\bt0003_00_tex.ctex", 2);
 
 
             Mdl = new Mesh[H3D.Models[0].Meshes.Count];
