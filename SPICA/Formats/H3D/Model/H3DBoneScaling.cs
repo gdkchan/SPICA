@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D.Model
 {
-    enum H3DSkeletonScalingType : byte
+    enum H3DBoneScaling : byte
     {
         Standard,
         Maya,

@@ -30,7 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBillboardMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBoneFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DModelFlags.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DSkeletonScalingType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBoneScaling.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DFragmentFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialLUT.cs" />
