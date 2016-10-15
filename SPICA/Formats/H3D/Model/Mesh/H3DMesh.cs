@@ -2,6 +2,7 @@
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 using SPICA.Utils;
 
@@ -11,12 +12,13 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Model.Mesh
 {
-    class H3DMesh : ICustomSerialization, ICustomSerializeCmd
+    [Repeatable]
+    struct H3DMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public ushort MaterialIndex;
         public byte Flags;
         public byte Padding;
-        public ushort NodeId;
+        public ushort NodeIndex;
         public ushort Key;
 
         public H3DMeshType Type

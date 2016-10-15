@@ -9,7 +9,7 @@ using System;
 
 namespace SPICA.Formats.H3D.Model.Material
 {
-    class H3DMaterialParams : ICustomSerialization
+    class H3DMaterialParams : ICustomSerialization, INamed
     {
         public uint UniqueId;
 
@@ -63,13 +63,6 @@ namespace SPICA.Formats.H3D.Model.Material
         [RepeatPointer]
         public uint[] FragmentShaderCommands;
 
-        public string LUTDist0TableName;
-        public string LUTDist1TableName;
-        public string LUTFresnelTableName;
-        public string LUTReflecRTableName;
-        public string LUTReflecGTableName;
-        public string LUTReflecBTableName;
-
         public string LUTDist0SamplerName;
         public string LUTDist1SamplerName;
         public string LUTFresnelSamplerName;
@@ -77,10 +70,19 @@ namespace SPICA.Formats.H3D.Model.Material
         public string LUTReflecGSamplerName;
         public string LUTReflecBSamplerName;
 
+        public string LUTDist0TableName;
+        public string LUTDist1TableName;
+        public string LUTFresnelTableName;
+        public string LUTReflecRTableName;
+        public string LUTReflecGTableName;
+        public string LUTReflecBTableName;
+
         public string ShaderReference;
         public string ModelReference;
 
         public H3DMetaData MetaData;
+
+        public string ObjectName { get { return null; } }
 
         //LookUp Table
         [NonSerialized]

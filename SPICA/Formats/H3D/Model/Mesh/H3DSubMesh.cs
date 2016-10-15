@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Model.Mesh
 {
-    class H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
+    struct H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public H3DSubMeshSkinning Skinning;
         public byte Padding;
@@ -75,13 +75,9 @@ namespace SPICA.Formats.H3D.Model.Mesh
             for (int Index = 0; Index < BufferCount; Index++)
             {
                 if (Format)
-                {
                     Indices[Index] = Deserializer.Reader.ReadUInt16();
-                }
                 else
-                {
                     Indices[Index] = Deserializer.Reader.ReadByte();
-                }
             }
 
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);

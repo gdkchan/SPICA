@@ -5,6 +5,7 @@ using OpenTK.Input;
 
 using SPICA.Formats.H3D;
 using SPICA.Formats.H3D.Model.Mesh;
+using SPICA.Formats.H3D.Texture;
 using SPICA.WinForms.Rendering;
 
 using System.Diagnostics;
@@ -60,7 +61,7 @@ void main(void)
         Vector3 position,
                 direction,
                 upVec;
-                
+
 
         H3D Model;
 
@@ -81,17 +82,16 @@ void main(void)
 
             CreateShaders();
 
-            //H3D H3D = H3D.Open("D:\\may.bch");
-            H3D H3D = H3D.Open("C:\\dec_25.bch");
-            //CMDL.Export(H3D, "J:\\PokeMaki\\3ds\\bt0003_00_clone.cmdl", 0);
-            //CTEX.Export(H3D, "J:\\PokeMaki\\3ds\\bt0003_00_tex.ctex", 2);
+            //H3D Model = H3D.Open("D:\\may.bch");
+            //H3D.Save("D:\\recreated.bch", Model);
 
-
-            Mdl = new Mesh[H3D.Models[0].Meshes.Count];
+            Mdl = new Mesh[Model.Models[0].Meshes.Count];
 
             for (int Index = 0; Index < Mdl.Length; Index++)
             {
-                H3DMesh Mesh = H3D.Models[0].Meshes[Index];
+                H3DMesh Mesh = Model.Models[0].Meshes[Index];
+
+                Debug.WriteLine(Model.Models[0].MeshNodesTree[Mesh.NodeIndex + 1].Name);
 
                 ushort[][] Indices = new ushort[Mesh.SubMeshes.Count][];
 

@@ -5,7 +5,7 @@ using System;
 
 namespace SPICA.Formats.H3D.LUT
 {
-    class H3DLUTSampler : ICustomSerialization
+    struct H3DLUTSampler : ICustomSerialization
     {
         public H3DLUTFlags Flags;
         public byte Padding0;

@@ -1727,20 +1727,20 @@ namespace SPICA.Formats.H3D
                 mesh = new ctrMesh();
                 mesh.IsVisible = true;
                 mesh.RenderPriority = mdl.Meshes[i].Key;
-                mesh.MeshNodeName = mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId+1].Name;
+                mesh.MeshNodeName = mdl.MeshNodesTree.Nodes[mdl.Meshes[i].NodeIndex + 1].Name;
                 mesh.SeparateShapeReference = "Shapes[" + i + "]";
                 mesh.MaterialReference = "Materials[\"" + mdl.Materials[mdl.Meshes[i].MaterialIndex].Name + "\"]";
-                addDccToolMeta(ref mesh.EditData, mdl.MeshesTree.Nodes[mdl.Meshes[i].NodeId + 1].Name);
+                addDccToolMeta(ref mesh.EditData, mdl.MeshNodesTree.Nodes[mdl.Meshes[i].NodeIndex + 1].Name);
                 meshes.Add(mesh);
             }
 
             //Mesh Node Visibility
             List<ctrMeshVis> meshVisibilites = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.MeshNodeVisibilities;
             ctrMeshVis meshVisibility;
-            for (i = 0; i < mdl.MeshesCount; i++) {
+            for (i = 0; i < mdl.MeshNodesCount; i++) {
                 meshVisibility = new ctrMeshVis();
-                meshVisibility.Name = mdl.MeshesTree.Nodes[i+1].Name;
-                meshVisibility.IsVisible = mdl.MeshVisibilities[i];
+                meshVisibility.Name = mdl.MeshNodesTree.Nodes[i+1].Name;
+                meshVisibility.IsVisible = mdl.MeshNodesVisibility[i];
                 meshVisibilites.Add(meshVisibility);
             }
 
@@ -1751,7 +1751,7 @@ namespace SPICA.Formats.H3D
             ctrFloatArrayMeta fmeta;
             ctrFloatSet fset;
             skeleton.RootBoneName = mdl.Skeleton[0].Name; //Not sure if this always holds true
-            skeleton.ScalingRule = mdl.SkeletonScalingType.ToString();
+            skeleton.ScalingRule = mdl.BoneScaling.ToString();
             skeleton.IsTranslateAnimationEnabled = true;
             skeleton.Bones = bones;
             foreach (var b in mdl.Skeleton) {

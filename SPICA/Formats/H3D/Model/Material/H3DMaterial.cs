@@ -5,7 +5,7 @@ using SPICA.Serialization.Serializer;
 
 namespace SPICA.Formats.H3D.Model.Material
 {
-    class H3DMaterial : ICustomSerialization
+    struct H3DMaterial : ICustomSerialization, INamed
     {
         public H3DMaterialParams MaterialParams;
 
@@ -21,6 +21,8 @@ namespace SPICA.Formats.H3D.Model.Material
         public string Texture1Name;
         public string Texture2Name;
         public string Name;
+
+        public string ObjectName { get { return Name; } }
 
         public void Deserialize(BinaryDeserializer Deserializer) { }
 

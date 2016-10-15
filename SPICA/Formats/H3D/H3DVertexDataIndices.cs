@@ -43,13 +43,9 @@ namespace SPICA.Formats.H3D
             for (int Index = 0; Index < Count; Index++)
             {
                 if (Format)
-                {
                     Indices[Index] = Deserializer.Reader.ReadUInt16();
-                }
                 else
-                {
                     Indices[Index] = Deserializer.Reader.ReadByte();
-                }
             }
 
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);

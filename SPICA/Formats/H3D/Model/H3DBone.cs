@@ -3,7 +3,7 @@ using SPICA.Utils;
 
 namespace SPICA.Formats.H3D.Model
 {
-    struct H3DBone
+    struct H3DBone : INamed
     {
         public H3DBoneFlags Flags;
 
@@ -23,6 +23,8 @@ namespace SPICA.Formats.H3D.Model
         public Matrix3x4 InverseTransform;
 
         public string Name;
+
+        public string ObjectName { get { return Name; } }
 
         public H3DMetaData MetaData;
     }

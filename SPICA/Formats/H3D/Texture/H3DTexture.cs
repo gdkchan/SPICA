@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Texture
 {
-    class H3DTexture : ICustomSerialization, ICustomSerializeCmd
+    class H3DTexture : ICustomSerialization, ICustomSerializeCmd, INamed
     {
         public uint[] Texture0Commands;
         public uint[] Texture1Commands;
@@ -19,6 +19,8 @@ namespace SPICA.Formats.H3D.Texture
         public ushort Padding;
 
         public string Name;
+
+        public string ObjectName { get { return Name; } }
 
         [NonSerialized]
         public byte[] RawBuffer;

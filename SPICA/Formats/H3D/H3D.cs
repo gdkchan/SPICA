@@ -18,21 +18,21 @@ namespace SPICA.Formats.H3D
 {
     class H3D : ICustomSerialization
     {
-        public PatriciaPointersList<H3DModel> Models;
-        public PatriciaPointersList<H3DMaterialParams> Materials;
-        public PatriciaPointersList<H3DShader> Shaders;
-        public PatriciaPointersList<H3DTexture> Textures;
-        public PatriciaPointersList<H3DLUT> LUTs;
-        public PatriciaPointersList<H3DLight> Lights;
-        public PatriciaPointersList<H3DCamera> Cameras;
-        public PatriciaPointersList<H3DFog> Fogs;
-        public PatriciaPointersList<H3DAnimation> SkeletalAnimations;
-        public PatriciaPointersList<H3DAnimation> MaterialAnimations;
-        public PatriciaPointersList<H3DAnimation> VisibilityAnimations;
-        public PatriciaPointersList<H3DAnimation> LightAnimations;
-        public PatriciaPointersList<H3DAnimation> CameraAnimations;
-        public PatriciaPointersList<H3DAnimation> FogAnimations;
-        public PatriciaPointersList<H3DScene> Scenes;
+        public PatriciaList<H3DModel> Models;
+        public PatriciaList<H3DMaterialParams> Materials;
+        public PatriciaList<H3DShader> Shaders;
+        public PatriciaList<H3DTexture> Textures;
+        public PatriciaList<H3DLUT> LUTs;
+        public PatriciaList<H3DLight> Lights;
+        public PatriciaList<H3DCamera> Cameras;
+        public PatriciaList<H3DFog> Fogs;
+        public PatriciaList<H3DAnimation> SkeletalAnimations;
+        public PatriciaList<H3DAnimation> MaterialAnimations;
+        public PatriciaList<H3DAnimation> VisibilityAnimations;
+        public PatriciaList<H3DAnimation> LightAnimations;
+        public PatriciaList<H3DAnimation> CameraAnimations;
+        public PatriciaList<H3DAnimation> FogAnimations;
+        public PatriciaList<H3DScene> Scenes;
 
         [NonSerialized]
         public ushort ConverterVersion;

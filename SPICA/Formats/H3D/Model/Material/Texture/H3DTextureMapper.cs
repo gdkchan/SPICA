@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.H3D.Model.Material.Texture
 {
-    class H3DTextureMapper
+    struct H3DTextureMapper
     {
         public byte SamplerType;
 

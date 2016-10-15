@@ -2,19 +2,24 @@
 using SPICA.Serialization.Serializer;
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SPICA.Formats.H3D
 {
-    class H3DMetaDataValue : ICustomSerialization
+    struct H3DMetaDataValue : ICustomSerialization, INamed
     {
         public string Name;
+
+        public string ObjectName { get { return Name; } }
 
         public H3DMetaDataType Type;
 
         [NonSerialized]
-        public object[] Values;
+        public List<object> Values;
 
         public object this[int Index]
         {
@@ -31,14 +36,14 @@ namespace SPICA.Formats.H3D
 
             Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
 
-            Values = new object[Count];
+            Values = new List<object>();
 
             for (int Index = 0; Index < Count; Index++)
             {
                 switch (Type)
                 {
-                    case H3DMetaDataType.Integer: Values[Index] = Deserializer.Reader.ReadInt32(); break;
-                    case H3DMetaDataType.Single: Values[Index] = Deserializer.Reader.ReadSingle(); break;
+                    case H3DMetaDataType.Integer: Values.Add(Deserializer.Reader.ReadInt32()); break;
+                    case H3DMetaDataType.Single: Values.Add(Deserializer.Reader.ReadSingle()); break;
 
                     case H3DMetaDataType.ASCIIString:
                         Deserializer.BaseStream.Seek(Address + Index * 4, SeekOrigin.Begin);
@@ -52,10 +57,9 @@ namespace SPICA.Formats.H3D
                                 MS.WriteByte(Chr);
                             }
 
-                            Values[Index] = Encoding.ASCII.GetString(MS.ToArray());
+                            Values.Add(Encoding.ASCII.GetString(MS.ToArray()));
                         }
                         break;
-
                     case H3DMetaDataType.UnicodeString:
                         Deserializer.BaseStream.Seek(Address + Index * 4, SeekOrigin.Begin);
                         Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
@@ -69,14 +73,14 @@ namespace SPICA.Formats.H3D
                                 MS.WriteByte((byte)(Chr >> 8));
                             }
 
-                            Values[Index] = Encoding.Unicode.GetString(MS.ToArray());
+                            Values.Add(Encoding.Unicode.GetString(MS.ToArray()));
                         }
                         break;
 
                     case H3DMetaDataType.BoundingBox:
                         Deserializer.BaseStream.Seek(Address + Index * 0x3c, SeekOrigin.Begin);
 
-                        Values[Index] = Deserializer.Deserialize<H3DBoundingBox>();
+                        Values.Add(Deserializer.Deserialize<H3DBoundingBox>());
                         break;
 
                     default: throw new NotImplementedException();
@@ -88,7 +92,7 @@ namespace SPICA.Formats.H3D
 
         public bool Serialize(BinarySerializer Serializer)
         {
-            //FIXME: Strings will not serialize properly
+            //FIXME: Unicode Strings will serialize as ASCII too
             Serializer.Strings.Values.Add(new RefValue
             {
                 Value = Name,
@@ -97,16 +101,32 @@ namespace SPICA.Formats.H3D
 
             Serializer.Contents.Values.Add(new RefValue
             {
-                Value = Values,
+                Value = GetCastedValues(),
                 Position = Serializer.BaseStream.Position + 8,
             });
 
             Serializer.Writer.Write(0u);
             Serializer.Writer.Write((ushort)Type);
-            Serializer.Writer.Write((ushort)Values.Length);
+            Serializer.Writer.Write((ushort)Values.Count);
             Serializer.Writer.Write(0u);
 
             return true;
+        }
+
+        public IList GetCastedValues()
+        {
+            switch (Type)
+            {
+                case H3DMetaDataType.Integer: return Values.Cast<int>().ToList();
+                case H3DMetaDataType.Single: return Values.Cast<float>().ToList();
+
+                case H3DMetaDataType.ASCIIString: return Values.Cast<string>().ToList();
+                case H3DMetaDataType.UnicodeString: return Values.Cast<string>().ToList();
+
+                case H3DMetaDataType.BoundingBox: return Values.Cast<H3DBoundingBox>().ToList();
+
+                default: throw new NotImplementedException();
+            }
         }
     }
 }
