@@ -827,6 +827,15 @@ namespace SPICA.Formats.H3D
             public string Scale;
 
             public string NullLookupTableCtr;
+
+            public ctrLutRef ReferenceLookupTableCtr;
+        }
+
+        public class ctrLutRef {
+            [XmlAttribute]
+            public string TableName;
+
+            public string LookupTableSetContentReferenceCtr;
         }
 
         public class ctrTexCombine {
@@ -1584,30 +1593,67 @@ namespace SPICA.Formats.H3D
                 fragShade.FragmentLighting.IsGeometricFactor1Enabled = (lightFlags & H3DFragmentFlags.IsLUTGeoFactor1Enabled) > 0;
                 fragShade.FragmentLighting.IsReflectionEnabled = (lightFlags & H3DFragmentFlags.IsLUTReflectionEnabled) > 0;
 
-                fragShade.FragmentLightingTable.ReflectanceRSampler.IsAbs = true;   //TODO: Fill all this out with real data
-                fragShade.FragmentLightingTable.ReflectanceRSampler.Input = "CosNormalHalf";
-                fragShade.FragmentLightingTable.ReflectanceRSampler.Scale = "One";
-                fragShade.FragmentLightingTable.ReflectanceRSampler.NullLookupTableCtr = "";
-                fragShade.FragmentLightingTable.ReflectanceGSampler.IsAbs = true;
-                fragShade.FragmentLightingTable.ReflectanceGSampler.Input = "CosNormalHalf";
-                fragShade.FragmentLightingTable.ReflectanceGSampler.Scale = "One";
-                fragShade.FragmentLightingTable.ReflectanceGSampler.NullLookupTableCtr = "";
-                fragShade.FragmentLightingTable.ReflectanceBSampler.IsAbs = true;
-                fragShade.FragmentLightingTable.ReflectanceBSampler.Input = "CosNormalHalf";
-                fragShade.FragmentLightingTable.ReflectanceBSampler.Scale = "One";
-                fragShade.FragmentLightingTable.ReflectanceBSampler.NullLookupTableCtr = "";
-                fragShade.FragmentLightingTable.Distribution0Sampler.IsAbs = true;
-                fragShade.FragmentLightingTable.Distribution0Sampler.Input = "CosNormalHalf";
-                fragShade.FragmentLightingTable.Distribution0Sampler.Scale = "One";
-                fragShade.FragmentLightingTable.Distribution0Sampler.NullLookupTableCtr = "";
-                fragShade.FragmentLightingTable.Distribution1Sampler.IsAbs = true;
-                fragShade.FragmentLightingTable.Distribution1Sampler.Input = "CosNormalHalf";
-                fragShade.FragmentLightingTable.Distribution1Sampler.Scale = "One";
-                fragShade.FragmentLightingTable.Distribution1Sampler.NullLookupTableCtr = "";
-                fragShade.FragmentLightingTable.FresnelSampler.IsAbs = true;
-                fragShade.FragmentLightingTable.FresnelSampler.Input = "CosNormalHalf";
-                fragShade.FragmentLightingTable.FresnelSampler.Scale = "One";
-                fragShade.FragmentLightingTable.FresnelSampler.NullLookupTableCtr = "";
+                ctrFragLightTable flt = fragShade.FragmentLightingTable;
+                flt.ReflectanceRSampler.IsAbs = mt.MaterialParams.LUTInputAbs.ReflecRAbs;
+                flt.ReflectanceRSampler.Input = mt.MaterialParams.LUTInputSel.ReflecRInput.ToString();
+                flt.ReflectanceRSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecRScale.ToString();
+                if (mt.MaterialParams.LUTReflecRTableName != null) {
+                    flt.ReflectanceRSampler.ReferenceLookupTableCtr = new ctrLutRef();
+                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecRTableName;
+                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecRSamplerName + "\"]";
+                } else {
+                    flt.ReflectanceRSampler.NullLookupTableCtr = "";
+                }
+                flt.ReflectanceGSampler.IsAbs = mt.MaterialParams.LUTInputAbs.ReflecGAbs;
+                flt.ReflectanceGSampler.Input = mt.MaterialParams.LUTInputSel.ReflecGInput.ToString();
+                flt.ReflectanceGSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecGScale.ToString();
+                if (mt.MaterialParams.LUTReflecGTableName != null) {
+                    flt.ReflectanceGSampler.ReferenceLookupTableCtr = new ctrLutRef();
+                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecGTableName;
+                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecGSamplerName + "\"]";
+                } else {
+                    flt.ReflectanceGSampler.NullLookupTableCtr = "";
+                }
+                flt.ReflectanceBSampler.IsAbs = mt.MaterialParams.LUTInputAbs.ReflecBAbs;
+                flt.ReflectanceBSampler.Input = mt.MaterialParams.LUTInputSel.ReflecBInput.ToString();
+                flt.ReflectanceBSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecBScale.ToString();
+                if (mt.MaterialParams.LUTReflecBTableName != null) {
+                    flt.ReflectanceBSampler.ReferenceLookupTableCtr = new ctrLutRef();
+                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecBTableName;
+                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecBSamplerName + "\"]";
+                } else {
+                    flt.ReflectanceBSampler.NullLookupTableCtr = "";
+                }
+                flt.Distribution0Sampler.IsAbs = mt.MaterialParams.LUTInputAbs.Dist0Abs;
+                flt.Distribution0Sampler.Input = mt.MaterialParams.LUTInputSel.Dist0Input.ToString();
+                flt.Distribution0Sampler.Scale = mt.MaterialParams.LUTInputScaleSel.Dist0Scale.ToString();
+                if (mt.MaterialParams.LUTDist0TableName != null) {
+                    flt.Distribution0Sampler.ReferenceLookupTableCtr = new ctrLutRef();
+                    flt.Distribution0Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist0TableName;
+                    flt.Distribution0Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist0SamplerName + "\"]";
+                } else {
+                    flt.Distribution0Sampler.NullLookupTableCtr = "";
+                }
+                flt.Distribution1Sampler.IsAbs = mt.MaterialParams.LUTInputAbs.Dist1Abs;
+                flt.Distribution1Sampler.Input = mt.MaterialParams.LUTInputSel.Dist1Input.ToString();
+                flt.Distribution1Sampler.Scale = mt.MaterialParams.LUTInputScaleSel.Dist1Scale.ToString();
+                if (mt.MaterialParams.LUTReflecRTableName != null) {
+                    flt.Distribution1Sampler.ReferenceLookupTableCtr = new ctrLutRef();
+                    flt.Distribution1Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist1TableName;
+                    flt.Distribution1Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist1SamplerName + "\"]";
+                } else {
+                    flt.Distribution1Sampler.NullLookupTableCtr = "";
+                }
+                flt.FresnelSampler.IsAbs = mt.MaterialParams.LUTInputAbs.FresnelAbs;
+                flt.FresnelSampler.Input = mt.MaterialParams.LUTInputSel.FresnelInput.ToString();
+                flt.FresnelSampler.Scale = mt.MaterialParams.LUTInputScaleSel.FresnelScale.ToString();
+                if (mt.MaterialParams.LUTFresnelTableName != null) {
+                    flt.FresnelSampler.ReferenceLookupTableCtr = new ctrLutRef();
+                    flt.FresnelSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTFresnelTableName;
+                    flt.FresnelSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTFresnelSamplerName + "\"]";
+                } else {
+                    flt.FresnelSampler.NullLookupTableCtr = "";
+                }
 
                 foreach (var comb in mt.MaterialParams.TexEnvStages) {
                     texComb = new ctrTexCombine();

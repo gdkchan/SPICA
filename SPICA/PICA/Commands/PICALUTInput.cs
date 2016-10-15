@@ -2,11 +2,11 @@
 {
     enum PICALUTInput
     {
-        NDotH,
-        VDotH,
-        NDotV,
-        LDotN,
-        SpotLight,
+        CosNormalHalf,
+        CosViewHalf,
+        CosNormalView,
+        CosLightNormal,
+        CosLightSpot,
         CosPhi
     }
 }

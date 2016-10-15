@@ -63,6 +63,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Scene\H3DScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Shader\H3DShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Texture\H3DTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CLTS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CMDL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
