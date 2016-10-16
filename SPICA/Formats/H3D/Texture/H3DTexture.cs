@@ -40,6 +40,8 @@ namespace SPICA.Formats.H3D.Texture
             this.Name = Name;
             this.Format = Format;
 
+            MipmapSize = 1;
+
             Width = (uint)Img.Width;
             Height = (uint)Img.Height;
 

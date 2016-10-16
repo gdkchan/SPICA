@@ -9,6 +9,7 @@ using SPICA.Formats.H3D.Texture;
 using SPICA.WinForms.Rendering;
 
 using System.Diagnostics;
+using System.Drawing;
 
 namespace SPICA.WinForms
 {
@@ -82,7 +83,7 @@ void main(void)
 
             CreateShaders();
 
-            //H3D Model = H3D.Open("D:\\may.bch");
+            H3D Model = H3D.Open("D:\\may.bch");
             //H3D.Save("D:\\recreated.bch", Model);
 
             Mdl = new Mesh[Model.Models[0].Meshes.Count];
