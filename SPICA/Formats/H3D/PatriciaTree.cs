@@ -105,17 +105,42 @@ namespace SPICA.Formats.H3D
         //Implementation
         public void Add(string Name)
         {
-            (Names ?? (Names = new List<string>())).Add(Name); RebuildTree();
+            if (Name != null)
+            {
+                (Names ?? (Names = new List<string>())).Add(Name);
+
+                RebuildTree();
+            }
+        }
+
+        public void Insert(int Index, string Name)
+        {
+            if (Name != null)
+            {
+                (Names ?? (Names = new List<string>())).Insert(Index, Name);
+
+                RebuildTree();
+            }
         }
 
         public void Remove(string Name)
         {
-            (Names ?? (Names = new List<string>())).Remove(Name); RebuildTree();
+            if (Names != null && Name != null)
+            {
+                Names.Remove(Name);
+
+                RebuildTree();
+            }
         }
 
         public void Clear()
         {
-            (Names ?? (Names = new List<string>())).Clear(); RebuildTree();
+            if (Names != null)
+            {
+                Names.Clear();
+
+                RebuildTree();
+            }
         }
 
         public int Find(string Name)
@@ -142,8 +167,6 @@ namespace SPICA.Formats.H3D
                 Nodes.Add(new PatriciaTreeNode { ReferenceBit = uint.MaxValue });
             else
                 Nodes.Add(new PatriciaTreeNode());
-
-            Names.RemoveAll(x => x == null);
 
             foreach (string Name in Names) Insert(Name);
         }

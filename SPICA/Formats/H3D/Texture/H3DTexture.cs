@@ -1,9 +1,11 @@
 ﻿using SPICA.PICA;
 using SPICA.PICA.Commands;
+using SPICA.PICA.Converters;
 using SPICA.Serialization;
 using SPICA.Serialization.Serializer;
 
 using System;
+using System.Drawing;
 using System.IO;
 
 namespace SPICA.Formats.H3D.Texture
@@ -31,6 +33,24 @@ namespace SPICA.Formats.H3D.Texture
         [NonSerialized]
         public uint Height;
 
+        public H3DTexture() { }
+
+        public H3DTexture(string Name, Bitmap Img, PICATextureFormat Format = 0)
+        {
+            this.Name = Name;
+            this.Format = Format;
+
+            Width = (uint)Img.Width;
+            Height = (uint)Img.Height;
+
+            RawBuffer = TextureConverter.Encode(Img, Format);
+        }
+
+        public Bitmap GetBitmap()
+        {
+            return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format);
+        }
+
         public void Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader = new PICACommandReader(Texture0Commands);
@@ -53,33 +73,13 @@ namespace SPICA.Formats.H3D.Texture
                 }
             }
 
-            uint Length = Width * Height;
-
-            switch (Format)
-            {
-                case PICATextureFormat.RGBA8: Length *= 4; break;
-                case PICATextureFormat.RGB8: Length *= 3; break;
-                case PICATextureFormat.RGBA5551:
-                case PICATextureFormat.RGB565:
-                case PICATextureFormat.RGBA4:
-                case PICATextureFormat.LA88:
-                case PICATextureFormat.HiLo8:
-                    Length *= 2;
-                    break;
-                case PICATextureFormat.L4:
-                case PICATextureFormat.A4:
-                case PICATextureFormat.ETC1:
-                    Length /= 2;
-                    break;
-            }
-
-            if ((Length & 0x7f) != 0) Length = (Length & ~0x7fu) + 0x80;
+            int Length = TextureConverter.CalculateLength((int)Width, (int)Height, Format);
 
             long Position = Deserializer.BaseStream.Position;
 
             Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
 
-            RawBuffer = Deserializer.Reader.ReadBytes((int)Length);
+            RawBuffer = Deserializer.Reader.ReadBytes(Length);
 
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }

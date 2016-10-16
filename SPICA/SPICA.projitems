@@ -44,7 +44,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureMinFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureTransformType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureWrap.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Mesh\H3DVertex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\PatriciaList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\PatriciaTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\H3DRelocationType.cs" />
@@ -106,6 +105,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\PICAVertex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\TextureConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\VerticesConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommandReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommandWriter.cs" />

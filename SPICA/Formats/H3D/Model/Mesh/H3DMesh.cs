@@ -1,6 +1,7 @@
 ﻿using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
+using SPICA.PICA.Converters;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
@@ -24,25 +25,25 @@ namespace SPICA.Formats.H3D.Model.Mesh
         public H3DMeshType Type
         {
             get { return (H3DMeshType)BitUtils.GetBits(Flags, 0, 2); }
-            set { Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 0, 2); }
+            set { Flags = BitUtils.SetBits(Flags, (uint)value, 0, 2); }
         }
 
         public H3DMeshSkinning Skinning
         {
             get { return (H3DMeshSkinning)BitUtils.GetBits(Flags, 2, 2); }
-            set { Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 2, 2); }
+            set { Flags = BitUtils.SetBits(Flags, (uint)value, 2, 2); }
         }
 
         public uint Priority
         {
             get { return BitUtils.GetBits(Key, 0, 8); }
-            set { Key = (ushort)BitUtils.SetBits(Key, value, 0, 8); }
+            set { Key = BitUtils.SetBits(Key, value, 0, 8); }
         }
 
         public uint Layer
         {
             get { return BitUtils.GetBits(Key, 8, 2); }
-            set { Key = (ushort)BitUtils.SetBits(Key, value, 8, 2); }
+            set { Key = BitUtils.SetBits(Key, value, 8, 2); }
         }
 
         public uint[] EnableCommands;
@@ -63,13 +64,13 @@ namespace SPICA.Formats.H3D.Model.Mesh
         public byte[] RawBuffer;
 
         [NonSerialized]
+        public int VertexStride;
+
+        [NonSerialized]
         public PICAAttribute[] Attributes;
 
         [NonSerialized]
         public Vector4D PositionOffset;
-
-        [NonSerialized]
-        public int VertexStride;
 
         public void Deserialize(BinaryDeserializer Deserializer)
         {
@@ -185,69 +186,9 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public H3DVertex[] GetVertices()
+        public PICAVertex[] GetVertices()
         {
-            H3DVertex[] Output = new H3DVertex[RawBuffer.Length / VertexStride];
-
-            using (MemoryStream MS = new MemoryStream(RawBuffer))
-            {
-                BinaryReader Reader = new BinaryReader(MS);
-
-                for (int Index = 0; Index < Output.Length; Index++)
-                {
-                    H3DVertex O = new H3DVertex();
-
-                    MS.Seek(Index * VertexStride, SeekOrigin.Begin);
-
-                    foreach (PICAAttribute Attrib in Attributes)
-                    {
-                        Vector4D V = new Vector4D();
-
-                        for (int Elem = 0; Elem < Attrib.Elements; Elem++)
-                        {
-                            switch (Attrib.Format)
-                            {
-                                case PICAAttributeFormat.Byte: V[Elem] = Reader.ReadSByte(); break;
-                                case PICAAttributeFormat.Ubyte: V[Elem] = Reader.ReadByte(); break;
-                                case PICAAttributeFormat.Short: V[Elem] = Reader.ReadInt16(); break;
-                                case PICAAttributeFormat.Float: V[Elem] = Reader.ReadSingle(); break;
-                            }
-                        }
-
-                        switch (Attrib.Name)
-                        {
-                            case PICAAttributeName.Position: O.Position = new Vector3D(V.X, V.Y, V.Z); break;
-
-                            case PICAAttributeName.Normal: O.Normal = new Vector3D(V.X, V.Y, V.Z); break;
-
-                            case PICAAttributeName.Tangent: O.Tangent = new Vector3D(V.X, V.Y, V.Z); break;
-
-                            case PICAAttributeName.Color: O.Color = new RGBAFloat(V.X, V.Y, V.Z, V.W); break;
-
-                            case PICAAttributeName.TextureCoordinate0: O.TextureCoord0 = new Vector2D(V.X, V.Y); break;
-                            case PICAAttributeName.TextureCoordinate1: O.TextureCoord1 = new Vector2D(V.X, V.Y); break;
-                            case PICAAttributeName.TextureCoordinate2: O.TextureCoord2 = new Vector2D(V.X, V.Y); break;
-
-                            case PICAAttributeName.BoneIndex:
-                                for (int Node = 0; Node < Attrib.Elements; Node++)
-                                {
-                                    O.Indices[Node] = (int)V[Node];
-                                }
-                                break;
-                            case PICAAttributeName.BoneWeight:
-                                for (int Node = 0; Node < Attrib.Elements; Node++)
-                                {
-                                    O.Weights[Node] = V[Node];
-                                }
-                                break;
-                        }
-                    }
-
-                    Output[Index] = O;
-                }
-            }
-
-            return Output;
+            return VerticesConverter.GetVertices(RawBuffer, VertexStride, Attributes);
         }
 
         public bool Serialize(BinarySerializer Serializer)

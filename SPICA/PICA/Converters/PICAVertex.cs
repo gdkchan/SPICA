@@ -1,8 +1,8 @@
 ﻿using SPICA.Math3D;
 
-namespace SPICA.Formats.H3D.Model.Mesh
+namespace SPICA.PICA.Converters
 {
-    class H3DVertex
+    class PICAVertex
     {
         public Vector3D Position;
 
@@ -18,8 +18,8 @@ namespace SPICA.Formats.H3D.Model.Mesh
 
         public int[] Indices;
         public float[] Weights;
-        
-        public H3DVertex()
+
+        public PICAVertex()
         {
             Indices = new int[4];
             Weights = new float[4];

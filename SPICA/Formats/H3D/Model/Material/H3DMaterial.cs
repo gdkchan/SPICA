@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.H3D.Model.Material.Texture;
+using SPICA.Formats.H3D.Texture;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
@@ -9,9 +10,10 @@ namespace SPICA.Formats.H3D.Model.Material
     {
         public H3DMaterialParams MaterialParams;
 
-        public uint Texture0ConfigAddress;
-        public uint Texture1ConfigAddress;
-        public uint Texture2ConfigAddress;
+        public H3DTexture Texture0;
+        public H3DTexture Texture1;
+        public H3DTexture Texture2;
+
         public uint[] TextureCommands;
 
         [FixedLength(3)]
@@ -20,6 +22,7 @@ namespace SPICA.Formats.H3D.Model.Material
         public string Texture0Name;
         public string Texture1Name;
         public string Texture2Name;
+
         public string Name;
 
         public string ObjectName { get { return Name; } }

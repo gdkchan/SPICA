@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SPICA.Utils
+﻿namespace SPICA.Utils
 {
     class BitUtils
     {
@@ -18,6 +14,22 @@ namespace SPICA.Utils
         {
             Value &= (uint)(~(((1 << Count) - 1) << Start));
             Value |= Bits << Start;
+
+            return Value;
+        }
+
+        public static ushort SetBits(ushort Value, uint Bits, int Start, int Count)
+        {
+            Value &= (ushort)(~(((1 << Count) - 1) << Start));
+            Value |= (ushort)(Bits << Start);
+
+            return Value;
+        }
+
+        public static byte SetBits(byte Value, uint Bits, int Start, int Count)
+        {
+            Value &= (byte)(~(((1 << Count) - 1) << Start));
+            Value |= (byte)(Bits << Start);
 
             return Value;
         }

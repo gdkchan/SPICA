@@ -91,8 +91,6 @@ void main(void)
             {
                 H3DMesh Mesh = Model.Models[0].Meshes[Index];
 
-                Debug.WriteLine(Model.Models[0].MeshNodesTree[Mesh.NodeIndex + 1].Name);
-
                 ushort[][] Indices = new ushort[Mesh.SubMeshes.Count][];
 
                 for (int SM = 0; SM < Mesh.SubMeshes.Count; SM++)

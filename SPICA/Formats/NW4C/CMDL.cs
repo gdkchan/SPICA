@@ -11,6 +11,7 @@ using SPICA.Formats.H3D.Model.Mesh;
 using SPICA.PICA.Commands;
 using System.Globalization;
 using SPICA.Math3D;
+using SPICA.PICA.Converters;
 
 namespace SPICA.Formats.H3D
 {
@@ -1794,7 +1795,7 @@ namespace SPICA.Formats.H3D
             output.Close();
         }
 
-        private static string genBoneIndex(H3DVertex[] verts) {
+        private static string genBoneIndex(PICAVertex[] verts) {
             StringBuilder sb = new StringBuilder("\n");
             foreach (var v in verts) {
                 sb.Append(string.Join(" ", v.Indices) + "\n");
@@ -1802,7 +1803,7 @@ namespace SPICA.Formats.H3D
             return sb.ToString();
         }
 
-        private static string genBoneWeights(H3DVertex[] verts) {
+        private static string genBoneWeights(PICAVertex[] verts) {
             StringBuilder sb = new StringBuilder("\n");
             foreach (var v in verts) {
                 for (int w = 0; w < 4; w++)
@@ -1811,7 +1812,7 @@ namespace SPICA.Formats.H3D
             return sb.ToString();
         }
 
-        private static string genVec2Array(H3DVertex[] verts, PICAAttributeFormat format, PICAAttributeName name) {
+        private static string genVec2Array(PICAVertex[] verts, PICAAttributeFormat format, PICAAttributeName name) {
             StringBuilder sb = new StringBuilder("\n");
             Vector2D vector = new Vector2D();
             foreach (var vec in verts) {
@@ -1850,7 +1851,7 @@ namespace SPICA.Formats.H3D
             return sb.ToString();
         }
 
-        private static string genVec3Array(H3DVertex[] verts, PICAAttributeFormat format, PICAAttributeName name) {
+        private static string genVec3Array(PICAVertex[] verts, PICAAttributeFormat format, PICAAttributeName name) {
             StringBuilder sb = new StringBuilder("\n");
             Vector3D vector = new Vector3D();
             foreach (var vec in verts) {
