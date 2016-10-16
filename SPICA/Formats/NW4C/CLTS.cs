@@ -290,7 +290,7 @@ namespace SPICA
             var segs = new List<ctrLinFloatSeg>();
             ctrLinFloatSeg linSeg = new ctrLinFloatSeg();
             ctrLinFloatKey linKey;
-            for (uint k = 0; k < 255; k++) {
+            for (uint k = 0; k <= 255; k++) {
                 linKey = new ctrLinFloatKey();
                 linKey.Frame = k;
                 linKey.Value = table[k];

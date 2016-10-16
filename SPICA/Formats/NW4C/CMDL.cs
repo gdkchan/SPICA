@@ -13,10 +13,8 @@ using System.Globalization;
 using SPICA.Math3D;
 using SPICA.PICA.Converters;
 
-namespace SPICA.Formats.H3D
-{
-    public class CMDL
-    {
+namespace SPICA.Formats.H3D {
+    public class CMDL {
         #region MODELS
         [XmlRootAttribute("NintendoWareIntermediateFile")]
         public class CtrModel {
@@ -304,9 +302,9 @@ namespace SPICA.Formats.H3D
             [XmlAttribute]
             public uint NeededBoneCapacity;
 
-            public ctrArrayMetaData UserData = null;
-
             public ctrEditData EditData = null;
+
+            public ctrArrayMetaData UserData = null;
 
             [XmlArrayItem("GraphicsAnimationGroupDescription")]
             public List<ctrGraphicsAnimGroupDesc> AnimationGroupDescriptions = new List<ctrGraphicsAnimGroupDesc>();
@@ -621,9 +619,9 @@ namespace SPICA.Formats.H3D
             [XmlAttribute]
             public string ShaderBinaryKind;
 
-            public ctrArrayMetaData UserData = null;
-
             public ctrArrayMetaData EditData = null;
+
+            public ctrArrayMetaData UserData = null;
 
             public string ShaderReference;
 
@@ -1043,7 +1041,7 @@ namespace SPICA.Formats.H3D
                 verts = 0;
             foreach (var m in mdl.Meshes) {
                 verts += m.GetVertices().Count();
-                
+
                 foreach (var s in m.SubMeshes) {
                     subMeshes++;
                     indices += s.Indices.Count();
@@ -1099,7 +1097,6 @@ namespace SPICA.Formats.H3D
 
             //Model data
             ctrSkeletalModel skelModel = ctrMdl.GraphicsContentCtr.Models.SkeletalModel;
-            addMetaData(ref skelModel.UserData, mdl.MetaData);
             skelModel.EditData = new ctrEditData();
             skelModel.EditData.ModelDccToolExportOption = new ctrModelDccToolExportOpt();
             skelModel.EditData.OptimizationLogArrayMetaData = new ctrOptLogArrayMeta();
@@ -1110,10 +1107,11 @@ namespace SPICA.Formats.H3D
             skelModel.IsNonuniformScalable = false;
             skelModel.LayerId = 0;
             skelModel.NeededBoneCapacity = 20;
+            addUserData(ref skelModel.UserData, mdl.MetaData);
 
             //Model UserData
             ctrArrayMetaData modelUserData = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.UserData;
-            addMetaData(ref modelUserData, mdl.MetaData);
+            addUserData(ref modelUserData, mdl.MetaData);
 
             //Model EditData
             ctrModelDccToolExportOpt dccExpOpt = skelModel.EditData.ModelDccToolExportOption;
@@ -1128,6 +1126,14 @@ namespace SPICA.Formats.H3D
             ctrOptLog optLog;
             optLog = new ctrOptLog();
             optLog.Date = DateTime.Now.ToString("yyyy-MM-ddThh:mm:ss");
+            string posMode = null,
+                   normMode = null,
+                   texMode = null;
+            foreach (var a in mdl.Meshes[0].Attributes) {
+                if (posMode == null && a.Name == PICAAttributeName.Position) posMode = a.Format.ToString();
+                if (normMode == null && a.Name == PICAAttributeName.Normal) normMode = a.Format.ToString();
+                if (texMode == null && a.Name == PICAAttributeName.TextureCoordinate0) texMode = a.Format.ToString();
+            }
             optLog.EditorVersion = "1.4.5.44775";
             optLog.OptimizePrimitiveAverageCacheMissRatio = 0.7663249;
             optLog.OptimizerIdentifier = "AlgorithmCombo";
@@ -1138,9 +1144,9 @@ namespace SPICA.Formats.H3D
             optLog.Options.IsOptimizePlygonPrimitiveEnabled = true;
             optLog.Options.IsConvertOneBoneSkeletalModelToModel = false;
             optLog.Options.IsDeleteUnusedVertexEnabled = false;
-            optLog.Options.PositionQuantizeMode = "Byte";
-            optLog.Options.NormalQuantizeMode = "Byte";
-            optLog.Options.TextureQuantizeMode = "Byte";
+            optLog.Options.PositionQuantizeMode = posMode;
+            optLog.Options.NormalQuantizeMode = normMode;
+            optLog.Options.TextureQuantizeMode = texMode;
             optLog.Options.GroupByIndexStream = false;
             optLog.Options.OptimizePolygonPrimitiveLevel = 0;
             optLogArr.Values.Add(optLog);
@@ -1290,7 +1296,7 @@ namespace SPICA.Formats.H3D
             trans.Translate.X = 0;
             trans.Translate.Y = 0;
             trans.Translate.Z = 0;
-            
+
             //Shapes
             List<ctrSeparateDataShape> shapes = ctrMdl.GraphicsContentCtr.Models.SkeletalModel.Shapes;
             ctrSeparateDataShape shape;
@@ -1385,38 +1391,33 @@ namespace SPICA.Formats.H3D
                     vertStream.Scale = att.Scale;
                     vertStream.QuantizedMode = att.Format.ToString();
                     switch (att.Name) {
-                        case PICAAttributeName.Position: 
-                            {
+                        case PICAAttributeName.Position: {
                                 vertStream.VecArray = genVec3Array(sh.GetVertices(), att.Format, att.Name);
                                 shape.VertexAttributes.Vec3Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.Normal: 
-                            {
+                        case PICAAttributeName.Normal: {
                                 vertStream.VecArray = genVec3Array(sh.GetVertices(), att.Format, att.Name);
                                 shape.VertexAttributes.Vec3Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.TextureCoordinate0: 
-                            {
+                        case PICAAttributeName.TextureCoordinate0: {
                                 vertStream.VecArray = genVec2Array(sh.GetVertices(), att.Format, att.Name);
                                 shape.VertexAttributes.Vec2Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.BoneIndex: 
-                            {
+                        case PICAAttributeName.BoneIndex: {
                                 vertStream.VecArray = genBoneIndex(sh.GetVertices());
                                 shape.VertexAttributes.Vec4Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.BoneWeight:
-                            {
+                        case PICAAttributeName.BoneWeight: {
                                 vertStream.VecArray = genBoneWeights(sh.GetVertices());
                                 shape.VertexAttributes.Vec4Attributes.Add(vertStream);
                                 break;
                             }
                     }
-                    
+
                 }
                 shapes.Add(shape);
             }
@@ -1449,10 +1450,10 @@ namespace SPICA.Formats.H3D
                 mat.TranslucencyKind = "Layer0";
                 mat.ShaderProgramDescriptionIndex = -1;
                 mat.ShaderBinaryKind = "Default";
-                addMetaData(ref mat.UserData, mt.MaterialParams.MetaData);
+                addUserData(ref mat.UserData, mt.MaterialParams.MetaData);
                 //ShaderReference
                 string shdr = mt.MaterialParams.ShaderReference;
-                mat.ShaderReference = shdr == "0@DefaultShader" ? "" : shdr;
+                mat.ShaderReference = shdr == "0@DefaultShader" ? "" : "Shaders[\"" + shdr.Substring(2) + "\"]";
                 //MaterialColor
                 matCol = new ctrMatColor();
                 matCol.VertexColorScale = mt.MaterialParams.ColorScale;
@@ -1532,7 +1533,7 @@ namespace SPICA.Formats.H3D
                 mat.TextureMappers = texMaps;
                 for (int g = 0; g < numOfTextures; g++) {
                     texMap = new ctrPixTexMap();
-                    texMap.TextureReference = "Textures[\"" + mt.Name + "\"]";
+                    texMap.TextureReference = "Textures[\"" + mt.Texture0Name + "\"]@file:Textures/" + mt.Texture0Name + ".ctex";
                     texSamp = new ctrTexSampler();
                     texSamp.MinFilter = mt.TextureMappers[g].MinFilter.ToString();
                     texSamp.MagFilter = mt.TextureMappers[g].MagFilter.ToString();
@@ -1540,10 +1541,10 @@ namespace SPICA.Formats.H3D
                     texSamp.WrapT = mt.TextureMappers[g].WrapV.ToString();
                     texSamp.MinLod = mt.TextureMappers[g].MinLOD;
                     texSamp.LodBias = mt.TextureMappers[g].LODBias;
-                    texSamp.BorderColor.R = mt.TextureMappers[g].BorderColor.R;
-                    texSamp.BorderColor.G = mt.TextureMappers[g].BorderColor.G;
-                    texSamp.BorderColor.B = mt.TextureMappers[g].BorderColor.B;
-                    texSamp.BorderColor.A = mt.TextureMappers[g].BorderColor.A;
+                    texSamp.BorderColor.R = (float)mt.TextureMappers[g].BorderColor.R / 255;
+                    texSamp.BorderColor.G = (float)mt.TextureMappers[g].BorderColor.G / 255;
+                    texSamp.BorderColor.B = (float)mt.TextureMappers[g].BorderColor.B / 255;
+                    texSamp.BorderColor.A = (float)mt.TextureMappers[g].BorderColor.A / 255;
                     texMap.StandardTextureSamplerCtr = texSamp;
                     texMaps.Add(texMap);
                 }
@@ -1577,10 +1578,10 @@ namespace SPICA.Formats.H3D
                         break;
                 }
                 fragShade.LayerConfig = "ConfigurationType" + mt.MaterialParams.LayerConfig.ToString();
-                fragShade.BufferColor.R = mt.MaterialParams.TexEnvBufferColor.R;
-                fragShade.BufferColor.G = mt.MaterialParams.TexEnvBufferColor.G;
-                fragShade.BufferColor.B = mt.MaterialParams.TexEnvBufferColor.B;
-                fragShade.BufferColor.A = mt.MaterialParams.TexEnvBufferColor.A;
+                fragShade.BufferColor.R = (float)mt.MaterialParams.TexEnvBufferColor.R / 255;
+                fragShade.BufferColor.G = (float)mt.MaterialParams.TexEnvBufferColor.G / 255;
+                fragShade.BufferColor.B = (float)mt.MaterialParams.TexEnvBufferColor.B / 255;
+                fragShade.BufferColor.A = (float)mt.MaterialParams.TexEnvBufferColor.A / 255;
                 fragShade.FragmentBump.BumpTextureIndex = "Texture" + mt.MaterialParams.BumpTexture;
                 fragShade.FragmentBump.BumpMode = bumpMode;
 
@@ -1601,7 +1602,7 @@ namespace SPICA.Formats.H3D
                 if (mt.MaterialParams.LUTReflecRTableName != null) {
                     flt.ReflectanceRSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.ReflectanceRSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecRTableName;
-                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecRSamplerName + "\"]";
+                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecRSamplerName + "\"]@file:" + mt.MaterialParams.LUTReflecRSamplerName + ".clts";
                 } else {
                     flt.ReflectanceRSampler.NullLookupTableCtr = "";
                 }
@@ -1611,7 +1612,7 @@ namespace SPICA.Formats.H3D
                 if (mt.MaterialParams.LUTReflecGTableName != null) {
                     flt.ReflectanceGSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.ReflectanceGSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecGTableName;
-                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecGSamplerName + "\"]";
+                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecGSamplerName + "\"]@file:" + mt.MaterialParams.LUTReflecGSamplerName + ".clts";
                 } else {
                     flt.ReflectanceGSampler.NullLookupTableCtr = "";
                 }
@@ -1621,7 +1622,7 @@ namespace SPICA.Formats.H3D
                 if (mt.MaterialParams.LUTReflecBTableName != null) {
                     flt.ReflectanceBSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.ReflectanceBSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecBTableName;
-                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecBSamplerName + "\"]";
+                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecBSamplerName + "\"]@file:" + mt.MaterialParams.LUTReflecBSamplerName + ".clts";
                 } else {
                     flt.ReflectanceBSampler.NullLookupTableCtr = "";
                 }
@@ -1631,17 +1632,17 @@ namespace SPICA.Formats.H3D
                 if (mt.MaterialParams.LUTDist0TableName != null) {
                     flt.Distribution0Sampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.Distribution0Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist0TableName;
-                    flt.Distribution0Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist0SamplerName + "\"]";
+                    flt.Distribution0Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist0SamplerName + "\"]@file:" + mt.MaterialParams.LUTDist0SamplerName + ".clts";
                 } else {
                     flt.Distribution0Sampler.NullLookupTableCtr = "";
                 }
                 flt.Distribution1Sampler.IsAbs = mt.MaterialParams.LUTInputAbs.Dist1Abs;
                 flt.Distribution1Sampler.Input = mt.MaterialParams.LUTInputSel.Dist1Input.ToString();
                 flt.Distribution1Sampler.Scale = mt.MaterialParams.LUTInputScaleSel.Dist1Scale.ToString();
-                if (mt.MaterialParams.LUTReflecRTableName != null) {
+                if (mt.MaterialParams.LUTDist1TableName != null) {
                     flt.Distribution1Sampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.Distribution1Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist1TableName;
-                    flt.Distribution1Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist1SamplerName + "\"]";
+                    flt.Distribution1Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist1SamplerName + "\"]@file:" + mt.MaterialParams.LUTDist1SamplerName + ".clts";
                 } else {
                     flt.Distribution1Sampler.NullLookupTableCtr = "";
                 }
@@ -1651,7 +1652,7 @@ namespace SPICA.Formats.H3D
                 if (mt.MaterialParams.LUTFresnelTableName != null) {
                     flt.FresnelSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.FresnelSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTFresnelTableName;
-                    flt.FresnelSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTFresnelSamplerName + "\"]";
+                    flt.FresnelSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTFresnelSamplerName + "\"]@file:" + mt.MaterialParams.LUTFresnelSamplerName + ".clts";
                 } else {
                     flt.FresnelSampler.NullLookupTableCtr = "";
                 }
@@ -1679,7 +1680,7 @@ namespace SPICA.Formats.H3D
                     texComb.OperandAlpha.Operand2 = comb.Operand.AlphaOp[2].ToString();
                     fragShade.TextureCombiners.Add(texComb);
                 }
-                
+
                 fragShade.AlphaTest.IsTestEnabled = mt.MaterialParams.FragmentAlphaTest.Enabled;
                 fragShade.AlphaTest.TestFunction = getTestFunc(mt.MaterialParams.FragmentAlphaTest.Function);
                 fragShade.AlphaTest.TestReference = mt.MaterialParams.FragmentAlphaTest.Reference;
@@ -1702,10 +1703,10 @@ namespace SPICA.Formats.H3D
                 fragOp.BlendOperation.AlphaParameter.BlendFunctionDestination = mt.MaterialParams.BlendingFunction.AlphaDestFunc.ToString();
                 fragOp.BlendOperation.AlphaParameter.BlendEquation = mt.MaterialParams.BlendingFunction.AlphaEquation.ToString();
 
-                fragOp.BlendOperation.BlendColor.R = mt.MaterialParams.BlendColor.R;
-                fragOp.BlendOperation.BlendColor.G = mt.MaterialParams.BlendColor.G;
-                fragOp.BlendOperation.BlendColor.B = mt.MaterialParams.BlendColor.B;
-                fragOp.BlendOperation.BlendColor.A = mt.MaterialParams.BlendColor.A;
+                fragOp.BlendOperation.BlendColor.R = (float)mt.MaterialParams.BlendColor.R / 255;
+                fragOp.BlendOperation.BlendColor.G = (float)mt.MaterialParams.BlendColor.G / 255;
+                fragOp.BlendOperation.BlendColor.B = (float)mt.MaterialParams.BlendColor.B / 255;
+                fragOp.BlendOperation.BlendColor.A = (float)mt.MaterialParams.BlendColor.A / 255;
 
                 fragOp.StencilOperation.IsTestEnabled = mt.MaterialParams.StencilTest.Enabled;
                 fragOp.StencilOperation.TestFunction = getTestFunc(mt.MaterialParams.StencilTest.Function);
@@ -1731,7 +1732,6 @@ namespace SPICA.Formats.H3D
                 mesh.MeshNodeName = mdl.MeshNodesTree.Nodes[mdl.Meshes[i].NodeIndex + 1].Name;
                 mesh.SeparateShapeReference = "Shapes[" + i + "]";
                 mesh.MaterialReference = "Materials[\"" + mdl.Materials[mdl.Meshes[i].MaterialIndex].Name + "\"]";
-                addDccToolMeta(ref mesh.EditData, mdl.MeshNodesTree.Nodes[mdl.Meshes[i].NodeIndex + 1].Name);
                 meshes.Add(mesh);
             }
 
@@ -1740,7 +1740,7 @@ namespace SPICA.Formats.H3D
             ctrMeshVis meshVisibility;
             for (i = 0; i < mdl.MeshNodesCount; i++) {
                 meshVisibility = new ctrMeshVis();
-                meshVisibility.Name = mdl.MeshNodesTree.Nodes[i+1].Name;
+                meshVisibility.Name = mdl.MeshNodesTree.Nodes[i + 1].Name;
                 meshVisibility.IsVisible = mdl.MeshNodesVisibility[i];
                 meshVisibilites.Add(meshVisibility);
             }
@@ -1767,7 +1767,7 @@ namespace SPICA.Formats.H3D
                 //EditData
                 //
                 //UserData
-                addMetaData(ref bone.UserData, b.MetaData);
+                addUserData(ref bone.UserData, b.MetaData);
                 //---------
                 bone.Transform.Rotate.X = b.Rotation.X;
                 bone.Transform.Rotate.Y = b.Rotation.Y;
@@ -1856,7 +1856,7 @@ namespace SPICA.Formats.H3D
             Vector3D vector = new Vector3D();
             foreach (var vec in verts) {
                 switch (name) {
-                    case PICAAttributeName.Position: 
+                    case PICAAttributeName.Position:
                         vector = vec.Position;
                         break;
                     case PICAAttributeName.Normal:
@@ -1899,7 +1899,7 @@ namespace SPICA.Formats.H3D
 
         private static string getTestFunc(PICATestFunc opt) { //The idea of this function is absurd, but these strings were too bad to add to the enums
             string func = "";
-            switch (opt) { 
+            switch (opt) {
                 case PICATestFunc.LessThan:
                     func = "Less";
                     break;
@@ -1919,17 +1919,7 @@ namespace SPICA.Formats.H3D
             return func;
         }
 
-        private static void addDccToolMeta(ref ctrEditData editData, string node) {
-            ctrNodeName n;
-            if (editData == null) editData = new ctrEditData();
-            editData.DccToolSourceNodeMetaData = new ctrDccSrcNode();
-            editData.DccToolSourceNodeMetaData.Key = "DccToolSourceNode";
-            n = new ctrNodeName();
-            n.Name = node;
-            editData.DccToolSourceNodeMetaData.Values.Add(n);
-        }
-
-        private static void addMetaData(ref ctrArrayMetaData localMeta, H3DMetaData metaData) {
+        private static void addUserData(ref ctrArrayMetaData localMeta, H3DMetaData metaData) {
             ctrIntArrayMeta intArr;
             ctrFloatArrayMeta floatArr;
             ctrStringArrayMeta strArr;
@@ -1944,8 +1934,7 @@ namespace SPICA.Formats.H3D
                 if (localMeta.strArrayData == null) localMeta.strArrayData = new List<ctrStringArrayMeta>();
                 switch (val.Type) {
                     case H3DMetaDataType.ASCIIString:
-                    case H3DMetaDataType.UnicodeString: 
-                        {
+                    case H3DMetaDataType.UnicodeString: {
                             strArr = new ctrStringArrayMeta();
                             strArr.DataKind = "StringSet";
                             strArr.Key = val.Name[0].Equals('$') ? val.Name.Substring(1) : val.Name;
@@ -1958,8 +1947,7 @@ namespace SPICA.Formats.H3D
                             localMeta.strArrayData.Add(strArr);
                             break;
                         }
-                    case H3DMetaDataType.Integer: 
-                        {
+                    case H3DMetaDataType.Integer: {
                             intArr = new ctrIntArrayMeta();
                             intArr.DataKind = "IntSet";
                             intArr.Key = val.Name[0].Equals('$') ? val.Name.Substring(1) : val.Name;
@@ -1971,8 +1959,7 @@ namespace SPICA.Formats.H3D
                             localMeta.intArrayData.Add(intArr);
                             break;
                         }
-                    case H3DMetaDataType.Single: 
-                        {
+                    case H3DMetaDataType.Single: {
                             floatArr = new ctrFloatArrayMeta();
                             floatArr.DataKind = "FloatSet";
                             floatArr.Key = val.Name[0].Equals('$') ? val.Name.Substring(1) : val.Name;
