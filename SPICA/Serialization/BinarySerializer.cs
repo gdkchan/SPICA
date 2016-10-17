@@ -60,6 +60,8 @@ namespace SPICA.Serialization
         private uint BufferedUInt = 0;
         private uint BufferedShift = 0;
 
+        private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
         public BinarySerializer(Stream BaseStream, H3DRelocator Relocator = null)
         {
             this.BaseStream = BaseStream;
@@ -198,11 +200,11 @@ namespace SPICA.Serialization
                 Type = Type.GetGenericArguments()[0];
 
             bool Inline = Type.IsDefined(typeof(InlineAttribute));
-            bool Pointer = !(Type.IsValueType || Type.IsEnum || Inline);
+            bool Pointers = !(Type.IsValueType || Type.IsEnum || Inline);
 
             foreach (object Value in List)
             {
-                if (Pointer)
+                if (Pointers)
                 {
                     AddReference(Type, new RefValue
                     {
@@ -223,11 +225,12 @@ namespace SPICA.Serialization
 
         private void WriteValue(RefValue Reference)
         {
+            FieldInfo Info = Reference.Info;
             object Value = Reference.Value;
+            bool Range = Info?.IsDefined(typeof(RangeAttribute)) ?? false;
 
-            if (Value != null)
+            if (Value != null && (!(Value is IList) || ((IList)Value).Count > 0 || Range))
             {
-                FieldInfo Info = Reference.Info;
                 ObjectInfo OInfo = GetObjInfo(Value, Info);
 
                 long Position = BaseStream.Position;
@@ -242,7 +245,6 @@ namespace SPICA.Serialization
 
                 if (Reference.Position != -1)
                 {
-                    bool Range = Info?.IsDefined(typeof(RangeAttribute)) ?? false;
                     long EndPos = BaseStream.Position;
 
                     BaseStream.Seek(Reference.Position, SeekOrigin.Begin);
@@ -323,7 +325,7 @@ namespace SPICA.Serialization
                 if (((ICustomSerialization)Value).Serialize(this)) return;
             }
 
-            foreach (FieldInfo Info in ValueType.GetFields())
+            foreach (FieldInfo Info in ValueType.GetFields(Binding))
             {
                 if (!Info.IsDefined(typeof(NonSerializedAttribute)))
                 {

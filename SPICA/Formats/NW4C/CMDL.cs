@@ -1051,7 +1051,7 @@ namespace SPICA.Formats.H3D {
             }
             note = new ctrNote();
             note.Name = "MaterialCount";
-            note.Value = (uint)mdl.Materials.Contents.Count;
+            note.Value = (uint)mdl.Materials.Count;
             notes.Add(note);
             note = new ctrNote();
             note.Name = "ShapeCount";
@@ -1063,7 +1063,7 @@ namespace SPICA.Formats.H3D {
             notes.Add(note);
             note = new ctrNote();
             note.Name = "BoneCount";
-            note.Value = (uint)mdl.Skeleton.Contents.Count;
+            note.Value = (uint)mdl.Skeleton.Count;
             notes.Add(note);
             note = new ctrNote();
             note.Name = "TotalPrimitiveSetCount";
@@ -1439,7 +1439,7 @@ namespace SPICA.Formats.H3D {
             ctrFragShader fragShade;
             ctrTexCombine texComb;
             ctrFragOp fragOp;
-            foreach (var mt in mdl.Materials.Contents) {
+            foreach (var mt in mdl.Materials) {
                 mat = new ctrMaterial();
                 mat.Name = mt.Name;
                 mat.IsCompressible = true;
@@ -1554,44 +1554,18 @@ namespace SPICA.Formats.H3D {
                 }
                 //FragmentShader
                 fragShade = new ctrFragShader();
-                string bumpMode = "",
-                       fresnelConf = "";
-                switch (mt.MaterialParams.BumpMode) {
-                    case 0:
-                        bumpMode = "NotUsed";
-                        break;
-                    case 1:
-                        bumpMode = "AsBump";
-                        break;
-                    case 2:
-                        bumpMode = "AsTangent";
-                        break;
-                }
-                switch (mt.MaterialParams.FresnelConfig) {
-                    case 0:
-                        fresnelConf = "No";
-                        break;
-                    case 1:
-                        fresnelConf = "Pri";
-                        break;
-                    case 2:
-                        fresnelConf = "Sec";
-                        break;
-                    case 3:
-                        fresnelConf = "PriSec";
-                        break;
-                }
-                fragShade.LayerConfig = "ConfigurationType" + mt.MaterialParams.LayerConfig.ToString();
+
+                fragShade.LayerConfig = "ConfigurationType" + ((int)mt.MaterialParams.TranslucencyLayer).ToString(); //???
                 fragShade.BufferColor.R = (float)mt.MaterialParams.TexEnvBufferColor.R / 255;
                 fragShade.BufferColor.G = (float)mt.MaterialParams.TexEnvBufferColor.G / 255;
                 fragShade.BufferColor.B = (float)mt.MaterialParams.TexEnvBufferColor.B / 255;
                 fragShade.BufferColor.A = (float)mt.MaterialParams.TexEnvBufferColor.A / 255;
                 fragShade.FragmentBump.BumpTextureIndex = "Texture" + mt.MaterialParams.BumpTexture;
-                fragShade.FragmentBump.BumpMode = bumpMode;
+                fragShade.FragmentBump.BumpMode = mt.MaterialParams.BumpMode.ToString();
 
                 H3DFragmentFlags lightFlags = mt.MaterialParams.FragmentFlags;
                 fragShade.FragmentBump.IsBumpRenormalize = (lightFlags & H3DFragmentFlags.IsBumpRenormalizeEnabled) > 0;
-                fragShade.FragmentLighting.FresnelConfig = fresnelConf;
+                fragShade.FragmentLighting.FresnelConfig = mt.MaterialParams.FresnelSelector.ToString();
                 fragShade.FragmentLighting.IsClampHighLight = (lightFlags & H3DFragmentFlags.IsClampHighLightEnabled) > 0;
                 fragShade.FragmentLighting.IsDistribution0Enabled = (lightFlags & H3DFragmentFlags.IsLUTDist0Enabled) > 0;
                 fragShade.FragmentLighting.IsDistribution1Enabled = (lightFlags & H3DFragmentFlags.IsLUTDist1Enabled) > 0;
@@ -1732,8 +1706,8 @@ namespace SPICA.Formats.H3D {
             for (i = 0; i < mdl.Meshes.Count; i++) {
                 mesh = new ctrMesh();
                 mesh.IsVisible = true;
-                mesh.RenderPriority = mdl.Meshes[i].Key;
-                mesh.MeshNodeName = mdl.MeshNodesTree.Nodes[mdl.Meshes[i].NodeIndex + 1].Name;
+                mesh.RenderPriority = (int)mdl.Meshes[i].Priority;
+                mesh.MeshNodeName = mdl.MeshNodesTree[mdl.Meshes[i].NodeIndex + 1].Name;
                 mesh.SeparateShapeReference = "Shapes[" + i + "]";
                 mesh.MaterialReference = "Materials[\"" + mdl.Materials[mdl.Meshes[i].MaterialIndex].Name + "\"]";
                 meshes.Add(mesh);
@@ -1744,7 +1718,7 @@ namespace SPICA.Formats.H3D {
             ctrMeshVis meshVisibility;
             for (i = 0; i < mdl.MeshNodesCount; i++) {
                 meshVisibility = new ctrMeshVis();
-                meshVisibility.Name = mdl.MeshNodesTree.Nodes[i + 1].Name;
+                meshVisibility.Name = mdl.MeshNodesTree[i + 1].Name;
                 meshVisibility.IsVisible = mdl.MeshNodesVisibility[i];
                 meshVisibilites.Add(meshVisibility);
             }

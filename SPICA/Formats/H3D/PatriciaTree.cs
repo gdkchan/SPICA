@@ -1,4 +1,5 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System;
@@ -8,13 +9,20 @@ using System.Collections;
 
 namespace SPICA.Formats.H3D
 {
-    struct PatriciaTree : ICustomSerialization, IEnumerable<PatriciaTreeNode>
+    [Inline]
+    class PatriciaTree : ICustomSerialization, IEnumerable<PatriciaTreeNode>
     {
         [NonSerialized]
-        public List<PatriciaTreeNode> Nodes;
+        private List<PatriciaTreeNode> Nodes;
 
         [NonSerialized]
         private List<string> Names;
+
+        public PatriciaTreeNode this[int Index]
+        {
+            get { return Nodes[Index]; }
+            set { Nodes[Index] = value; }
+        }
 
         public int MaxLength
         {
@@ -35,23 +43,12 @@ namespace SPICA.Formats.H3D
 
         private const string DuplicateKeysEx = "Tree shouldn't contain duplicate keys!";
 
-        public PatriciaTreeNode this[int Index]
+        public PatriciaTree()
         {
-            get { return Nodes[Index]; }
-            set { Nodes[Index] = value; }
-        }
+            Nodes = new List<PatriciaTreeNode>();
+            Nodes.Add(new PatriciaTreeNode());
 
-        public static PatriciaTree Empty
-        {
-            get
-            {
-                PatriciaTree Tree = new PatriciaTree();
-
-                Tree.Nodes = new List<PatriciaTreeNode>();
-                Tree.Nodes.Add(new PatriciaTreeNode());
-
-                return Tree;
-            }
+            Names = new List<string>();
         }
 
         public void Deserialize(BinaryDeserializer Deserializer)
@@ -63,8 +60,7 @@ namespace SPICA.Formats.H3D
             int MaxIndex = 0;
             int Index = 0;
 
-            Nodes = new List<PatriciaTreeNode>();
-            Names = new List<string>();
+            Nodes.Clear();
 
             while (Index++ <= MaxIndex)
             {
@@ -86,7 +82,7 @@ namespace SPICA.Formats.H3D
             Serializer.Contents.Values.Add(new RefValue
             {
                 Position = Serializer.BaseStream.Position,
-                Value = Nodes ?? Empty.Nodes
+                Value = Nodes
             });
 
             Serializer.Skip(4);
@@ -105,46 +101,6 @@ namespace SPICA.Formats.H3D
         }
 
         //Implementation
-        public void Add(string Name)
-        {
-            if (Name != null)
-            {
-                (Names ?? (Names = new List<string>())).Add(Name);
-
-                RebuildTree();
-            }
-        }
-
-        public void Insert(int Index, string Name)
-        {
-            if (Name != null)
-            {
-                (Names ?? (Names = new List<string>())).Insert(Index, Name);
-
-                RebuildTree();
-            }
-        }
-
-        public void Remove(string Name)
-        {
-            if (Names != null && Name != null)
-            {
-                Names.Remove(Name);
-
-                RebuildTree();
-            }
-        }
-
-        public void Clear()
-        {
-            if (Names != null)
-            {
-                Names.Clear();
-
-                RebuildTree();
-            }
-        }
-
         public int Find(string Name)
         {
             int Output = 0;
@@ -161,9 +117,33 @@ namespace SPICA.Formats.H3D
             return Output - 1;
         }
 
+        public void Add(string Name)
+        {
+            Names.Add(Name);
+            RebuildTree();
+        }
+
+        public void Insert(int Index, string Name)
+        {
+            Names.Insert(Index, Name);
+            RebuildTree();
+        }
+
+        public void Remove(string Name)
+        {
+            Names.Remove(Name);
+            RebuildTree();
+        }
+
+        public void Clear()
+        {
+            Names.Clear();
+            RebuildTree();
+        }
+
         private void RebuildTree()
         {
-            Nodes = new List<PatriciaTreeNode>();
+            Nodes.Clear();
 
             if (Names.Count > 0)
                 Nodes.Add(new PatriciaTreeNode { ReferenceBit = uint.MaxValue });
@@ -175,6 +155,8 @@ namespace SPICA.Formats.H3D
 
         private void Insert(string Name)
         {
+            if (Name == null) return;
+
             PatriciaTreeNode New = new PatriciaTreeNode();
             PatriciaTreeNode Root;
 

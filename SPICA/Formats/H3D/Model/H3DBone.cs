@@ -15,7 +15,7 @@ namespace SPICA.Formats.H3D.Model
 
         public short ParentIndex;
 
-        public ushort Padding;
+        private ushort Padding;
 
         public Vector3D Scale;
         public Vector3D Rotation;

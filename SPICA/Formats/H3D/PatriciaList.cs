@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using SPICA.Serialization.Attributes;
+
+using System.Collections.Generic;
 using System.Collections;
 
 namespace SPICA.Formats.H3D
 {
-    struct PatriciaList<T> : IEnumerable<T> where T : INamed
+    [Inline]
+    class PatriciaList<T> : IEnumerable<T> where T : INamed
     {
-        public List<T> Contents;
-        public PatriciaTree Tree;
+        private List<T> Contents;
+        public PatriciaTree NameTree;
 
         public T this[int Index]
         {
@@ -14,15 +17,18 @@ namespace SPICA.Formats.H3D
             set { Contents[Index] = value; }
         }
 
-        public T this[string Key]
+        public T this[string Name]
         {
-            get { return Contents[Tree.Find(Key)]; }
-            set { Contents[Tree.Find(Key)] = value; }
+            get { return Contents[FindIndex(Name)]; }
+            set { Contents[FindIndex(Name)] = value; }
         }
 
-        public int Count
+        public int Count { get { return Contents.Count; } }
+
+        public PatriciaList()
         {
-            get { return Contents.Count; }
+            Contents = new List<T>();
+            NameTree = new PatriciaTree();
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -36,30 +42,38 @@ namespace SPICA.Formats.H3D
         }
 
         //List management methods
-        public void Add(T Data)
+        public void Add(T Value)
         {
-            (Contents ?? (Contents = new List<T>())).Add(Data);
-
-            Tree.Add(((INamed)Data).ObjectName);
+            Contents.Add(Value);
+            NameTree.Add(((INamed)Value).ObjectName);
         }
 
-        public void Insert(int Index, T Data)
+        public void Insert(int Index, T Value)
         {
-            (Contents ?? (Contents = new List<T>())).Insert(Index, Data);
-
-            Tree.Insert(Index, ((INamed)Data).ObjectName);
+            Contents.Insert(Index, Value);
+            NameTree.Insert(Index, ((INamed)Value).ObjectName);
         }
 
-        public void Remove(T Data)
+        public void Remove(T Value)
         {
-            if (Contents != null)
-            {
-                Contents.Remove(Data);
+            Contents.Remove(Value);
+            NameTree.Remove(((INamed)Value).ObjectName);
+        }
 
-                Tree.Remove(((INamed)Data).ObjectName);
+        public void Clear()
+        {
+            Contents.Clear();
+            NameTree.Clear();
+        }
 
-                if (Contents.Count == 0) Contents = null;
-            }
+        public int FindIndex(string Name)
+        {
+            return NameTree.Find(Name);
+        }
+
+        public string FindName(int Index)
+        {
+            return NameTree[Index + 1].Name;
         }
 
         public void Remove(int Index)
@@ -70,13 +84,6 @@ namespace SPICA.Formats.H3D
         public void Remove(string Name)
         {
             Remove(this[Name]);
-        }
-
-        public void Clear()
-        {
-            Contents = null;
-
-            Tree.Clear();
         }
     }
 }

@@ -18,10 +18,10 @@ namespace SPICA.Formats.H3D.Model.Mesh
     class H3DMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public ushort MaterialIndex;
-        public byte Flags;
-        public byte Padding;
+        private byte Flags;
+        private byte Padding;
         public ushort NodeIndex;
-        public ushort Key;
+        private ushort Key;
 
         public H3DMeshType Type
         {
@@ -47,17 +47,17 @@ namespace SPICA.Formats.H3D.Model.Mesh
             set { Key = BitUtils.SetBits(Key, value, 8, 2); }
         }
 
-        public uint[] EnableCommands;
+        private uint[] EnableCommands;
 
         public List<H3DSubMesh> SubMeshes;
 
-        public uint[] DisableCommands;
+        private uint[] DisableCommands;
 
         public Vector3D MeshCenter;
 
         public H3DModel Parent;
 
-        public uint UserDefinedAddress;
+        private uint UserDefinedAddress;
 
         public H3DMetaData MetaData;
 
@@ -76,7 +76,10 @@ namespace SPICA.Formats.H3D.Model.Mesh
         [NonSerialized]
         public Vector4D PositionOffset;
 
-        public H3DMesh() { }
+        public H3DMesh()
+        {
+            SubMeshes = new List<H3DSubMesh>();
+        }
 
         public H3DMesh(IEnumerable<PICAVertex> Vertices, PICAAttribute[] Attributes, ushort[] Indices)
         {
@@ -99,14 +102,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
                 VertexStride += Length;
             }
 
-            SubMeshes = new List<H3DSubMesh>();
-
-            SubMeshes.Add(new H3DSubMesh
-            {
-                BoneIndices = new ushort[20],
-                Indices = Indices,
-                BoolUniforms = 0xa280
-            });
+            SubMeshes = new List<H3DSubMesh> { new H3DSubMesh { Indices = Indices } };
         }
 
         public PICAVertex[] ToVertices()
@@ -250,15 +246,23 @@ namespace SPICA.Formats.H3D.Model.Mesh
 
         public bool Serialize(BinarySerializer Serializer)
         {
-            /*
-             * Setup flags
-             */
-            
+            //Setup flags
+            bool UVMap0 = Attributes.Any(x => x.Name == PICAAttributeName.TextureCoordinate0);
+            bool UVMap1 = Attributes.Any(x => x.Name == PICAAttributeName.TextureCoordinate1);
+            bool UVMap2 = Attributes.Any(x => x.Name == PICAAttributeName.TextureCoordinate2);
 
+            foreach (H3DSubMesh SM in SubMeshes)
+            {
+                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, SM.Skinning == H3DSubMeshSkinning.Smooth, 1);
+                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, SM.Skinning == H3DSubMeshSkinning.Rigid, 2);
+                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap0, 9);
+                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap1, 10);
+                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap2, 11);
+                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap0, 13);
+                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, true, 15);
+            }
 
-            /*
-             * Fill Commands
-             */
+            //Fill Commands
             PICACommandWriter Writer;
 
             ulong BufferFormats = 0;

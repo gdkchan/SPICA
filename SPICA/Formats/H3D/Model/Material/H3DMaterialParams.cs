@@ -4,6 +4,7 @@ using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+using SPICA.Utils;
 
 using System;
 
@@ -48,20 +49,35 @@ namespace SPICA.Formats.H3D.Model.Material
         public H3DMaterialLUT ReflecGLUT;
         public H3DMaterialLUT ReflecBLUT;
 
-        public byte LayerConfig;
-        public byte FresnelConfig;
-        public byte BumpMode;
+        private byte LayerConfig;
+
+        public H3DTranslucencyLayer TranslucencyLayer
+        {
+            get { return (H3DTranslucencyLayer)BitUtils.GetBits(LayerConfig, 0, 4); }
+            set { LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 0, 4); }
+        }
+
+        public H3DTexCoordConfig TexCoordConfig
+        {
+            get { return (H3DTexCoordConfig)BitUtils.GetBits(LayerConfig, 4, 4); }
+            set { LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 4, 4); }
+        }
+
+        public H3DFresnelSelector FresnelSelector;
+
+        public H3DBumpMode BumpMode;
+
         public byte BumpTexture;
 
         [Inline, FixedLength(6)]
-        public uint[] LUTConfigCommands;
+        private uint[] LUTConfigCommands;
 
         public uint ConstantColors;
 
         public float PolygonOffsetUnit;
 
         [RepeatPointer]
-        public uint[] FragmentShaderCommands;
+        private uint[] FragmentShaderCommands;
 
         public string LUTDist0SamplerName;
         public string LUTDist1SamplerName;
@@ -81,8 +97,6 @@ namespace SPICA.Formats.H3D.Model.Material
         public string ModelReference;
 
         public H3DMetaData MetaData;
-
-        public string ObjectName { get { return null; } }
 
         //LookUp Table
         [NonSerialized]
@@ -125,8 +139,11 @@ namespace SPICA.Formats.H3D.Model.Material
         [NonSerialized]
         public PICADepthColorMask DepthColorMask;
 
+        public string ObjectName { get { return null; } }
+
         public H3DMaterialParams()
         {
+            TextureCoords = new H3DTextureCoord[3];
             TexEnvStages = new PICATexEnvStage[6];
 
             for (int Index = 0; Index < TexEnvStages.Length; Index++)

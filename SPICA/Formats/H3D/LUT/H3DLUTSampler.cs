@@ -8,10 +8,10 @@ namespace SPICA.Formats.H3D.LUT
     struct H3DLUTSampler : ICustomSerialization
     {
         public H3DLUTFlags Flags;
-        public byte Padding0;
-        public ushort Padding1;
+        private byte Padding0;
+        private ushort Padding1;
 
-        public uint[] Commands;
+        private uint[] Commands;
 
         public string Name;
 

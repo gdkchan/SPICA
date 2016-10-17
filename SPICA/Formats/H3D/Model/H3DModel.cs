@@ -20,17 +20,10 @@ namespace SPICA.Formats.H3D.Model
 
         public List<H3DMesh> Meshes;
 
-        [Range]
-        public List<H3DMesh> MeshesLayer0;
-
-        [Range]
-        public List<H3DMesh> MeshesLayer1;
-
-        [Range]
-        public List<H3DMesh> MeshesLayer2;
-
-        [Range]
-        public List<H3DMesh> MeshesLayer3;
+        [Range] public List<H3DMesh> MeshesLayer0;
+        [Range] public List<H3DMesh> MeshesLayer1;
+        [Range] public List<H3DMesh> MeshesLayer2;
+        [Range] public List<H3DMesh> MeshesLayer3;
 
         public List<H3DSubMeshCulling> SubMeshCullings;
 
@@ -46,8 +39,26 @@ namespace SPICA.Formats.H3D.Model
 
         public PatriciaTree MeshNodesTree;
 
-        public uint UserDefinedAddress;
+        private uint UserDefinedAddress;
 
         public H3DMetaData MetaData;
+
+        public H3DModel()
+        {
+            Materials = new PatriciaList<H3DMaterial>();
+
+            Meshes = new List<H3DMesh>();
+
+            MeshesLayer0 = new List<H3DMesh>();
+            MeshesLayer1 = new List<H3DMesh>();
+            MeshesLayer2 = new List<H3DMesh>();
+            MeshesLayer3 = new List<H3DMesh>();
+
+            SubMeshCullings = new List<H3DSubMeshCulling>();
+
+            Skeleton = new PatriciaList<H3DBone>();
+
+            MeshNodesVisibility = new List<bool>();
+        }
     }
 }

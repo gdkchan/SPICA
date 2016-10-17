@@ -33,11 +33,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBoneFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DModelFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\H3DBoneScaling.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DBumpMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DFragmentFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DFresnelSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DMaterialShader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTexCoordConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\H3DTranslucencyLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureCoord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureCoordFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\H3D\Model\Material\Texture\H3DTextureMagFilter.cs" />

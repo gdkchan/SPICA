@@ -28,7 +28,7 @@ namespace SPICA.Formats.H3D
         public int UnInitCommandsLength;
 
         public H3DFlags Flags;
-        public byte Padding;
+        private byte Padding;
 
         public ushort AddressCount;
     }

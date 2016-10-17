@@ -33,6 +33,8 @@ namespace SPICA.Serialization
         private uint BufferedUInt = 0;
         private uint BufferedShift = 0;
 
+        private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
         public BinaryDeserializer(Stream BaseStream)
         {
             this.BaseStream = BaseStream;
@@ -178,7 +180,7 @@ namespace SPICA.Serialization
 
                 long Position = BaseStream.Position;
 
-                foreach (FieldInfo Info in Value.GetType().GetFields())
+                foreach (FieldInfo Info in ObjectType.GetFields(Binding))
                 {
                     if (!Info.IsDefined(typeof(NonSerializedAttribute)))
                     {
@@ -202,7 +204,7 @@ namespace SPICA.Serialization
                         }
                         else
                         {
-                            Info.SetValue(Value, ReadReference(Info));
+                            ReadReference(Value, Info);
                         }
                     }
                 }
@@ -215,7 +217,7 @@ namespace SPICA.Serialization
             return Value;
         }
 
-        private object ReadReference(FieldInfo Info)
+        private void ReadReference(object Parent, FieldInfo Info)
         {
             uint Address = Reader.ReadUInt32();
             int Length = 0;
@@ -230,8 +232,6 @@ namespace SPICA.Serialization
             }
 
             if (Info.IsDefined(typeof(RepeatPointerAttribute))) Reader.ReadUInt32();
-            
-            object Value = null;
 
             if (Address != 0)
             {
@@ -239,12 +239,10 @@ namespace SPICA.Serialization
 
                 BaseStream.Seek(Address, SeekOrigin.Begin);
 
-                Value = ReadValue(Info.FieldType, Info, Length);
+                Info.SetValue(Parent, ReadValue(Info.FieldType, Info, Length));
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
             }
-
-            return Value;
         }
     }
 }

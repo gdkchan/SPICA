@@ -96,13 +96,13 @@ namespace SPICA.Formats.H3D
             Serializer.Strings.Values.Add(new RefValue
             {
                 Value = Name,
-                Position = Serializer.BaseStream.Position,
+                Position = Serializer.BaseStream.Position
             });
 
             Serializer.Contents.Values.Add(new RefValue
             {
                 Value = GetCastedValues(),
-                Position = Serializer.BaseStream.Position + 8,
+                Position = Serializer.BaseStream.Position + 8
             });
 
             Serializer.Writer.Write(0u);

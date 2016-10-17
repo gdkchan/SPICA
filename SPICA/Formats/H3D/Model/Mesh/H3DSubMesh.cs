@@ -8,17 +8,18 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Model.Mesh
 {
-    struct H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
+    [Inline]
+    class H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public H3DSubMeshSkinning Skinning;
-        public byte Padding;
+        private byte Padding;
 
         public ushort BoneIndicesCount;
 
         [FixedLength(20), Inline]
         public ushort[] BoneIndices;
 
-        public uint[] Commands;
+        private uint[] Commands;
 
         public int MaxIndex
         {
@@ -39,10 +40,15 @@ namespace SPICA.Formats.H3D.Model.Mesh
         private byte[] RawBuffer;
 
         [NonSerialized]
-        public ushort BoolUniforms;
+        internal ushort BoolUniforms;
 
         [NonSerialized]
         public ushort[] Indices;
+
+        public H3DSubMesh()
+        {
+            BoneIndices = new ushort[20];
+        }
 
         public void Deserialize(BinaryDeserializer Deserializer)
         {

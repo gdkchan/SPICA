@@ -7,7 +7,7 @@ namespace SPICA.Formats.H3D
     struct H3DVertexData : ICustomSerialization
     {
         public byte AttributesCount;
-        public byte Padding;
+        private byte Padding;
         public ushort IndicesCount;
 
         public void Deserialize(BinaryDeserializer Deserializer)

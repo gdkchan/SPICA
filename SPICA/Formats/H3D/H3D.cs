@@ -18,21 +18,21 @@ namespace SPICA.Formats.H3D
 {
     class H3D : ICustomSerialization
     {
-        public PatriciaList<H3DModel> Models;
+        public PatriciaList<H3DModel>          Models;
         public PatriciaList<H3DMaterialParams> Materials;
-        public PatriciaList<H3DShader> Shaders;
-        public PatriciaList<H3DTexture> Textures;
-        public PatriciaList<H3DLUT> LUTs;
-        public PatriciaList<H3DLight> Lights;
-        public PatriciaList<H3DCamera> Cameras;
-        public PatriciaList<H3DFog> Fogs;
-        public PatriciaList<H3DAnimation> SkeletalAnimations;
-        public PatriciaList<H3DAnimation> MaterialAnimations;
-        public PatriciaList<H3DAnimation> VisibilityAnimations;
-        public PatriciaList<H3DAnimation> LightAnimations;
-        public PatriciaList<H3DAnimation> CameraAnimations;
-        public PatriciaList<H3DAnimation> FogAnimations;
-        public PatriciaList<H3DScene> Scenes;
+        public PatriciaList<H3DShader>         Shaders;
+        public PatriciaList<H3DTexture>        Textures;
+        public PatriciaList<H3DLUT>            LUTs;
+        public PatriciaList<H3DLight>          Lights;
+        public PatriciaList<H3DCamera>         Cameras;
+        public PatriciaList<H3DFog>            Fogs;
+        public PatriciaList<H3DAnimation>      SkeletalAnimations;
+        public PatriciaList<H3DAnimation>      MaterialAnimations;
+        public PatriciaList<H3DAnimation>      VisibilityAnimations;
+        public PatriciaList<H3DAnimation>      LightAnimations;
+        public PatriciaList<H3DAnimation>      CameraAnimations;
+        public PatriciaList<H3DAnimation>      FogAnimations;
+        public PatriciaList<H3DScene>          Scenes;
 
         [NonSerialized]
         public ushort ConverterVersion;
@@ -45,6 +45,25 @@ namespace SPICA.Formats.H3D
 
         [NonSerialized]
         public H3DFlags Flags;
+
+        public H3D()
+        {
+            Models               = new PatriciaList<H3DModel>();
+            Materials            = new PatriciaList<H3DMaterialParams>();
+            Shaders              = new PatriciaList<H3DShader>();
+            Textures             = new PatriciaList<H3DTexture>();
+            LUTs                 = new PatriciaList<H3DLUT>();
+            Lights               = new PatriciaList<H3DLight>();
+            Cameras              = new PatriciaList<H3DCamera>();
+            Fogs                 = new PatriciaList<H3DFog>();
+            SkeletalAnimations   = new PatriciaList<H3DAnimation>();
+            MaterialAnimations   = new PatriciaList<H3DAnimation>();
+            VisibilityAnimations = new PatriciaList<H3DAnimation>();
+            LightAnimations      = new PatriciaList<H3DAnimation>();
+            CameraAnimations     = new PatriciaList<H3DAnimation>();
+            FogAnimations        = new PatriciaList<H3DAnimation>();
+            Scenes               = new PatriciaList<H3DScene>();
+        }
 
         public static H3D Open(string FileName)
         {

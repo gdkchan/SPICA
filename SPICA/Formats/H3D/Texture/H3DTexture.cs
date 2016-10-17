@@ -12,13 +12,13 @@ namespace SPICA.Formats.H3D.Texture
 {
     class H3DTexture : ICustomSerialization, ICustomSerializeCmd, INamed
     {
-        public uint[] Texture0Commands;
-        public uint[] Texture1Commands;
-        public uint[] Texture2Commands;
+        private uint[] Texture0Commands;
+        private uint[] Texture1Commands;
+        private uint[] Texture2Commands;
 
         public PICATextureFormat Format;
         public byte MipmapSize;
-        public ushort Padding;
+        private ushort Padding;
 
         public string Name;
 
