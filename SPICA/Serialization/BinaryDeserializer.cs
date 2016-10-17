@@ -21,7 +21,7 @@ namespace SPICA.Serialization
             public Type ObjectType;
         }
 
-        private struct ObjectRef
+        private class ObjectRef
         {
             public object Value;
             public int Length;
@@ -172,7 +172,9 @@ namespace SPICA.Serialization
             }
             else
             {
-                if (ObjectType.IsClass) ObjPointers.Add(OInfo, new ObjectRef { Value = Value });
+                ObjectRef ORef = new ObjectRef { Value = Value };
+
+                ObjPointers.Add(OInfo, ORef);
 
                 long Position = BaseStream.Position;
 
@@ -207,14 +209,7 @@ namespace SPICA.Serialization
 
                 if (Value is ICustomSerialization) ((ICustomSerialization)Value).Deserialize(this);
 
-                if (!ObjectType.IsClass)
-                {
-                    ObjPointers.Add(OInfo, new ObjectRef
-                    {
-                        Value = Value,
-                        Length = (int)(BaseStream.Position - Position)
-                    });
-                }
+                ORef.Length = (int)(BaseStream.Position - Position);
             }
 
             return Value;

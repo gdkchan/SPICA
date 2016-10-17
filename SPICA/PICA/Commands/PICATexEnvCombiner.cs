@@ -1,18 +1,14 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    class PICATexEnvCombiner
+    struct PICATexEnvCombiner
     {
         public PICATextureCombinerMode RGBCombiner;
         public PICATextureCombinerMode AlphaCombiner;
 
-        public static PICATexEnvCombiner FromParameter(uint Param)
+        public PICATexEnvCombiner(uint Param)
         {
-            PICATexEnvCombiner Output = new PICATexEnvCombiner();
-
-            Output.RGBCombiner = (PICATextureCombinerMode)((Param >> 0) & 0xf);
-            Output.AlphaCombiner = (PICATextureCombinerMode)((Param >> 16) & 0xf);
-
-            return Output;
+            RGBCombiner = (PICATextureCombinerMode)((Param >> 0) & 0xf);
+            AlphaCombiner = (PICATextureCombinerMode)((Param >> 16) & 0xf);
         }
     }
 }

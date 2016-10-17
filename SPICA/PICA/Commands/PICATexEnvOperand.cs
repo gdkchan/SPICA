@@ -1,29 +1,23 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    class PICATexEnvOperand
+    struct PICATexEnvOperand
     {
         public PICATextureCombinerRGBOp[] RGBOp;
         public PICATextureCombinerAlphaOp[] AlphaOp;
 
-        public PICATexEnvOperand()
+        public PICATexEnvOperand(uint Param)
         {
             RGBOp = new PICATextureCombinerRGBOp[3];
+            
+            RGBOp[0] = (PICATextureCombinerRGBOp)((Param >> 0) & 0xf);
+            RGBOp[1] = (PICATextureCombinerRGBOp)((Param >> 4) & 0xf);
+            RGBOp[2] = (PICATextureCombinerRGBOp)((Param >> 8) & 0xf);
+
             AlphaOp = new PICATextureCombinerAlphaOp[3];
-        }
 
-        public static PICATexEnvOperand FromParameter(uint Param)
-        {
-            PICATexEnvOperand Output = new PICATexEnvOperand();
-
-            Output.RGBOp[0] = (PICATextureCombinerRGBOp)((Param >> 0) & 0xf);
-            Output.RGBOp[1] = (PICATextureCombinerRGBOp)((Param >> 4) & 0xf);
-            Output.RGBOp[2] = (PICATextureCombinerRGBOp)((Param >> 8) & 0xf);
-
-            Output.AlphaOp[0] = (PICATextureCombinerAlphaOp)((Param >> 12) & 7);
-            Output.AlphaOp[1] = (PICATextureCombinerAlphaOp)((Param >> 16) & 7);
-            Output.AlphaOp[2] = (PICATextureCombinerAlphaOp)((Param >> 20) & 7);
-
-            return Output;
+            AlphaOp[0] = (PICATextureCombinerAlphaOp)((Param >> 12) & 7);
+            AlphaOp[1] = (PICATextureCombinerAlphaOp)((Param >> 16) & 7);
+            AlphaOp[2] = (PICATextureCombinerAlphaOp)((Param >> 20) & 7);
         }
     }
 }

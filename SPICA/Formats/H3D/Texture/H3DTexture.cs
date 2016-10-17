@@ -48,7 +48,7 @@ namespace SPICA.Formats.H3D.Texture
             RawBuffer = TextureConverter.Encode(Img, Format);
         }
 
-        public Bitmap GetBitmap()
+        public Bitmap ToBitmap()
         {
             return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format);
         }
@@ -116,8 +116,7 @@ namespace SPICA.Formats.H3D.Texture
                         break;
                 }
 
-                Writer.SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
-                Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
+                Writer.Finalize();
 
                 switch (Unit)
                 {

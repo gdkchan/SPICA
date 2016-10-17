@@ -97,8 +97,8 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Writer.SetCommand(PICARegister.GPUREG_VTX_FUNC, true);
             Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
             Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
-            Writer.SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
-            Writer.SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
+
+            Writer.Finalize();
 
             Commands = Writer.GetBuffer();
 

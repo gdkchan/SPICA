@@ -1,20 +1,16 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    class PICAStencilOperation
+    struct PICAStencilOperation
     {
         public PICAStencilOp FailOp;
         public PICAStencilOp ZFailOp;
         public PICAStencilOp ZPassOp;
 
-        public static PICAStencilOperation FromParameter(uint Param)
+        public PICAStencilOperation(uint Param)
         {
-            PICAStencilOperation Output = new PICAStencilOperation();
-
-            Output.FailOp = (PICAStencilOp)((Param >> 0) & 7);
-            Output.ZFailOp = (PICAStencilOp)((Param >> 4) & 7);
-            Output.ZPassOp = (PICAStencilOp)((Param >> 8) & 7);
-
-            return Output;
+            FailOp = (PICAStencilOp)((Param >> 0) & 7);
+            ZFailOp = (PICAStencilOp)((Param >> 4) & 7);
+            ZPassOp = (PICAStencilOp)((Param >> 8) & 7);
         }
     }
 }

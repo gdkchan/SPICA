@@ -165,7 +165,7 @@ namespace SPICA.Serialization
             }
 
             //Avoid writing the same Object more than once
-            if (Type.IsClass || Type.IsDefined(typeof(RepeatableAttribute))) AddObjPointer(Value, Position);
+            if (Type.IsClass) AddObjPointer(Value, Position);
         }
 
         private void AddObjPointer(object Value, long Position)

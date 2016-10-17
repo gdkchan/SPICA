@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    class PICAStencilTest
+    struct PICAStencilTest
     {
         public bool Enabled;
         public PICATestFunc Function;
@@ -8,17 +8,13 @@
         public sbyte Reference;
         public byte Mask;
 
-        public static PICAStencilTest FromParameter(uint Param)
+        public PICAStencilTest(uint Param)
         {
-            PICAStencilTest Output = new PICAStencilTest();
-
-            Output.Enabled = (Param & 1) != 0;
-            Output.Function = (PICATestFunc)((Param >> 4) & 7);
-            Output.BufferMask = (byte)(Param >> 8);
-            Output.Reference = (sbyte)(Param >> 16);
-            Output.Mask = (byte)(Param >> 24);
-
-            return Output;
+            Enabled = (Param & 1) != 0;
+            Function = (PICATestFunc)((Param >> 4) & 7);
+            BufferMask = (byte)(Param >> 8);
+            Reference = (sbyte)(Param >> 16);
+            Mask = (byte)(Param >> 24);
         }
     }
 }

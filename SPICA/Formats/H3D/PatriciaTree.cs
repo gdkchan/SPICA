@@ -31,6 +31,8 @@ namespace SPICA.Formats.H3D
             }
         }
 
+        public int Count { get { return Nodes.Count; } }
+
         private const string DuplicateKeysEx = "Tree shouldn't contain duplicate keys!";
 
         public PatriciaTreeNode this[int Index]

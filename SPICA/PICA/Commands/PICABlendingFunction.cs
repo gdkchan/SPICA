@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    class PICABlendingFunction
+    struct PICABlendingFunction
     {
         public PICABlendingEquation RGBEquation;
         public PICABlendingEquation AlphaEquation;
@@ -11,20 +11,16 @@
         public PICABlendingFunc AlphaSourceFunc;
         public PICABlendingFunc AlphaDestFunc;
 
-        public static PICABlendingFunction FromParameter(uint Param)
+        public PICABlendingFunction(uint Param)
         {
-            PICABlendingFunction Output = new PICABlendingFunction();
+            RGBEquation = (PICABlendingEquation)((Param >> 0) & 7);
+            AlphaEquation = (PICABlendingEquation)((Param >> 8) & 7);
 
-            Output.RGBEquation = (PICABlendingEquation)((Param >> 0) & 7);
-            Output.AlphaEquation = (PICABlendingEquation)((Param >> 8) & 7);
+            RGBSourceFunc = (PICABlendingFunc)((Param >> 16) & 0xf);
+            RGBDestFunc = (PICABlendingFunc)((Param >> 20) & 0xf);
 
-            Output.RGBSourceFunc = (PICABlendingFunc)((Param >> 16) & 0xf);
-            Output.RGBDestFunc = (PICABlendingFunc)((Param >> 20) & 0xf);
-
-            Output.AlphaSourceFunc = (PICABlendingFunc)((Param >> 24) & 0xf);
-            Output.AlphaDestFunc = (PICABlendingFunc)((Param >> 28) & 0xf);
-
-            return Output;
+            AlphaSourceFunc = (PICABlendingFunc)((Param >> 24) & 0xf);
+            AlphaDestFunc = (PICABlendingFunc)((Param >> 28) & 0xf);
         }
     }
 }

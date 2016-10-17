@@ -1,18 +1,14 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    class PICATexEnvScale
+    struct PICATexEnvScale
     {
         public PICATextureCombinerScale RGBScale;
         public PICATextureCombinerScale AlphaScale;
 
-        public static PICATexEnvScale FromParameter(uint Param)
+        public PICATexEnvScale(uint Param)
         {
-            PICATexEnvScale Output = new PICATexEnvScale();
-
-            Output.RGBScale = (PICATextureCombinerScale)((Param >> 0) & 3);
-            Output.AlphaScale = (PICATextureCombinerScale)((Param >> 16) & 3);
-
-            return Output;
+            RGBScale = (PICATextureCombinerScale)((Param >> 0) & 3);
+            AlphaScale = (PICATextureCombinerScale)((Param >> 16) & 3);
         }
     }
 }

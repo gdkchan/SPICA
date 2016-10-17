@@ -7,6 +7,8 @@ namespace SPICA.PICA
     {
         private List<uint> Commands;
 
+        public int Index { get { return Commands.Count; } }
+
         public PICACommandWriter()
         {
             Commands = new List<uint>();
@@ -35,7 +37,7 @@ namespace SPICA.PICA
             Commands.Add((uint)Register | (Mask << 16));
         }
 
-        public void SetCommand(PICARegister Register, bool Consecutive = false, uint Mask = 0xf, params uint[] Params)
+        public void SetCommand(PICARegister Register, bool Consecutive, uint Mask, params uint[] Params)
         {
             Commands.Add(Params[0]);
 
@@ -52,7 +54,7 @@ namespace SPICA.PICA
             Align();
         }
 
-        public void SetCommand(PICARegister Register, bool Consecutive = false, params float[] Params)
+        public void SetCommand(PICARegister Register, bool Consecutive, params float[] Params)
         {
             Commands.Add(IOUtils.ToUInt(Params[0]));
 
@@ -67,6 +69,17 @@ namespace SPICA.PICA
             }
 
             Align();
+        }
+
+        public void Finalize()
+        {
+            //Make sure that the Buffer is aligned on a 16 bytes boundary
+            if ((Index & 3) == 0)
+            {
+                SetCommand(PICARegister.GPUREG_DUMMY, 0, 0);
+            }
+
+            SetCommand(PICARegister.GPUREG_CMDBUF_JUMP1, true);
         }
 
         private void Align()

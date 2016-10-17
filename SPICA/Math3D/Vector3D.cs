@@ -1,4 +1,6 @@
-﻿namespace SPICA.Math3D
+﻿using System;
+
+namespace SPICA.Math3D
 {
     struct Vector3D
     {
@@ -11,6 +13,32 @@
             this.X = X;
             this.Y = Y;
             this.Z = Z;
+        }
+
+        public float this[int Index]
+        {
+            get
+            {
+                switch (Index)
+                {
+                    case 0: return X;
+                    case 1: return Y;
+                    case 2: return Z;
+
+                    default: throw new IndexOutOfRangeException("Expected 0-2 (X-Z) range!");
+                }
+            }
+            set
+            {
+                switch (Index)
+                {
+                    case 0: X = value; break;
+                    case 1: Y = value; break;
+                    case 2: Z = value; break;
+
+                    default: throw new IndexOutOfRangeException("Expected 0-2 (X-Z) range!");
+                }
+            }
         }
 
         public override string ToString()

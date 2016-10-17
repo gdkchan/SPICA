@@ -1,6 +1,7 @@
 ﻿using SPICA.Math3D;
 using SPICA.PICA.Commands;
 
+using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.PICA.Converters
@@ -70,6 +71,56 @@ namespace SPICA.PICA.Converters
             }
 
             return Output;
+        }
+
+        public static byte[] GetBuffer(IEnumerable<PICAVertex> Vertices, PICAAttribute[] Attributes)
+        {
+            using (MemoryStream MS = new MemoryStream())
+            {
+                BinaryWriter Writer = new BinaryWriter(MS);
+
+                foreach (PICAVertex Vertex in Vertices)
+                {
+                    foreach (PICAAttribute Attrib in Attributes)
+                    {
+                        for (int Index = 0; Index < Attrib.Elements; Index++)
+                        {
+                            switch (Attrib.Name)
+                            {
+                                case PICAAttributeName.Position: Writer.Write(Quantize(Vertex.Position[Index], Attrib)); break;
+
+                                case PICAAttributeName.Normal: Writer.Write(Quantize(Vertex.Normal[Index], Attrib)); break;
+
+                                case PICAAttributeName.Tangent: Writer.Write(Quantize(Vertex.Tangent[Index], Attrib)); break;
+
+                                case PICAAttributeName.Color: Writer.Write(Quantize(Vertex.Color[Index], Attrib)); break;
+
+                                case PICAAttributeName.TextureCoordinate0: Writer.Write(Quantize(Vertex.TextureCoord0[Index], Attrib)); break;
+                                case PICAAttributeName.TextureCoordinate1: Writer.Write(Quantize(Vertex.TextureCoord1[Index], Attrib)); break;
+                                case PICAAttributeName.TextureCoordinate2: Writer.Write(Quantize(Vertex.TextureCoord2[Index], Attrib)); break;
+
+                                case PICAAttributeName.BoneIndex: Writer.Write((byte)Vertex.Indices[Index]); break;
+                                case PICAAttributeName.BoneWeight: Writer.Write(Quantize(Vertex.Weights[Index], Attrib)); break;
+                            }
+                        }
+                    }
+                }
+
+                return MS.ToArray();
+            }
+        }
+
+        private static dynamic Quantize(float Value, PICAAttribute Attrib)
+        {
+            switch (Attrib.Format)
+            {
+                case PICAAttributeFormat.Byte: return (sbyte)(Value / Attrib.Scale);
+                case PICAAttributeFormat.Ubyte: return (byte)(Value / Attrib.Scale);
+                case PICAAttributeFormat.Short: return (short)(Value / Attrib.Scale);
+                case PICAAttributeFormat.Float: return Value / Attrib.Scale;
+            }
+
+            return 0;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace SPICA.Math3D
+﻿using System;
+
+namespace SPICA.Math3D
 {
     struct RGBAFloat
     {
@@ -13,6 +15,34 @@
             this.G = G;
             this.B = B;
             this.A = A;
+        }
+
+        public float this[int Index]
+        {
+            get
+            {
+                switch (Index)
+                {
+                    case 0: return R;
+                    case 1: return G;
+                    case 2: return B;
+                    case 3: return A;
+
+                    default: throw new IndexOutOfRangeException("Expected 0-3 (R-A) range!");
+                }
+            }
+            set
+            {
+                switch (Index)
+                {
+                    case 0: R = value; break;
+                    case 1: G = value; break;
+                    case 2: B = value; break;
+                    case 3: A = value; break;
+
+                    default: throw new IndexOutOfRangeException("Expected 0-3 (R-A) range!");
+                }
+            }
         }
 
         public override string ToString()

@@ -149,9 +149,9 @@ namespace SPICA.Formats.H3D.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS: LUTInputAbs = PICALUTInputAbs.FromParameter(Param); break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel = PICALUTInputSel.FromParameter(Param); break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE: LUTInputScaleSel = PICALUTInputScaleSel.FromParameter(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS: LUTInputAbs = new PICALUTInputAbs(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel = new PICALUTInputSel(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE: LUTInputScaleSel = new PICALUTInputScaleSel(Param); break;
                 }
             }
 
@@ -177,7 +177,7 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_TEXENV3_SOURCE:
                     case PICARegister.GPUREG_TEXENV4_SOURCE:
                     case PICARegister.GPUREG_TEXENV5_SOURCE:
-                        TexEnvStages[Stage].Source = PICATexEnvSource.FromParameter(Param);
+                        TexEnvStages[Stage].Source = new PICATexEnvSource(Param);
                         break;
                     case PICARegister.GPUREG_TEXENV0_OPERAND:
                     case PICARegister.GPUREG_TEXENV1_OPERAND:
@@ -185,7 +185,7 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_TEXENV3_OPERAND:
                     case PICARegister.GPUREG_TEXENV4_OPERAND:
                     case PICARegister.GPUREG_TEXENV5_OPERAND:
-                        TexEnvStages[Stage].Operand = PICATexEnvOperand.FromParameter(Param);
+                        TexEnvStages[Stage].Operand = new PICATexEnvOperand(Param);
                         break;
                     case PICARegister.GPUREG_TEXENV0_COMBINER:
                     case PICARegister.GPUREG_TEXENV1_COMBINER:
@@ -193,7 +193,7 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_TEXENV3_COMBINER:
                     case PICARegister.GPUREG_TEXENV4_COMBINER:
                     case PICARegister.GPUREG_TEXENV5_COMBINER:
-                        TexEnvStages[Stage].Combiner = PICATexEnvCombiner.FromParameter(Param);
+                        TexEnvStages[Stage].Combiner = new PICATexEnvCombiner(Param);
                         break;
                     case PICARegister.GPUREG_TEXENV0_COLOR:
                     case PICARegister.GPUREG_TEXENV1_COLOR:
@@ -201,7 +201,7 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_TEXENV3_COLOR:
                     case PICARegister.GPUREG_TEXENV4_COLOR:
                     case PICARegister.GPUREG_TEXENV5_COLOR:
-                        TexEnvStages[Stage].Color = PICATexEnvColor.FromParameter(Param);
+                        TexEnvStages[Stage].Color = new PICATexEnvColor(Param);
                         break;
                     case PICARegister.GPUREG_TEXENV0_SCALE:
                     case PICARegister.GPUREG_TEXENV1_SCALE:
@@ -209,24 +209,24 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_TEXENV3_SCALE:
                     case PICARegister.GPUREG_TEXENV4_SCALE:
                     case PICARegister.GPUREG_TEXENV5_SCALE:
-                        TexEnvStages[Stage].Scale = PICATexEnvScale.FromParameter(Param);
+                        TexEnvStages[Stage].Scale = new PICATexEnvScale(Param);
                         break;
 
-                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = PICAColorOperation.FromParameter(Param); break;
+                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
 
-                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = PICATexEnvColor.FromParameter(Param); break;
+                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
 
-                    case PICARegister.GPUREG_BLEND_FUNC: BlendingFunction = PICABlendingFunction.FromParameter(Param); break;
+                    case PICARegister.GPUREG_BLEND_FUNC: BlendingFunction = new PICABlendingFunction(Param); break;
 
                     case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
 
-                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: FragmentAlphaTest = PICAFragmentAlphaTest.FromParameter(Param); break;
+                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: FragmentAlphaTest = new PICAFragmentAlphaTest(Param); break;
 
-                    case PICARegister.GPUREG_STENCIL_TEST: StencilTest = PICAStencilTest.FromParameter(Param); break;
+                    case PICARegister.GPUREG_STENCIL_TEST: StencilTest = new PICAStencilTest(Param); break;
 
-                    case PICARegister.GPUREG_STENCIL_OP: StencilOperation = PICAStencilOperation.FromParameter(Param); break;
+                    case PICARegister.GPUREG_STENCIL_OP: StencilOperation = new PICAStencilOperation(Param); break;
 
-                    case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = PICADepthColorMask.FromParameter(Param); break;
+                    case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = new PICADepthColorMask(Param); break;
                 }
             }
         }

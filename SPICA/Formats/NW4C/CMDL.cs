@@ -1040,8 +1040,7 @@ namespace SPICA.Formats.H3D {
                 indices = 0,
                 verts = 0;
             foreach (var m in mdl.Meshes) {
-                verts += m.GetVertices().Count();
-
+                verts += m.ToVertices().Count();
                 foreach (var s in m.SubMeshes) {
                     subMeshes++;
                     indices += s.Indices.Count();
@@ -1387,32 +1386,37 @@ namespace SPICA.Formats.H3D {
                 foreach (var att in sh.Attributes) {
                     vertStream = new ctrVertStream(); //stream
                     vertStream.Usage = att.Name.ToString();
-                    vertStream.VertexSize = sh.GetVertices().Count();
+                    vertStream.VertexSize = sh.ToVertices().Count();
                     vertStream.Scale = att.Scale;
                     vertStream.QuantizedMode = att.Format.ToString();
                     switch (att.Name) {
-                        case PICAAttributeName.Position: {
-                                vertStream.VecArray = genVec3Array(sh.GetVertices(), att.Format, att.Name);
+                        case PICAAttributeName.Position: 
+                            {
+                                vertStream.VecArray = genVec3Array(sh.ToVertices(), att.Format, att.Name);
                                 shape.VertexAttributes.Vec3Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.Normal: {
-                                vertStream.VecArray = genVec3Array(sh.GetVertices(), att.Format, att.Name);
+                        case PICAAttributeName.Normal: 
+                            {
+                                vertStream.VecArray = genVec3Array(sh.ToVertices(), att.Format, att.Name);
                                 shape.VertexAttributes.Vec3Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.TextureCoordinate0: {
-                                vertStream.VecArray = genVec2Array(sh.GetVertices(), att.Format, att.Name);
+                        case PICAAttributeName.TextureCoordinate0: 
+                            {
+                                vertStream.VecArray = genVec2Array(sh.ToVertices(), att.Format, att.Name);
                                 shape.VertexAttributes.Vec2Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.BoneIndex: {
-                                vertStream.VecArray = genBoneIndex(sh.GetVertices());
+                        case PICAAttributeName.BoneIndex: 
+                            {
+                                vertStream.VecArray = genBoneIndex(sh.ToVertices());
                                 shape.VertexAttributes.Vec4Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.BoneWeight: {
-                                vertStream.VecArray = genBoneWeights(sh.GetVertices());
+                        case PICAAttributeName.BoneWeight:
+                            {
+                                vertStream.VecArray = genBoneWeights(sh.ToVertices());
                                 shape.VertexAttributes.Vec4Attributes.Add(vertStream);
                                 break;
                             }

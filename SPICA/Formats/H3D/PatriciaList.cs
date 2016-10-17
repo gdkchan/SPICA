@@ -38,45 +38,30 @@ namespace SPICA.Formats.H3D
         //List management methods
         public void Add(T Data)
         {
-            if (Data != null)
-            {
-                (Contents ?? (Contents = new List<T>())).Add(Data);
+            (Contents ?? (Contents = new List<T>())).Add(Data);
 
-                Tree.Add(((INamed)Data).ObjectName);
-            }
+            Tree.Add(((INamed)Data).ObjectName);
         }
 
         public void Insert(int Index, T Data)
         {
-            if (Data != null)
-            {
-                (Contents ?? (Contents = new List<T>())).Insert(Index, Data);
+            (Contents ?? (Contents = new List<T>())).Insert(Index, Data);
 
-                Tree.Insert(Index, ((INamed)Data).ObjectName);
-            }
+            Tree.Insert(Index, ((INamed)Data).ObjectName);
         }
 
         public void Remove(T Data)
         {
-            if (Contents != null && Data != null)
+            if (Contents != null)
             {
                 Contents.Remove(Data);
 
                 Tree.Remove(((INamed)Data).ObjectName);
+
+                if (Contents.Count == 0) Contents = null;
             }
         }
 
-        public void Clear()
-        {
-            if (Contents != null)
-            {
-                Contents.Clear();
-
-                Tree.Clear();
-            }
-        }
-
-        //Extended methods
         public void Remove(int Index)
         {
             Remove(this[Index]);
@@ -85,6 +70,13 @@ namespace SPICA.Formats.H3D
         public void Remove(string Name)
         {
             Remove(this[Name]);
+        }
+
+        public void Clear()
+        {
+            Contents = null;
+
+            Tree.Clear();
         }
     }
 }
