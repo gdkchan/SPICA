@@ -9,7 +9,6 @@ using System.Collections;
 
 namespace SPICA.Formats.H3D
 {
-    [Inline]
     class PatriciaTree : ICustomSerialization, IEnumerable<PatriciaTreeNode>
     {
         [NonSerialized]
@@ -53,10 +52,6 @@ namespace SPICA.Formats.H3D
 
         public void Deserialize(BinaryDeserializer Deserializer)
         {
-            long Posiiton = Deserializer.BaseStream.Position + 4;
-
-            Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
-
             int MaxIndex = 0;
             int Index = 0;
 
@@ -73,19 +68,11 @@ namespace SPICA.Formats.H3D
 
                 if (Node.Name != null) Names.Add(Node.Name);
             }
-
-            Deserializer.BaseStream.Seek(Posiiton, SeekOrigin.Begin);
         }
 
         public bool Serialize(BinarySerializer Serializer)
         {
-            Serializer.Contents.Values.Add(new RefValue
-            {
-                Position = Serializer.BaseStream.Position,
-                Value = Nodes
-            });
-
-            Serializer.Skip(4);
+            Serializer.WriteValue(Nodes);
 
             return true;
         }
@@ -101,6 +88,11 @@ namespace SPICA.Formats.H3D
         }
 
         //Implementation
+        public string Find(int Index)
+        {
+            return Nodes[Index + 1].Name;
+        }
+
         public int Find(string Name)
         {
             int Output = 0;

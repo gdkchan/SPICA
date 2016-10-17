@@ -122,7 +122,7 @@ namespace SPICA.Serialization
             while ((BaseStream.Position % Align) != 0) BaseStream.WriteByte(0);
         }
 
-        private void WriteValue(object Value, bool IsElem = false)
+        public void WriteValue(object Value, bool IsElem = false)
         {
             Type Type = Value.GetType();
             long Position = BaseStream.Position;
