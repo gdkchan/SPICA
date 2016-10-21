@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D.Light
 {
-    class H3DLight : INamed
+    public class H3DLight : INamed
     {
         //TODO
         public string ObjectName { get { return null; } }

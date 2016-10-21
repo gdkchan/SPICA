@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    class PICATexEnvStage
+    public class PICATexEnvStage
     {
         public PICATexEnvSource Source;
         public PICATexEnvOperand Operand;

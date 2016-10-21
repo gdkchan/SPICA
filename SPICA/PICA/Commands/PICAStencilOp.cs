@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    enum PICAStencilOp
+    public enum PICAStencilOp
     {
         Keep,
         Zero,

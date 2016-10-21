@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D
 {
-    enum H3DMetaDataType : ushort
+    public enum H3DMetaDataType : ushort
     {
         Integer,
         Single,

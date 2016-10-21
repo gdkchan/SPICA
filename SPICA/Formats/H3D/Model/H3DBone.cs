@@ -3,7 +3,7 @@ using SPICA.Utils;
 
 namespace SPICA.Formats.H3D.Model
 {
-    struct H3DBone : INamed
+    public struct H3DBone : INamed
     {
         public H3DBoneFlags Flags;
 

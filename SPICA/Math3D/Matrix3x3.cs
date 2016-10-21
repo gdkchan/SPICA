@@ -6,7 +6,7 @@ using System.Text;
 namespace SPICA.Math3D
 {
     [Inline]
-    class Matrix3x3
+    public class Matrix3x3
     {
         [FixedLength(3 * 3), Inline]
         public float[] Elems;

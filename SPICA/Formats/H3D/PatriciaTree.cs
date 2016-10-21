@@ -1,15 +1,12 @@
 ﻿using SPICA.Serialization;
-using SPICA.Serialization.Attributes;
-using SPICA.Serialization.Serializer;
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Collections;
 
 namespace SPICA.Formats.H3D
 {
-    class PatriciaTree : ICustomSerialization, IEnumerable<PatriciaTreeNode>
+    public class PatriciaTree : ICustomSerialization, IEnumerable<PatriciaTreeNode>
     {
         [NonSerialized]
         private List<PatriciaTreeNode> Nodes;
@@ -50,7 +47,7 @@ namespace SPICA.Formats.H3D
             Names = new List<string>();
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             int MaxIndex = 0;
             int Index = 0;
@@ -70,7 +67,7 @@ namespace SPICA.Formats.H3D
             }
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             Serializer.WriteValue(Nodes);
 

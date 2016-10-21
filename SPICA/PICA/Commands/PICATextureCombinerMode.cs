@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    enum PICATextureCombinerMode
+    public enum PICATextureCombinerMode
     {
         Replace,
         Modulate,

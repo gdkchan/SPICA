@@ -5,7 +5,7 @@ using System;
 
 namespace SPICA.Formats.H3D.LUT
 {
-    struct H3DLUTSampler : ICustomSerialization
+    public struct H3DLUTSampler : ICustomSerialization
     {
         public H3DLUTFlags Flags;
         private byte Padding0;
@@ -18,7 +18,7 @@ namespace SPICA.Formats.H3D.LUT
         [NonSerialized]
         public float[] Table;
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader = new PICACommandReader(Commands);
 
@@ -49,7 +49,7 @@ namespace SPICA.Formats.H3D.LUT
             }
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //TODO
 

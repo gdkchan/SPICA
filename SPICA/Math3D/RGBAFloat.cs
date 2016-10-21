@@ -2,7 +2,7 @@
 
 namespace SPICA.Math3D
 {
-    struct RGBAFloat
+    public struct RGBAFloat
     {
         public float R;
         public float G;

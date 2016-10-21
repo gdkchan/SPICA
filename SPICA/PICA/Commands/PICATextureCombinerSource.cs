@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    enum PICATextureCombinerSource
+    public enum PICATextureCombinerSource
     {
         PrimaryColor = 0,
         FragmentPrimaryColor = 1,

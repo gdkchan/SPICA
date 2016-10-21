@@ -3,7 +3,7 @@
 namespace SPICA.Formats.H3D.Model.Material
 {
     [Flags]
-    enum H3DMaterialFlags : ushort
+    public enum H3DMaterialFlags : ushort
     {
         IsFragmentLightingEnabled = 1 << 0,
         IsVertexLightingEnabled = 1 << 1,

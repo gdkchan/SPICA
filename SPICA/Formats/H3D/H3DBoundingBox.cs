@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.H3D
 {
-    struct H3DBoundingBox
+    public struct H3DBoundingBox
     {
         public Vector3D Center;
         public Matrix3x3 Orientation;

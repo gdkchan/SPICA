@@ -2,7 +2,7 @@
 
 namespace SPICA.Math3D
 {
-    struct Vector3D
+    public struct Vector3D
     {
         public float X;
         public float Y;

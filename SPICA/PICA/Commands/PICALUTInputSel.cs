@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICALUTInputSel
+    public struct PICALUTInputSel
     {
         public PICALUTInput Dist0Input;
         public PICALUTInput Dist1Input;

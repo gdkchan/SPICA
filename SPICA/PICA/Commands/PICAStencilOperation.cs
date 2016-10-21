@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICAStencilOperation
+    public struct PICAStencilOperation
     {
         public PICAStencilOp FailOp;
         public PICAStencilOp ZFailOp;

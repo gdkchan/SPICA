@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D
 {
-    interface INamed
+    public interface INamed
     {
         string ObjectName { get; }
     }

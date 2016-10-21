@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    enum PICALUTInputScale
+    public enum PICALUTInputScale
     {
         One = 0,
         Two = 1,

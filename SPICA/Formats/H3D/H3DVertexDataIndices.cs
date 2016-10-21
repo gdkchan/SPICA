@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D
 {
-    class H3DVertexDataIndices : ICustomSerialization
+    public class H3DVertexDataIndices : ICustomSerialization
     {
         public byte Type;
         public byte DrawMode;
@@ -30,7 +30,7 @@ namespace SPICA.Formats.H3D
         [NonSerialized]
         public ushort[] Indices;
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             bool Format = (Type & 1) != 0;
             uint Address = Deserializer.Reader.ReadUInt32();
@@ -51,7 +51,7 @@ namespace SPICA.Formats.H3D
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             Serializer.Writer.Write(Type);
             Serializer.Writer.Write(DrawMode);

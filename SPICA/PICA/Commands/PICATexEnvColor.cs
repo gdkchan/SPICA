@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICATexEnvColor
+    public struct PICATexEnvColor
     {
         public byte R;
         public byte G;
@@ -13,6 +13,18 @@
             G = (byte)(Param >> 8);
             B = (byte)(Param >> 16);
             A = (byte)(Param >> 24);
+        }
+
+        public uint ToUInt32()
+        {
+            uint Param = 0;
+
+            Param |= (uint)R << 0;
+            Param |= (uint)G << 8;
+            Param |= (uint)B << 16;
+            Param |= (uint)A << 24;
+
+            return Param;
         }
     }
 }

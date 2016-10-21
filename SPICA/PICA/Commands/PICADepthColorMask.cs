@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICADepthColorMask
+    public struct PICADepthColorMask
     {
         public bool Enabled;
         public PICATestFunc DepthFunc;

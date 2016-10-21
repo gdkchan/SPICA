@@ -10,7 +10,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D.Texture
 {
-    class H3DTexture : ICustomSerialization, ICustomSerializeCmd, INamed
+    public class H3DTexture : ICustomSerialization, ICustomSerializeCmd, INamed
     {
         private uint[] Texture0Commands;
         private uint[] Texture1Commands;
@@ -53,7 +53,7 @@ namespace SPICA.Formats.H3D.Texture
             return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format);
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader = new PICACommandReader(Texture0Commands);
 
@@ -86,7 +86,7 @@ namespace SPICA.Formats.H3D.Texture
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             for (int Unit = 0; Unit < 3; Unit++)
             {
@@ -129,7 +129,7 @@ namespace SPICA.Formats.H3D.Texture
             return false;
         }
 
-        public void SerializeCmd(BinarySerializer Serializer, object Value)
+        void ICustomSerializeCmd.SerializeCmd(BinarySerializer Serializer, object Value)
         {
             long Position = Serializer.BaseStream.Position + 0x10;
 

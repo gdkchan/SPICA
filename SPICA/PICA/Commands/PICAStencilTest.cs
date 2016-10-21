@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICAStencilTest
+    public struct PICAStencilTest
     {
         public bool Enabled;
         public PICATestFunc Function;

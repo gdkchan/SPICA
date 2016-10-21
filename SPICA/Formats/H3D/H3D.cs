@@ -16,7 +16,7 @@ using System.IO;
 
 namespace SPICA.Formats.H3D
 {
-    class H3D : ICustomSerialization
+    public class H3D : ICustomSerialization
     {
         public PatriciaList<H3DModel>          Models;
         public PatriciaList<H3DMaterialParams> Materials;
@@ -143,9 +143,9 @@ namespace SPICA.Formats.H3D
             }
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer) { }
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer) { }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //The original tool seems to this empty name for some reason
             Serializer.Strings.Values.Add(new RefValue

@@ -3,7 +3,7 @@
 namespace SPICA.Formats.H3D.Model
 {
     [Flags]
-    enum H3DBoneFlags : uint
+    public enum H3DBoneFlags : uint
     {
         IsMatrixDirty = 1 << 1,
         IsWorldMatrixUpdated = 1 << 2,

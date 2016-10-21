@@ -7,7 +7,7 @@ using SPICA.Serialization.Serializer;
 namespace SPICA.Formats.H3D.Model.Material
 {
     [Inline]
-    class H3DMaterial : ICustomSerialization, INamed
+    public class H3DMaterial : ICustomSerialization, INamed
     {
         public H3DMaterialParams MaterialParams;
 
@@ -33,9 +33,9 @@ namespace SPICA.Formats.H3D.Model.Material
             TextureMappers = new H3DTextureMapper[3];
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer) { }
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer) { }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //The original tool seems to add those (usually unused) names with the silhouette suffix
             Serializer.Strings.Values.Add(new RefValue

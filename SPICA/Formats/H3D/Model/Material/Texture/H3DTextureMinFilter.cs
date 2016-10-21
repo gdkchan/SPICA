@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D.Model.Material.Texture
 {
-    enum H3DTextureMinFilter : byte
+    public enum H3DTextureMinFilter : byte
     {
         NearestMipmapNearest = 1,
         NearestMipmapLinear = 2,

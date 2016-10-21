@@ -3,7 +3,7 @@ using SPICA.Utils;
 
 namespace SPICA.PICA.Commands
 {
-    struct PICAVectorFloat24
+    public struct PICAVectorFloat24
     {
         public uint Word0;
         public uint Word1;

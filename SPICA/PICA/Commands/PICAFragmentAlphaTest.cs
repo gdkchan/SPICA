@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICAFragmentAlphaTest
+    public struct PICAFragmentAlphaTest
     {
         public bool Enabled;
         public PICATestFunc Function;

@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    enum PICAFaceCulling
+    public enum PICAFaceCulling
     {
         Never,
         FrontFace,

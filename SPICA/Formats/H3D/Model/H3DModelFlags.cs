@@ -3,7 +3,7 @@
 namespace SPICA.Formats.H3D.Model
 {
     [Flags]
-    enum H3DModelFlags : byte
+    public enum H3DModelFlags : byte
     {
         IsDrawingEnabled = 1 << 0,
         HasSkeleton = 1 << 1,

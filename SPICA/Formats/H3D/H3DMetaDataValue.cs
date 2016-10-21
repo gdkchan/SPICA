@@ -10,7 +10,7 @@ using System.Text;
 
 namespace SPICA.Formats.H3D
 {
-    struct H3DMetaDataValue : ICustomSerialization, INamed
+    public struct H3DMetaDataValue : ICustomSerialization, INamed
     {
         public string Name;
 
@@ -27,7 +27,7 @@ namespace SPICA.Formats.H3D
             set { Values[Index] = value; }
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             ushort Count = Deserializer.Reader.ReadUInt16();
             uint Address = Deserializer.Reader.ReadUInt32();
@@ -90,7 +90,7 @@ namespace SPICA.Formats.H3D
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //FIXME: Unicode Strings will serialize as ASCII too
             Serializer.Strings.Values.Add(new RefValue

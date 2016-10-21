@@ -9,7 +9,7 @@ using System.IO;
 namespace SPICA.Formats.H3D.Model.Mesh
 {
     [Inline]
-    class H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
+    public class H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public H3DSubMeshSkinning Skinning;
         private byte Padding;
@@ -50,7 +50,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             BoneIndices = new ushort[20];
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader = new PICACommandReader(Commands);
 
@@ -89,7 +89,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             PICACommandWriter Writer = new PICACommandWriter();
 
@@ -111,7 +111,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             return false;
         }
 
-        public void SerializeCmd(BinarySerializer Serializer, object Value)
+        void ICustomSerializeCmd.SerializeCmd(BinarySerializer Serializer, object Value)
         {
             H3DRelocationType RelocType = H3DRelocationType.RawDataIndex16;
 

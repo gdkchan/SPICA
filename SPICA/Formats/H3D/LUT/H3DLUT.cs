@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.H3D.LUT
 {
-    class H3DLUT : INamed
+    public class H3DLUT : INamed
     {
         public List<H3DLUTSampler> Samplers;
 

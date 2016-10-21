@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D.Model
 {
-    enum H3DBillboardMode
+    public enum H3DBillboardMode
     {
         Off = 0,
         World = 2,

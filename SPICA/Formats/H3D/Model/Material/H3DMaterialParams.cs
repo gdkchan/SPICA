@@ -10,7 +10,7 @@ using System;
 
 namespace SPICA.Formats.H3D.Model.Material
 {
-    class H3DMaterialParams : ICustomSerialization, INamed
+    public class H3DMaterialParams : ICustomSerialization, INamed
     {
         public uint UniqueId;
 
@@ -139,6 +139,24 @@ namespace SPICA.Formats.H3D.Model.Material
         [NonSerialized]
         public PICADepthColorMask DepthColorMask;
 
+        [NonSerialized]
+        public bool ColorBufferRead;
+
+        [NonSerialized]
+        public bool ColorBufferWrite;
+
+        [NonSerialized]
+        public bool StencilBufferRead;
+
+        [NonSerialized]
+        public bool StencilBufferWrite;
+
+        [NonSerialized]
+        public bool DepthBufferRead;
+
+        [NonSerialized]
+        public bool DepthBufferWrite;
+
         public string ObjectName { get { return null; } }
 
         public H3DMaterialParams()
@@ -152,7 +170,7 @@ namespace SPICA.Formats.H3D.Model.Material
             }
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader;
 
@@ -244,13 +262,52 @@ namespace SPICA.Formats.H3D.Model.Material
                     case PICARegister.GPUREG_STENCIL_OP: StencilOperation = new PICAStencilOperation(Param); break;
 
                     case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = new PICADepthColorMask(Param); break;
+
+                    case PICARegister.GPUREG_COLORBUFFER_READ: ColorBufferRead = (Param & 0xf) == 0xf; break;
+
+                    case PICARegister.GPUREG_COLORBUFFER_WRITE: ColorBufferWrite = (Param & 0xf) == 0xf; break;
+
+                    case PICARegister.GPUREG_DEPTHBUFFER_READ:
+                        StencilBufferRead = (Param & 1) != 0;
+                        DepthBufferRead = (Param & 2) != 0;
+                        break;
+
+                    case PICARegister.GPUREG_DEPTHBUFFER_WRITE:
+                        StencilBufferWrite = (Param & 1) != 0;
+                        DepthBufferWrite = (Param & 2) != 0;
+                        break;
                 }
             }
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //TODO
+            PICACommandWriter Writer;
+
+            Writer = new PICACommandWriter();
+
+            for (int Stage = 0; Stage < 6; Stage++)
+            {
+                PICARegister Register = PICARegister.GPUREG_DUMMY;
+
+                switch (Stage)
+                {
+                    case 0: Register = PICARegister.GPUREG_TEXENV0_SOURCE; break;
+                    case 1: Register = PICARegister.GPUREG_TEXENV1_SOURCE; break;
+                    case 2: Register = PICARegister.GPUREG_TEXENV2_SOURCE; break;
+                    case 3: Register = PICARegister.GPUREG_TEXENV3_SOURCE; break;
+                    case 4: Register = PICARegister.GPUREG_TEXENV4_SOURCE; break;
+                    case 5: Register = PICARegister.GPUREG_TEXENV5_SOURCE; break;
+                }
+
+                Writer.SetCommand(Register, true, 0xf,
+                    TexEnvStages[Stage].Source.ToUInt32(),
+                    TexEnvStages[Stage].Operand.ToUInt32(),
+                    TexEnvStages[Stage].Combiner.ToUInt32(),
+                    TexEnvStages[Stage].Color.ToUInt32(),
+                    TexEnvStages[Stage].Scale.ToUInt32());
+            }
 
             return false;
         }

@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICAColorOperation
+    public struct PICAColorOperation
     {
         public PICAFragmentOpMode FragmentOpMode;
         public PICABlendingMode BlendingMode;

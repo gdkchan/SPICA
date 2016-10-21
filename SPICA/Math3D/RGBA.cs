@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Math3D
 {
-    struct RGBA
+    public struct RGBA
     {
         public byte R;
         public byte G;

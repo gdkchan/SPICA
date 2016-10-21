@@ -15,7 +15,7 @@ using System.Linq;
 namespace SPICA.Formats.H3D.Model.Mesh
 {
     [Inline]
-    class H3DMesh : ICustomSerialization, ICustomSerializeCmd
+    public class H3DMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public ushort MaterialIndex;
         private byte Flags;
@@ -110,7 +110,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             return VerticesConverter.GetVertices(RawBuffer, VertexStride, Attributes);
         }
 
-        public void Deserialize(BinaryDeserializer Deserializer)
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader = new PICACommandReader(EnableCommands);
 
@@ -244,7 +244,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        public bool Serialize(BinarySerializer Serializer)
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //Setup flags
             bool UVMap0 = Attributes.Any(x => x.Name == PICAAttributeName.TextureCoordinate0);
@@ -377,7 +377,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             return false;
         }
 
-        public void SerializeCmd(BinarySerializer Serializer, object Value)
+        void ICustomSerializeCmd.SerializeCmd(BinarySerializer Serializer, object Value)
         {
             if (Value == EnableCommands)
             {

@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D.Model.Material
 {
-    enum H3DTranslucencyLayer
+    public enum H3DTranslucencyLayer
     {
         Layer0,
         Layer1,

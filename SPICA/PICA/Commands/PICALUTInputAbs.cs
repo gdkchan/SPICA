@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICALUTInputAbs
+    public struct PICALUTInputAbs
     {
         public bool Dist0Abs;
         public bool Dist1Abs;

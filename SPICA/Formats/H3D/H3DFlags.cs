@@ -3,7 +3,7 @@
 namespace SPICA.Formats.H3D
 {
     [Flags]
-    enum H3DFlags : byte
+    public enum H3DFlags : byte
     {
         IsFromNewConverter = 1 << 0,
         IsInitialized = 1 << 1,

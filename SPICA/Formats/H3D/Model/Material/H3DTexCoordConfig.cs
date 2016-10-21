@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.H3D.Model.Material
 {
-    enum H3DTexCoordConfig
+    public enum H3DTexCoordConfig
     {
         Config0120,
         Config0110,

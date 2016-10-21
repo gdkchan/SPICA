@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.H3D.Model.Material.Texture
 {
-    struct H3DTextureCoord
+    public struct H3DTextureCoord
     {
         public H3DTextureCoordFlags Flags;
         public H3DTextureTransformType TransformType;

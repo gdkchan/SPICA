@@ -2,7 +2,7 @@
 
 namespace SPICA.PICA.Converters
 {
-    class PICAVertex
+    public class PICAVertex
     {
         public Vector3D Position;
 

@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    enum PICATextureCombinerScale
+    public enum PICATextureCombinerScale
     {
         One,
         Two,

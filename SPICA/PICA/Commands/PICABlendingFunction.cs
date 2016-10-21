@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    struct PICABlendingFunction
+    public struct PICABlendingFunction
     {
         public PICABlendingEquation RGBEquation;
         public PICABlendingEquation AlphaEquation;

@@ -6,7 +6,7 @@ using System.Collections;
 namespace SPICA.Formats.H3D
 {
     [Inline]
-    class PatriciaList<T> : IEnumerable<T> where T : INamed
+    public class PatriciaList<T> : IEnumerable<T> where T : INamed
     {
         private List<T> Contents;
         public PatriciaTree NameTree;

@@ -3,7 +3,7 @@
 namespace SPICA.Formats.H3D.Model.Material
 {
     [Flags]
-    enum H3DFragmentFlags : byte
+    public enum H3DFragmentFlags : byte
     {
         IsBumpRenormalizeEnabled = 1 << 0,
         IsClampHighLightEnabled = 1 << 1,

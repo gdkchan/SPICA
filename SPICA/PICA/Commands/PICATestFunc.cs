@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    enum PICATestFunc
+    public enum PICATestFunc
     {
         Never,
         Always,
