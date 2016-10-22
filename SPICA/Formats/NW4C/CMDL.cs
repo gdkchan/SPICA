@@ -1318,15 +1318,15 @@ namespace SPICA.Formats.H3D {
                                     obb.CenterPosition.X = obbox.Center.X;
                                     obb.CenterPosition.Y = obbox.Center.Y;
                                     obb.CenterPosition.Z = obbox.Center.Z;
-                                    obb.OrientationMatrix.M00 = obbox.Orientation.Elems[0];
-                                    obb.OrientationMatrix.M01 = obbox.Orientation.Elems[1];
-                                    obb.OrientationMatrix.M02 = obbox.Orientation.Elems[2];
-                                    obb.OrientationMatrix.M10 = obbox.Orientation.Elems[3];
-                                    obb.OrientationMatrix.M11 = obbox.Orientation.Elems[4];
-                                    obb.OrientationMatrix.M12 = obbox.Orientation.Elems[5];
-                                    obb.OrientationMatrix.M20 = obbox.Orientation.Elems[6];
-                                    obb.OrientationMatrix.M21 = obbox.Orientation.Elems[7];
-                                    obb.OrientationMatrix.M22 = obbox.Orientation.Elems[8];
+                                    obb.OrientationMatrix.M00 = obbox.Orientation[0, 0];
+                                    obb.OrientationMatrix.M01 = obbox.Orientation[0, 1];
+                                    obb.OrientationMatrix.M02 = obbox.Orientation[0, 2];
+                                    obb.OrientationMatrix.M10 = obbox.Orientation[1, 0];
+                                    obb.OrientationMatrix.M11 = obbox.Orientation[1, 1];
+                                    obb.OrientationMatrix.M12 = obbox.Orientation[1, 2];
+                                    obb.OrientationMatrix.M20 = obbox.Orientation[2, 0];
+                                    obb.OrientationMatrix.M21 = obbox.Orientation[2, 1];
+                                    obb.OrientationMatrix.M22 = obbox.Orientation[2, 2];
                                     obb.Size.X = obbox.Size.X;
                                     obb.Size.Y = obbox.Size.Y;
                                     obb.Size.Z = obbox.Size.Z;
@@ -1659,9 +1659,9 @@ namespace SPICA.Formats.H3D {
                     fragShade.TextureCombiners.Add(texComb);
                 }
 
-                fragShade.AlphaTest.IsTestEnabled = mt.MaterialParams.FragmentAlphaTest.Enabled;
-                fragShade.AlphaTest.TestFunction = getTestFunc(mt.MaterialParams.FragmentAlphaTest.Function);
-                fragShade.AlphaTest.TestReference = mt.MaterialParams.FragmentAlphaTest.Reference;
+                fragShade.AlphaTest.IsTestEnabled = mt.MaterialParams.AlphaTest.Enabled;
+                fragShade.AlphaTest.TestFunction = getTestFunc(mt.MaterialParams.AlphaTest.Function);
+                fragShade.AlphaTest.TestReference = mt.MaterialParams.AlphaTest.Reference;
 
                 mat.FragmentShader = fragShade;
 
@@ -1673,13 +1673,13 @@ namespace SPICA.Formats.H3D {
                 fragOp.BlendOperation.Mode = "NotUsed";
                 fragOp.BlendOperation.LogicOperation = mt.MaterialParams.LogicalOperation.ToString();
 
-                fragOp.BlendOperation.RgbParameter.BlendFunctionSource = mt.MaterialParams.BlendingFunction.RGBSourceFunc.ToString();
-                fragOp.BlendOperation.RgbParameter.BlendFunctionDestination = mt.MaterialParams.BlendingFunction.RGBDestFunc.ToString();
-                fragOp.BlendOperation.RgbParameter.BlendEquation = mt.MaterialParams.BlendingFunction.RGBEquation.ToString();
+                fragOp.BlendOperation.RgbParameter.BlendFunctionSource = mt.MaterialParams.BlendFunction.RGBSourceFunc.ToString();
+                fragOp.BlendOperation.RgbParameter.BlendFunctionDestination = mt.MaterialParams.BlendFunction.RGBDestFunc.ToString();
+                fragOp.BlendOperation.RgbParameter.BlendEquation = mt.MaterialParams.BlendFunction.RGBEquation.ToString();
 
-                fragOp.BlendOperation.AlphaParameter.BlendFunctionSource = mt.MaterialParams.BlendingFunction.AlphaSourceFunc.ToString();
-                fragOp.BlendOperation.AlphaParameter.BlendFunctionDestination = mt.MaterialParams.BlendingFunction.AlphaDestFunc.ToString();
-                fragOp.BlendOperation.AlphaParameter.BlendEquation = mt.MaterialParams.BlendingFunction.AlphaEquation.ToString();
+                fragOp.BlendOperation.AlphaParameter.BlendFunctionSource = mt.MaterialParams.BlendFunction.AlphaSourceFunc.ToString();
+                fragOp.BlendOperation.AlphaParameter.BlendFunctionDestination = mt.MaterialParams.BlendFunction.AlphaDestFunc.ToString();
+                fragOp.BlendOperation.AlphaParameter.BlendEquation = mt.MaterialParams.BlendFunction.AlphaEquation.ToString();
 
                 fragOp.BlendOperation.BlendColor.R = (float)mt.MaterialParams.BlendColor.R / 255;
                 fragOp.BlendOperation.BlendColor.G = (float)mt.MaterialParams.BlendColor.G / 255;

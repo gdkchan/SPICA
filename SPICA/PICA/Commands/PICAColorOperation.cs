@@ -2,13 +2,23 @@
 {
     public struct PICAColorOperation
     {
-        public PICAFragmentOpMode FragmentOpMode;
-        public PICABlendingMode BlendingMode;
+        public PICAFragOpMode FragOpMode;
+        public PICABlendMode BlendMode;
 
         public PICAColorOperation(uint Param)
         {
-            FragmentOpMode = (PICAFragmentOpMode)((Param >> 0) & 3);
-            BlendingMode = (PICABlendingMode)((Param >> 8) & 1);
+            FragOpMode = (PICAFragOpMode)((Param >> 0) & 3);
+            BlendMode = (PICABlendMode)((Param >> 8) & 1);
+        }
+
+        public uint ToUInt32()
+        {
+            uint Param = 0xe4u << 16;
+
+            Param |= ((uint)FragOpMode & 3) << 0;
+            Param |= ((uint)BlendMode & 1) << 8;
+
+            return Param;
         }
     }
 }

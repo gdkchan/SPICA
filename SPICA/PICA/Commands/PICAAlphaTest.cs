@@ -1,20 +1,16 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public struct PICAStencilTest
+    public struct PICAAlphaTest
     {
         public bool Enabled;
         public PICATestFunc Function;
-        public byte BufferMask;
-        public sbyte Reference;
-        public byte Mask;
+        public byte Reference;
 
-        public PICAStencilTest(uint Param)
+        public PICAAlphaTest(uint Param)
         {
             Enabled = (Param & 1) != 0;
             Function = (PICATestFunc)((Param >> 4) & 7);
-            BufferMask = (byte)(Param >> 8);
-            Reference = (sbyte)(Param >> 16);
-            Mask = (byte)(Param >> 24);
+            Reference = (byte)(Param >> 8);
         }
 
         public uint ToUInt32()
@@ -23,9 +19,7 @@
 
             Param |= Enabled ? 1u : 0u;
             Param |= ((uint)Function & 7) << 4;
-            Param |= (uint)BufferMask << 8;
-            Param |= (uint)Reference << 16;
-            Param |= (uint)Mask << 24;
+            Param |= (uint)Reference << 8;
 
             return Param;
         }

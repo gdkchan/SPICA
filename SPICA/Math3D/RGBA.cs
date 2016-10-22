@@ -1,11 +1,16 @@
-﻿namespace SPICA.Math3D
+﻿using SPICA.Serialization.Attributes;
+
+namespace SPICA.Math3D
 {
-    public struct RGBA
+    [Inline]
+    public class RGBA
     {
         public byte R;
         public byte G;
         public byte B;
         public byte A;
+
+        public RGBA() { }
 
         public RGBA(byte R, byte G, byte B, byte A)
         {
@@ -13,6 +18,18 @@
             this.G = G;
             this.B = B;
             this.A = A;
+        }
+
+        public uint ToUInt32()
+        {
+            uint Param = 0;
+
+            Param |= (uint)R << 0;
+            Param |= (uint)G << 8;
+            Param |= (uint)B << 16;
+            Param |= (uint)A << 24;
+
+            return Param;
         }
 
         public override string ToString()

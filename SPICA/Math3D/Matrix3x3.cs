@@ -9,7 +9,7 @@ namespace SPICA.Math3D
     public class Matrix3x3
     {
         [FixedLength(3 * 3), Inline]
-        public float[] Elems;
+        private float[] Elems;
 
         public Matrix3x3()
         {

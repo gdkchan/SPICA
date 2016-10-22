@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICABlendingFunc
+    public enum PICABlendFunc
     {
         Zero,
         One,

@@ -165,17 +165,12 @@ namespace SPICA.Formats.H3D.Model.Mesh
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA5:
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA6:
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
-                        int ParamIndex = 0;
-
-                        while (ParamIndex < Cmd.Parameters.Length)
+                        for (int i = 0; i < Cmd.Parameters.Length; i++)
                         {
-                            switch (UniformIndex & 3)
-                            {
-                                case 0: Uniform[UniformIndex++ >> 2].W = IOUtils.ToFloat(Cmd.Parameters[ParamIndex++]); break;
-                                case 1: Uniform[UniformIndex++ >> 2].Z = IOUtils.ToFloat(Cmd.Parameters[ParamIndex++]); break;
-                                case 2: Uniform[UniformIndex++ >> 2].Y = IOUtils.ToFloat(Cmd.Parameters[ParamIndex++]); break;
-                                case 3: Uniform[UniformIndex++ >> 2].X = IOUtils.ToFloat(Cmd.Parameters[ParamIndex++]); break;
-                            }
+                            int j = UniformIndex >> 2;
+                            int k = (UniformIndex++ & 3) ^ 3;
+
+                            Uniform[j][k] = IOUtils.ToSingle(Cmd.Parameters[i]);
                         }
                         break;
                 }
@@ -198,11 +193,12 @@ namespace SPICA.Formats.H3D.Model.Mesh
                 else
                 {
                     int PermutationIdx = (int)((BufferAttributes >> Index * 4) & 0xf);
+                    int AttributeName = (int)((BufferPermutation >> PermutationIdx * 4) & 0xf);
                     int AttributeFmt = (int)((BufferFormats >> PermutationIdx * 4) & 0xf);
 
                     PICAAttribute Attrib = new PICAAttribute
                     {
-                        Name = (PICAAttributeName)((BufferPermutation >> PermutationIdx * 4) & 0xf),
+                        Name = (PICAAttributeName)AttributeName,
                         Format = (PICAAttributeFormat)(AttributeFmt & 3),
                         Elements = (AttributeFmt >> 2) + 1,
                         Scale = 1
@@ -321,7 +317,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Writer.SetCommand(PICARegister.GPUREG_VSH_NUM_ATTR, (uint)(AttributesTotal - 1), 1);
             Writer.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW, (uint)BufferPermutation);
             Writer.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH, (uint)(BufferPermutation >> 32));
-            Writer.SetCommand(PICARegister.GPUREG_ATTRIBBUFFERS_LOC, true, 0xf, 
+            Writer.SetCommand(PICARegister.GPUREG_ATTRIBBUFFERS_LOC, true,
                 0, //Base Address (Place holder)
                 (uint)BufferFormats,
                 (uint)(BufferFormats >> 32),
@@ -333,32 +329,32 @@ namespace SPICA.Formats.H3D.Model.Mesh
             {
                 PICAFixedAttribute Attrib = FixedAttributes[Index];
 
-                Writer.SetCommand(PICARegister.GPUREG_FIXEDATTRIB_INDEX, true, 0xf,
+                Writer.SetCommand(PICARegister.GPUREG_FIXEDATTRIB_INDEX, true,
                     (uint)(Attributes.Length + Index),
                     Attrib.Value.Word0,
                     Attrib.Value.Word1,
                     Attrib.Value.Word2);
             }
 
-            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0xf, 0x80000006u,
-                    IOUtils.ToUInt(PositionOffset.W),
-                    IOUtils.ToUInt(PositionOffset.Z),
-                    IOUtils.ToUInt(PositionOffset.Y),
-                    IOUtils.ToUInt(PositionOffset.X));
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000006u,
+                    IOUtils.ToUInt32(PositionOffset.W),
+                    IOUtils.ToUInt32(PositionOffset.Z),
+                    IOUtils.ToUInt32(PositionOffset.Y),
+                    IOUtils.ToUInt32(PositionOffset.X));
 
             //Scales
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, 0x80000007u);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0, false, Scales);
 
-            Writer.Finalize();
+            Writer.WriteEnd();
 
             EnableCommands = Writer.GetBuffer();
 
             Writer = new PICACommandWriter();
 
             //Assuming that the Position isn't used as Fixed Attribute since this doesn't make sense
-            Writer.SetCommand(PICARegister.GPUREG_ATTRIBBUFFER0_OFFSET, true, 0xf, 0, 0, 0);
+            Writer.SetCommand(PICARegister.GPUREG_ATTRIBBUFFER0_OFFSET, true, 0, 0, 0);
 
             for (int Index = 1; Index < 12; Index++)
             {
@@ -366,11 +362,11 @@ namespace SPICA.Formats.H3D.Model.Mesh
 
                 if (FixedAttributes?.Any(x => (int)x.Name == Index) ?? false)
                 {
-                    Writer.SetCommand(PICARegister.GPUREG_FIXEDATTRIB_INDEX, true, 0xf, (uint)Index, 0, 0, 0);
+                    Writer.SetCommand(PICARegister.GPUREG_FIXEDATTRIB_INDEX, true, (uint)Index, 0, 0, 0);
                 }
             }
 
-            Writer.Finalize();
+            Writer.WriteEnd();
 
             DisableCommands = Writer.GetBuffer();
 

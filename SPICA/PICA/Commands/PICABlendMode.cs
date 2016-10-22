@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICABlendingMode
+    public enum PICABlendMode
     {
         LogicalOp,
         Blend

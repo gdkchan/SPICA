@@ -27,7 +27,7 @@ namespace SPICA.PICA
 
         public void SetCommand(PICARegister Register, float Param, uint Mask = 0xf)
         {
-            Commands.Add(IOUtils.ToUInt(Param));
+            Commands.Add(IOUtils.ToUInt32(Param));
             Commands.Add((uint)Register | (Mask << 16));
         }
 
@@ -37,18 +37,30 @@ namespace SPICA.PICA
             Commands.Add((uint)Register | (Mask << 16));
         }
 
-        public void SetCommand(PICARegister Register, bool Consecutive, uint Mask, params uint[] Params)
+        public void SetCommand(PICARegister Register, params bool[] Params)
+        {
+            uint Param = 0;
+
+            for (int Bit = 0; Bit < Params.Length; Bit++)
+            {
+                if (Params[Bit]) Param |= (1u << Bit);
+            }
+
+            SetCommand(Register, Param, 1);
+        }
+
+        public void SetCommand(PICARegister Register, bool Consecutive, params uint[] Params)
         {
             Commands.Add(Params[0]);
 
-            uint ExtraW = (uint)(((Params.Length - 1) & 0x7ff) << 20);
-            uint CFlag = Consecutive ? (1u << 31) : 0;
+            uint WordsCount = (((uint)Params.Length - 1) & 0x7ff) << 20;
+            uint ConsecutiveBit = Consecutive ? (1u << 31) : 0;
 
-            Commands.Add((uint)Register | (Mask << 16) | ExtraW | CFlag);
+            Commands.Add((uint)Register | (0xf << 16) | WordsCount | ConsecutiveBit);
 
-            for (int PIndex = 1; PIndex < Params.Length; PIndex++)
+            for (int Index = 1; Index < Params.Length; Index++)
             {
-                Commands.Add(Params[PIndex]);
+                Commands.Add(Params[Index]);
             }
 
             Align();
@@ -56,22 +68,22 @@ namespace SPICA.PICA
 
         public void SetCommand(PICARegister Register, bool Consecutive, params float[] Params)
         {
-            Commands.Add(IOUtils.ToUInt(Params[0]));
+            Commands.Add(IOUtils.ToUInt32(Params[0]));
 
-            uint ExtraW = (uint)(((Params.Length - 1) & 0x7ff) << 20);
-            uint CFlag = Consecutive ? (1u << 31) : 0;
+            uint WordsCount = (((uint)Params.Length - 1) & 0x7ff) << 20;
+            uint ConsecutiveBit = Consecutive ? (1u << 31) : 0;
 
-            Commands.Add((uint)Register | (0xf << 16) | ExtraW | CFlag);
+            Commands.Add((uint)Register | (0xf << 16) | WordsCount | ConsecutiveBit);
 
-            for (int PIndex = 1; PIndex < Params.Length; PIndex++)
+            for (int Index = 1; Index < Params.Length; Index++)
             {
-                Commands.Add(IOUtils.ToUInt(Params[PIndex]));
+                Commands.Add(IOUtils.ToUInt32(Params[Index]));
             }
 
             Align();
         }
 
-        public void Finalize()
+        public void WriteEnd()
         {
             //Make sure that the Buffer is aligned on a 16 bytes boundary
             if ((Index & 3) == 0)

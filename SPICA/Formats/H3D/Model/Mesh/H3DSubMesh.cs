@@ -104,7 +104,7 @@ namespace SPICA.Formats.H3D.Model.Mesh
             Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
             Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
 
-            Writer.Finalize();
+            Writer.WriteEnd();
 
             Commands = Writer.GetBuffer();
 

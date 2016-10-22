@@ -116,7 +116,7 @@ namespace SPICA.Formats.H3D.Texture
                         break;
                 }
 
-                Writer.Finalize();
+                Writer.WriteEnd();
 
                 switch (Unit)
                 {

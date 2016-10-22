@@ -20,5 +20,20 @@
             ReflecGScale = (PICALUTInputScale)((Param >> 20) & 7);
             ReflecBScale = (PICALUTInputScale)((Param >> 24) & 7);
         }
+
+        public uint ToUInt32()
+        {
+            uint Param = 0;
+
+            Param |= ((uint)Dist0Scale & 7) << 0;
+            Param |= ((uint)Dist1Scale & 7) << 4;
+            Param |= ((uint)SpecularScale & 7) << 8;
+            Param |= ((uint)FresnelScale & 7) << 12;
+            Param |= ((uint)ReflecRScale & 7) << 16;
+            Param |= ((uint)ReflecGScale & 7) << 20;
+            Param |= ((uint)ReflecBScale & 7) << 24;
+
+            return Param;
+        }
     }
 }

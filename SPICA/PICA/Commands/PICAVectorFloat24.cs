@@ -37,7 +37,7 @@ namespace SPICA.PICA.Commands
             Float |= Exponent << 23;
             Float |= SignBit << 31;
 
-            return IOUtils.ToFloat(Float);
+            return IOUtils.ToSingle(Float);
         }
 
         public override string ToString()

@@ -113,22 +113,22 @@ namespace SPICA.Formats.H3D.Model.Material
         public PICAFaceCulling FaceCulling;
 
         [NonSerialized]
-        public PICAColorOperation ColorOperation;
-
-        [NonSerialized]
         public PICATexEnvStage[] TexEnvStages;
 
         [NonSerialized]
         public PICATexEnvColor TexEnvBufferColor;
 
         [NonSerialized]
-        public PICABlendingFunction BlendingFunction;
+        public PICAColorOperation ColorOperation;
+
+        [NonSerialized]
+        public PICABlendFunction BlendFunction;
 
         [NonSerialized]
         public PICALogicalOperation LogicalOperation;
 
         [NonSerialized]
-        public PICAFragmentAlphaTest FragmentAlphaTest;
+        public PICAAlphaTest AlphaTest;
 
         [NonSerialized]
         public PICAStencilTest StencilTest;
@@ -157,7 +157,13 @@ namespace SPICA.Formats.H3D.Model.Material
         [NonSerialized]
         public bool DepthBufferWrite;
 
-        public string ObjectName { get { return null; } }
+        [NonSerialized]
+        public float[] TextureMaps;
+
+        [NonSerialized]
+        public H3DMaterial Parent;
+
+        public string ObjectName { get { return Parent?.Name; } }
 
         public H3DMaterialParams()
         {
@@ -168,6 +174,8 @@ namespace SPICA.Formats.H3D.Model.Material
             {
                 TexEnvStages[Index] = new PICATexEnvStage();
             }
+
+            TextureMaps = new float[3];
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -192,6 +200,10 @@ namespace SPICA.Formats.H3D.Model.Material
 
             Reader = new PICACommandReader(FragmentShaderCommands);
 
+            int UniformIndex = 0;
+
+            Vector4D[] Uniform = new Vector4D[96];
+
             while (Reader.HasCommand)
             {
                 PICACommand Cmd = Reader.GetCommand();
@@ -204,8 +216,6 @@ namespace SPICA.Formats.H3D.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
-
                     case PICARegister.GPUREG_TEXENV0_SOURCE:
                     case PICARegister.GPUREG_TEXENV1_SOURCE:
                     case PICARegister.GPUREG_TEXENV2_SOURCE:
@@ -247,15 +257,15 @@ namespace SPICA.Formats.H3D.Model.Material
                         TexEnvStages[Stage].Scale = new PICATexEnvScale(Param);
                         break;
 
-                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
-
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
 
-                    case PICARegister.GPUREG_BLEND_FUNC: BlendingFunction = new PICABlendingFunction(Param); break;
+                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
+
+                    case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = new PICABlendFunction(Param); break;
 
                     case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
 
-                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: FragmentAlphaTest = new PICAFragmentAlphaTest(Param); break;
+                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: AlphaTest = new PICAAlphaTest(Param); break;
 
                     case PICARegister.GPUREG_STENCIL_TEST: StencilTest = new PICAStencilTest(Param); break;
 
@@ -263,27 +273,64 @@ namespace SPICA.Formats.H3D.Model.Material
 
                     case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = new PICADepthColorMask(Param); break;
 
-                    case PICARegister.GPUREG_COLORBUFFER_READ: ColorBufferRead = (Param & 0xf) == 0xf; break;
+                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
 
+                    case PICARegister.GPUREG_COLORBUFFER_READ: ColorBufferRead = (Param & 0xf) == 0xf; break;
                     case PICARegister.GPUREG_COLORBUFFER_WRITE: ColorBufferWrite = (Param & 0xf) == 0xf; break;
 
                     case PICARegister.GPUREG_DEPTHBUFFER_READ:
                         StencilBufferRead = (Param & 1) != 0;
                         DepthBufferRead = (Param & 2) != 0;
                         break;
-
                     case PICARegister.GPUREG_DEPTHBUFFER_WRITE:
                         StencilBufferWrite = (Param & 1) != 0;
                         DepthBufferWrite = (Param & 2) != 0;
                         break;
+
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA1:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA2:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA3:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA4:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA5:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA6:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
+                        for (int i = 0; i < Cmd.Parameters.Length; i++)
+                        {
+                            int j = UniformIndex >> 2;
+                            int k = (UniformIndex++ & 3) ^ 3;
+
+                            Uniform[j][k] = IOUtils.ToSingle(Cmd.Parameters[i]);
+                        }
+                        break;
                 }
             }
+
+            //Those define the mapping used by each texture
+            /*
+             * Values:
+             * 0-2 = UVMap[0-2]
+             * 3 = CameraSphereEnvMap aka SkyDome
+             * 4 = CameraCubeEnvMap aka SkyBox
+             * 5 = ProjectionMap?
+             */
+            TextureMaps[0] = Uniform[10].X;
+            TextureMaps[1] = Uniform[10].Y;
+            TextureMaps[2] = Uniform[10].Z;
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //TODO
             PICACommandWriter Writer;
+
+            Writer = new PICACommandWriter();
+
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS, LUTInputAbs.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT, LUTInputSel.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE, LUTInputScaleSel.ToUInt32());
+
+            LUTConfigCommands = Writer.GetBuffer();
 
             Writer = new PICACommandWriter();
 
@@ -301,13 +348,74 @@ namespace SPICA.Formats.H3D.Model.Material
                     case 5: Register = PICARegister.GPUREG_TEXENV5_SOURCE; break;
                 }
 
-                Writer.SetCommand(Register, true, 0xf,
+                Writer.SetCommand(Register, true,
                     TexEnvStages[Stage].Source.ToUInt32(),
                     TexEnvStages[Stage].Operand.ToUInt32(),
                     TexEnvStages[Stage].Combiner.ToUInt32(),
                     TexEnvStages[Stage].Color.ToUInt32(),
                     TexEnvStages[Stage].Scale.ToUInt32());
             }
+
+            Writer.SetCommand(PICARegister.GPUREG_TEXENV_UPDATE_BUFFER, false, 2);
+            Writer.SetCommand(PICARegister.GPUREG_TEXENV_BUFFER_COLOR, TexEnvBufferColor.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_COLOR_OPERATION, ColorOperation.ToUInt32(), 3);
+            Writer.SetCommand(PICARegister.GPUREG_BLEND_FUNC, BlendFunction.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_FRAGOP_ALPHA_TEST, AlphaTest.ToUInt32(), 3);
+            Writer.SetCommand(PICARegister.GPUREG_STENCIL_TEST, StencilTest.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_STENCIL_OP, StencilOperation.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_DEPTH_COLOR_MASK, DepthColorMask.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_FACECULLING_CONFIG, (uint)FaceCulling);
+            Writer.SetCommand(PICARegister.GPUREG_FRAMEBUFFER_FLUSH, true);
+            Writer.SetCommand(PICARegister.GPUREG_FRAMEBUFFER_INVALIDATE, true);
+            Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_READ, ColorBufferRead ? 0xfu : 0u, 1);
+            Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_WRITE, ColorBufferWrite ? 0xfu : 0u, 1);
+            Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_READ, StencilBufferRead, DepthBufferRead);
+            Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_WRITE, StencilBufferWrite, DepthBufferWrite);
+
+            Matrix3x4 TexMtx0 = Matrix3x4.RotateZ(TextureCoords[0].Rotation);
+            Matrix3x4 TexMtx1 = Matrix3x4.RotateZ(TextureCoords[1].Rotation);
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, 0x8000000bu);
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0, false,
+                TexMtx0.M14, TexMtx0.M13, TexMtx0.M12, TexMtx0.M11,
+                TexMtx0.M24, TexMtx0.M23, TexMtx0.M22, TexMtx0.M21,
+                TexMtx0.M34, TexMtx0.M33, TexMtx0.M32, TexMtx0.M31,
+                TexMtx1.M14, TexMtx1.M13, TexMtx1.M12, TexMtx1.M11,
+                TexMtx1.M24, TexMtx1.M23, TexMtx1.M22, TexMtx1.M21,
+                TexMtx1.M34, TexMtx1.M33, TexMtx1.M32, TexMtx1.M31,
+                0, 0, 0, 0,
+                0, 0, 0, 0);
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000013u, 0, 0, 0, 0);
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x8000000au, 
+                IOUtils.ToUInt32(0),
+                IOUtils.ToUInt32(TextureMaps[2]),
+                IOUtils.ToUInt32(TextureMaps[1]),
+                IOUtils.ToUInt32(TextureMaps[0]));
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000014u,
+                IOUtils.ToUInt32(ColorScale),
+                IOUtils.ToUInt32(AmbientColor.B / 255f),
+                IOUtils.ToUInt32(AmbientColor.G / 255f),
+                IOUtils.ToUInt32(AmbientColor.R / 255f));
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000015u,
+                IOUtils.ToUInt32(DiffuseColor.A / 255f),
+                IOUtils.ToUInt32(DiffuseColor.B / 255f),
+                IOUtils.ToUInt32(DiffuseColor.G / 255f),
+                IOUtils.ToUInt32(DiffuseColor.R / 255f));
+
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000055u,
+                IOUtils.ToUInt32(1),
+                IOUtils.ToUInt32(8),
+                IOUtils.ToUInt32(1),
+                IOUtils.ToUInt32(8));
+
+            Writer.WriteEnd();
+
+            FragmentShaderCommands = Writer.GetBuffer();
 
             return false;
         }

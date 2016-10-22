@@ -30,6 +30,7 @@ namespace SPICA.Formats.H3D.Model.Material
 
         public H3DMaterial()
         {
+            MaterialParams = new H3DMaterialParams();
             TextureMappers = new H3DTextureMapper[3];
         }
 

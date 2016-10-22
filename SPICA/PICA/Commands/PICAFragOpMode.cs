@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICAFragmentOpMode
+    public enum PICAFragOpMode
     {
         Default = 0,
         Gas = 1,
