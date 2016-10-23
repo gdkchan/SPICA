@@ -13,7 +13,7 @@ namespace SPICA.Formats.H3D.Model.Material.Texture
         public H3DTextureMinFilter MinFilter;
 
         public byte MinLOD;
-        public ushort Padding;
+        private ushort Padding;
         public float LODBias;
 
         public RGBA BorderColor;

@@ -49,14 +49,14 @@ namespace SPICA.PICA
             SetCommand(Register, Param, 1);
         }
 
-        public void SetCommand(PICARegister Register, bool Consecutive, params uint[] Params)
+        public void SetCommands(PICARegister Register, bool Consecutive, uint Mask, params uint[] Params)
         {
             Commands.Add(Params[0]);
 
-            uint WordsCount = (((uint)Params.Length - 1) & 0x7ff) << 20;
+            uint ExtraParams = (((uint)Params.Length - 1) & 0x7ff) << 20;
             uint ConsecutiveBit = Consecutive ? (1u << 31) : 0;
 
-            Commands.Add((uint)Register | (0xf << 16) | WordsCount | ConsecutiveBit);
+            Commands.Add((uint)Register | (Mask << 16) | ExtraParams | ConsecutiveBit);
 
             for (int Index = 1; Index < Params.Length; Index++)
             {
@@ -66,14 +66,14 @@ namespace SPICA.PICA
             Align();
         }
 
-        public void SetCommand(PICARegister Register, bool Consecutive, params float[] Params)
+        public void SetCommands(PICARegister Register, bool Consecutive, uint Mask, params float[] Params)
         {
             Commands.Add(IOUtils.ToUInt32(Params[0]));
 
-            uint WordsCount = (((uint)Params.Length - 1) & 0x7ff) << 20;
+            uint ExtraParams = (((uint)Params.Length - 1) & 0x7ff) << 20;
             uint ConsecutiveBit = Consecutive ? (1u << 31) : 0;
 
-            Commands.Add((uint)Register | (0xf << 16) | WordsCount | ConsecutiveBit);
+            Commands.Add((uint)Register | (Mask << 16) | ExtraParams | ConsecutiveBit);
 
             for (int Index = 1; Index < Params.Length; Index++)
             {
@@ -81,6 +81,16 @@ namespace SPICA.PICA
             }
 
             Align();
+        }
+
+        public void SetCommand(PICARegister Register, bool Consecutive, params uint[] Params)
+        {
+            SetCommands(Register, Consecutive, 0xf, Params);
+        }
+
+        public void SetCommand(PICARegister Register, bool Consecutive, params float[] Params)
+        {
+            SetCommands(Register, Consecutive, 0xf, Params);
         }
 
         public void WriteEnd()

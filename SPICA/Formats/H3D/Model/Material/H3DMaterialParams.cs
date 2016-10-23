@@ -372,24 +372,31 @@ namespace SPICA.Formats.H3D.Model.Material
             Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_READ, StencilBufferRead, DepthBufferRead);
             Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_WRITE, StencilBufferWrite, DepthBufferWrite);
 
-            Matrix3x4 TexMtx0 = Matrix3x4.RotateZ(TextureCoords[0].Rotation);
-            Matrix3x4 TexMtx1 = Matrix3x4.RotateZ(TextureCoords[1].Rotation);
+            Matrix3x4[] TexMtx = new Matrix3x4[3];
+
+            for (int Unit = 0; Unit < 3; Unit++)
+            {
+                if (Parent.EnabledTextures[Unit])
+                    TexMtx[Unit] = Matrix3x4.RotateZ(TextureCoords[Unit].Rotation);
+                else
+                    TexMtx[Unit] = Matrix3x4.Empty;
+            }
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, 0x8000000bu);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0, false,
-                TexMtx0.M14, TexMtx0.M13, TexMtx0.M12, TexMtx0.M11,
-                TexMtx0.M24, TexMtx0.M23, TexMtx0.M22, TexMtx0.M21,
-                TexMtx0.M34, TexMtx0.M33, TexMtx0.M32, TexMtx0.M31,
-                TexMtx1.M14, TexMtx1.M13, TexMtx1.M12, TexMtx1.M11,
-                TexMtx1.M24, TexMtx1.M23, TexMtx1.M22, TexMtx1.M21,
-                TexMtx1.M34, TexMtx1.M33, TexMtx1.M32, TexMtx1.M31,
-                0, 0, 0, 0,
-                0, 0, 0, 0);
+                TexMtx[0].M14, TexMtx[0].M13, TexMtx[0].M12, TexMtx[0].M11,
+                TexMtx[0].M24, TexMtx[0].M23, TexMtx[0].M22, TexMtx[0].M21,
+                TexMtx[0].M34, TexMtx[0].M33, TexMtx[0].M32, TexMtx[0].M31,
+                TexMtx[1].M14, TexMtx[1].M13, TexMtx[1].M12, TexMtx[1].M11,
+                TexMtx[1].M24, TexMtx[1].M23, TexMtx[1].M22, TexMtx[1].M21,
+                TexMtx[1].M34, TexMtx[1].M33, TexMtx[1].M32, TexMtx[1].M31,
+                TexMtx[2].M14, TexMtx[2].M13, TexMtx[2].M12, TexMtx[2].M11,
+                TexMtx[2].M24, TexMtx[2].M23, TexMtx[2].M22, TexMtx[2].M21);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000013u, 0, 0, 0, 0);
 
-            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x8000000au, 
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x8000000au,
                 IOUtils.ToUInt32(0),
                 IOUtils.ToUInt32(TextureMaps[2]),
                 IOUtils.ToUInt32(TextureMaps[1]),
