@@ -9,6 +9,8 @@ namespace SPICA.Math3D
         public float Z;
         public float W;
 
+        public static Vector4D Empty { get { return new Vector4D(0, 0, 0, 0); } }
+
         public Vector4D(float X, float Y, float Z, float W)
         {
             this.X = X;
@@ -43,6 +45,51 @@ namespace SPICA.Math3D
                     default: throw new IndexOutOfRangeException("Expected 0-3 (X-W) range!");
                 }
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Vector4D && (Vector4D)obj == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode() ^ W.GetHashCode();
+        }
+
+        public static bool operator ==(Vector4D LHS, Vector4D RHS)
+        {
+            return LHS.X == RHS.X && LHS.Y == RHS.Y && LHS.Z == RHS.Z && LHS.W == RHS.W;
+        }
+
+        public static bool operator !=(Vector4D LHS, Vector4D RHS)
+        {
+            return !(LHS == RHS);
+        }
+
+        public static Vector4D operator +(Vector4D LHS, Vector4D RHS)
+        {
+            return new Vector4D(LHS.X + RHS.X, LHS.Y + RHS.Y, LHS.Z + RHS.Z, LHS.W + RHS.W);
+        }
+
+        public static Vector4D operator *(Vector4D LHS, Vector4D RHS)
+        {
+            return new Vector4D(LHS.X * RHS.X, LHS.Y * RHS.Y, LHS.Z * RHS.Z, LHS.W * RHS.W);
+        }
+
+        public static Vector4D operator -(Vector4D Vector)
+        {
+            return new Vector4D(-Vector.X, -Vector.Y, -Vector.Z, -Vector.W);
+        }
+
+        public static Vector4D operator -(Vector4D LHS, Vector4D RHS)
+        {
+            return LHS + (-RHS);
+        }
+
+        public static Vector4D operator *(Vector4D LHS, float RHS)
+        {
+            return new Vector4D(LHS.X * RHS, LHS.Y * RHS, LHS.Z * RHS, LHS.W * RHS);
         }
 
         public override string ToString()

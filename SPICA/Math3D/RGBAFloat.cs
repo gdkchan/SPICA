@@ -45,6 +45,26 @@ namespace SPICA.Math3D
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            return obj is RGBAFloat && (RGBAFloat)obj == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return R.GetHashCode() ^ G.GetHashCode() ^ B.GetHashCode() ^ A.GetHashCode();
+        }
+
+        public static bool operator ==(RGBAFloat LHS, RGBAFloat RHS)
+        {
+            return LHS.R == RHS.R && LHS.G == RHS.G && LHS.B == RHS.B && LHS.A == RHS.A;
+        }
+
+        public static bool operator !=(RGBAFloat LHS, RGBAFloat RHS)
+        {
+            return !(LHS == RHS);
+        }
+
         public override string ToString()
         {
             return string.Format("R: {0} G: {1} B: {2} A: {3}", R, G, B, A);

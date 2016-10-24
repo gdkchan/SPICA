@@ -60,8 +60,8 @@ namespace SPICA.Math3D
             return new Matrix3x4
             {
                 M22 = (float)Math.Cos(Angle),
-                M23 = -(float)Math.Sin(Angle),
-                M32 = (float)Math.Sin(Angle),
+                M23 = (float)Math.Sin(Angle),
+                M32 = -(float)Math.Sin(Angle),
                 M33 = (float)Math.Cos(Angle)
             };
         }
@@ -71,8 +71,8 @@ namespace SPICA.Math3D
             return new Matrix3x4
             {
                 M11 = (float)Math.Cos(Angle),
-                M13 = (float)Math.Sin(Angle),
-                M31 = -(float)Math.Sin(Angle),
+                M13 = -(float)Math.Sin(Angle),
+                M31 = (float)Math.Sin(Angle),
                 M33 = (float)Math.Cos(Angle)
             };
         }
@@ -82,8 +82,8 @@ namespace SPICA.Math3D
             return new Matrix3x4
             {
                 M11 = (float)Math.Cos(Angle),
-                M12 = -(float)Math.Sin(Angle),
-                M21 = (float)Math.Sin(Angle),
+                M12 = (float)Math.Sin(Angle),
+                M21 = -(float)Math.Sin(Angle),
                 M22 = (float)Math.Cos(Angle)
             };
         }
@@ -109,43 +109,59 @@ namespace SPICA.Math3D
             };
         }
 
-        //Vector2D
-        public static Matrix3x4 Translate(Vector2D Offset)
-        {
-            return new Matrix3x4
-            {
-                M14 = Offset.X,
-                M24 = Offset.Y
-            };
-        }
-
-        public static Matrix3x4 Scale(Vector2D Scale)
-        {
-            return new Matrix3x4
-            {
-                M11 = Scale.X,
-                M22 = Scale.Y
-            };
-        }
-
+        //Adapted from OpenTK lib
         public static Matrix3x4 operator *(Matrix3x4 LHS, Matrix3x4 RHS)
         {
             Matrix3x4 Output = new Matrix3x4();
 
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    float Sum = 0;
+            Output.M11 = (LHS.M11 * RHS.M11) + (LHS.M12 * RHS.M21) + (LHS.M13 * RHS.M31);
+            Output.M12 = (LHS.M11 * RHS.M12) + (LHS.M12 * RHS.M22) + (LHS.M13 * RHS.M32);
+            Output.M13 = (LHS.M11 * RHS.M13) + (LHS.M12 * RHS.M23) + (LHS.M13 * RHS.M33);
+            Output.M14 = (LHS.M11 * RHS.M14) + (LHS.M12 * RHS.M24) + (LHS.M13 * RHS.M34) + LHS.M14;
+            Output.M21 = (LHS.M21 * RHS.M11) + (LHS.M22 * RHS.M21) + (LHS.M23 * RHS.M31);
+            Output.M22 = (LHS.M21 * RHS.M12) + (LHS.M22 * RHS.M22) + (LHS.M23 * RHS.M32);
+            Output.M23 = (LHS.M21 * RHS.M13) + (LHS.M22 * RHS.M23) + (LHS.M23 * RHS.M33);
+            Output.M24 = (LHS.M21 * RHS.M14) + (LHS.M22 * RHS.M24) + (LHS.M23 * RHS.M34) + LHS.M24;
+            Output.M31 = (LHS.M31 * RHS.M11) + (LHS.M32 * RHS.M21) + (LHS.M33 * RHS.M31);
+            Output.M32 = (LHS.M31 * RHS.M12) + (LHS.M32 * RHS.M22) + (LHS.M33 * RHS.M32);
+            Output.M33 = (LHS.M31 * RHS.M13) + (LHS.M32 * RHS.M23) + (LHS.M33 * RHS.M33);
+            Output.M34 = (LHS.M31 * RHS.M14) + (LHS.M32 * RHS.M24) + (LHS.M33 * RHS.M34) + LHS.M34;
 
-                    for (int k = 0; k < 3; k++)
-                    {
-                        Sum += LHS[i, k] * RHS[k, j];
-                    }
+            return Output;
+        }
 
-                    Output[i, j] = Sum;
-                }
-            }
+        public Matrix3x4 Invert()
+        {
+            Vector3D InvRot0 = new Vector3D(M11, M21, M31);
+            Vector3D InvRot1 = new Vector3D(M12, M22, M32);
+            Vector3D InvRot2 = new Vector3D(M13, M23, M33);
+            
+            InvRot0 *= (1f / InvRot0.Length);
+            InvRot1 *= (1f / InvRot1.Length);
+            InvRot2 *= (1f / InvRot2.Length);
+
+            Vector3D Translation = new Vector3D(M14, M24, M34);
+
+            float TranslateX = -Vector3D.Dot(InvRot0, Translation);
+            float TranslateY = -Vector3D.Dot(InvRot1, Translation);
+            float TranslateZ = -Vector3D.Dot(InvRot2, Translation);
+
+            Matrix3x4 Output = new Matrix3x4();
+
+            Output.M11 = InvRot0.X;
+            Output.M12 = InvRot0.Y;
+            Output.M13 = InvRot0.Z;
+            Output.M14 = TranslateX;
+
+            Output.M21 = InvRot1.X;
+            Output.M22 = InvRot1.Y;
+            Output.M23 = InvRot1.Z;
+            Output.M24 = TranslateY;
+
+            Output.M31 = InvRot2.X;
+            Output.M32 = InvRot2.Y;
+            Output.M33 = InvRot2.Z;
+            Output.M34 = TranslateZ;
 
             return Output;
         }

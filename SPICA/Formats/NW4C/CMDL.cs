@@ -5,15 +5,15 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Linq;
-using SPICA.Formats.H3D.Model;
-using SPICA.Formats.H3D.Model.Material;
-using SPICA.Formats.H3D.Model.Mesh;
+using SPICA.Formats.CtrH3D.Model;
+using SPICA.Formats.CtrH3D.Model.Material;
+using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
 using System.Globalization;
 using SPICA.Math3D;
 using SPICA.PICA.Converters;
 
-namespace SPICA.Formats.H3D {
+namespace SPICA.Formats.CtrH3D {
     public class CMDL {
         #region MODELS
         [XmlRootAttribute("NintendoWareIntermediateFile")]

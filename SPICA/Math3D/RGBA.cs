@@ -2,15 +2,12 @@
 
 namespace SPICA.Math3D
 {
-    [Inline]
-    public class RGBA
+    public struct RGBA
     {
         public byte R;
         public byte G;
         public byte B;
         public byte A;
-
-        public RGBA() { }
 
         public RGBA(byte R, byte G, byte B, byte A)
         {

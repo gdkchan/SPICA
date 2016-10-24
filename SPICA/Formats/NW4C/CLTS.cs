@@ -1,5 +1,5 @@
-﻿using SPICA.Formats.H3D;
-using SPICA.Formats.H3D.LUT;
+﻿using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.LUT;
 using System;
 using System.Collections.Generic;
 using System.IO;

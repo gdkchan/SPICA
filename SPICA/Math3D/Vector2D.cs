@@ -7,6 +7,8 @@ namespace SPICA.Math3D
         public float X;
         public float Y;
 
+        public static Vector2D Empty { get { return new Vector2D(0, 0); } }
+
         public Vector2D(float X, float Y)
         {
             this.X = X;
@@ -35,6 +37,51 @@ namespace SPICA.Math3D
                     default: throw new IndexOutOfRangeException("Expected 0-1 (X-Y) range!");
                 }
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Vector2D && (Vector2D)obj == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return X.GetHashCode() ^ Y.GetHashCode();
+        }
+
+        public static bool operator ==(Vector2D LHS, Vector2D RHS)
+        {
+            return LHS.X == RHS.X && LHS.Y == RHS.Y;
+        }
+
+        public static bool operator !=(Vector2D LHS, Vector2D RHS)
+        {
+            return !(LHS == RHS);
+        }
+
+        public static Vector2D operator +(Vector2D LHS, Vector2D RHS)
+        {
+            return new Vector2D(LHS.X + RHS.X, LHS.Y + RHS.Y);
+        }
+
+        public static Vector2D operator *(Vector2D LHS, Vector2D RHS)
+        {
+            return new Vector2D(LHS.X * RHS.X, LHS.Y * RHS.Y);
+        }
+
+        public static Vector2D operator -(Vector2D Vector)
+        {
+            return new Vector2D(-Vector.X, -Vector.Y);
+        }
+
+        public static Vector2D operator -(Vector2D LHS, Vector2D RHS)
+        {
+            return LHS + (-RHS);
+        }
+
+        public static Vector2D operator *(Vector2D LHS, float RHS)
+        {
+            return new Vector2D(LHS.X * RHS, LHS.Y * RHS);
         }
 
         public override string ToString()

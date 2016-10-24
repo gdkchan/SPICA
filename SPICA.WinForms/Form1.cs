@@ -3,13 +3,14 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SPICA.Formats.Generic.OBJ;
-using SPICA.Formats.H3D;
-using SPICA.Formats.H3D.Model.Mesh;
-using SPICA.Formats.H3D.Texture;
+using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Model.Mesh;
+using SPICA.Formats.CtrH3D.Texture;
 using SPICA.WinForms.Rendering;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using SPICA.Formats.Generic.StudioMdl;
 
 namespace SPICA.WinForms
 {
@@ -84,7 +85,6 @@ void main(void)
             CreateShaders();
 
             H3D Model = H3D.Open("D:\\may.bch");
-            //H3D.Save("D:\\recreated.bch", Model);
 
             Mdl = new Mesh[Model.Models[0].Meshes.Count];
 

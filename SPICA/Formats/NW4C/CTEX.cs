@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.H3D.Model;
+﻿using SPICA.Formats.CtrH3D.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace SPICA.Formats.H3D
+namespace SPICA.Formats.CtrH3D
 {
     public class CTEX
     {
