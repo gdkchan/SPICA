@@ -6,6 +6,7 @@ using SPICA.Serialization.Serializer;
 
 using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace SPICA.Formats.CtrH3D.Texture
@@ -36,13 +37,32 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public H3DTexture() { }
 
+        public H3DTexture(string FileName)
+        {
+            Bitmap Img = new Bitmap(FileName);
+
+            if (Img.PixelFormat != PixelFormat.Format32bppArgb) Img = new Bitmap(Img);
+
+            using (Img)
+            {
+                Name = Path.GetFileNameWithoutExtension(FileName);
+                Format = PICATextureFormat.RGBA8;
+
+                H3DTextureImpl(Img);
+            }
+        }
+
         public H3DTexture(string Name, Bitmap Img, PICATextureFormat Format = 0)
         {
             this.Name = Name;
             this.Format = Format;
 
+            H3DTextureImpl(Img);
+        }
+
+        private void H3DTextureImpl(Bitmap Img)
+        {
             MipmapSize = 1;
-            Padding = 0;
 
             Width = (uint)Img.Width;
             Height = (uint)Img.Height;
@@ -57,6 +77,8 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public void ReplaceData(H3DTexture Texture)
         {
+            Format = Texture.Format;
+
             MipmapSize = Texture.MipmapSize;
 
             RawBuffer = Texture.RawBuffer;
