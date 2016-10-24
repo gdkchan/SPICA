@@ -17,6 +17,7 @@ namespace SPICA.Formats.CtrH3D.Texture
         private uint[] Texture2Commands;
 
         public PICATextureFormat Format;
+
         public byte MipmapSize;
         private ushort Padding;
 
@@ -41,6 +42,7 @@ namespace SPICA.Formats.CtrH3D.Texture
             this.Format = Format;
 
             MipmapSize = 1;
+            Padding = 0;
 
             Width = (uint)Img.Width;
             Height = (uint)Img.Height;
@@ -51,6 +53,16 @@ namespace SPICA.Formats.CtrH3D.Texture
         public Bitmap ToBitmap()
         {
             return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format);
+        }
+
+        public void ReplaceData(H3DTexture Texture)
+        {
+            MipmapSize = Texture.MipmapSize;
+
+            RawBuffer = Texture.RawBuffer;
+
+            Width = Texture.Width;
+            Height = Texture.Height;
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)

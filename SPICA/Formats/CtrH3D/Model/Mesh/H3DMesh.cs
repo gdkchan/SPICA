@@ -222,9 +222,9 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                         case PICAAttributeName.Normal: Attrib.Scale = Uniform[7].Y; break;
                         case PICAAttributeName.Tangent: Attrib.Scale = Uniform[7].Z; break;
                         case PICAAttributeName.Color: Attrib.Scale = Uniform[7].W; break;
-                        case PICAAttributeName.TextureCoordinate0: Attrib.Scale = Uniform[8].X; break;
-                        case PICAAttributeName.TextureCoordinate1: Attrib.Scale = Uniform[8].Y; break;
-                        case PICAAttributeName.TextureCoordinate2: Attrib.Scale = Uniform[8].Z; break;
+                        case PICAAttributeName.TexCoord0: Attrib.Scale = Uniform[8].X; break;
+                        case PICAAttributeName.TexCoord1: Attrib.Scale = Uniform[8].Y; break;
+                        case PICAAttributeName.TexCoord2: Attrib.Scale = Uniform[8].Z; break;
                         case PICAAttributeName.BoneWeight: Attrib.Scale = Uniform[8].W; break;
                     }
 
@@ -255,9 +255,9 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //Setup flags
-            bool UVMap0 = Attributes.Any(x => x.Name == PICAAttributeName.TextureCoordinate0);
-            bool UVMap1 = Attributes.Any(x => x.Name == PICAAttributeName.TextureCoordinate1);
-            bool UVMap2 = Attributes.Any(x => x.Name == PICAAttributeName.TextureCoordinate2);
+            bool UVMap0 = Attributes.Any(x => x.Name == PICAAttributeName.TexCoord0);
+            bool UVMap1 = Attributes.Any(x => x.Name == PICAAttributeName.TexCoord1);
+            bool UVMap2 = Attributes.Any(x => x.Name == PICAAttributeName.TexCoord2);
 
             foreach (H3DSubMesh SM in SubMeshes)
             {
@@ -302,9 +302,9 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                     case PICAAttributeName.Normal: Scales[2] = Attrib.Scale; break;
                     case PICAAttributeName.Tangent: Scales[1] = Attrib.Scale; break;
                     case PICAAttributeName.Color: Scales[0] = Attrib.Scale; break;
-                    case PICAAttributeName.TextureCoordinate0: Scales[7] =  Attrib.Scale; break;
-                    case PICAAttributeName.TextureCoordinate1: Scales[6] = Attrib.Scale; break;
-                    case PICAAttributeName.TextureCoordinate2: Scales[5] = Attrib.Scale; break;
+                    case PICAAttributeName.TexCoord0: Scales[7] =  Attrib.Scale; break;
+                    case PICAAttributeName.TexCoord1: Scales[6] = Attrib.Scale; break;
+                    case PICAAttributeName.TexCoord2: Scales[5] = Attrib.Scale; break;
                     case PICAAttributeName.BoneWeight: Scales[4] = Attrib.Scale; break;
                 }
             }

@@ -60,8 +60,8 @@ namespace SPICA.Math3D
             return new Matrix3x4
             {
                 M22 = (float)Math.Cos(Angle),
-                M23 = (float)Math.Sin(Angle),
-                M32 = -(float)Math.Sin(Angle),
+                M23 = -(float)Math.Sin(Angle),
+                M32 = (float)Math.Sin(Angle),
                 M33 = (float)Math.Cos(Angle)
             };
         }
@@ -71,8 +71,8 @@ namespace SPICA.Math3D
             return new Matrix3x4
             {
                 M11 = (float)Math.Cos(Angle),
-                M13 = -(float)Math.Sin(Angle),
-                M31 = (float)Math.Sin(Angle),
+                M13 = (float)Math.Sin(Angle),
+                M31 = -(float)Math.Sin(Angle),
                 M33 = (float)Math.Cos(Angle)
             };
         }
@@ -82,13 +82,12 @@ namespace SPICA.Math3D
             return new Matrix3x4
             {
                 M11 = (float)Math.Cos(Angle),
-                M12 = (float)Math.Sin(Angle),
-                M21 = -(float)Math.Sin(Angle),
+                M12 = -(float)Math.Sin(Angle),
+                M21 = (float)Math.Sin(Angle),
                 M22 = (float)Math.Cos(Angle)
             };
         }
 
-        //Vector3D
         public static Matrix3x4 Translate(Vector3D Offset)
         {
             return new Matrix3x4
@@ -110,7 +109,7 @@ namespace SPICA.Math3D
         }
 
         //Adapted from OpenTK lib
-        public static Matrix3x4 operator *(Matrix3x4 LHS, Matrix3x4 RHS)
+        public static Matrix3x4 operator *(Matrix3x4 RHS, Matrix3x4 LHS)
         {
             Matrix3x4 Output = new Matrix3x4();
 
@@ -130,12 +129,12 @@ namespace SPICA.Math3D
             return Output;
         }
 
-        public Matrix3x4 Invert()
+        public void Invert()
         {
             Vector3D InvRot0 = new Vector3D(M11, M21, M31);
             Vector3D InvRot1 = new Vector3D(M12, M22, M32);
             Vector3D InvRot2 = new Vector3D(M13, M23, M33);
-            
+
             InvRot0 *= (1f / InvRot0.Length);
             InvRot1 *= (1f / InvRot1.Length);
             InvRot2 *= (1f / InvRot2.Length);
@@ -146,24 +145,20 @@ namespace SPICA.Math3D
             float TranslateY = -Vector3D.Dot(InvRot1, Translation);
             float TranslateZ = -Vector3D.Dot(InvRot2, Translation);
 
-            Matrix3x4 Output = new Matrix3x4();
+            M11 = InvRot0.X;
+            M12 = InvRot0.Y;
+            M13 = InvRot0.Z;
+            M14 = TranslateX;
 
-            Output.M11 = InvRot0.X;
-            Output.M12 = InvRot0.Y;
-            Output.M13 = InvRot0.Z;
-            Output.M14 = TranslateX;
+            M21 = InvRot1.X;
+            M22 = InvRot1.Y;
+            M23 = InvRot1.Z;
+            M24 = TranslateY;
 
-            Output.M21 = InvRot1.X;
-            Output.M22 = InvRot1.Y;
-            Output.M23 = InvRot1.Z;
-            Output.M24 = TranslateY;
-
-            Output.M31 = InvRot2.X;
-            Output.M32 = InvRot2.Y;
-            Output.M33 = InvRot2.Z;
-            Output.M34 = TranslateZ;
-
-            return Output;
+            M31 = InvRot2.X;
+            M32 = InvRot2.Y;
+            M33 = InvRot2.Z;
+            M34 = TranslateZ;
         }
 
         public override string ToString()

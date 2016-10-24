@@ -386,14 +386,14 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, 0x8000000bu);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0, false,
-                0, TexMtx[0].M31, TexMtx[0].M21, TexMtx[0].M11,
-                0, TexMtx[0].M32, TexMtx[0].M22, TexMtx[0].M12,
-                0, TexMtx[0].M33, TexMtx[0].M23, TexMtx[0].M13,
-                0, TexMtx[1].M31, TexMtx[1].M21, TexMtx[1].M11,
-                0, TexMtx[1].M32, TexMtx[1].M22, TexMtx[1].M12,
-                0, TexMtx[1].M33, TexMtx[1].M23, TexMtx[1].M13,
-                0, TexMtx[2].M31, TexMtx[2].M21, TexMtx[2].M11,
-                0, TexMtx[2].M32, TexMtx[2].M22, TexMtx[2].M12);
+                TexMtx[0].M14, TexMtx[0].M13, TexMtx[0].M12, TexMtx[0].M11,
+                TexMtx[0].M24, TexMtx[0].M23, TexMtx[0].M22, TexMtx[0].M21,
+                TexMtx[0].M34, TexMtx[0].M33, TexMtx[0].M32, TexMtx[0].M31,
+                TexMtx[1].M14, TexMtx[1].M13, TexMtx[1].M12, TexMtx[1].M11,
+                TexMtx[1].M24, TexMtx[1].M23, TexMtx[1].M22, TexMtx[1].M21,
+                TexMtx[1].M34, TexMtx[1].M33, TexMtx[1].M32, TexMtx[1].M31,
+                TexMtx[2].M14, TexMtx[2].M13, TexMtx[2].M12, TexMtx[2].M11,
+                TexMtx[2].M24, TexMtx[2].M23, TexMtx[2].M22, TexMtx[2].M21);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000013u, 0, 0, 0, 0);
 

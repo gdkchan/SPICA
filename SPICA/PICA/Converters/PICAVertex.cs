@@ -15,9 +15,9 @@ namespace SPICA.PICA.Converters
 
         public RGBAFloat Color;
 
-        public Vector2D TextureCoord0;
-        public Vector2D TextureCoord1;
-        public Vector2D TextureCoord2;
+        public Vector2D TexCoord0;
+        public Vector2D TexCoord1;
+        public Vector2D TexCoord2;
 
         public int[] Indices;
         public float[] Weights;
@@ -36,9 +36,9 @@ namespace SPICA.PICA.Converters
             Output.Normal = Normal;
             Output.Tangent = Tangent;
             Output.Color = Color;
-            Output.TextureCoord0 = TextureCoord0;
-            Output.TextureCoord1 = TextureCoord1;
-            Output.TextureCoord2 = TextureCoord2;
+            Output.TexCoord0 = TexCoord0;
+            Output.TexCoord1 = TexCoord1;
+            Output.TexCoord2 = TexCoord2;
 
             for (int Index = 0; Index < 4; Index++)
             {
@@ -66,9 +66,9 @@ namespace SPICA.PICA.Converters
             Hash ^= Position.GetHashCode();
             Hash ^= Tangent.GetHashCode();
             Hash ^= Color.GetHashCode();
-            Hash ^= TextureCoord0.GetHashCode();
-            Hash ^= TextureCoord1.GetHashCode();
-            Hash ^= TextureCoord2.GetHashCode();
+            Hash ^= TexCoord0.GetHashCode();
+            Hash ^= TexCoord1.GetHashCode();
+            Hash ^= TexCoord2.GetHashCode();
             
             for (int Index = 0; Index < 4; Index++)
             {
@@ -87,9 +87,9 @@ namespace SPICA.PICA.Converters
             Equals &= LHS.Normal == RHS.Normal;
             Equals &= LHS.Tangent == RHS.Tangent;
             Equals &= LHS.Color == RHS.Color;
-            Equals &= LHS.TextureCoord0 == RHS.TextureCoord0;
-            Equals &= LHS.TextureCoord1 == RHS.TextureCoord1;
-            Equals &= LHS.TextureCoord2 == RHS.TextureCoord2;
+            Equals &= LHS.TexCoord0 == RHS.TexCoord0;
+            Equals &= LHS.TexCoord1 == RHS.TexCoord1;
+            Equals &= LHS.TexCoord2 == RHS.TexCoord2;
 
             Equals &= LHS.Indices.SequenceEqual(RHS.Indices);
             Equals &= LHS.Weights.SequenceEqual(RHS.Weights);

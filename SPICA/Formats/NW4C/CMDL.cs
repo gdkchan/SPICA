@@ -1131,7 +1131,7 @@ namespace SPICA.Formats.CtrH3D {
             foreach (var a in mdl.Meshes[0].Attributes) {
                 if (posMode == null && a.Name == PICAAttributeName.Position) posMode = a.Format.ToString();
                 if (normMode == null && a.Name == PICAAttributeName.Normal) normMode = a.Format.ToString();
-                if (texMode == null && a.Name == PICAAttributeName.TextureCoordinate0) texMode = a.Format.ToString();
+                if (texMode == null && a.Name == PICAAttributeName.TexCoord0) texMode = a.Format.ToString();
             }
             optLog.EditorVersion = "1.4.5.44775";
             optLog.OptimizePrimitiveAverageCacheMissRatio = 0.7663249;
@@ -1385,7 +1385,7 @@ namespace SPICA.Formats.CtrH3D {
                 shape.VertexAttributes.Vec4Attributes = new List<ctrVertStream>();
                 foreach (var att in sh.Attributes) {
                     vertStream = new ctrVertStream(); //stream
-                    vertStream.Usage = att.Name.ToString();
+                    vertStream.Usage = att.Name.ToString().Replace("TexCoord", "TextureCoordinate");
                     vertStream.VertexSize = sh.ToVertices().Count();
                     vertStream.Scale = att.Scale;
                     vertStream.QuantizedMode = att.Format.ToString();
@@ -1402,7 +1402,7 @@ namespace SPICA.Formats.CtrH3D {
                                 shape.VertexAttributes.Vec3Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.TextureCoordinate0: 
+                        case PICAAttributeName.TexCoord0: 
                             {
                                 vertStream.VecArray = genVec2Array(sh.ToVertices(), att.Format, att.Name);
                                 shape.VertexAttributes.Vec2Attributes.Add(vertStream);
@@ -1795,8 +1795,8 @@ namespace SPICA.Formats.CtrH3D {
             Vector2D vector = new Vector2D();
             foreach (var vec in verts) {
                 switch (name) {
-                    case PICAAttributeName.TextureCoordinate0:
-                        vector = vec.TextureCoord0;
+                    case PICAAttributeName.TexCoord0:
+                        vector = vec.TexCoord0;
                         break;
                 }
                 switch (format) {

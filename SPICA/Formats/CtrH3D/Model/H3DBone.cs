@@ -54,7 +54,7 @@ namespace SPICA.Formats.CtrH3D.Model
                 Bone = Skeleton[Bone.ParentIndex];
             }
 
-            InverseTransform = InverseTransform.Invert();
+            InverseTransform.Invert();
         }
     }
 }

@@ -122,8 +122,8 @@ namespace SPICA.Formats.Generic.StudioMdl
                                         Vertex.Normal.Y = ParseFloat(Params[5]);
                                         Vertex.Normal.Z = ParseFloat(Params[6]);
 
-                                        Vertex.TextureCoord0.X = ParseFloat(Params[7]);
-                                        Vertex.TextureCoord0.Y = ParseFloat(Params[8]);
+                                        Vertex.TexCoord0.X = ParseFloat(Params[7]);
+                                        Vertex.TexCoord0.Y = ParseFloat(Params[8]);
 
                                         int NodesCount = int.Parse(Params[9]);
 
@@ -195,13 +195,13 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                         for (int Tri = 0; Tri < 3; Tri++)
                         {
-                            PICAVertex TempVtx = Triangle[Tri];
+                            PICAVertex Vertex = Triangle[Tri];
 
-                            for (int j = 0; j < TempVtx.Indices.Length; j++)
+                            for (int j = 0; j < Vertex.Indices.Length; j++)
                             {
-                                if (TempVtx.Weights[j] == 0) break;
+                                if (Vertex.Weights[j] == 0) break;
 
-                                ushort Index = (ushort)TempVtx.Indices[j];
+                                ushort Index = (ushort)Vertex.Indices[j];
 
                                 if (!(BoneIndices.Contains(Index) || TempIndices.Contains(Index)))
                                 {
@@ -272,14 +272,16 @@ namespace SPICA.Formats.Generic.StudioMdl
                     });
                 }
 
-                H3DMesh H3DMesh = new H3DMesh(Vertices.Keys, GetAttributes(), SubMeshes);
+                //Mesh
+                H3DMesh M = new H3DMesh(Vertices.Keys, GetAttributes(), SubMeshes);
 
-                H3DMesh.Skinning = H3DMeshSkinning.Smooth;
-                H3DMesh.MeshCenter = (MinVector + MaxVector) * 0.5f;
-                H3DMesh.MaterialIndex = MaterialIndex++;
+                M.Skinning = H3DMeshSkinning.Smooth;
+                M.MeshCenter = (MinVector + MaxVector) * 0.5f;
+                M.MaterialIndex = MaterialIndex++;
 
-                Model.AddMesh(H3DMesh);
+                Model.AddMesh(M);
 
+                //Material
                 H3DMaterial Material = H3DMaterial.Default;
 
                 Material.Name = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
@@ -294,19 +296,19 @@ namespace SPICA.Formats.Generic.StudioMdl
             //Build Skeleton
             foreach (SMDBone Bone in Skeleton)
             {
-                H3DBone H3DBone = new H3DBone();
+                H3DBone B = new H3DBone();
 
                 SMDNode Node = Nodes[Bone.NodeIndex];
 
-                H3DBone.Name = Node.Name;
+                B.Name = Node.Name;
 
-                H3DBone.ParentIndex = (short)Node.ParentIndex;
+                B.ParentIndex = (short)Node.ParentIndex;
 
-                H3DBone.Translation = Bone.Translation;
-                H3DBone.Rotation = Bone.Rotation;
-                H3DBone.Scale = new Vector3D(1, 1, 1);
+                B.Translation = Bone.Translation;
+                B.Rotation = Bone.Rotation;
+                B.Scale = new Vector3D(1, 1, 1);
 
-                Model.Skeleton.Add(H3DBone);
+                Model.Skeleton.Add(B);
             }
 
             //Calculate Absolute Inverse Transforms for all bones
@@ -323,7 +325,10 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             Output.BackwardCompatibility = 0x21;
             Output.ForwardCompatibility = 0x21;
+
             Output.ConverterVersion = 42607;
+
+            Output.Flags = H3DFlags.IsFromNewConverter;
 
             return Output;
         }
@@ -340,14 +345,14 @@ namespace SPICA.Formats.Generic.StudioMdl
                 {
                     case 0: Name = PICAAttributeName.Position; break;
                     case 1: Name = PICAAttributeName.Normal; break;
-                    case 2: Name = PICAAttributeName.TextureCoordinate0; break;
+                    case 2: Name = PICAAttributeName.TexCoord0; break;
                 }
 
                 Attributes[i] = new PICAAttribute
                 {
                     Name = Name,
                     Format = PICAAttributeFormat.Float,
-                    Elements = Name == PICAAttributeName.TextureCoordinate0 ? 2 : 3,
+                    Elements = Name == PICAAttributeName.TexCoord0 ? 2 : 3,
                     Scale = 1
                 };
             }

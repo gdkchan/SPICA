@@ -47,9 +47,9 @@ namespace SPICA.PICA.Converters
 
                             case PICAAttributeName.Color: O.Color = new RGBAFloat(V.X, V.Y, V.Z, V.W); break;
 
-                            case PICAAttributeName.TextureCoordinate0: O.TextureCoord0 = new Vector2D(V.X, V.Y); break;
-                            case PICAAttributeName.TextureCoordinate1: O.TextureCoord1 = new Vector2D(V.X, V.Y); break;
-                            case PICAAttributeName.TextureCoordinate2: O.TextureCoord2 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TexCoord0: O.TexCoord0 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TexCoord1: O.TexCoord1 = new Vector2D(V.X, V.Y); break;
+                            case PICAAttributeName.TexCoord2: O.TexCoord2 = new Vector2D(V.X, V.Y); break;
 
                             case PICAAttributeName.BoneIndex:
                                 for (int Node = 0; Node < Attrib.Elements; Node++)
@@ -95,9 +95,9 @@ namespace SPICA.PICA.Converters
 
                                 case PICAAttributeName.Color: Writer.Write(Quantize(Vertex.Color[Index], Attrib)); break;
 
-                                case PICAAttributeName.TextureCoordinate0: Writer.Write(Quantize(Vertex.TextureCoord0[Index], Attrib)); break;
-                                case PICAAttributeName.TextureCoordinate1: Writer.Write(Quantize(Vertex.TextureCoord1[Index], Attrib)); break;
-                                case PICAAttributeName.TextureCoordinate2: Writer.Write(Quantize(Vertex.TextureCoord2[Index], Attrib)); break;
+                                case PICAAttributeName.TexCoord0: Writer.Write(Quantize(Vertex.TexCoord0[Index], Attrib)); break;
+                                case PICAAttributeName.TexCoord1: Writer.Write(Quantize(Vertex.TexCoord1[Index], Attrib)); break;
+                                case PICAAttributeName.TexCoord2: Writer.Write(Quantize(Vertex.TexCoord2[Index], Attrib)); break;
 
                                 case PICAAttributeName.BoneIndex: Writer.Write((byte)Vertex.Indices[Index]); break;
                                 case PICAAttributeName.BoneWeight: Writer.Write(Quantize(Vertex.Weights[Index], Attrib)); break;

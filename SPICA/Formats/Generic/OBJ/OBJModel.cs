@@ -74,7 +74,7 @@ namespace SPICA.Formats.Generic.OBJ
                             {
                                 Position = Positions.Dequeue(),
                                 Normal = Normals.Dequeue(),
-                                TextureCoord0 = TexCoords.Dequeue()
+                                TexCoord0 = TexCoords.Dequeue()
                             });
                         }
 
@@ -133,7 +133,7 @@ namespace SPICA.Formats.Generic.OBJ
 
                 Attributes.Add(new PICAAttribute
                 {
-                    Name = PICAAttributeName.TextureCoordinate0,
+                    Name = PICAAttributeName.TexCoord0,
                     Format = PICAAttributeFormat.Float,
                     Elements = 2,
                     Scale = 1
