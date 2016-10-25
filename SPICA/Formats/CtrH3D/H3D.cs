@@ -71,27 +71,32 @@ namespace SPICA.Formats.CtrH3D
             {
                 using (MemoryStream MS = new MemoryStream(File.ReadAllBytes(FileName)))
                 {
-                    BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
-                    H3DHeader Header = Deserializer.Deserialize<H3DHeader>();
-
-                    new H3DRelocator(MS, Header).ToAbsolute();
-
-                    H3D Model = Deserializer.Deserialize<H3D>();
-
-                    Model.ConverterVersion = Header.ConverterVersion;
-
-                    Model.BackwardCompatibility = Header.BackwardCompatibility;
-                    Model.ForwardCompatibility = Header.ForwardCompatibility;
-
-                    Model.Flags = Header.Flags;
-
-                    return Model;
+                    return Open(MS);
                 }
             }
             else
             {
                 throw new FileNotFoundException(string.Format("The file \"{0}\" was not found!", FileName));
             }
+        }
+
+        public static H3D Open(MemoryStream MS)
+        {
+            BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
+            H3DHeader Header = Deserializer.Deserialize<H3DHeader>();
+
+            new H3DRelocator(MS, Header).ToAbsolute();
+
+            H3D Model = Deserializer.Deserialize<H3D>();
+
+            Model.ConverterVersion = Header.ConverterVersion;
+
+            Model.BackwardCompatibility = Header.BackwardCompatibility;
+            Model.ForwardCompatibility = Header.ForwardCompatibility;
+
+            Model.Flags = Header.Flags;
+
+            return Model;
         }
 
         public static void Save(string FileName, H3D Model)

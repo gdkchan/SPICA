@@ -15,6 +15,8 @@ namespace SPICA.Formats.Generic.StudioMdl
 {
     class SMDModel
     {
+        private ConversionParams ConvParams;
+
         private List<SMDNode> Nodes;
         private List<SMDBone> Skeleton;
         private List<SMDMesh> Meshes;
@@ -27,18 +29,20 @@ namespace SPICA.Formats.Generic.StudioMdl
             Triangles
         }
 
-        public SMDModel(string FileName)
+        public SMDModel(string FileName, ConversionParams ConvParams)
         {
-            using (FileStream FS = new FileStream(FileName, FileMode.Open)) SMDModelImpl(FS);
+            using (FileStream FS = new FileStream(FileName, FileMode.Open)) SMDModelImpl(FS, ConvParams);
         }
 
-        public SMDModel(Stream Stream)
+        public SMDModel(Stream Stream, ConversionParams ConvParams)
         {
-            SMDModelImpl(Stream);
+            SMDModelImpl(Stream, ConvParams);
         }
 
-        private void SMDModelImpl(Stream Stream)
+        private void SMDModelImpl(Stream Stream, ConversionParams ConvParams)
         {
+            this.ConvParams = ConvParams;
+
             TextReader Reader = new StreamReader(Stream);
 
             Nodes = new List<SMDNode>();
@@ -55,7 +59,7 @@ namespace SPICA.Formats.Generic.StudioMdl
             string Line;
             while ((Line = Reader.ReadLine()) != null)
             {
-                string[] Params = Line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] Params = Line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
                 if (Params.Length > 0)
                 {
@@ -125,12 +129,15 @@ namespace SPICA.Formats.Generic.StudioMdl
                                         Vertex.TexCoord0.X = ParseFloat(Params[7]);
                                         Vertex.TexCoord0.Y = ParseFloat(Params[8]);
 
-                                        int NodesCount = int.Parse(Params[9]);
-
-                                        for (int Node = 0; Node < NodesCount; Node++)
+                                        if (Params.Length > 9)
                                         {
-                                            Vertex.Indices[Node] = int.Parse(Params[10 + Node * 2]);
-                                            Vertex.Weights[Node] = ParseFloat(Params[11 + Node * 2]);
+                                            int NodesCount = int.Parse(Params[9]);
+
+                                            for (int Node = 0; Node < NodesCount; Node++)
+                                            {
+                                                Vertex.Indices[Node] = int.Parse(Params[10 + Node * 2]);
+                                                Vertex.Weights[Node] = ParseFloat(Params[11 + Node * 2]);
+                                            }
                                         }
 
                                         CurrMesh.Vertices.Add(Vertex);
@@ -158,6 +165,9 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             if (Skeleton.Count > 0) Model.Flags = H3DModelFlags.HasSkeleton;
 
+            Model.BoneScaling = H3DBoneScaling.Maya;
+            Model.MeshNodesVisibility.Add(true);
+
             ushort MaterialIndex = 0;
 
             foreach (SMDMesh Mesh in Meshes)
@@ -176,7 +186,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                     VerticesQueue.Enqueue(Vertex.Clone());
                 }
 
-                while (VerticesQueue.Count > 0)
+                while (VerticesQueue.Count > 2)
                 {
                     List<ushort> Indices = new List<ushort>();
                     List<ushort> BoneIndices = new List<ushort>();
@@ -197,11 +207,9 @@ namespace SPICA.Formats.Generic.StudioMdl
                         {
                             PICAVertex Vertex = Triangle[Tri];
 
-                            for (int j = 0; j < Vertex.Indices.Length; j++)
+                            for (int i = 0; i < Vertex.Indices.Length; i++)
                             {
-                                if (Vertex.Weights[j] == 0) break;
-
-                                ushort Index = (ushort)Vertex.Indices[j];
+                                ushort Index = (ushort)Vertex.Indices[i];
 
                                 if (!(BoneIndices.Contains(Index) || TempIndices.Contains(Index)))
                                 {
@@ -225,8 +233,6 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                             for (int Index = 0; Index < Vertex.Indices.Length; Index++)
                             {
-                                if (Vertex.Weights[Index] == 0) break;
-
                                 int BoneIndex = BoneIndices.IndexOf((ushort)Vertex.Indices[Index]);
 
                                 if (BoneIndex == -1)
@@ -284,14 +290,15 @@ namespace SPICA.Formats.Generic.StudioMdl
                 //Material
                 H3DMaterial Material = H3DMaterial.Default;
 
-                Material.Name = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
-                Material.Texture0Name = Material.Name + "_Texture";
-                Material.MaterialParams.UniqueId = (uint)Material.Texture0Name.GetHashCode();
+                string MatName = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
+                uint MatHash = (uint)MatName.GetHashCode();
+
+                Material.Name = string.Format("{0}_Mat{1:D5}", MatName, MaterialIndex - 1);
+                Material.Texture0Name = MatName;
+                Material.MaterialParams.UniqueId = MatHash;
 
                 Model.Materials.Add(Material);
             }
-
-            Model.MeshNodesVisibility.Add(true);
 
             //Build Skeleton
             foreach (SMDBone Bone in Skeleton)
@@ -317,16 +324,14 @@ namespace SPICA.Formats.Generic.StudioMdl
                 Bone.CalculateTransform(Model.Skeleton);
             }
 
-            Model.BoneScaling = H3DBoneScaling.Maya;
-
             Output.Models.Add(Model);
 
             Output.CopyMaterials();
 
-            Output.BackwardCompatibility = 0x21;
-            Output.ForwardCompatibility = 0x21;
+            Output.BackwardCompatibility = ConvParams.Compatibility;
+            Output.ForwardCompatibility = ConvParams.Compatibility;
 
-            Output.ConverterVersion = 42607;
+            Output.ConverterVersion = ConvParams.ConverterVersion;
 
             Output.Flags = H3DFlags.IsFromNewConverter;
 
@@ -340,6 +345,7 @@ namespace SPICA.Formats.Generic.StudioMdl
             for (int i = 0; i < 3; i++)
             {
                 PICAAttributeName Name = default(PICAAttributeName);
+                PICAAttributeFormat Fmt = default(PICAAttributeFormat);
 
                 switch (i)
                 {

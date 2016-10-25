@@ -9,6 +9,7 @@
     <Import_RootNamespace>SPICA</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\ConversionParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDBone.cs" />

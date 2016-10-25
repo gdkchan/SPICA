@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using SPICA.Formats.Generic.StudioMdl;
+using SPICA.Formats.Generic;
 
 namespace SPICA.WinForms
 {
@@ -84,7 +85,7 @@ void main(void)
 
             CreateShaders();
 
-            H3D Model = H3D.Open("D:\\may.bch");
+            H3D.Open("D:\\may.bch");
 
             Mdl = new Mesh[Model.Models[0].Meshes.Count];
 

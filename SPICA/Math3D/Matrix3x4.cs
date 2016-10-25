@@ -117,10 +117,12 @@ namespace SPICA.Math3D
             Output.M12 = (LHS.M11 * RHS.M12) + (LHS.M12 * RHS.M22) + (LHS.M13 * RHS.M32);
             Output.M13 = (LHS.M11 * RHS.M13) + (LHS.M12 * RHS.M23) + (LHS.M13 * RHS.M33);
             Output.M14 = (LHS.M11 * RHS.M14) + (LHS.M12 * RHS.M24) + (LHS.M13 * RHS.M34) + LHS.M14;
+
             Output.M21 = (LHS.M21 * RHS.M11) + (LHS.M22 * RHS.M21) + (LHS.M23 * RHS.M31);
             Output.M22 = (LHS.M21 * RHS.M12) + (LHS.M22 * RHS.M22) + (LHS.M23 * RHS.M32);
             Output.M23 = (LHS.M21 * RHS.M13) + (LHS.M22 * RHS.M23) + (LHS.M23 * RHS.M33);
             Output.M24 = (LHS.M21 * RHS.M14) + (LHS.M22 * RHS.M24) + (LHS.M23 * RHS.M34) + LHS.M24;
+
             Output.M31 = (LHS.M31 * RHS.M11) + (LHS.M32 * RHS.M21) + (LHS.M33 * RHS.M31);
             Output.M32 = (LHS.M31 * RHS.M12) + (LHS.M32 * RHS.M22) + (LHS.M33 * RHS.M32);
             Output.M33 = (LHS.M31 * RHS.M13) + (LHS.M32 * RHS.M23) + (LHS.M33 * RHS.M33);
