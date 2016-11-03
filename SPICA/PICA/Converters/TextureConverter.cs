@@ -21,7 +21,7 @@ namespace SPICA.PICA.Converters
             52, 53, 60, 61, 54, 55, 62, 63
         };
 
-        public static Bitmap Decode(byte[] Input, int Width, int Height, PICATextureFormat Format)
+        public static Bitmap Decode(byte[] Input, int Width, int Height, PICATextureFormat Format, bool SwapRB = false)
         {
             byte[] Output = new byte[Width * Height * 4];
 
@@ -117,7 +117,24 @@ namespace SPICA.PICA.Converters
                                     IOffs += 2;
                                     break;
 
+                                case PICATextureFormat.L8:
+                                    Output[OOffs + 0] = Input[IOffs];
+                                    Output[OOffs + 1] = Input[IOffs];
+                                    Output[OOffs + 2] = Input[IOffs];
+                                    Output[OOffs + 3] = byte.MaxValue;
+
+                                    IOffs++;
+                                    break;
+
                                 default: throw new NotImplementedException();
+                            }
+
+                            if (SwapRB)
+                            {
+                                byte Temp = Output[OOffs + 0];
+
+                                Output[OOffs + 0] = Output[OOffs + 2];
+                                Output[OOffs + 2] = Temp;
                             }
                         }
                     }

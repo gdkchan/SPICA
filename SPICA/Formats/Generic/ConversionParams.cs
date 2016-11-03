@@ -1,6 +1,4 @@
-﻿using SPICA.PICA.Commands;
-
-namespace SPICA.Formats.Generic
+﻿namespace SPICA.Formats.Generic
 {
     struct ConversionParams
     {
@@ -14,7 +12,7 @@ namespace SPICA.Formats.Generic
                 return new ConversionParams
                 {
                     Compatibility = 0x21,
-                    ConverterVersion = 42607,
+                    ConverterVersion = 42607
                 };
             }
         }
