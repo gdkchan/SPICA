@@ -1,14 +1,14 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Input;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Renderer;
+
 using System;
 
 namespace SPICA.WinForms
 {
-    public partial class Form1 : GameWindow
+    public partial class FrmMain : GameWindow
     {
         RenderEngine Renderer;
 
@@ -17,15 +17,14 @@ namespace SPICA.WinForms
         Vector2 FinalMov;
 
         private float Zoom;
+        private float Step;
 
         private Model Model;
 
-        public Form1()
-            : base(640, 480,
-            new GraphicsMode(), "OpenGL 3 Example", 0,
-            DisplayDevice.Default, 3, 0,
-            GraphicsContextFlags.ForwardCompatible | GraphicsContextFlags.Debug)
-        { }
+        public FrmMain() : base(800, 600)
+        {
+            Title = "SPICA";
+        }
 
         protected override void OnLoad(System.EventArgs e)
         {
@@ -34,6 +33,17 @@ namespace SPICA.WinForms
             Renderer = new RenderEngine(Width, Height);
 
             Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
+
+            Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
+
+            Vector3 Center = -CenterMax.Item1;
+            float Maximum = CenterMax.Item2;
+
+            Model.TranslateAbs(Center);
+            Zoom = Center.Z - Maximum * 2;
+            Step = Maximum * 0.05f;
+
+            UpdateTranslation();
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -99,14 +109,19 @@ namespace SPICA.WinForms
             if (e.Mouse.RightButton == ButtonState.Released)
             {
                 if (e.Delta > 0)
-                    Zoom += 0.5f;
+                    Zoom += Step;
                 else
-                    Zoom -= 0.5f;
+                    Zoom -= Step;
 
-                Renderer.TranslateAbs(new Vector3(-FinalMov.X, FinalMov.Y, Zoom));
+                UpdateTranslation();
             }
 
             base.OnMouseWheel(e);
+        }
+
+        private void UpdateTranslation()
+        {
+            Renderer.TranslateAbs(new Vector3(-FinalMov.X, FinalMov.Y, Zoom));
         }
     }
 }

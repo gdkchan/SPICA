@@ -70,9 +70,14 @@ namespace SPICA.Formats.CtrH3D.Texture
             RawBuffer = TextureConverter.Encode(Img, Format);
         }
 
-        public Bitmap ToBitmap(bool SwapRB = false)
+        public Bitmap ToBitmap()
         {
-            return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format, SwapRB);
+            return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format);
+        }
+
+        public byte[] ToRGBA()
+        {
+            return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format, true);
         }
 
         public void ReplaceData(H3DTexture Texture)

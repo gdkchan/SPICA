@@ -80,19 +80,19 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         [RepeatPointer]
         private uint[] FragmentShaderCommands;
 
-        public string LUTDist0SamplerName;
-        public string LUTDist1SamplerName;
-        public string LUTFresnelSamplerName;
-        public string LUTReflecRSamplerName;
-        public string LUTReflecGSamplerName;
-        public string LUTReflecBSamplerName;
-
         public string LUTDist0TableName;
         public string LUTDist1TableName;
         public string LUTFresnelTableName;
         public string LUTReflecRTableName;
         public string LUTReflecGTableName;
         public string LUTReflecBTableName;
+
+        public string LUTDist0SamplerName;
+        public string LUTDist1SamplerName;
+        public string LUTFresnelSamplerName;
+        public string LUTReflecRSamplerName;
+        public string LUTReflecGSamplerName;
+        public string LUTReflecBSamplerName;
 
         public string ShaderReference;
         public string ModelReference;
@@ -159,7 +159,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public bool DepthBufferWrite;
 
         [NonSerialized]
-        public float[] TextureMaps;
+        public float[] TextureSources;
 
         [NonSerialized]
         internal H3DMaterial Parent;
@@ -176,7 +176,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 TexEnvStages[Index] = new PICATexEnvStage();
             }
 
-            TextureMaps = new float[3];
+            TextureSources = new float[3];
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -312,13 +312,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             /*
              * Values:
              * 0-2 = UVMap[0-2]
-             * 3 = CameraSphereEnvMap aka SkyDome
-             * 4 = CameraCubeEnvMap aka SkyBox
+             * 3 = CameraCubeEnvMap aka SkyBox
+             * 4 = CameraSphereEnvMap aka SkyDome
              * 5 = ProjectionMap?
              */
-            TextureMaps[0] = Uniform[10].X;
-            TextureMaps[1] = Uniform[10].Y;
-            TextureMaps[2] = Uniform[10].Z;
+            TextureSources[0] = Uniform[10].X;
+            TextureSources[1] = Uniform[10].Y;
+            TextureSources[2] = Uniform[10].Z;
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
@@ -399,9 +399,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x8000000au,
                 IOUtils.ToUInt32(0),
-                IOUtils.ToUInt32(TextureMaps[2]),
-                IOUtils.ToUInt32(TextureMaps[1]),
-                IOUtils.ToUInt32(TextureMaps[0]));
+                IOUtils.ToUInt32(TextureSources[2]),
+                IOUtils.ToUInt32(TextureSources[1]),
+                IOUtils.ToUInt32(TextureSources[0]));
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000014u,
                 IOUtils.ToUInt32(ColorScale),

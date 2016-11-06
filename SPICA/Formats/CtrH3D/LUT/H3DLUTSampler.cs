@@ -20,15 +20,15 @@ namespace SPICA.Formats.CtrH3D.LUT
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
+            int Index = 0;
+
+            Table = new float[256];
+
             PICACommandReader Reader = new PICACommandReader(Commands);
 
             while (Reader.HasCommand)
             {
                 PICACommand Cmd = Reader.GetCommand();
-
-                Table = new float[256];
-
-                int Index = 0;
 
                 switch (Cmd.Register)
                 {

@@ -37,7 +37,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public bool[] EnabledTextures;
 
         [NonSerialized]
-        public int[] TextureCoords;
+        public int[] TextureSources;
 
         //This is a default material with 1 texture and default settings
         public static H3DMaterial Default
@@ -105,7 +105,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureMappers = new H3DTextureMapper[3];
 
             EnabledTextures = new bool[4];
-            TextureCoords = new int[4];
+            TextureSources = new int[4];
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -126,9 +126,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         EnabledTextures[0] = (Param & 0x1) != 0;
                         EnabledTextures[1] = (Param & 0x2) != 0;
                         EnabledTextures[2] = (Param & 0x4) != 0;
-                        TextureCoords[3] = (int)((Param >> 8) & 3);
+                        TextureSources[3] = (int)((Param >> 8) & 3);
                         EnabledTextures[3] = (Param & 0x400) != 0;
-                        TextureCoords[2] = (int)((Param >> 13) & 1);
+                        TextureSources[2] = (int)((Param >> 13) & 1);
                         break;
                 }
             }
@@ -150,9 +150,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TexUnitConfig |= (EnabledTextures[0] ? 1u : 0u) << 0;
             TexUnitConfig |= (EnabledTextures[1] ? 1u : 0u) << 1;
             TexUnitConfig |= (EnabledTextures[2] ? 1u : 0u) << 2;
-            TexUnitConfig |= ((uint)TextureCoords[3] & 3) << 8;
+            TexUnitConfig |= ((uint)TextureSources[3] & 3) << 8;
             TexUnitConfig |= (EnabledTextures[3] ? 1u : 0u) << 10;
-            TexUnitConfig |= ((uint)TextureCoords[2] & 1) << 13;
+            TexUnitConfig |= ((uint)TextureSources[2] & 1) << 13;
 
             Writer.SetCommands(PICARegister.GPUREG_TEXUNIT_CONFIG, false, 0, 0, 0, 0);
             Writer.SetCommand(PICARegister.GPUREG_TEXUNIT_CONFIG, TexUnitConfig);

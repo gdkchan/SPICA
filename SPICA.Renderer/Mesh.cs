@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace SPICA.Renderer
 {
-    public class Mesh
+    public class Mesh : IDisposable
     {
         private int VBOHandle;
         private int VAOHandle;
@@ -20,19 +20,23 @@ namespace SPICA.Renderer
 
         private Model Parent;
 
+        public H3DMesh BaseMesh;
         private List<H3DSubMesh> SubMeshes;
-
         private H3DMaterial Material;
+
+        public Vector3 MeshCenter;
 
         public Mesh(Model Parent, H3DMesh Mesh, int ShaderHandle)
         {
             this.ShaderHandle = ShaderHandle;
-
+            
             this.Parent = Parent;
 
-            SubMeshes = Mesh.SubMeshes;
-
+            BaseMesh = Mesh;
+            SubMeshes = BaseMesh.SubMeshes;
             Material = Parent.Materials[Mesh.MaterialIndex];
+
+            MeshCenter = new Vector3(Mesh.MeshCenter.X, Mesh.MeshCenter.Y, Mesh.MeshCenter.Z);
 
             IntPtr Length = new IntPtr(Mesh.RawBuffer.Length);
 
@@ -86,9 +90,43 @@ namespace SPICA.Renderer
         public void Render()
         {
             //Upload Material data to Fragment Shader
+            H3DMaterialParams Params = Material.MaterialParams;
+
+            //Coordinate sources
+            int TexUnit0SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit0Source");
+            int TexUnit1SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit1Source");
+            int TexUnit2SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit2Source");
+
+            GL.Uniform1(TexUnit0SourceLocation, (int)Params.TextureSources[0]);
+            GL.Uniform1(TexUnit1SourceLocation, (int)Params.TextureSources[1]);
+            GL.Uniform1(TexUnit2SourceLocation, (int)Params.TextureSources[2]);
+
+            //Material colors
+            int MEmissionLocation = GL.GetUniformLocation(ShaderHandle, "MEmission");
+            int MDiffuseLocation = GL.GetUniformLocation(ShaderHandle, "MDiffuse");
+            int MAmbientLocation = GL.GetUniformLocation(ShaderHandle, "MAmbient");
+            int MSpecularLocation = GL.GetUniformLocation(ShaderHandle, "MSpecular");
+
+            GL.Uniform4(MEmissionLocation, GetColorVector(Params.EmissionColor));
+            GL.Uniform4(MDiffuseLocation, GetColorVector(Params.DiffuseColor));
+            GL.Uniform4(MAmbientLocation, GetColorVector(Params.AmbientColor));
+            GL.Uniform4(MSpecularLocation, GetColorVector(Params.Specular0Color));
+
+            //Shader math parameters
+            int FragFlagsLocation = GL.GetUniformLocation(ShaderHandle, "FragFlags");
+            int FresnelSelLocation = GL.GetUniformLocation(ShaderHandle, "FresnelSel");
+            int BumpIndexLocation = GL.GetUniformLocation(ShaderHandle, "BumpIndex");
+            int BumpModeLocation = GL.GetUniformLocation(ShaderHandle, "BumpMode");
+
+            GL.Uniform1(FragFlagsLocation, (int)Params.FragmentFlags);
+            GL.Uniform1(FresnelSelLocation, (int)Params.FresnelSelector);
+            GL.Uniform1(BumpIndexLocation, Params.BumpTexture);
+            GL.Uniform1(BumpModeLocation, (int)Params.BumpMode);
+
+            //Texture Environment stages
             for (int Index = 0; Index < 6; Index++)
             {
-                PICATexEnvStage Stage = Material.MaterialParams.TexEnvStages[Index];
+                PICATexEnvStage Stage = Params.TexEnvStages[Index];
 
                 int ColorCombLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].ColorCombine");
                 int AlphaCombLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].AlphaCombine");
@@ -104,13 +142,13 @@ namespace SPICA.Renderer
 
                 for (int Param = 0; Param < 3; Param++)
                 {
-                    int ColorArgLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorArg");
-                    int AlphaArgLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaArg");
+                    int ColorSrcLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorSrc");
+                    int AlphaSrcLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaSrc");
                     int ColorOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorOp");
                     int AlphaOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaOp");
 
-                    GL.Uniform1(ColorArgLocation, (int)Stage.Source.RGBSource[Param]);
-                    GL.Uniform1(AlphaArgLocation, (int)Stage.Source.AlphaSource[Param]);
+                    GL.Uniform1(ColorSrcLocation, (int)Stage.Source.RGBSource[Param]);
+                    GL.Uniform1(AlphaSrcLocation, (int)Stage.Source.AlphaSource[Param]);
                     GL.Uniform1(ColorOpLocation, (int)Stage.Operand.RGBOp[Param]);
                     GL.Uniform1(AlphaOpLocation, (int)Stage.Operand.AlphaOp[Param]);
                 }
@@ -123,15 +161,57 @@ namespace SPICA.Renderer
 
                 int ColorLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Color");
 
-                GL.Uniform4(ColorLocation, Color);
-
-                //Only those two are selectable afaik
-                int TexUnit2SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit2Source");
-                int TexUnit3SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit3Source");
-
-                GL.Uniform1(TexUnit2SourceLocation, Material.TextureCoords[2]);
-                GL.Uniform1(TexUnit3SourceLocation, Material.TextureCoords[3]);
+                GL.Uniform4(ColorLocation, GetColorVector(Stage.Color.ToRGBA()));
             }
+
+            //Setup LUTs
+            for (int Index = 0; Index < 6; Index++)
+            {
+                int LUTIsAbsLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].IsAbs");
+                int LUTInputLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].Input");
+                int LUTScaleLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].Scale");
+
+                switch (Index)
+                {
+                    case 0:
+                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.Dist0Abs ? 1 : 0);
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.Dist0Input);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.Dist0Scale.ToFloat());
+                        break;
+                    case 1:
+                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.Dist1Abs ? 1 : 0);
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.Dist1Input);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.Dist1Scale.ToFloat());
+                        break;
+                    case 2:
+                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.FresnelAbs ? 1 : 0);
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.FresnelInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.FresnelScale.ToFloat());
+                        break;
+                    case 3:
+                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.ReflecRAbs ? 1 : 0);
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecRInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecRScale.ToFloat());
+                        break;
+                    case 4:
+                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.ReflecGAbs ? 1 : 0);
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecGInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecGScale.ToFloat());
+                        break;
+                    case 5:
+                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.ReflecBAbs ? 1 : 0);
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecBInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecBScale.ToFloat());
+                        break;
+                }
+            }
+
+            BindLUT(1, Params.LUTDist0TableName, Params.LUTDist0SamplerName);
+            BindLUT(2, Params.LUTDist1TableName, Params.LUTDist1SamplerName);
+            BindLUT(3, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
+            BindLUT(4, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
+            BindLUT(5, Params.LUTReflecGTableName, Params.LUTReflecGSamplerName);
+            BindLUT(6, Params.LUTReflecBTableName, Params.LUTReflecBSamplerName);
 
             //Setup texture units
             if (Material.EnabledTextures[0])
@@ -161,6 +241,43 @@ namespace SPICA.Renderer
             }
 
             GL.BindVertexArray(0);
+        }
+
+        private Vector4 GetColorVector(RGBA Color)
+        {
+            return new Vector4(
+                (float)Color.R / byte.MaxValue,
+                (float)Color.G / byte.MaxValue,
+                (float)Color.B / byte.MaxValue,
+                (float)Color.A / byte.MaxValue);
+        }
+
+        private void BindLUT(int Index, string TableName, string SamplerName)
+        {
+            if (!(TableName == null || SamplerName == null))
+            {
+                int UBOHandle = Parent.GetLUTHandle(TableName + "/" + SamplerName);
+
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, Index, UBOHandle);
+            }
+        }
+
+        private bool Disposed;
+
+        protected virtual void Dispose(bool Disposing)
+        {
+            if (!Disposed)
+            {
+                GL.DeleteBuffer(VBOHandle);
+                GL.DeleteVertexArray(VAOHandle);
+
+                Disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

@@ -7,10 +7,11 @@ using SPICA.Renderer.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace SPICA.Renderer
 {
-    public class RenderEngine
+    public class RenderEngine : IDisposable
     {
         private int Width, Height;
 
@@ -28,10 +29,17 @@ namespace SPICA.Renderer
 
         private List<Model> Models;
 
+        public Vector4 SceneAmbient;
+
         public RenderEngine(int Width, int Height)
         {
+            //Set initial and default values
             this.Width = Width;
             this.Height = Height;
+
+            Models = new List<Model>();
+
+            SceneAmbient = new Vector4(0.1f);
 
             //Setup Shaders
             ShaderHandle = GL.CreateProgram();
@@ -75,11 +83,24 @@ namespace SPICA.Renderer
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture1"), 1);
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture2"), 2);
 
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist0"), 1);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist1"), 2);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBFresnel"), 3);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecR"), 4);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecG"), 5);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecB"), 6);
+
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "SAmbient"), SceneAmbient);
+
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "LightCount"), 1);
+
+            GL.Uniform3(GL.GetUniformLocation(ShaderHandle, "Lights[0].Position"), new Vector3(0, 100, 100));
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Diffuse"), new Vector4(1));
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Specular"), new Vector4(1));
+
             GL.Enable(EnableCap.DepthTest);
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-            GL.ClearColor(System.Drawing.Color.MidnightBlue);
-
-            Models = new List<Model>();
+            GL.ClearColor(Color.DimGray);
         }
 
         public Model AddModel(H3D BaseModel, int ModelIndex = 0)
@@ -122,6 +143,28 @@ namespace SPICA.Renderer
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             foreach (Model Model in Models) Model.Render();
+        }
+
+        private bool Disposed;
+
+        protected virtual void Dispose(bool Disposing)
+        {
+            if (!Disposed)
+            {
+                GL.DeleteProgram(ShaderHandle);
+
+                GL.DeleteShader(VertexShaderHandle);
+                GL.DeleteShader(FragmentShaderHandle);
+
+                foreach (Model Model in Models) Model.Dispose();
+
+                Disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

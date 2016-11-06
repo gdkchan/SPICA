@@ -1,4 +1,6 @@
-﻿namespace SPICA.PICA.Commands
+﻿using SPICA.Math3D;
+
+namespace SPICA.PICA.Commands
 {
     public struct PICATexEnvColor
     {
@@ -25,6 +27,11 @@
             Param |= (uint)A << 24;
 
             return Param;
+        }
+
+        public RGBA ToRGBA()
+        {
+            return new RGBA(R, G, B, A);
         }
     }
 }

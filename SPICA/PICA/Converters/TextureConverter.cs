@@ -21,7 +21,7 @@ namespace SPICA.PICA.Converters
             52, 53, 60, 61, 54, 55, 62, 63
         };
 
-        public static Bitmap Decode(byte[] Input, int Width, int Height, PICATextureFormat Format, bool SwapRB = false)
+        public static byte[] Decode(byte[] Input, int Width, int Height, PICATextureFormat Format, bool SwapRB)
         {
             byte[] Output = new byte[Width * Height * 4];
 
@@ -141,7 +141,12 @@ namespace SPICA.PICA.Converters
                 }
             }
 
-            return GetBitmap(Output, Width, Height);
+            return Output;
+        }
+
+        public static Bitmap Decode(byte[] Input, int Width, int Height, PICATextureFormat Format)
+        {
+            return GetBitmap(Decode(Input, Width, Height, Format, false), Width, Height);
         }
 
         public static byte[] Encode(Bitmap Img, PICATextureFormat Format)

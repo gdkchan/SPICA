@@ -34,6 +34,10 @@ uniform mat4 ModelMatrix;
     in vec4 a8_weight;
 #endif
 
+out mat3 ModelMtx;
+out vec3 EyeDir;
+out vec3 WorldPos;
+
 out vec3 Normal;
 out vec3 Tangent;
 out vec4 Color;
@@ -41,11 +45,15 @@ out vec2 TexCoord0;
 out vec2 TexCoord1;
 out vec2 TexCoord2;
 
-void main(void) {
+void main() {
     gl_Position = ProjMatrix * ViewMatrix * ModelMatrix * vec4(a0_pos, 1);
     
-    Normal = a1_norm;
-    Tangent = a2_tan;
+    ModelMtx = mat3(ModelMatrix);
+    EyeDir = normalize(vec3(ViewMatrix * ModelMatrix * vec4(a0_pos, 1)));
+    WorldPos = vec3(ModelMatrix * vec4(a0_pos, 1));
+    
+    Normal = normalize(mat3(ModelMatrix) * a1_norm);
+    Tangent = normalize(mat3(ModelMatrix) * a2_tan);
     Color = a3_col;
     TexCoord0 = vec2(a4_tex0.x, -a4_tex0.y);
     TexCoord1 = vec2(a5_tex1.x, -a5_tex1.y);
