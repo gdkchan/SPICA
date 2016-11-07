@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Renderer.Shaders
 {
-    class FragmentShader
+    static class FragmentShader
     {
         public const string Code = @"
 #version 150
@@ -31,6 +31,10 @@ precision highp float;
 
 #define FLAG_PRI  1
 #define FLAG_SEC  2
+
+uniform int AlphaTestEnb;
+uniform int AlphaTestFunc;
+uniform int AlphaTestRef;
 
 struct CombArg_t {
     int ColorSrc;
@@ -307,6 +311,24 @@ void main() {
         
         PrevBuffer = Previous;
         Previous = Output;
+    }
+    
+    if (AlphaTestEnb != 0) {
+        bool Pass = true;
+        float Ref = float(AlphaTestRef) / 255;
+        
+        switch (AlphaTestFunc) {
+            case 0: Pass = false; break;
+            case 1: Pass = true; break;
+            case 2: Pass = Output.a == Ref; break;
+            case 3: Pass = Output.a != Ref; break;
+            case 4: Pass = Output.a < Ref; break;
+            case 5: Pass = Output.a <= Ref; break;
+            case 6: Pass = Output.a > Ref; break;
+            case 7: Pass = Output.a >= Ref; break;
+        }
+        
+        if (!Pass) discard;
     }
 }
 

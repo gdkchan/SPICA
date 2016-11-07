@@ -3,11 +3,12 @@ using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.LUT;
+using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
-using SPICA.Math3D;
 using SPICA.PICA.Converters;
+using SPICA.Renderer.SPICA_GL;
 
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace SPICA.Renderer
 {
     public class Model : IDisposable
     {
-        public RenderEngine Parent;
+        private RenderEngine Parent;
 
         public Matrix4 Transform;
 
@@ -27,6 +28,9 @@ namespace SPICA.Renderer
         private Dictionary<string, int> TextureIds;
         private Dictionary<string, int> LUTHandles;
 
+        internal Matrix4[] InverseTransform;
+        internal Matrix4[] SkeletonTransform;
+
         public Model(RenderEngine Renderer, H3D Model, int ModelIndex, int ShaderHandle)
         {
             Parent = Renderer;
@@ -36,6 +40,17 @@ namespace SPICA.Renderer
             Meshes = new List<Mesh>();
 
             Materials = Model.Models[ModelIndex].Materials;
+
+            PatriciaList<H3DBone> Skeleton = Model.Models[ModelIndex].Skeleton;
+
+            InverseTransform = new Matrix4[Skeleton.Count];
+            SkeletonTransform = new Matrix4[Skeleton.Count];
+
+            for (int Index = 0; Index < Skeleton.Count; Index++)
+            {
+                InverseTransform[Index] = GLConverter.ToMatrix4(Skeleton[Index].InverseTransform);
+                SkeletonTransform[Index] = InverseTransform[Index].Inverted();
+            }
 
             foreach (H3DMesh Mesh in Model.Models[ModelIndex].Meshes)
             {
@@ -110,10 +125,8 @@ namespace SPICA.Renderer
 
                 if (IsFirst)
                 {
-                    Vector3D P = Vertices[0].Position;
-
-                    Min = new Vector3(P.X, P.Y, P.Z);
-                    Max = new Vector3(P.X, P.Y, P.Z);
+                    Min = GLConverter.ToVector3(Vertices[0].Position);
+                    Max = GLConverter.ToVector3(Vertices[0].Position);
 
                     IsFirst = false;
                 }

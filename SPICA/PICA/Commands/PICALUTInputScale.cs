@@ -25,7 +25,7 @@ namespace SPICA.PICA.Commands
                 case PICALUTInputScale.Quarter: return 0.25f;
                 case PICALUTInputScale.Half: return 0.5f;
 
-                default: throw new ArgumentException("Invaid Scale value!");
+                default: throw new ArgumentException("Invalid Scale value!");
             }
         }
     }

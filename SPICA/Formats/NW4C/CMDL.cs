@@ -1660,7 +1660,7 @@ namespace SPICA.Formats.CtrH3D {
                 }
 
                 fragShade.AlphaTest.IsTestEnabled = mt.MaterialParams.AlphaTest.Enabled;
-                fragShade.AlphaTest.TestFunction = getTestFunc(mt.MaterialParams.AlphaTest.Function);
+                fragShade.AlphaTest.TestFunction = mt.MaterialParams.AlphaTest.Function.ToString();
                 fragShade.AlphaTest.TestReference = mt.MaterialParams.AlphaTest.Reference;
 
                 mat.FragmentShader = fragShade;
@@ -1687,7 +1687,7 @@ namespace SPICA.Formats.CtrH3D {
                 fragOp.BlendOperation.BlendColor.A = (float)mt.MaterialParams.BlendColor.A / 255;
 
                 fragOp.StencilOperation.IsTestEnabled = mt.MaterialParams.StencilTest.Enabled;
-                fragOp.StencilOperation.TestFunction = getTestFunc(mt.MaterialParams.StencilTest.Function);
+                fragOp.StencilOperation.TestFunction = mt.MaterialParams.StencilTest.Function.ToString();
                 fragOp.StencilOperation.TestReference = mt.MaterialParams.StencilTest.Reference;
                 fragOp.StencilOperation.TestMask = mt.MaterialParams.StencilTest.Mask;
                 fragOp.StencilOperation.FailOperation = mt.MaterialParams.StencilOperation.FailOp.ToString();
@@ -1873,28 +1873,6 @@ namespace SPICA.Formats.CtrH3D {
                 }
             }
             return sb.ToString();
-        }
-
-        private static string getTestFunc(PICATestFunc opt) { //The idea of this function is absurd, but these strings were too bad to add to the enums
-            string func = "";
-            switch (opt) {
-                case PICATestFunc.LessThan:
-                    func = "Less";
-                    break;
-                case PICATestFunc.LessThanEqu:
-                    func = "Lequal";
-                    break;
-                case PICATestFunc.GreaterThanEqu:
-                    func = "Gequal";
-                    break;
-                case PICATestFunc.GreaterThan:
-                    func = "Greater";
-                    break;
-                default:
-                    func = opt.ToString();
-                    break;
-            }
-            return func;
         }
 
         private static void addUserData(ref ctrArrayMetaData localMeta, H3DMetaData metaData) {

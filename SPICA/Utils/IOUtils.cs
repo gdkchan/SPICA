@@ -2,7 +2,7 @@
 
 namespace SPICA.Utils
 {
-    class IOUtils
+    static class IOUtils
     {
         public static float ToSingle(uint Value)
         {

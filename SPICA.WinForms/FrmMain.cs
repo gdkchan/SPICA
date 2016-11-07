@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Input;
 
 using SPICA.Formats.CtrH3D;
@@ -21,12 +22,17 @@ namespace SPICA.WinForms
 
         private Model Model;
 
-        public FrmMain() : base(800, 600)
+        public FrmMain() : base(800, 600, new GraphicsMode(new ColorFormat(32), 24, 8))
         {
             Title = "SPICA";
         }
 
-        protected override void OnLoad(System.EventArgs e)
+        protected override void OnResize(EventArgs e)
+        {
+            Renderer.UpdateResolution(Width, Height);
+        }
+
+        protected override void OnLoad(EventArgs e)
         {
             VSync = VSyncMode.On;
 

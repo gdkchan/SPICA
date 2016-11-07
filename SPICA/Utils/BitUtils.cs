@@ -1,7 +1,18 @@
 ﻿namespace SPICA.Utils
 {
-    class BitUtils
+    static class BitUtils
     {
+        public static ulong Swap64(ulong Value)
+        {
+            Value = (Value >> 32) | (Value << 32);
+
+            Value = ((Value & 0xffff0000ffff0000ul) >> 16) | ((Value & 0x0000ffff0000fffful) << 16);
+
+            Value = ((Value & 0xff00ff00ff00ff00ul) >> 8) | ((Value & 0x00ff00ff00ff00fful) << 8);
+
+            return Value;
+        }
+
         public static uint GetBits(uint Value, int Start, int Count)
         {
             Value >>= Start;

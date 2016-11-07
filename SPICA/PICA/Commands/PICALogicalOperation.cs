@@ -8,7 +8,7 @@
         Copy,
         Set,
         CopyInverted,
-        NoOp,
+        Noop,
         Invert,
         Nand,
         Or,

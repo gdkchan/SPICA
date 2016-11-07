@@ -5,10 +5,10 @@
         Never,
         Always,
         Equal,
-        NotEqual,
-        LessThan,
-        LessThanEqu,
-        GreaterThan,
-        GreaterThanEqu
+        Notequal,
+        Less,
+        Lequal,
+        Greater,
+        Gequal
     }
 }

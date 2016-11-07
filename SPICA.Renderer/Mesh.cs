@@ -3,8 +3,8 @@ using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
-using SPICA.Math3D;
 using SPICA.PICA.Commands;
+using SPICA.Renderer.SPICA_GL;
 
 using System;
 using System.Collections.Generic;
@@ -25,6 +25,9 @@ namespace SPICA.Renderer
         private H3DMaterial Material;
 
         public Vector3 MeshCenter;
+        private Vector4 PosOffset;
+        private Vector4 Scales0;
+        private Vector4 Scales1;
 
         public Mesh(Model Parent, H3DMesh Mesh, int ShaderHandle)
         {
@@ -36,7 +39,8 @@ namespace SPICA.Renderer
             SubMeshes = BaseMesh.SubMeshes;
             Material = Parent.Materials[Mesh.MaterialIndex];
 
-            MeshCenter = new Vector3(Mesh.MeshCenter.X, Mesh.MeshCenter.Y, Mesh.MeshCenter.Z);
+            MeshCenter = GLConverter.ToVector3(Mesh.MeshCenter);
+            PosOffset = GLConverter.ToVector4(Mesh.PositionOffset);
 
             IntPtr Length = new IntPtr(Mesh.RawBuffer.Length);
 
@@ -78,7 +82,18 @@ namespace SPICA.Renderer
                 {
                     GL.EnableVertexAttribArray(AttribIndex);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, VBOHandle);
-                    GL.VertexAttribPointer(AttribIndex, Attrib.Elements, Type, true, Mesh.VertexStride, Offset);
+                    GL.VertexAttribPointer(AttribIndex, Attrib.Elements, Type, false, Mesh.VertexStride, Offset);
+
+                    //Bone Index (7) doesn't have Scale so we need to ignore it here
+                    if (AttribIndex == 8) AttribIndex--;
+
+                    int i = AttribIndex >> 2;
+                    int j = AttribIndex & 3;
+
+                    if (i == 0)
+                        Scales0[j] = Attrib.Scale;
+                    else
+                        Scales1[j] = Attrib.Scale;
                 }
 
                 Offset += Size;
@@ -91,6 +106,48 @@ namespace SPICA.Renderer
         {
             //Upload Material data to Fragment Shader
             H3DMaterialParams Params = Material.MaterialParams;
+
+            //Blending and Logical Operation
+            BlendEquationMode ColorEquation = Params.BlendFunction.RGBEquation.ToBlendEquation();
+            BlendEquationMode AlphaEquation = Params.BlendFunction.AlphaEquation.ToBlendEquation();
+
+            BlendingFactorSrc ColorSrcFunc = Params.BlendFunction.RGBSourceFunc.ToBlendingFactorSrc();
+            BlendingFactorDest ColorDstFunc = Params.BlendFunction.RGBDestFunc.ToBlendingFactorDest();
+            BlendingFactorSrc AlphaSrcFunc = Params.BlendFunction.AlphaSourceFunc.ToBlendingFactorSrc();
+            BlendingFactorDest AlphaDstFunc = Params.BlendFunction.AlphaDestFunc.ToBlendingFactorDest();
+
+            GL.BlendEquationSeparate(ColorEquation, AlphaEquation);
+            GL.BlendFuncSeparate(ColorSrcFunc, ColorDstFunc, AlphaSrcFunc, AlphaDstFunc);
+            GL.BlendColor(GLConverter.ToColor(Params.BlendColor));
+
+            Utils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
+
+            //Alpha, Stencil and Depth testing
+            StencilFunction StencilFunc = Params.StencilTest.Function.ToStencilFunction();
+            DepthFunction DepthFunc = Params.DepthColorMask.DepthFunc.ToDepthFunction();
+
+            StencilOp Fail = Params.StencilOperation.FailOp.ToStencilOp();
+            StencilOp ZFail = Params.StencilOperation.ZFailOp.ToStencilOp();
+            StencilOp ZPass = Params.StencilOperation.ZPassOp.ToStencilOp();
+
+            GL.StencilFunc(StencilFunc, Params.StencilTest.Reference, Params.StencilTest.Mask);
+            GL.DepthFunc(DepthFunc);
+            GL.DepthMask(Params.DepthColorMask.DepthWrite);
+
+            GL.StencilMask(Params.StencilTest.BufferMask);
+            GL.StencilOp(Fail, ZFail, ZPass);
+
+            Utils.SetState(EnableCap.AlphaTest, Params.AlphaTest.Enabled);
+            Utils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
+            Utils.SetState(EnableCap.DepthTest, Params.DepthColorMask.Enabled);
+
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestEnb"), Params.AlphaTest.Enabled ? 1 : 0);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestFunc"), (int)Params.AlphaTest.Function);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestRef"), Params.AlphaTest.Reference);
+
+            GL.CullFace(Params.FaceCulling.ToCullFaceMode());
+
+            GL.PolygonOffset(0, Params.PolygonOffsetUnit);
 
             //Coordinate sources
             int TexUnit0SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit0Source");
@@ -107,10 +164,10 @@ namespace SPICA.Renderer
             int MAmbientLocation = GL.GetUniformLocation(ShaderHandle, "MAmbient");
             int MSpecularLocation = GL.GetUniformLocation(ShaderHandle, "MSpecular");
 
-            GL.Uniform4(MEmissionLocation, GetColorVector(Params.EmissionColor));
-            GL.Uniform4(MDiffuseLocation, GetColorVector(Params.DiffuseColor));
-            GL.Uniform4(MAmbientLocation, GetColorVector(Params.AmbientColor));
-            GL.Uniform4(MSpecularLocation, GetColorVector(Params.Specular0Color));
+            GL.Uniform4(MEmissionLocation, GLConverter.ToColor(Params.EmissionColor));
+            GL.Uniform4(MDiffuseLocation, GLConverter.ToColor(Params.DiffuseColor));
+            GL.Uniform4(MAmbientLocation, GLConverter.ToColor(Params.AmbientColor));
+            GL.Uniform4(MSpecularLocation, GLConverter.ToColor(Params.Specular0Color));
 
             //Shader math parameters
             int FragFlagsLocation = GL.GetUniformLocation(ShaderHandle, "FragFlags");
@@ -153,15 +210,9 @@ namespace SPICA.Renderer
                     GL.Uniform1(AlphaOpLocation, (int)Stage.Operand.AlphaOp[Param]);
                 }
 
-                Vector4 Color = new Vector4(
-                    (float)Stage.Color.R / byte.MaxValue,
-                    (float)Stage.Color.G / byte.MaxValue,
-                    (float)Stage.Color.B / byte.MaxValue,
-                    (float)Stage.Color.A / byte.MaxValue);
-
                 int ColorLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Color");
 
-                GL.Uniform4(ColorLocation, GetColorVector(Stage.Color.ToRGBA()));
+                GL.Uniform4(ColorLocation, GLConverter.ToColor(Stage.Color.ToRGBA()));
             }
 
             //Setup LUTs
@@ -206,12 +257,17 @@ namespace SPICA.Renderer
                 }
             }
 
-            BindLUT(1, Params.LUTDist0TableName, Params.LUTDist0SamplerName);
-            BindLUT(2, Params.LUTDist1TableName, Params.LUTDist1SamplerName);
-            BindLUT(3, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
-            BindLUT(4, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
-            BindLUT(5, Params.LUTReflecGTableName, Params.LUTReflecGSamplerName);
-            BindLUT(6, Params.LUTReflecBTableName, Params.LUTReflecBSamplerName);
+            BindLUT(0, Params.LUTDist0TableName, Params.LUTDist0SamplerName);
+            BindLUT(1, Params.LUTDist1TableName, Params.LUTDist1SamplerName);
+            BindLUT(2, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
+            BindLUT(3, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
+            BindLUT(4, Params.LUTReflecGTableName, Params.LUTReflecGSamplerName);
+            BindLUT(5, Params.LUTReflecBTableName, Params.LUTReflecBSamplerName);
+
+            //Vertex related Uniforms
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), PosOffset);
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Scales0);
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Scales1);
 
             //Setup texture units
             if (Material.EnabledTextures[0])
@@ -237,19 +293,26 @@ namespace SPICA.Renderer
 
             foreach (H3DSubMesh SubMesh in SubMeshes)
             {
+                Matrix4[] Transforms = new Matrix4[32];
+
+                for (int Index = 0; Index < SubMesh.BoneIndicesCount; Index++)
+                {
+                    Matrix4 Transform = Parent.SkeletonTransform[SubMesh.BoneIndices[Index]];
+
+                    if (SubMesh.Skinning == H3DSubMeshSkinning.Smooth)
+                    {
+                        Transform = Parent.InverseTransform[SubMesh.BoneIndices[Index]] * Transform;
+                    }
+
+                    int Location = GL.GetUniformLocation(ShaderHandle, $"Transforms[{Index}]");
+
+                    GL.UniformMatrix4(Location, false, ref Transform);
+                }
+
                 GL.DrawElements(PrimitiveType.Triangles, SubMesh.Indices.Length, DrawElementsType.UnsignedShort, SubMesh.Indices);
             }
 
             GL.BindVertexArray(0);
-        }
-
-        private Vector4 GetColorVector(RGBA Color)
-        {
-            return new Vector4(
-                (float)Color.R / byte.MaxValue,
-                (float)Color.G / byte.MaxValue,
-                (float)Color.B / byte.MaxValue,
-                (float)Color.A / byte.MaxValue);
         }
 
         private void BindLUT(int Index, string TableName, string SamplerName)

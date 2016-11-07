@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.PICA.Converters
 {
-    class VerticesConverter
+    static class VerticesConverter
     {
         public static PICAVertex[] GetVertices(byte[] RawBuffer, int VertexStride, PICAAttribute[] Attributes)
         {

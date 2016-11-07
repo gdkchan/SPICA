@@ -68,7 +68,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 Output.MaterialParams.DepthColorMask.Enabled = true;
 
-                Output.MaterialParams.DepthColorMask.DepthFunc = PICATestFunc.LessThan;
+                Output.MaterialParams.DepthColorMask.DepthFunc = PICATestFunc.Less;
 
                 Output.MaterialParams.DepthColorMask.RedWrite = true;
                 Output.MaterialParams.DepthColorMask.GreenWrite = true;

@@ -119,6 +119,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\PICAVertex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\TextureCompression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\TextureConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\VerticesConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommand.cs" />

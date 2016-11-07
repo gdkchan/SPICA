@@ -34,12 +34,11 @@ namespace SPICA.Renderer
         public RenderEngine(int Width, int Height)
         {
             //Set initial and default values
-            this.Width = Width;
-            this.Height = Height;
-
             Models = new List<Model>();
 
             SceneAmbient = new Vector4(0.1f);
+
+            System.Diagnostics.Debug.WriteLine(GL.GetInteger(GetPName.MaxVertexUniformComponents));
 
             //Setup Shaders
             ShaderHandle = GL.CreateProgram();
@@ -71,24 +70,23 @@ namespace SPICA.Renderer
             ViewMtxLocation = GL.GetUniformLocation(ShaderHandle, "ViewMatrix");
             ModelMtxLocation = GL.GetUniformLocation(ShaderHandle, "ModelMatrix");
 
-            float AR = Width / (float)Height;
-            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 1, 1000);
             ViewMtx = Matrix4.Identity;
 
-            GL.UniformMatrix4(ProjMtxLocation, false, ref ProjMtx);
             GL.UniformMatrix4(ViewMtxLocation, false, ref ViewMtx);
+
+            UpdateResolution(Width, Height);
 
             //Misc. stuff initialization
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture0"), 0);
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture1"), 1);
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture2"), 2);
 
-            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist0"), 1);
-            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist1"), 2);
-            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBFresnel"), 3);
-            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecR"), 4);
-            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecG"), 5);
-            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecB"), 6);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist0"), 0);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist1"), 1);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBFresnel"), 2);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecR"), 3);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecG"), 4);
+            GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBReflecB"), 5);
 
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "SAmbient"), SceneAmbient);
 
@@ -140,9 +138,23 @@ namespace SPICA.Renderer
         public void RenderScene()
         {
             GL.Viewport(0, 0, Width, Height);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.StencilBufferBit);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
 
             foreach (Model Model in Models) Model.Render();
+        }
+        
+        public void UpdateResolution(int Width, int Height)
+        {
+            this.Width = Width;
+            this.Height = Height;
+
+            float AR = Width / (float)Height;
+            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 1, 1000);
+
+            GL.UniformMatrix4(ProjMtxLocation, false, ref ProjMtx);
         }
 
         private bool Disposed;

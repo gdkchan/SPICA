@@ -14,6 +14,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)RenderEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shaders\FragmentShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shaders\VertexShader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\GLConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICABlendEquation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICABlendFunc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICAFaceCulling.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICAStencilOp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICATestFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
   </ItemGroup>
 </Project>

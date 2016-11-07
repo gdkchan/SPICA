@@ -1,16 +1,31 @@
 ﻿namespace SPICA.Renderer.Shaders
 {
-    class VertexShader
+    static class VertexShader
     {
         public const string Code = @"
-#version 150
+#version 330 core
 #extension GL_ARB_explicit_uniform_location: enable
 
 precision highp float;
 
+#define POS     0
+#define NORM    1
+#define TAN     2
+#define COL     3
+#define TEX0    0
+#define TEX1    1
+#define TEX2    2
+#define WEIGHT  3
+
 uniform mat4 ProjMatrix;
 uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
+
+uniform vec4 PosOffset;
+uniform vec4 Scales0;
+uniform vec4 Scales1;
+
+uniform mat4 Transforms[32];
 
 #ifdef GL_ARB_explicit_uniform_location
     layout(location = 0) in vec3 a0_pos;
@@ -46,18 +61,47 @@ out vec2 TexCoord1;
 out vec2 TexCoord2;
 
 void main() {
-    gl_Position = ProjMatrix * ViewMatrix * ModelMatrix * vec4(a0_pos, 1);
+    /*
+     * Note: The order in which variables in accessed in important on (some) GPUs, so don't change it!
+     * In particular, Intel drivers seems to order attributes in the order they're accessed on the code
+     * This is hacky, but GPUs that supports the explicit location doesn't have this problem (yay!)
+     */
+    vec4 Position = PosOffset + vec4(a0_pos * Scales0[POS], 1);
+    
+    Normal = normalize(mat3(ModelMatrix) * (a1_norm * Scales0[NORM]));
+    Tangent = normalize(mat3(ModelMatrix) * (a2_tan * Scales0[TAN]));
+    Color = a3_col * Scales0[COL];
+    TexCoord0 = vec2(a4_tex0.x, -a4_tex0.y) * Scales1[TEX0];
+    TexCoord1 = vec2(a5_tex1.x, -a5_tex1.y) * Scales1[TEX1];
+    TexCoord2 = vec2(a6_tex2.x, -a6_tex2.y) * Scales1[TEX2];
+    
+    //Apply bone transform
+    int b0 = int(a7_bone[0]);
+    int b1 = int(a7_bone[1]);
+    int b2 = int(a7_bone[2]);
+    int b3 = int(a7_bone[3]);
+    
+    float w0 = a8_weight[0] * Scales1[WEIGHT];
+    float w1 = a8_weight[1] * Scales1[WEIGHT];
+    float w2 = a8_weight[2] * Scales1[WEIGHT];
+    float w3 = a8_weight[3] * Scales1[WEIGHT];
+    
+    vec4 p;
+    
+    p  = (Transforms[b0] * Position) * w0;
+    p += (Transforms[b1] * Position) * w1;
+    p += (Transforms[b2] * Position) * w2;
+    p += (Transforms[b3] * Position) * w3;
+    
+    float Sum = w0 + w1 + w2 + w3;
+    Position = (Position * (1 - Sum)) + p;
+    Position.w = 1;
     
     ModelMtx = mat3(ModelMatrix);
-    EyeDir = normalize(vec3(ViewMatrix * ModelMatrix * vec4(a0_pos, 1)));
-    WorldPos = vec3(ModelMatrix * vec4(a0_pos, 1));
+    EyeDir = normalize(vec3(ViewMatrix * ModelMatrix * Position));
+    WorldPos = vec3(ModelMatrix * Position);
     
-    Normal = normalize(mat3(ModelMatrix) * a1_norm);
-    Tangent = normalize(mat3(ModelMatrix) * a2_tan);
-    Color = a3_col;
-    TexCoord0 = vec2(a4_tex0.x, -a4_tex0.y);
-    TexCoord1 = vec2(a5_tex1.x, -a5_tex1.y);
-    TexCoord2 = vec2(a6_tex2.x, -a6_tex2.y);
+    gl_Position = ProjMatrix * ViewMatrix * ModelMatrix * Position;
 }
 ";
     }

@@ -1,8 +1,9 @@
 ﻿using OpenTK;
+using OpenTK.Graphics.ES30;
 
 namespace SPICA.Renderer
 {
-    class Utils
+    static class Utils
     {
         public static Matrix4 EulerRotate(Vector3 Rotation)
         {
@@ -11,6 +12,14 @@ namespace SPICA.Renderer
             Matrix4 RotZMtx = Matrix4.CreateRotationZ(Rotation.Z);
 
             return RotXMtx * RotYMtx * RotZMtx;
+        }
+
+        public static void SetState(EnableCap Cap, bool Value)
+        {
+            if (Value)
+                GL.Enable(Cap);
+            else
+                GL.Disable(Cap);
         }
     }
 }
