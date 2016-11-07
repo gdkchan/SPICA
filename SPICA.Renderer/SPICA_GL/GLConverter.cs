@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 
 using SPICA.Math3D;
+using SPICA.PICA.Commands;
 
 namespace SPICA.Renderer.SPICA_GL
 {
@@ -28,6 +29,11 @@ namespace SPICA.Renderer.SPICA_GL
         }
 
         public static Vector4 ToVector4(Vector4D Vector)
+        {
+            return new Vector4(Vector.X, Vector.Y, Vector.Z, Vector.W);
+        }
+
+        public static Vector4 ToVector4(PICAVectorFloat24 Vector)
         {
             return new Vector4(Vector.X, Vector.Y, Vector.Z, Vector.W);
         }

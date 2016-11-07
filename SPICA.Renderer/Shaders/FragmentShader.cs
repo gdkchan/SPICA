@@ -166,15 +166,17 @@ void main() {
     
     if (BumpMode != 0) {
         switch (BumpIndex) {
-            case 0: n = ModelMtx * (Color0.xyz * 2 - 1); break;
-            case 1: n = ModelMtx * (Color1.xyz * 2 - 1); break;
-            case 2: n = ModelMtx * (Color2.xyz * 2 - 1); break;
+            case 0: n = Color0.xyz * 2 - 1; break;
+            case 1: n = Color1.xyz * 2 - 1; break;
+            case 2: n = Color2.xyz * 2 - 1; break;
         }
         
         //Tangent Space
-        if (BumpMode == 2) {
+        if (BumpMode == 1) {
             vec3 BiTangent = cross(Normal, Tangent);
             n *= mat3(Tangent, BiTangent, Normal);
+        } else {
+            n *= ModelMtx;
         }
         
         if ((FragFlags & FLAG_BUMP_RENORM) != 0) n = normalize(n);

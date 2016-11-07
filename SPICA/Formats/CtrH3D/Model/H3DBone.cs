@@ -35,26 +35,26 @@ namespace SPICA.Formats.CtrH3D.Model
             InverseTransform = new Matrix3x4();
         }
 
-        public void CalculateTransform(PatriciaList<H3DBone> Skeleton)
+        public Matrix3x4 CalculateTransform(PatriciaList<H3DBone> Skeleton)
         {
-            InverseTransform = new Matrix3x4();
+            Matrix3x4 Transform = new Matrix3x4();
 
             H3DBone Bone = this;
 
             while (true)
             {
-                InverseTransform *= Matrix3x4.Scale(Bone.Scale);
-                InverseTransform *= Matrix3x4.RotateX(Bone.Rotation.X);
-                InverseTransform *= Matrix3x4.RotateY(Bone.Rotation.Y);
-                InverseTransform *= Matrix3x4.RotateZ(Bone.Rotation.Z);
-                InverseTransform *= Matrix3x4.Translate(Bone.Translation);
+                Transform *= Matrix3x4.Scale(Bone.Scale);
+                Transform *= Matrix3x4.RotateX(Bone.Rotation.X);
+                Transform *= Matrix3x4.RotateY(Bone.Rotation.Y);
+                Transform *= Matrix3x4.RotateZ(Bone.Rotation.Z);
+                Transform *= Matrix3x4.Translate(Bone.Translation);
 
                 if (Bone.ParentIndex == -1) break;
 
                 Bone = Skeleton[Bone.ParentIndex];
             }
 
-            InverseTransform.Invert();
+            return Transform;
         }
     }
 }

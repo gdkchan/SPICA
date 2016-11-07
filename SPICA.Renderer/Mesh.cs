@@ -133,7 +133,6 @@ namespace SPICA.Renderer
             GL.StencilFunc(StencilFunc, Params.StencilTest.Reference, Params.StencilTest.Mask);
             GL.DepthFunc(DepthFunc);
             GL.DepthMask(Params.DepthColorMask.DepthWrite);
-
             GL.StencilMask(Params.StencilTest.BufferMask);
             GL.StencilOp(Fail, ZFail, ZPass);
 
@@ -288,26 +287,51 @@ namespace SPICA.Renderer
                 GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture2Name));
             }
 
+            //Setup Fixed attributes
+            int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedColor");
+            int FixedBoneLocation = GL.GetUniformLocation(ShaderHandle, "FixedBone");
+            int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
+
+            GL.Uniform4(FixedColorLocation, new Vector4(-1));
+            GL.Uniform4(FixedBoneLocation, new Vector4(0));
+            GL.Uniform4(FixedWeightLocation, new Vector4(0));
+
+            foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
+            {
+                Vector4 Value = GLConverter.ToVector4(Attrib.Value);
+
+                switch (Attrib.Name)
+                {
+                    case PICAAttributeName.Color: GL.Uniform4(FixedColorLocation, Value); break;
+                    case PICAAttributeName.BoneIndex: GL.Uniform4(FixedBoneLocation, Value); break;
+                    case PICAAttributeName.BoneWeight: GL.Uniform4(FixedWeightLocation, Value); break;
+                }
+            }
+
             //Render all SubMeshes
             GL.BindVertexArray(VAOHandle);
 
             foreach (H3DSubMesh SubMesh in SubMeshes)
             {
+                bool SmoothSkin = SubMesh.Skinning == H3DSubMeshSkinning.Smooth;
+
                 Matrix4[] Transforms = new Matrix4[32];
 
                 for (int Index = 0; Index < SubMesh.BoneIndicesCount; Index++)
                 {
                     Matrix4 Transform = Parent.SkeletonTransform[SubMesh.BoneIndices[Index]];
 
-                    if (SubMesh.Skinning == H3DSubMeshSkinning.Smooth)
-                    {
+                    if (SmoothSkin)
                         Transform = Parent.InverseTransform[SubMesh.BoneIndices[Index]] * Transform;
-                    }
+                    else
+                        Transform.Transpose();
 
                     int Location = GL.GetUniformLocation(ShaderHandle, $"Transforms[{Index}]");
 
                     GL.UniformMatrix4(Location, false, ref Transform);
                 }
+
+                GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "SmoothSkin"), SmoothSkin ? 1 : 0);
 
                 GL.DrawElements(PrimitiveType.Triangles, SubMesh.Indices.Length, DrawElementsType.UnsignedShort, SubMesh.Indices);
             }

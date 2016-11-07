@@ -184,12 +184,12 @@ namespace SPICA.PICA.Converters
 
         private static Color ETC1Pixel(uint R, uint G, uint B, int X, int Y, uint Block, uint Table)
         {
-            int index = X * 4 + Y;
+            int Index = X * 4 + Y;
             uint MSB = Block << 1;
 
-            int Pixel = index < 8
-                ? ETC1LUT[Table, ((Block >> (index + 24)) & 1) + ((MSB >> (index + 8)) & 2)]
-                : ETC1LUT[Table, ((Block >> (index + 8)) & 1) + ((MSB >> (index - 8)) & 2)];
+            int Pixel = Index < 8
+                ? ETC1LUT[Table, ((Block >> (Index + 24)) & 1) + ((MSB >> (Index + 8)) & 2)]
+                : ETC1LUT[Table, ((Block >> (Index + 8)) & 1) + ((MSB >> (Index - 8)) & 2)];
 
             R = Saturate((int)(R + Pixel));
             G = Saturate((int)(G + Pixel));

@@ -27,6 +27,12 @@ uniform vec4 Scales1;
 
 uniform mat4 Transforms[32];
 
+uniform int SmoothSkin;
+
+uniform vec4 FixedColor;
+uniform vec4 FixedBone;
+uniform vec4 FixedWeight;
+
 #ifdef GL_ARB_explicit_uniform_location
     layout(location = 0) in vec3 a0_pos;
     layout(location = 1) in vec3 a1_norm;
@@ -70,31 +76,54 @@ void main() {
     
     Normal = normalize(mat3(ModelMatrix) * (a1_norm * Scales0[NORM]));
     Tangent = normalize(mat3(ModelMatrix) * (a2_tan * Scales0[TAN]));
-    Color = a3_col * Scales0[COL];
+    Color = FixedColor.w != -1 ? FixedColor : a3_col * Scales0[COL];
     TexCoord0 = vec2(a4_tex0.x, -a4_tex0.y) * Scales1[TEX0];
     TexCoord1 = vec2(a5_tex1.x, -a5_tex1.y) * Scales1[TEX1];
     TexCoord2 = vec2(a6_tex2.x, -a6_tex2.y) * Scales1[TEX2];
     
     //Apply bone transform
-    int b0 = int(a7_bone[0]);
-    int b1 = int(a7_bone[1]);
-    int b2 = int(a7_bone[2]);
-    int b3 = int(a7_bone[3]);
+    int b0, b1, b2, b3;
     
-    float w0 = a8_weight[0] * Scales1[WEIGHT];
-    float w1 = a8_weight[1] * Scales1[WEIGHT];
-    float w2 = a8_weight[2] * Scales1[WEIGHT];
-    float w3 = a8_weight[3] * Scales1[WEIGHT];
+    if (FixedBone.w != 0) {
+        b0 = int(FixedBone[0]);
+        b1 = int(FixedBone[1]);
+        b2 = int(FixedBone[2]);
+        b3 = 0;
+    } else {
+        b0 = int(a7_bone[0]);
+        b1 = int(a7_bone[1]);
+        b2 = int(a7_bone[2]);
+        b3 = int(a7_bone[3]);
+    }
     
-    vec4 p;
+    if (SmoothSkin != 0) {
+        float w0, w1, w2, w3;
+        
+        if (FixedWeight.w != 0) {
+            w0 = FixedWeight[0];
+            w1 = FixedWeight[1];
+            w2 = FixedWeight[2];
+            w3 = 0;
+        } else {
+            w0 = a8_weight[0] * Scales1[WEIGHT];
+            w1 = a8_weight[1] * Scales1[WEIGHT];
+            w2 = a8_weight[2] * Scales1[WEIGHT];
+            w3 = a8_weight[3] * Scales1[WEIGHT];
+        }
+        
+        vec4 p;
+        
+        p  = (Transforms[b0] * Position) * w0;
+        p += (Transforms[b1] * Position) * w1;
+        p += (Transforms[b2] * Position) * w2;
+        p += (Transforms[b3] * Position) * w3;
+        
+        float Sum = w0 + w1 + w2 + w3;
+        Position = (Position * (1 - Sum)) + p;
+    } else {
+        Position *= Transforms[b0];
+    }
     
-    p  = (Transforms[b0] * Position) * w0;
-    p += (Transforms[b1] * Position) * w1;
-    p += (Transforms[b2] * Position) * w2;
-    p += (Transforms[b3] * Position) * w3;
-    
-    float Sum = w0 + w1 + w2 + w3;
-    Position = (Position * (1 - Sum)) + p;
     Position.w = 1;
     
     ModelMtx = mat3(ModelMatrix);

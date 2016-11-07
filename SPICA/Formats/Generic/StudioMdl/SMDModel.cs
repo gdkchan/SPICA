@@ -321,7 +321,8 @@ namespace SPICA.Formats.Generic.StudioMdl
             //Calculate Absolute Inverse Transforms for all bones
             foreach (H3DBone Bone in Model.Skeleton)
             {
-                Bone.CalculateTransform(Model.Skeleton);
+                Bone.InverseTransform = Bone.CalculateTransform(Model.Skeleton);
+                Bone.InverseTransform.Invert();
             }
 
             Output.Models.Add(Model);
@@ -345,7 +346,6 @@ namespace SPICA.Formats.Generic.StudioMdl
             for (int i = 0; i < 3; i++)
             {
                 PICAAttributeName Name = default(PICAAttributeName);
-                PICAAttributeFormat Fmt = default(PICAAttributeFormat);
 
                 switch (i)
                 {
