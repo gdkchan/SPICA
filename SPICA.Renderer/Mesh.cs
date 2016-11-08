@@ -2,6 +2,7 @@
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D.Model.Material;
+using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
 using SPICA.Renderer.SPICA_GL;
@@ -190,11 +191,17 @@ namespace SPICA.Renderer
                 int ColorScaleLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].ColorScale");
                 int AlphaScaleLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].AlphaScale");
 
+                int UpColorBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpColorBuff");
+                int UpAlphaBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpAlphaBuff");
+
                 GL.Uniform1(ColorCombLocation, (int)Stage.Combiner.RGBCombiner);
                 GL.Uniform1(AlphaCombLocation, (int)Stage.Combiner.AlphaCombiner);
 
                 GL.Uniform1(ColorScaleLocation, (float)(1 << (int)Stage.Scale.RGBScale));
                 GL.Uniform1(AlphaScaleLocation, (float)(1 << (int)Stage.Scale.AlphaScale));
+
+                GL.Uniform1(UpColorBuffLocation, Stage.UpdateRGBBuffer ? 1 : 0);
+                GL.Uniform1(UpAlphaBuffLocation, Stage.UpdateAlphaBuffer ? 1 : 0);
 
                 for (int Param = 0; Param < 3; Param++)
                 {
@@ -213,6 +220,10 @@ namespace SPICA.Renderer
 
                 GL.Uniform4(ColorLocation, GLConverter.ToColor(Stage.Color.ToRGBA()));
             }
+
+            int BuffColorLocation = GL.GetUniformLocation(ShaderHandle, "BuffColor");
+
+            GL.Uniform4(BuffColorLocation, GLConverter.ToColor(Params.TexEnvBufferColor));
 
             //Setup LUTs
             for (int Index = 0; Index < 6; Index++)
@@ -256,12 +267,20 @@ namespace SPICA.Renderer
                 }
             }
 
+
             BindLUT(0, Params.LUTDist0TableName, Params.LUTDist0SamplerName);
             BindLUT(1, Params.LUTDist1TableName, Params.LUTDist1SamplerName);
             BindLUT(2, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
             BindLUT(3, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
-            BindLUT(4, Params.LUTReflecGTableName, Params.LUTReflecGSamplerName);
-            BindLUT(5, Params.LUTReflecBTableName, Params.LUTReflecBSamplerName);
+
+            //Use Reflectance R values if G/B are not present
+            BindLUT(4,
+                Params.LUTReflecGTableName   ?? Params.LUTReflecRTableName, 
+                Params.LUTReflecGSamplerName ?? Params.LUTReflecRSamplerName);
+
+            BindLUT(5,
+                Params.LUTReflecBTableName   ?? Params.LUTReflecRTableName, 
+                Params.LUTReflecBSamplerName ?? Params.LUTReflecRSamplerName);
 
             //Vertex related Uniforms
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), PosOffset);
@@ -271,8 +290,19 @@ namespace SPICA.Renderer
             //Setup texture units
             if (Material.EnabledTextures[0])
             {
-                GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture0Name));
+                int TextureId = Parent.GetTextureId(Material.Texture0Name);
+
+                //Only the texture unit 0 can have a Cube Map texture
+                if (Params.TextureCoords[0].MappingType == H3DTextureMappingType.CameraCubeEnvMap)
+                {
+                    GL.ActiveTexture(TextureUnit.Texture3);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, TextureId);
+                }
+                else
+                {
+                    GL.ActiveTexture(TextureUnit.Texture0);
+                    GL.BindTexture(TextureTarget.Texture2D, TextureId);
+                }
             }
 
             if (Material.EnabledTextures[1])
@@ -322,9 +352,9 @@ namespace SPICA.Renderer
                     Matrix4 Transform = Parent.SkeletonTransform[SubMesh.BoneIndices[Index]];
 
                     if (SmoothSkin)
+                    {
                         Transform = Parent.InverseTransform[SubMesh.BoneIndices[Index]] * Transform;
-                    else
-                        Transform.Transpose();
+                    }
 
                     int Location = GL.GetUniformLocation(ShaderHandle, $"Transforms[{Index}]");
 

@@ -26,14 +26,17 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public string ObjectName { get { return Name; } }
 
-        [NonSerialized]
-        public byte[] RawBuffer;
+        public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 
-        [NonSerialized]
-        public uint Width;
+        [NonSerialized] public byte[] RawBufferXPos;
+        [NonSerialized] public byte[] RawBufferXNeg;
+        [NonSerialized] public byte[] RawBufferYPos;
+        [NonSerialized] public byte[] RawBufferYNeg;
+        [NonSerialized] public byte[] RawBufferZPos;
+        [NonSerialized] public byte[] RawBufferZNeg;
 
-        [NonSerialized]
-        public uint Height;
+        [NonSerialized] public uint Width;
+        [NonSerialized] public uint Height;
 
         public H3DTexture() { }
 
@@ -67,17 +70,32 @@ namespace SPICA.Formats.CtrH3D.Texture
             Width = (uint)Img.Width;
             Height = (uint)Img.Height;
 
-            RawBuffer = TextureConverter.Encode(Img, Format);
+            RawBufferXPos = TextureConverter.Encode(Img, Format);
         }
 
-        public Bitmap ToBitmap()
+        public Bitmap ToBitmap(int Face = 0)
         {
-            return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format);
+            return TextureConverter.Decode(BufferFromFace(Face), (int)Width, (int)Height, Format);
         }
 
-        public byte[] ToRGBA()
+        public byte[] ToRGBA(int Face = 0)
         {
-            return TextureConverter.Decode(RawBuffer, (int)Width, (int)Height, Format, true);
+            return TextureConverter.Decode(BufferFromFace(Face), (int)Width, (int)Height, Format, true);
+        }
+
+        private byte[] BufferFromFace(int Face)
+        {
+            switch (Face)
+            {
+                case 0: return RawBufferXPos;
+                case 1: return RawBufferXNeg;
+                case 2: return RawBufferYPos;
+                case 3: return RawBufferYNeg;
+                case 4: return RawBufferZPos;
+                case 5: return RawBufferZNeg;
+
+                default: throw new IndexOutOfRangeException("Expected a value in 0-6 range!");
+            }
         }
 
         public void ReplaceData(H3DTexture Texture)
@@ -86,7 +104,7 @@ namespace SPICA.Formats.CtrH3D.Texture
 
             MipmapSize = Texture.MipmapSize;
 
-            RawBuffer = Texture.RawBuffer;
+            RawBufferXPos = Texture.RawBufferXPos;
 
             Width = Texture.Width;
             Height = Texture.Height;
@@ -96,7 +114,7 @@ namespace SPICA.Formats.CtrH3D.Texture
         {
             PICACommandReader Reader = new PICACommandReader(Texture0Commands);
 
-            uint Address = 0;
+            uint[] Address = new uint[6];
 
             while (Reader.HasCommand)
             {
@@ -110,7 +128,12 @@ namespace SPICA.Formats.CtrH3D.Texture
                         Height = Param & 0x7ff;
                         Width = (Param >> 16) & 0x7ff;
                         break;
-                    case PICARegister.GPUREG_TEXUNIT0_ADDR1: Address = Param; break;
+                    case PICARegister.GPUREG_TEXUNIT0_ADDR1: Address[0] = Param; break;
+                    case PICARegister.GPUREG_TEXUNIT0_ADDR2: Address[1] = Param; break;
+                    case PICARegister.GPUREG_TEXUNIT0_ADDR3: Address[2] = Param; break;
+                    case PICARegister.GPUREG_TEXUNIT0_ADDR4: Address[3] = Param; break;
+                    case PICARegister.GPUREG_TEXUNIT0_ADDR5: Address[4] = Param; break;
+                    case PICARegister.GPUREG_TEXUNIT0_ADDR6: Address[5] = Param; break;
                 }
             }
 
@@ -118,9 +141,22 @@ namespace SPICA.Formats.CtrH3D.Texture
 
             long Position = Deserializer.BaseStream.Position;
 
-            Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
+            for (int Face = 0; Face < 6; Face++)
+            {
+                if (Address[Face] == 0) break;
 
-            RawBuffer = Deserializer.Reader.ReadBytes(Length);
+                Deserializer.BaseStream.Seek(Address[Face], SeekOrigin.Begin);
+
+                switch (Face)
+                {
+                    case 0: RawBufferXPos = Deserializer.Reader.ReadBytes(Length); break;
+                    case 1: RawBufferXNeg = Deserializer.Reader.ReadBytes(Length); break;
+                    case 2: RawBufferYPos = Deserializer.Reader.ReadBytes(Length); break;
+                    case 3: RawBufferYNeg = Deserializer.Reader.ReadBytes(Length); break;
+                    case 4: RawBufferZPos = Deserializer.Reader.ReadBytes(Length); break;
+                    case 5: RawBufferZNeg = Deserializer.Reader.ReadBytes(Length); break;
+                }
+            }
 
             Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
         }
@@ -170,11 +206,12 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         void ICustomSerializeCmd.SerializeCmd(BinarySerializer Serializer, object Value)
         {
+            //TODO: Write all 6 faces of a Cube Map
             long Position = Serializer.BaseStream.Position + 0x10;
 
             Serializer.RawDataTex.Values.Add(new RefValue
             {
-                Value = RawBuffer,
+                Value = RawBufferXPos,
                 Position = Position
             });
 

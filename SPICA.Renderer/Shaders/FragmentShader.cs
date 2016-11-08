@@ -46,8 +46,12 @@ struct CombArg_t {
 struct Combiner_t {
 	int ColorCombine;
 	int AlphaCombine;
+    
 	float ColorScale;
 	float AlphaScale;
+    
+    int UpColorBuff;
+    int UpAlphaBuff;
     
     CombArg_t Args[3];
     
@@ -55,6 +59,8 @@ struct Combiner_t {
 };
 
 uniform Combiner_t Combiners[6];
+
+uniform vec4 BuffColor;
 
 uniform int TexUnit0Source;
 uniform int TexUnit1Source;
@@ -94,6 +100,7 @@ uniform LUT_t LUTs[6];
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 uniform sampler2D Texture2;
+uniform samplerCube TextureCube;
 
 uniform UBDist0 { vec4 Dist0[64]; };
 uniform UBDist1 { vec4 Dist1[64]; };
@@ -109,7 +116,6 @@ float ln;
 float lp;
 float cp;
 
-in mat3 ModelMtx;
 in vec3 EyeDir;
 in vec3 WorldPos;
 
@@ -129,12 +135,10 @@ vec3 Dot3v(vec4 l, vec4 r);
 vec3 Dot4v(vec4 l, vec4 r);
 
 void main() {
-    //TODO: CubeMap
     vec3 r = reflect(EyeDir, Normal);
     float rz = r.z + 1;
     float m = 2 * sqrt(r.x * r.x + r.y * r.y + rz * rz);
     vec2 SphereUV = r.xy / m + 0.5;
-    SphereUV.y = -SphereUV.y;
     
     vec4 Color0, Color1, Color2, Color3;
     
@@ -142,6 +146,7 @@ void main() {
         case 0: Color0 = texture(Texture0, TexCoord0); break;
         case 1: Color0 = texture(Texture0, TexCoord1); break;
         case 2: Color0 = texture(Texture0, TexCoord2); break;
+        case 3: Color0 = texture(TextureCube, r); break;
         case 4: Color0 = texture(Texture0, SphereUV); break;
     }
     
@@ -149,6 +154,7 @@ void main() {
         case 0: Color1 = texture(Texture1, TexCoord0); break;
         case 1: Color1 = texture(Texture1, TexCoord1); break;
         case 2: Color1 = texture(Texture1, TexCoord2); break;
+        case 3: Color1 = texture(TextureCube, r); break;
         case 4: Color1 = texture(Texture1, SphereUV); break;
     }
     
@@ -156,6 +162,7 @@ void main() {
         case 0: Color2 = texture(Texture2, TexCoord0); break;
         case 1: Color2 = texture(Texture2, TexCoord1); break;
         case 2: Color2 = texture(Texture2, TexCoord2); break;
+        case 3: Color2 = texture(TextureCube, r); break;
         case 4: Color2 = texture(Texture2, SphereUV); break;
     }
     
@@ -171,15 +178,17 @@ void main() {
             case 2: n = Color2.xyz * 2 - 1; break;
         }
         
-        //Tangent Space
+        n = mat3(Tangent, cross(Normal, Tangent), Normal) * n;
+        
+        //As Bump perturbation
         if (BumpMode == 1) {
-            vec3 BiTangent = cross(Normal, Tangent);
-            n *= mat3(Tangent, BiTangent, Normal);
-        } else {
-            n *= ModelMtx;
+            n = normalize(Normal + n);
         }
         
-        if ((FragFlags & FLAG_BUMP_RENORM) != 0) n = normalize(n);
+        //Renormalize
+        if ((FragFlags & FLAG_BUMP_RENORM) != 0) {
+            n.z = sqrt(clamp(1 - (n.x * n.x + n.y * n.y), 0, 1));
+        }
     }
     
     for (int i = 0; i < LightCount; i++) {
@@ -193,17 +202,15 @@ void main() {
         //TODO: lp
         //TODO: cp
         
-        float fi = ln < 0 ? 0 : 1;
+        float d0 = (FragFlags & FLAG_D0_ENB) != 0 ? GetLUTVal(LUT_DIST0) : 1;
+        float d1 = (FragFlags & FLAG_D1_ENB) != 0 ? GetLUTVal(LUT_DIST1) : 1;
         
-        float d0 = (FragFlags & FLAG_D0_ENB) != 0 ? GetLUTVal(LUT_DIST0) : 0;
-        float d1 = (FragFlags & FLAG_D1_ENB) != 0 ? GetLUTVal(LUT_DIST1) : 0;
-        
-        float rr = 0, rg = 0, rb = 0;
+        vec4 Reflec = vec4(0, 0, 0, 1);
         
         if ((FragFlags & FLAG_R_ENB) != 0) {
-            rr = GetLUTVal(LUT_REFLECR);
-            rg = GetLUTVal(LUT_REFLECG);
-            rb = GetLUTVal(LUT_REFLECB);
+            Reflec.r = GetLUTVal(LUT_REFLECR);
+            Reflec.g = GetLUTVal(LUT_REFLECG);
+            Reflec.b = GetLUTVal(LUT_REFLECB);
         }
         
         float g0 = 1, g1 = 1;
@@ -213,10 +220,9 @@ void main() {
         
         vec4 Ambient = MAmbient * Lights[i].Ambient;
         vec4 Diffuse = MDiffuse * Lights[i].Diffuse;
-        vec4 Specular = (MSpecular * d0 * g0 + vec4(rr, rg, rb, 1) * d1 * g1) * Lights[i].Specular;
+        vec4 Specular = (MSpecular * d0 * g0 + Reflec * d1 * g1) * Lights[i].Specular;
         
-        Diffuse = fi * (Ambient + Diffuse * ln);
-        Specular = fi * Specular;
+        Diffuse = Ambient + Diffuse * ln;
         
         if ((FresnelSel & FLAG_PRI) != 0) Diffuse.a *= GetLUTVal(LUT_FRESNEL);
         if ((FresnelSel & FLAG_SEC) != 0) Specular.a *= GetLUTVal(LUT_FRESNEL);
@@ -225,12 +231,14 @@ void main() {
         FragSecondaryColor += Specular;
     }
     
-    vec4 PrevBuffer;
-    vec4 Previous;
+    vec4 CombBuffer = BuffColor;
     
     for (int Stage = 0; Stage < 6; Stage++) {
         vec4 ColorArgs[3];
         vec4 AlphaArgs[3];
+        
+        if (Combiners[Stage].UpColorBuff != 0) CombBuffer.rgb = Output.rgb;
+        if (Combiners[Stage].UpAlphaBuff != 0) CombBuffer.a = Output.a;
         
         for (int Param = 0; Param < 3; Param++) {
             vec4 ColorArg;
@@ -244,9 +252,9 @@ void main() {
                 case 4: ColorArg = Color1; break;
                 case 5: ColorArg = Color2; break;
                 case 6: ColorArg = Color3; break;
-                case 13: ColorArg = PrevBuffer; break;
+                case 13: ColorArg = CombBuffer; break;
                 case 14: ColorArg = Combiners[Stage].Color; break;
-                case 15: ColorArg = Previous; break;
+                case 15: ColorArg = Output; break;
             }
             
             switch (Combiners[Stage].Args[Param].AlphaSrc) {
@@ -257,9 +265,9 @@ void main() {
                 case 4: AlphaArg = Color1; break;
                 case 5: AlphaArg = Color2; break;
                 case 6: AlphaArg = Color3; break;
-                case 13: AlphaArg = PrevBuffer; break;
+                case 13: AlphaArg = CombBuffer; break;
                 case 14: AlphaArg = Combiners[Stage].Color; break;
-                case 15: AlphaArg = Previous; break;
+                case 15: AlphaArg = Output; break;
             }
             
             switch (Combiners[Stage].Args[Param].ColorOp >> 1) {
@@ -310,9 +318,6 @@ void main() {
         
         Output.rgb *= Combiners[Stage].ColorScale;
         Output.a *= Combiners[Stage].AlphaScale;
-        
-        PrevBuffer = Previous;
-        Previous = Output;
     }
     
     if (AlphaTestEnb != 0) {

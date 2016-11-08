@@ -21,16 +21,19 @@ namespace SPICA.PICA.Converters
             52, 53, 60, 61, 54, 55, 62, 63
         };
 
-        public static byte[] Decode(byte[] Input, int Width, int Height, PICATextureFormat Format, bool SwapRB)
+        public static byte[] Decode(byte[] Input, int Width, int Height, PICATextureFormat Format, bool IsGL)
         {
+            //Note: OpenGL reads texture from bottom to top, so we need to invert Y (see YMask variable)
             bool ETCAlpha = Format == PICATextureFormat.ETC1A4;
 
             if (Format == PICATextureFormat.ETC1 || ETCAlpha)
             {
-                return TextureCompression.ETC1Decompress(Input, Width, Height, ETCAlpha, SwapRB);
+                return TextureCompression.ETC1Decompress(Input, Width, Height, ETCAlpha, IsGL);
             }
             else
             {
+                int YMask = IsGL ? Height - 1 : 0;
+
                 byte[] Output = new byte[Width * Height * 4];
 
                 int IOffs = 0;
@@ -43,7 +46,7 @@ namespace SPICA.PICA.Converters
                         {
                             int X = SwizzleLUT[Px] & 7;
                             int Y = (SwizzleLUT[Px] - X) >> 3;
-                            int OOffs = (TX + X + ((TY + Y) * Width)) * 4;
+                            int OOffs = (TX + X + (((TY + Y) ^ YMask) * Width)) * 4;
 
                             int Value;
                             byte R, G, B, A;
@@ -181,7 +184,7 @@ namespace SPICA.PICA.Converters
                                 default: throw new ArgumentException("Invalid Texture format!");
                             }
 
-                            if (SwapRB)
+                            if (IsGL)
                             {
                                 byte Temp = Output[OOffs + 0];
 

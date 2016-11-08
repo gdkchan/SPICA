@@ -120,7 +120,7 @@ namespace SPICA.Formats.CtrH3D
             tex.Format = ctrTexs.Format.ToString().Substring(0, 1) + ctrTexs.Format.ToString().Substring(1).ToLower(); //I'll just fix case this way instead of changing enums
             for (int i = 0; i < ctrTexs.MipmapSize; i++) {
                 img = new ctrImage();
-                img.data = imgToBase64(ctrTexs.RawBuffer);
+                img.data = imgToBase64(ctrTexs.RawBufferXPos);
                 tex.Images.Add(img);
             }
             ctex.GraphicsContentCtr.Textures.Add(tex);

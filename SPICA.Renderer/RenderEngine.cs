@@ -80,6 +80,7 @@ namespace SPICA.Renderer
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture0"), 0);
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture1"), 1);
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture2"), 2);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "TextureCube"), 3);
 
             GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist0"), 0);
             GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist1"), 1);

@@ -63,18 +63,41 @@ namespace SPICA.Renderer
             {
                 int TextureId = GL.GenTexture();
 
-                GL.BindTexture(TextureTarget.Texture2D, TextureId);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-                GL.TexImage2D(TextureTarget2d.Texture2D,
-                    0,
-                    TextureComponentCount.Rgba,
-                    (int)Texture.Width,
-                    (int)Texture.Height,
-                    0,
-                    PixelFormat.Rgba,
-                    PixelType.UnsignedByte,
-                    Texture.ToRGBA());
+                if (Texture.IsCubeTexture)
+                {
+                    GL.BindTexture(TextureTarget.TextureCubeMap, TextureId);
+                    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+                    for (int Face = 0; Face < 6; Face++)
+                    {
+                        GL.TexImage2D(TextureTarget2d.TextureCubeMapPositiveX + Face,
+                            0,
+                            TextureComponentCount.Rgba,
+                            (int)Texture.Width,
+                            (int)Texture.Height,
+                            0,
+                            PixelFormat.Rgba,
+                            PixelType.UnsignedByte,
+                            Texture.ToRGBA(Face));
+                    }
+                }
+                else
+                {
+                    GL.BindTexture(TextureTarget.Texture2D, TextureId);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+                    GL.TexImage2D(TextureTarget2d.Texture2D,
+                        0,
+                        TextureComponentCount.Rgba,
+                        (int)Texture.Width,
+                        (int)Texture.Height,
+                        0,
+                        PixelFormat.Rgba,
+                        PixelType.UnsignedByte,
+                        Texture.ToRGBA());
+                }
 
                 TextureIds.Add(Texture.Name, TextureId);
             }

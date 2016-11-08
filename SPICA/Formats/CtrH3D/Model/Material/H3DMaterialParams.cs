@@ -258,6 +258,14 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         TexEnvStages[Stage].Scale = new PICATexEnvScale(Param);
                         break;
 
+                    case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER:
+                        for (int Index = 1; Index < 5; Index++)
+                        {
+                            TexEnvStages[Index].UpdateRGBBuffer = ((Param >> (7 + Index)) & 1) != 0;
+                            TexEnvStages[Index].UpdateAlphaBuffer = ((Param >> (11 + Index)) & 1) != 0;
+                        }
+                        break;
+
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
 
                     case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;

@@ -18,6 +18,11 @@ namespace SPICA.Renderer.SPICA_GL
             return new Color4(Color.R, Color.G, Color.B, Color.A);
         }
 
+        public static Color4 ToColor(PICATexEnvColor Color)
+        {
+            return new Color4(Color.R, Color.G, Color.B, Color.A);
+        }
+
         public static Vector2 ToVector2(Vector2D Vector)
         {
             return new Vector2(Vector.X, Vector.Y);

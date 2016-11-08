@@ -8,6 +8,9 @@
         public PICATexEnvColor Color;
         public PICATexEnvScale Scale;
 
+        public bool UpdateRGBBuffer;
+        public bool UpdateAlphaBuffer;
+
         public PICATexEnvStage()
         {
             Source = new PICATexEnvSource();

@@ -55,7 +55,6 @@ uniform vec4 FixedWeight;
     in vec4 a8_weight;
 #endif
 
-out mat3 ModelMtx;
 out vec3 EyeDir;
 out vec3 WorldPos;
 
@@ -74,12 +73,14 @@ void main() {
      */
     vec4 Position = PosOffset + vec4(a0_pos * Scales0[POS], 1);
     
-    Normal = normalize(mat3(ModelMatrix) * (a1_norm * Scales0[NORM]));
-    Tangent = normalize(mat3(ModelMatrix) * (a2_tan * Scales0[TAN]));
+    Normal = a1_norm * Scales0[NORM];
+    Tangent = a2_tan * Scales0[TAN];
+    
     Color = FixedColor.w != -1 ? FixedColor : a3_col * Scales0[COL];
-    TexCoord0 = vec2(a4_tex0.x, -a4_tex0.y) * Scales1[TEX0];
-    TexCoord1 = vec2(a5_tex1.x, -a5_tex1.y) * Scales1[TEX1];
-    TexCoord2 = vec2(a6_tex2.x, -a6_tex2.y) * Scales1[TEX2];
+    
+    TexCoord0 = a4_tex0 * Scales1[TEX0];
+    TexCoord1 = a5_tex1 * Scales1[TEX1];
+    TexCoord2 = a6_tex2 * Scales1[TEX2];
     
     //Apply bone transform
     int b0, b1, b2, b3;
@@ -88,7 +89,7 @@ void main() {
         b0 = int(FixedBone[0]);
         b1 = int(FixedBone[1]);
         b2 = int(FixedBone[2]);
-        b3 = 0;
+        b3 = int(FixedBone[3]);
     } else {
         b0 = int(a7_bone[0]);
         b1 = int(a7_bone[1]);
@@ -96,37 +97,50 @@ void main() {
         b3 = int(a7_bone[3]);
     }
     
-    if (SmoothSkin != 0) {
-        float w0, w1, w2, w3;
+    if (1 == 1) {
+        vec4 w = vec4(1, 0, 0, 0);
         
-        if (FixedWeight.w != 0) {
-            w0 = FixedWeight[0];
-            w1 = FixedWeight[1];
-            w2 = FixedWeight[2];
-            w3 = 0;
-        } else {
-            w0 = a8_weight[0] * Scales1[WEIGHT];
-            w1 = a8_weight[1] * Scales1[WEIGHT];
-            w2 = a8_weight[2] * Scales1[WEIGHT];
-            w3 = a8_weight[3] * Scales1[WEIGHT];
+        if (SmoothSkin != 0) {
+            if (FixedWeight.w != 0) {
+                w[0] = FixedWeight[0];
+                w[1] = FixedWeight[1];
+                w[2] = FixedWeight[2];
+            } else {
+                w = a8_weight * Scales1[WEIGHT];
+            }
         }
         
         vec4 p;
         
-        p  = (Transforms[b0] * Position) * w0;
-        p += (Transforms[b1] * Position) * w1;
-        p += (Transforms[b2] * Position) * w2;
-        p += (Transforms[b3] * Position) * w3;
+        p  = (Transforms[b0] * Position) * w[0];
+        p += (Transforms[b1] * Position) * w[1];
+        p += (Transforms[b2] * Position) * w[2];
+        p += (Transforms[b3] * Position) * w[3];
         
-        float Sum = w0 + w1 + w2 + w3;
+        vec3 n, t;
+        
+        n  = (mat3(Transforms[b0]) * Normal) * w[0];
+        n += (mat3(Transforms[b1]) * Normal) * w[1];
+        n += (mat3(Transforms[b2]) * Normal) * w[2];
+        n += (mat3(Transforms[b3]) * Normal) * w[3];
+        
+        t  = (mat3(Transforms[b0]) * Tangent) * w[0];
+        t += (mat3(Transforms[b1]) * Tangent) * w[1];
+        t += (mat3(Transforms[b2]) * Tangent) * w[2];
+        t += (mat3(Transforms[b3]) * Tangent) * w[3];
+        
+        float Sum = w[0] + w[1] + w[2] + w[3];
+        
         Position = (Position * (1 - Sum)) + p;
-    } else {
-        Position *= Transforms[b0];
+        Normal   = (Normal   * (1 - Sum)) + n;
+        Tangent  = (Tangent  * (1 - Sum)) + t;
+        
+        Position.w = 1;
     }
     
-    Position.w = 1;
+    Normal = normalize(mat3(ModelMatrix) * Normal);
+    Tangent = normalize(mat3(ModelMatrix) * Tangent);
     
-    ModelMtx = mat3(ModelMatrix);
     EyeDir = normalize(vec3(ViewMatrix * ModelMatrix * Position));
     WorldPos = vec3(ModelMatrix * Position);
     

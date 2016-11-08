@@ -12,8 +12,10 @@ namespace SPICA.PICA.Converters
         private static byte[] XT = { 0, 4, 0, 4 };
         private static byte[] YT = { 0, 0, 4, 4 };
 
-        public static byte[] ETC1Decompress(byte[] Input, int Width, int Height, bool Alpha, bool SwapRB)
+        public static byte[] ETC1Decompress(byte[] Input, int Width, int Height, bool Alpha, bool IsGL)
         {
+            int YMask = IsGL ? Height - 1 : 0;
+
             byte[] Output = new byte[Width * Height * 4];
 
             using (MemoryStream MS = new MemoryStream(Input))
@@ -40,7 +42,7 @@ namespace SPICA.PICA.Converters
                             {
                                 for (int PX = XT[T]; PX < 4 + XT[T]; PX++)
                                 {
-                                    int OOffs = ((TY + PY) * Width + TX + PX) * 4;
+                                    int OOffs = (((TY + PY) ^ YMask) * Width + TX + PX) * 4;
 
                                     Buffer.BlockCopy(Tile, TileOffset, Output, OOffs, 3);
 
@@ -48,7 +50,7 @@ namespace SPICA.PICA.Converters
 
                                     Output[OOffs + 3] = (byte)((A << 4) | A);
 
-                                    if (SwapRB)
+                                    if (IsGL)
                                     {
                                         byte Temp = Output[OOffs + 0];
 
