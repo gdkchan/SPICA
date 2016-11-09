@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SPICA.Math3D
 {
@@ -13,6 +14,12 @@ namespace SPICA.Math3D
         {
             this.X = X;
             this.Y = Y;
+        }
+
+        public Vector2D(BinaryReader Reader)
+        {
+            X = Reader.ReadSingle();
+            Y = Reader.ReadSingle();
         }
 
         public float this[int Index]
@@ -87,6 +94,12 @@ namespace SPICA.Math3D
         public override string ToString()
         {
             return string.Format("X: {0} Y: {1}", X, Y);
+        }
+
+        public void Write(BinaryWriter Writer)
+        {
+            Writer.Write(X);
+            Writer.Write(Y);
         }
     }
 }

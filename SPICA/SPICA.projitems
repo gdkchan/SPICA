@@ -72,11 +72,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Scene\H3DScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Shader\H3DShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Texture\H3DTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFBone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFLUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFHashName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFSection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFString.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CLTS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CMDL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix4x4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\RGBA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\RGBAFloat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Vector2D.cs" />
@@ -93,6 +101,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFaceCulling.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICADepthColorMask.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFixedAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAVectorFloat24.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAAlphaTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFragOpMode.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SPICA.Math3D
 {
@@ -17,6 +18,13 @@ namespace SPICA.Math3D
             this.X = X;
             this.Y = Y;
             this.Z = Z;
+        }
+
+        public Vector3D(BinaryReader Reader)
+        {
+            X = Reader.ReadSingle();
+            Y = Reader.ReadSingle();
+            Z = Reader.ReadSingle();
         }
 
         public float this[int Index]
@@ -90,6 +98,11 @@ namespace SPICA.Math3D
             return new Vector3D(LHS.X * RHS, LHS.Y * RHS, LHS.Z * RHS);
         }
 
+        public override string ToString()
+        {
+            return string.Format("X: {0} Y: {1} Z: {2}", X, Y, Z);
+        }
+
         public static Vector3D Cross(Vector3D LHS, Vector3D RHS)
         {
             float X = LHS.Y * RHS.Z - LHS.Z * RHS.Y;
@@ -108,9 +121,11 @@ namespace SPICA.Math3D
             return X + Y + Z;
         }
 
-        public override string ToString()
+        public void Write(BinaryWriter Writer)
         {
-            return string.Format("X: {0} Y: {1} Z: {2}", X, Y, Z);
+            Writer.Write(X);
+            Writer.Write(Y);
+            Writer.Write(Z);
         }
     }
 }
