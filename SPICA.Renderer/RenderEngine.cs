@@ -38,8 +38,6 @@ namespace SPICA.Renderer
 
             SceneAmbient = new Vector4(0.1f);
 
-            System.Diagnostics.Debug.WriteLine(GL.GetInteger(GetPName.MaxVertexUniformComponents));
-
             //Setup Shaders
             ShaderHandle = GL.CreateProgram();
 
@@ -93,7 +91,7 @@ namespace SPICA.Renderer
 
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "LightCount"), 1);
 
-            GL.Uniform3(GL.GetUniformLocation(ShaderHandle, "Lights[0].Position"), new Vector3(0, 100, 100));
+            GL.Uniform3(GL.GetUniformLocation(ShaderHandle, "Lights[0].Position"), new Vector3(0, 25, 100));
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Diffuse"), new Vector4(1));
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Specular"), new Vector4(1));
 

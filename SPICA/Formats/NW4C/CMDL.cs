@@ -1537,7 +1537,17 @@ namespace SPICA.Formats.CtrH3D {
                 mat.TextureMappers = texMaps;
                 for (int g = 0; g < numOfTextures; g++) {
                     texMap = new ctrPixTexMap();
-                    texMap.TextureReference = "Textures[\"" + mt.Texture0Name + "\"]@file:Textures/" + mt.Texture0Name + ".ctex";
+
+                    string tName = string.Empty;
+
+                    switch (g)
+                    {
+                        case 0: tName = mt.Texture0Name; break;
+                        case 1: tName = mt.Texture1Name; break;
+                        case 2: tName = mt.Texture2Name; break;
+                    }
+
+                    texMap.TextureReference = "Textures[\"" + tName + "\"]@file:" + tName + ".ctex";
                     texSamp = new ctrTexSampler();
                     texSamp.MinFilter = mt.TextureMappers[g].MinFilter.ToString();
                     texSamp.MagFilter = mt.TextureMappers[g].MagFilter.ToString();
@@ -1579,8 +1589,8 @@ namespace SPICA.Formats.CtrH3D {
                 flt.ReflectanceRSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecRScale.ToString();
                 if (mt.MaterialParams.LUTReflecRTableName != null) {
                     flt.ReflectanceRSampler.ReferenceLookupTableCtr = new ctrLutRef();
-                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecRTableName;
-                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecRSamplerName + "\"]@file:" + mt.MaterialParams.LUTReflecRSamplerName + ".clts";
+                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecRSamplerName;
+                    flt.ReflectanceRSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecRTableName + "\"]@file:" + mt.MaterialParams.LUTReflecRTableName + ".clts";
                 } else {
                     flt.ReflectanceRSampler.NullLookupTableCtr = "";
                 }
@@ -1589,8 +1599,8 @@ namespace SPICA.Formats.CtrH3D {
                 flt.ReflectanceGSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecGScale.ToString();
                 if (mt.MaterialParams.LUTReflecGTableName != null) {
                     flt.ReflectanceGSampler.ReferenceLookupTableCtr = new ctrLutRef();
-                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecGTableName;
-                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecGSamplerName + "\"]@file:" + mt.MaterialParams.LUTReflecGSamplerName + ".clts";
+                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecGSamplerName;
+                    flt.ReflectanceGSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecGTableName + "\"]@file:" + mt.MaterialParams.LUTReflecGTableName + ".clts";
                 } else {
                     flt.ReflectanceGSampler.NullLookupTableCtr = "";
                 }
@@ -1599,8 +1609,8 @@ namespace SPICA.Formats.CtrH3D {
                 flt.ReflectanceBSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecBScale.ToString();
                 if (mt.MaterialParams.LUTReflecBTableName != null) {
                     flt.ReflectanceBSampler.ReferenceLookupTableCtr = new ctrLutRef();
-                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecBTableName;
-                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecBSamplerName + "\"]@file:" + mt.MaterialParams.LUTReflecBSamplerName + ".clts";
+                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecBSamplerName;
+                    flt.ReflectanceBSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTReflecBTableName + "\"]@file:" + mt.MaterialParams.LUTReflecBTableName + ".clts";
                 } else {
                     flt.ReflectanceBSampler.NullLookupTableCtr = "";
                 }
@@ -1609,8 +1619,8 @@ namespace SPICA.Formats.CtrH3D {
                 flt.Distribution0Sampler.Scale = mt.MaterialParams.LUTInputScaleSel.Dist0Scale.ToString();
                 if (mt.MaterialParams.LUTDist0TableName != null) {
                     flt.Distribution0Sampler.ReferenceLookupTableCtr = new ctrLutRef();
-                    flt.Distribution0Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist0TableName;
-                    flt.Distribution0Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist0SamplerName + "\"]@file:" + mt.MaterialParams.LUTDist0SamplerName + ".clts";
+                    flt.Distribution0Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist0SamplerName;
+                    flt.Distribution0Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist0TableName + "\"]@file:" + mt.MaterialParams.LUTDist0TableName + ".clts";
                 } else {
                     flt.Distribution0Sampler.NullLookupTableCtr = "";
                 }
@@ -1619,8 +1629,8 @@ namespace SPICA.Formats.CtrH3D {
                 flt.Distribution1Sampler.Scale = mt.MaterialParams.LUTInputScaleSel.Dist1Scale.ToString();
                 if (mt.MaterialParams.LUTDist1TableName != null) {
                     flt.Distribution1Sampler.ReferenceLookupTableCtr = new ctrLutRef();
-                    flt.Distribution1Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist1TableName;
-                    flt.Distribution1Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist1SamplerName + "\"]@file:" + mt.MaterialParams.LUTDist1SamplerName + ".clts";
+                    flt.Distribution1Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist1SamplerName;
+                    flt.Distribution1Sampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTDist1TableName + "\"]@file:" + mt.MaterialParams.LUTDist1TableName + ".clts";
                 } else {
                     flt.Distribution1Sampler.NullLookupTableCtr = "";
                 }
@@ -1629,8 +1639,8 @@ namespace SPICA.Formats.CtrH3D {
                 flt.FresnelSampler.Scale = mt.MaterialParams.LUTInputScaleSel.FresnelScale.ToString();
                 if (mt.MaterialParams.LUTFresnelTableName != null) {
                     flt.FresnelSampler.ReferenceLookupTableCtr = new ctrLutRef();
-                    flt.FresnelSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTFresnelTableName;
-                    flt.FresnelSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTFresnelSamplerName + "\"]@file:" + mt.MaterialParams.LUTFresnelSamplerName + ".clts";
+                    flt.FresnelSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTFresnelSamplerName;
+                    flt.FresnelSampler.ReferenceLookupTableCtr.LookupTableSetContentReferenceCtr = "LookupTableSetContents[\"" + mt.MaterialParams.LUTFresnelTableName + "\"]@file:" + mt.MaterialParams.LUTFresnelTableName + ".clts";
                 } else {
                     flt.FresnelSampler.NullLookupTableCtr = "";
                 }
@@ -1921,7 +1931,7 @@ namespace SPICA.Formats.CtrH3D {
                             floatArr.Key = val.Name[0].Equals('$') ? val.Name.Substring(1) : val.Name;
                             foreach (var vals in val.Values) {
                                 fs = new ctrFloatSet();
-                                fs.obj = vals.ToString();
+                                fs.obj = ((float)vals).ToString(CultureInfo.InvariantCulture);
                                 floatArr.Values.Add(fs);
                             }
                             localMeta.floatArrayData.Add(floatArr);

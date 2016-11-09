@@ -187,7 +187,7 @@ void main() {
         
         //Renormalize
         if ((FragFlags & FLAG_BUMP_RENORM) != 0) {
-            n.z = sqrt(clamp(1 - (n.x * n.x + n.y * n.y), 0, 1));
+            n.z = sqrt(max(1 - (n.x * n.x + n.y * n.y), 0));
         }
     }
     
@@ -201,6 +201,8 @@ void main() {
         ln = dot(li, n);
         //TODO: lp
         //TODO: cp
+        
+        float fi = ((FragFlags & FLAG_CLAMP_HLIGHT) != 0 && ln < 0) ? 0 : 1;
         
         float d0 = (FragFlags & FLAG_D0_ENB) != 0 ? GetLUTVal(LUT_DIST0) : 1;
         float d1 = (FragFlags & FLAG_D1_ENB) != 0 ? GetLUTVal(LUT_DIST1) : 1;
@@ -222,7 +224,8 @@ void main() {
         vec4 Diffuse = MDiffuse * Lights[i].Diffuse;
         vec4 Specular = (MSpecular * d0 * g0 + Reflec * d1 * g1) * Lights[i].Specular;
         
-        Diffuse = Ambient + Diffuse * ln;
+        Diffuse = fi * (Ambient + Diffuse * ln);
+        Specular = fi * Specular;
         
         if ((FresnelSel & FLAG_PRI) != 0) Diffuse.a *= GetLUTVal(LUT_FRESNEL);
         if ((FresnelSel & FLAG_SEC) != 0) Specular.a *= GetLUTVal(LUT_FRESNEL);
@@ -373,7 +376,7 @@ float GetLUTVal(int SrcLUT) {
         case LUT_REFLECB: Value = ReflecB[i][j]; break;
     }
     
-    return Value * LUTs[SrcLUT].Scale;
+    return clamp(Value * LUTs[SrcLUT].Scale, 0, 1);
 }
 
 float Dot3(vec4 l, vec4 r) {
