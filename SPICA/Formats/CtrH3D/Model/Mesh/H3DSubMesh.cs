@@ -71,7 +71,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                 }
             }
 
-            bool Format = (BufferAddress & (1u << 31)) != 0;
+            bool Format = (BufferAddress >> 31) != 0;
             long Position = Deserializer.BaseStream.Position;
 
             Indices = new ushort[BufferCount];

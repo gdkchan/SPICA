@@ -74,9 +74,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Texture\H3DTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFLUT.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFMaterial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFHashName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Material\GFMagFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Material\GFMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Material\GFMinFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Material\GFTextureCoord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Material\GFTextureWrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Mesh\GFMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Mesh\GFSubMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFString.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CLTS.cs" />

@@ -1,4 +1,4 @@
-﻿using SPICA.Serialization.Attributes;
+﻿using System.IO;
 
 namespace SPICA.Math3D
 {
@@ -17,6 +17,19 @@ namespace SPICA.Math3D
             this.A = A;
         }
 
+        public RGBA(BinaryReader Reader)
+        {
+            R = Reader.ReadByte();
+            G = Reader.ReadByte();
+            B = Reader.ReadByte();
+            A = Reader.ReadByte();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("R: {0} G: {1} B: {2} A: {3}", R, G, B, A);
+        }
+
         public uint ToUInt32()
         {
             uint Param = 0;
@@ -29,9 +42,12 @@ namespace SPICA.Math3D
             return Param;
         }
 
-        public override string ToString()
+        public void Write(BinaryWriter Writer)
         {
-            return string.Format("R: {0} G: {1} B: {2} A: {3}", R, G, B, A);
+            Writer.Write(R);
+            Writer.Write(G);
+            Writer.Write(B);
+            Writer.Write(A);
         }
     }
 }

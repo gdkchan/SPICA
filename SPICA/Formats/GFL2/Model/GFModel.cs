@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.GFL2.Utils;
+﻿using SPICA.Formats.GFL2.Model.Material;
+using SPICA.Formats.GFL2.Utils;
 using SPICA.Math3D;
 
 using System.Collections.Generic;
@@ -9,11 +10,6 @@ namespace SPICA.Formats.GFL2.Model
 {
     class GFModel
     {
-        public List<GFHashName> EffectNames;
-        public List<GFHashName> LUTNames;
-        public List<GFHashName> MaterialNames;
-        public List<GFHashName> MeshNames;
-
         public Vector4D BBoxMinVector;
         public Vector4D BBoxMaxVector;
 
@@ -25,11 +21,6 @@ namespace SPICA.Formats.GFL2.Model
 
         public GFModel()
         {
-            EffectNames   = new List<GFHashName>();
-            LUTNames      = new List<GFHashName>();
-            MaterialNames = new List<GFHashName>();
-            MeshNames     = new List<GFHashName>();
-
             Skeleton  = new List<GFBone>();
             LUTs      = new List<GFLUT>();
             Materials = new List<GFMaterial>();
@@ -39,10 +30,10 @@ namespace SPICA.Formats.GFL2.Model
         {
             GFSection ModelSection = new GFSection(Reader);
 
-            EffectNames   = ReadStringTable(Reader).ToList();
-            LUTNames      = ReadStringTable(Reader).ToList();
-            MaterialNames = ReadStringTable(Reader).ToList();
-            MeshNames     = ReadStringTable(Reader).ToList();
+            GFHashName[] EffectNames   = ReadStringTable(Reader);
+            GFHashName[] LUTNames      = ReadStringTable(Reader);
+            GFHashName[] MaterialNames = ReadStringTable(Reader);
+            GFHashName[] MeshNames     = ReadStringTable(Reader);
 
             BBoxMinVector = new Vector4D(Reader);
             BBoxMaxVector = new Vector4D(Reader);
@@ -58,7 +49,7 @@ namespace SPICA.Formats.GFL2.Model
 
             uint BonesCount = Reader.ReadUInt32();
 
-            Reader.BaseStream.Seek(0xc, SeekOrigin.Current); //Padding
+            GFSection.SkipPadding(Reader);
 
             Skeleton = new List<GFBone>();
 
@@ -72,7 +63,7 @@ namespace SPICA.Formats.GFL2.Model
             uint LUTsCount = Reader.ReadUInt32();
             int LUTLength = Reader.ReadInt32();
 
-            Reader.BaseStream.Seek(8, SeekOrigin.Current); //Padding
+            GFSection.SkipPadding(Reader);
 
             LUTs = new List<GFLUT>();
 
@@ -83,11 +74,6 @@ namespace SPICA.Formats.GFL2.Model
 
             Materials = new List<GFMaterial>();
 
-
-        }
-
-        public void Write(BinaryWriter Writer)
-        {
 
         }
 
@@ -106,15 +92,10 @@ namespace SPICA.Formats.GFL2.Model
             return Values;
         }
 
-        private void WriteStringTable(BinaryWriter Writer, IEnumerable<GFHashName> Values)
+        public void Write(BinaryWriter Writer)
         {
-            Writer.Write(Values.Count());
-
-            foreach (GFHashName Value in Values)
-            {
-                Writer.Write(Value.Hash);
-                GFString.WriteLength(Writer, Value.Name, 0x40);
-            }
+            //TODO
         }
+
     }
 }
