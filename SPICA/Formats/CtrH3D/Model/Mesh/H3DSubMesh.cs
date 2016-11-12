@@ -37,9 +37,6 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         }
 
         [NonSerialized]
-        private byte[] RawBuffer;
-
-        [NonSerialized]
         internal ushort BoolUniforms;
 
         [NonSerialized]
@@ -107,6 +104,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             Writer.WriteEnd();
 
             Commands = Writer.GetBuffer();
+
+            Array.Resize(ref BoneIndices, 20);
 
             return false;
         }

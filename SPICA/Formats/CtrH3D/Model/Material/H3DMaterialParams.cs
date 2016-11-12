@@ -100,69 +100,42 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMetaData MetaData;
 
         //LookUp Table
-        [NonSerialized]
-        public PICALUTInputAbs LUTInputAbs;
-
-        [NonSerialized]
-        public PICALUTInputSel LUTInputSel;
-
-        [NonSerialized]
-        public PICALUTInputScaleSel LUTInputScaleSel;
+        [NonSerialized] public PICALUTInputAbs LUTInputAbs;
+        [NonSerialized] public PICALUTInputSel LUTInputSel;
+        [NonSerialized] public PICALUTInputScaleSel LUTInputScaleSel;
 
         //Fragment Lighting
-        [NonSerialized]
-        public PICATexEnvStage[] TexEnvStages;
+        [NonSerialized] public PICATexEnvStage[] TexEnvStages;
+        [NonSerialized] public PICATexEnvColor TexEnvBufferColor;
 
-        [NonSerialized]
-        public PICATexEnvColor TexEnvBufferColor;
+        [NonSerialized] public PICAColorOperation ColorOperation;
 
-        [NonSerialized]
-        public PICAColorOperation ColorOperation;
+        [NonSerialized] public PICABlendFunction BlendFunction;
 
-        [NonSerialized]
-        public PICABlendFunction BlendFunction;
+        [NonSerialized] public PICALogicalOperation LogicalOperation;
 
-        [NonSerialized]
-        public PICALogicalOperation LogicalOperation;
+        [NonSerialized] public PICAAlphaTest AlphaTest;
 
-        [NonSerialized]
-        public PICAAlphaTest AlphaTest;
+        [NonSerialized] public PICAStencilTest StencilTest;
 
-        [NonSerialized]
-        public PICAStencilTest StencilTest;
+        [NonSerialized] public PICAStencilOperation StencilOperation;
 
-        [NonSerialized]
-        public PICAStencilOperation StencilOperation;
+        [NonSerialized] public PICADepthColorMask DepthColorMask;
 
-        [NonSerialized]
-        public PICADepthColorMask DepthColorMask;
+        [NonSerialized] public PICAFaceCulling FaceCulling;
 
-        [NonSerialized]
-        public PICAFaceCulling FaceCulling;
+        [NonSerialized] public bool ColorBufferRead;
+        [NonSerialized] public bool ColorBufferWrite;
 
-        [NonSerialized]
-        public bool ColorBufferRead;
+        [NonSerialized] public bool StencilBufferRead;
+        [NonSerialized] public bool StencilBufferWrite;
 
-        [NonSerialized]
-        public bool ColorBufferWrite;
+        [NonSerialized] public bool DepthBufferRead;
+        [NonSerialized] public bool DepthBufferWrite;
 
-        [NonSerialized]
-        public bool StencilBufferRead;
+        [NonSerialized] public float[] TextureSources;
 
-        [NonSerialized]
-        public bool StencilBufferWrite;
-
-        [NonSerialized]
-        public bool DepthBufferRead;
-
-        [NonSerialized]
-        public bool DepthBufferWrite;
-
-        [NonSerialized]
-        public float[] TextureSources;
-
-        [NonSerialized]
-        internal H3DMaterial Parent;
+        [NonSerialized] internal H3DMaterial Parent;
 
         public string ObjectName { get { return Parent?.Name; } }
 
@@ -289,11 +262,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                     case PICARegister.GPUREG_DEPTHBUFFER_READ:
                         StencilBufferRead = (Param & 1) != 0;
-                        DepthBufferRead = (Param & 2) != 0;
+                        DepthBufferRead   = (Param & 2) != 0;
                         break;
                     case PICARegister.GPUREG_DEPTHBUFFER_WRITE:
                         StencilBufferWrite = (Param & 1) != 0;
-                        DepthBufferWrite = (Param & 2) != 0;
+                        DepthBufferWrite   = (Param & 2) != 0;
                         break;
 
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;

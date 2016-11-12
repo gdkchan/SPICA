@@ -1457,7 +1457,7 @@ namespace SPICA.Formats.CtrH3D {
                 addUserData(ref mat.UserData, mt.MaterialParams.MetaData);
                 //ShaderReference
                 string shdr = mt.MaterialParams.ShaderReference;
-                mat.ShaderReference = shdr == "0@DefaultShader" ? "" : "Shaders[\"" + shdr.Substring(2) + "\"]";
+                if (shdr != null) mat.ShaderReference = shdr == "0@DefaultShader" ? "" : "Shaders[\"" + shdr.Substring(2) + "\"]";
                 //MaterialColor
                 matCol = new ctrMatColor();
                 matCol.VertexColorScale = mt.MaterialParams.ColorScale;

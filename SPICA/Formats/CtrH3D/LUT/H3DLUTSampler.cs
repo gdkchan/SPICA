@@ -1,4 +1,5 @@
 ﻿using SPICA.PICA;
+using SPICA.PICA.Commands;
 using SPICA.Serialization;
 
 using System;
@@ -16,6 +17,9 @@ namespace SPICA.Formats.CtrH3D.LUT
         public string Name;
 
         [NonSerialized]
+        public PICALUTType Type;
+
+        [NonSerialized]
         public float[] Table;
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -30,8 +34,14 @@ namespace SPICA.Formats.CtrH3D.LUT
             {
                 PICACommand Cmd = Reader.GetCommand();
 
+                uint Param = Cmd.Parameters[0];
+
                 switch (Cmd.Register)
                 {
+                    case PICARegister.GPUREG_LIGHTING_LUT_INDEX:
+                        Index = (int)(Param & 0xff);
+                        Type = (PICALUTType)(Param >> 8);
+                        break;
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA0:
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA1:
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA2:

@@ -7,15 +7,22 @@ namespace SPICA.Formats.GFL2.Utils
     {
         public static string ReadLength(BinaryReader Reader, int Length)
         {
-            StringBuilder SB = new StringBuilder();
-
-            while (Length-- > 0)
+            if (Length > 0)
             {
-                char Chr = Reader.ReadChar();
-                if (Chr != '\0') SB.Append(Chr);
-            }
+                StringBuilder SB = new StringBuilder();
 
-            return SB.ToString();
+                while (Length-- > 0)
+                {
+                    char Chr = Reader.ReadChar();
+                    if (Chr != '\0') SB.Append(Chr);
+                }
+
+                return SB.ToString();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public static void WriteLength(BinaryWriter Writer, string Value, int Length)

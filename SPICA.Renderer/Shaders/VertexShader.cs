@@ -97,6 +97,13 @@ void main() {
         b3 = int(a7_bone[3]);
     }
     
+    //Ensure that illegal addresses are not accessed
+    //Some models will put 0xff on unused indices, so this is necessary
+    if (b0 > 0x1f) b0 = 0;
+    if (b1 > 0x1f) b1 = 0;
+    if (b2 > 0x1f) b2 = 0;
+    if (b3 > 0x1f) b3 = 0;
+    
     if (1 == 1) {
         vec4 w = vec4(1, 0, 0, 0);
         

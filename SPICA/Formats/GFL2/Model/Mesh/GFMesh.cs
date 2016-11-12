@@ -3,7 +3,6 @@ using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -11,6 +10,14 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 {
     class GFMesh
     {
+        private static float[] Scales =
+        {
+            1f / sbyte.MaxValue,
+            1f / byte.MaxValue,
+            1f / short.MaxValue,
+            1
+        };
+
         public uint Hash;
         public string Name;
 
@@ -27,6 +34,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
         public GFMesh(BinaryReader Reader)
         {
             GFSection MeshSection = new GFSection(Reader);
+
+            long Position = Reader.BaseStream.Position;
 
             Hash = Reader.ReadUInt32();
             Name = GFString.ReadLength(Reader, 0x40);
@@ -66,9 +75,36 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             }
             while (CommandIndex < CommandsCount - 1);
 
+            //Add SubMesh with Hash, Name and Bone Indices
+            //The rest is added latter (because the data is split inside the file)
+            SubMeshes = new List<GFSubMesh>();
+
             for (int MeshIndex = 0; MeshIndex < SubMeshesCount; MeshIndex++)
             {
+                uint Hash = Reader.ReadUInt32();
+                string Name = GFString.ReadLength(Reader, Reader.ReadInt32());
 
+                byte BoneIndicesCount = Reader.ReadByte();
+                byte[] BoneIndices = new byte[0x1f];
+
+                for (int Bone = 0; Bone < BoneIndices.Length; Bone++)
+                {
+                    BoneIndices[Bone] = Reader.ReadByte();
+                }
+
+                SubMeshes.Add(new GFSubMesh
+                {
+                    BoneIndices = BoneIndices,
+                    BoneIndicesCount = BoneIndicesCount,
+
+                    VerticesCount = Reader.ReadUInt32(),
+                    IndicesCount = Reader.ReadUInt32(),
+                    VerticesLength = Reader.ReadUInt32(),
+                    IndicesLength = Reader.ReadUInt32(),
+
+                    Hash = Hash,
+                    Name = Name
+                });
             }
 
             for (int MeshIndex = 0; MeshIndex < SubMeshesCount; MeshIndex++)
@@ -143,7 +179,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                             Name = (PICAAttributeName)AttributeName,
                             Format = (PICAAttributeFormat)(AttributeFmt & 3),
                             Elements = (AttributeFmt >> 2) + 1,
-                            Scale = 1
+                            Scale = Scales[AttributeFmt & 3]
                         };
 
                         Attributes[Index] = Attrib;
@@ -152,8 +188,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
                 CmdReader = new PICACommandReader(IndexCommands);
 
-                bool IndexFormat;
-                uint PrimitivesCount;
+                bool IndexFormat = false;
+                uint PrimitivesCount = 0;
 
                 while (CmdReader.HasCommand)
                 {
@@ -168,10 +204,29 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                     }
                 }
 
+                GFSubMesh SM = SubMeshes[MeshIndex];
 
+                SM.RawBuffer = Reader.ReadBytes((int)SM.VerticesLength);
+                SM.VertexStride = VertexStride;
+                SM.Attributes = Attributes;
+                SM.FixedAttributes = FixedAttributes;
+
+                SM.Indices = new ushort[PrimitivesCount];
+
+                long IndexAddress = Reader.BaseStream.Position;
+
+                for (int Index = 0; Index < PrimitivesCount; Index++)
+                {
+                    if (IndexFormat)
+                        SM.Indices[Index] = Reader.ReadUInt16();
+                    else
+                        SM.Indices[Index] = Reader.ReadByte();
+                }
+
+                Reader.BaseStream.Seek(IndexAddress + SM.IndicesLength, SeekOrigin.Begin);
             }
 
-            
+            Reader.BaseStream.Seek(Position + MeshSection.Length, SeekOrigin.Begin);
         }
     }
 }

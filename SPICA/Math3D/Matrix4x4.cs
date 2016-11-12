@@ -16,7 +16,6 @@ namespace SPICA.Math3D
         {
             Elems = new float[4 * 4];
 
-            //Make identity
             this[0, 0] = 1;
             this[1, 1] = 1;
             this[2, 2] = 1;
@@ -25,6 +24,8 @@ namespace SPICA.Math3D
 
         public Matrix4x4(BinaryReader Reader)
         {
+            Elems = new float[4 * 4];
+
             for (int Row = 0; Row < 4; Row++)
             {
                 for (int Col = 0; Col < 4; Col++)

@@ -11,6 +11,8 @@ namespace SPICA.Formats.GFL2.Model.Material
         public uint Hash;
         public string Name;
 
+        public GFTextureMappingType MappingType;
+
         public Vector2D Scale;
         public float Rotation;
         public Vector2D Translation;
@@ -29,6 +31,10 @@ namespace SPICA.Formats.GFL2.Model.Material
         {
             Hash = Reader.ReadUInt32();
             Name = GFString.ReadLength(Reader, Reader.ReadByte());
+
+            byte UnitIndex = Reader.ReadByte();
+
+            MappingType = (GFTextureMappingType)Reader.ReadByte();
 
             Scale = new Vector2D(Reader);
             Rotation = Reader.ReadSingle();

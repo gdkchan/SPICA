@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Input;
 
 using SPICA.Formats.CtrH3D;
+using SPICA.Formats.GFL2;
 using SPICA.Renderer;
 
 using System;
@@ -38,7 +39,8 @@ namespace SPICA.WinForms
 
             Renderer = new RenderEngine(Width, Height);
 
-            Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
+            H3D May = H3D.Open("D:\\may.bch");
+            Model = Renderer.AddModel(May);
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 

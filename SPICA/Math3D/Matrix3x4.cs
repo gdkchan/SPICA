@@ -15,7 +15,6 @@ namespace SPICA.Math3D
         {
             Elems = new float[4 * 3];
 
-            //Make identity
             this[0, 0] = 1;
             this[1, 1] = 1;
             this[2, 2] = 1;

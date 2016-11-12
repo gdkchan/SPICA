@@ -14,6 +14,10 @@ namespace SPICA.Math3D
         public Matrix3x3()
         {
             Elems = new float[3 * 3];
+
+            this[0, 0] = 1;
+            this[1, 1] = 1;
+            this[2, 2] = 1;
         }
 
         public float this[int Row, int Col]

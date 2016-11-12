@@ -11,6 +11,11 @@ namespace SPICA.Formats.GFL2.Model.Material
     {
         public string Name;
 
+        public GFHashName SubMeshName;
+        public GFHashName GeoShaderName;
+        public GFHashName VtxShaderName;
+        public GFHashName FragShaderName;
+
         public uint LUT0HashId;
         public uint LUT1HashId;
         public uint LUT2HashId;
@@ -38,59 +43,36 @@ namespace SPICA.Formats.GFL2.Model.Material
         public Vector4D ShaderParams;
 
         //LookUp Table
-        [NonSerialized]
         public PICALUTInputAbs LUTInputAbs;
 
-        [NonSerialized]
         public PICALUTInputSel LUTInputSel;
 
-        [NonSerialized]
         public PICALUTInputScaleSel LUTInputScaleSel;
 
         //Fragment Lighting
-        [NonSerialized]
-        public PICATexEnvColor TexEnvBufferColor;
-
-        [NonSerialized]
         public PICAColorOperation ColorOperation;
 
-        [NonSerialized]
         public PICABlendFunction BlendFunction;
 
-        [NonSerialized]
         public PICALogicalOperation LogicalOperation;
 
-        [NonSerialized]
         public PICAAlphaTest AlphaTest;
 
-        [NonSerialized]
         public PICAStencilTest StencilTest;
 
-        [NonSerialized]
         public PICAStencilOperation StencilOperation;
 
-        [NonSerialized]
         public PICADepthColorMask DepthColorMask;
 
-        [NonSerialized]
         public PICAFaceCulling FaceCulling;
 
-        [NonSerialized]
         public bool ColorBufferRead;
-
-        [NonSerialized]
         public bool ColorBufferWrite;
 
-        [NonSerialized]
         public bool StencilBufferRead;
-
-        [NonSerialized]
         public bool StencilBufferWrite;
 
-        [NonSerialized]
         public bool DepthBufferRead;
-
-        [NonSerialized]
         public bool DepthBufferWrite;
 
         public GFTextureCoord[] TextureCoords;
@@ -117,6 +99,11 @@ namespace SPICA.Formats.GFL2.Model.Material
 
                 Names[i] = new GFHashName(Hash, Name);
             }
+
+            SubMeshName = Names[0];
+            GeoShaderName = Names[1];
+            VtxShaderName = Names[2];
+            FragShaderName = Names[3];
 
             LUT0HashId = Reader.ReadUInt32();
             LUT1HashId = Reader.ReadUInt32();
@@ -184,8 +171,6 @@ namespace SPICA.Formats.GFL2.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
-
                     case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
 
                     case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = new PICABlendFunction(Param); break;
