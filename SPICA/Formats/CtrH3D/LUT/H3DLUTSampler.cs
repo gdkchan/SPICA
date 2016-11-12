@@ -53,6 +53,7 @@ namespace SPICA.Formats.CtrH3D.LUT
                         foreach (uint Value in Cmd.Parameters)
                         {
                             Table[Index++] = (Value & 0xfff) / (float)0xfff;
+                            //System.Diagnostics.Debug.WriteLine((Index - 1) + " - " + Table[Index - 1]);
                         }
                         break;
                 }

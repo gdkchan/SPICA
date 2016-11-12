@@ -27,6 +27,7 @@ namespace SPICA.Renderer
 
         private Dictionary<string, int> TextureIds;
         private Dictionary<string, int> LUTHandles;
+        private Dictionary<string, bool> IsLUTAbs;
 
         internal Matrix4[] InverseTransform;
         internal Matrix4[] SkeletonTransform;
@@ -103,6 +104,7 @@ namespace SPICA.Renderer
             }
 
             LUTHandles = new Dictionary<string, int>();
+            IsLUTAbs = new Dictionary<string, bool>();
 
             foreach (H3DLUT LUT in Model.LUTs)
             {
@@ -115,6 +117,7 @@ namespace SPICA.Renderer
                     GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
                     LUTHandles.Add(LUT.Name + "/" + Sampler.Name, UBOHandle);
+                    IsLUTAbs.Add(LUT.Name + "/" + Sampler.Name, Sampler.Flags == H3DLUTFlags.IsAbsolute);
                 }
             }
         }
@@ -220,6 +223,11 @@ namespace SPICA.Renderer
         public int GetLUTHandle(string Name)
         {
             return LUTHandles.ContainsKey(Name) ? LUTHandles[Name] : -1;
+        }
+
+        public bool GetIsLUTAbs(string Name)
+        {
+            return IsLUTAbs.ContainsKey(Name) ? IsLUTAbs[Name] : false;
         }
 
         private bool Disposed;

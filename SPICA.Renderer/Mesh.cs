@@ -235,38 +235,31 @@ namespace SPICA.Renderer
                 switch (Index)
                 {
                     case 0:
-                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.Dist0Abs ? 1 : 0);
                         GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.Dist0Input);
                         GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.Dist0Scale.ToFloat());
                         break;
                     case 1:
-                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.Dist1Abs ? 1 : 0);
                         GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.Dist1Input);
                         GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.Dist1Scale.ToFloat());
                         break;
                     case 2:
-                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.FresnelAbs ? 1 : 0);
                         GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.FresnelInput);
                         GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.FresnelScale.ToFloat());
                         break;
                     case 3:
-                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.ReflecRAbs ? 1 : 0);
                         GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecRInput);
                         GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecRScale.ToFloat());
                         break;
                     case 4:
-                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.ReflecGAbs ? 1 : 0);
                         GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecGInput);
                         GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecGScale.ToFloat());
                         break;
                     case 5:
-                        GL.Uniform1(LUTIsAbsLocation, Params.LUTInputAbs.ReflecBAbs ? 1 : 0);
                         GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecBInput);
                         GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecBScale.ToFloat());
                         break;
                 }
             }
-
 
             BindLUT(0, Params.LUTDist0TableName, Params.LUTDist0SamplerName);
             BindLUT(1, Params.LUTDist1TableName, Params.LUTDist1SamplerName);
@@ -373,9 +366,13 @@ namespace SPICA.Renderer
         {
             if (!(TableName == null || SamplerName == null))
             {
-                int UBOHandle = Parent.GetLUTHandle(TableName + "/" + SamplerName);
+                string Name = TableName + "/" + SamplerName;
+
+                int UBOHandle = Parent.GetLUTHandle(Name);
+                int LUTIsAbsLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].IsAbs");
 
                 GL.BindBufferBase(BufferRangeTarget.UniformBuffer, Index, UBOHandle);
+                GL.Uniform1(LUTIsAbsLocation, Parent.GetIsLUTAbs(Name) ? 1 : 0);
             }
         }
 

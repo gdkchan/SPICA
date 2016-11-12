@@ -166,9 +166,6 @@ void main() {
         case 4: Color2 = texture(Texture2, SphereUV); break;
     }
     
-    vec4 FragPrimaryColor = MEmission + MAmbient * SAmbient;
-    vec4 FragSecondaryColor = vec4(0, 0, 0, 1);
-    
     vec3 n = Normal;
     
     if (BumpMode != 0) {
@@ -190,6 +187,9 @@ void main() {
             n.z = sqrt(max(1 - (n.x * n.x + n.y * n.y), 0));
         }
     }
+    
+    vec4 FragPrimaryColor = MEmission + MAmbient * SAmbient;
+    vec4 FragSecondaryColor = vec4(0, 0, 0, 1);
     
     for (int i = 0; i < LightCount; i++) {
         vec3 li = normalize(Lights[i].Position - WorldPos);
@@ -298,7 +298,7 @@ void main() {
             case 1: Output.rgb = ColorArgs[0].rgb * ColorArgs[1].rgb; break;
             case 2: Output.rgb = clamp(ColorArgs[0].rgb + ColorArgs[1].rgb, 0, 1); break;
             case 3: Output.rgb = clamp(ColorArgs[0].rgb + ColorArgs[1].rgb - 0.5, 0, 1); break;
-            case 4: Output.rgb = mix(ColorArgs[0].rgb, ColorArgs[1].rgb, ColorArgs[2].rgb); break;
+            case 4: Output.rgb = mix(ColorArgs[1].rgb, ColorArgs[0].rgb, ColorArgs[2].rgb); break;
             case 5: Output.rgb = clamp(ColorArgs[0].rgb - ColorArgs[1].rgb, 0, 1); break;
             case 6: Output.rgb = clamp(Dot3v(ColorArgs[0], ColorArgs[1]), 0, 1); break;
             case 7: Output.rgb = clamp(Dot4v(ColorArgs[0], ColorArgs[1]), 0, 1); break;
@@ -311,7 +311,7 @@ void main() {
             case 1: Output.a = AlphaArgs[0].a * AlphaArgs[1].a; break;
             case 2: Output.a = clamp(AlphaArgs[0].a + AlphaArgs[1].a, 0, 1); break;
             case 3: Output.a = clamp(AlphaArgs[0].a + AlphaArgs[1].a - 0.5, 0, 1); break;
-            case 4: Output.a = mix(AlphaArgs[0].a, AlphaArgs[1].a, AlphaArgs[2].a); break;
+            case 4: Output.a = mix(AlphaArgs[1].a, AlphaArgs[0].a, AlphaArgs[2].a); break;
             case 5: Output.a = clamp(AlphaArgs[0].a - AlphaArgs[1].a, 0, 1); break;
             case 6: Output.a = clamp(Dot3(AlphaArgs[0], AlphaArgs[1]), 0, 1); break;
             case 7: Output.a = clamp(Dot4(AlphaArgs[0], AlphaArgs[1]), 0, 1); break;

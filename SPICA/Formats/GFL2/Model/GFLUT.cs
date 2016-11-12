@@ -33,8 +33,6 @@ namespace SPICA.Formats.GFL2.Model
 
             Table = new float[256];
 
-            
-
             PICACommandReader CmdReader = new PICACommandReader(Commands);
 
             while (CmdReader.HasCommand)
@@ -64,8 +62,6 @@ namespace SPICA.Formats.GFL2.Model
                         break;
                 }
             }
-
-            System.Diagnostics.Debug.WriteLine(Type);
         }
 
         public void Write(BinaryWriter Writer)

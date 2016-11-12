@@ -148,6 +148,11 @@ namespace SPICA.Formats.GFL2
                 });
             }
 
+            Output.BackwardCompatibility = 0x21;
+            Output.ForwardCompatibility = 0x21;
+            Output.ConverterVersion = 42607;
+            Output.Flags = H3DFlags.IsFromNewConverter;
+
             return Output;
         }
     }
