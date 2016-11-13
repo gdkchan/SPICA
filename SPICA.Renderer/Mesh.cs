@@ -121,9 +121,11 @@ namespace SPICA.Renderer
             GL.BlendFuncSeparate(ColorSrcFunc, ColorDstFunc, AlphaSrcFunc, AlphaDstFunc);
             GL.BlendColor(GLConverter.ToColor(Params.BlendColor));
 
-            Utils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
-
             //Alpha, Stencil and Depth testing
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestEnb"), Params.AlphaTest.Enabled ? 1 : 0);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestFunc"), (int)Params.AlphaTest.Function);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestRef"), Params.AlphaTest.Reference);
+
             StencilFunction StencilFunc = Params.StencilTest.Function.ToStencilFunction();
             DepthFunction DepthFunc = Params.DepthColorMask.DepthFunc.ToDepthFunction();
 
@@ -131,23 +133,23 @@ namespace SPICA.Renderer
             StencilOp ZFail = Params.StencilOperation.ZFailOp.ToStencilOp();
             StencilOp ZPass = Params.StencilOperation.ZPassOp.ToStencilOp();
 
-            GL.StencilFunc(StencilFunc, Params.StencilTest.Reference, Params.StencilTest.Mask);
-            GL.DepthFunc(DepthFunc);
-            GL.DepthMask(Params.DepthColorMask.DepthWrite);
+            sbyte StencilRef = Params.StencilTest.Reference;
+            byte StencilMask = Params.StencilTest.Mask;
+
+            GL.StencilFunc(StencilFunc, StencilRef, StencilMask);
             GL.StencilMask(Params.StencilTest.BufferMask);
             GL.StencilOp(Fail, ZFail, ZPass);
 
-            Utils.SetState(EnableCap.AlphaTest, Params.AlphaTest.Enabled);
-            Utils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
-            Utils.SetState(EnableCap.DepthTest, Params.DepthColorMask.Enabled);
-
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestEnb"), Params.AlphaTest.Enabled ? 1 : 0);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestFunc"), (int)Params.AlphaTest.Function);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestRef"), Params.AlphaTest.Reference);
-
+            GL.DepthFunc(DepthFunc);
+            GL.DepthMask(Params.DepthColorMask.DepthWrite);
+            
             GL.CullFace(Params.FaceCulling.ToCullFaceMode());
 
             GL.PolygonOffset(0, Params.PolygonOffsetUnit);
+
+            Utils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
+            Utils.SetState(EnableCap.DepthTest, Params.DepthColorMask.Enabled);
+            Utils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
 
             //Coordinate sources
             int TexUnit0SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit0Source");
@@ -218,7 +220,7 @@ namespace SPICA.Renderer
 
                 int ColorLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Color");
 
-                GL.Uniform4(ColorLocation, GLConverter.ToColor(Stage.Color.ToRGBA()));
+                GL.Uniform4(ColorLocation, GLConverter.ToColor(Stage.Color));
             }
 
             int BuffColorLocation = GL.GetUniformLocation(ShaderHandle, "BuffColor");
@@ -228,7 +230,6 @@ namespace SPICA.Renderer
             //Setup LUTs
             for (int Index = 0; Index < 6; Index++)
             {
-                int LUTIsAbsLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].IsAbs");
                 int LUTInputLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].Input");
                 int LUTScaleLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].Scale");
 

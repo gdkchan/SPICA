@@ -28,10 +28,5 @@ namespace SPICA.PICA.Commands
 
             return Param;
         }
-
-        public RGBA ToRGBA()
-        {
-            return new RGBA(R, G, B, A);
-        }
     }
 }

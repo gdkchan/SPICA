@@ -33,11 +33,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public string ObjectName { get { return Name; } }
 
-        [NonSerialized]
-        public bool[] EnabledTextures;
+        [NonSerialized] public bool[] EnabledTextures;
 
-        [NonSerialized]
-        public int[] TextureSources;
+        [NonSerialized] public int[] TextureSources;
 
         //This is a default material with 1 texture and default settings
         public static H3DMaterial Default

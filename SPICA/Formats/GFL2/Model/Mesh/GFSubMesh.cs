@@ -4,12 +4,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 {
     class GFSubMesh
     {
-        public byte[] RawBuffer;
-        public int VertexStride;
-        public PICAAttribute[] Attributes;
-        public PICAFixedAttribute[] FixedAttributes;
-
-        public ushort[] Indices;
+        public uint Hash;
+        public string Name;
 
         public byte[] BoneIndices;
         public byte BoneIndicesCount;
@@ -19,7 +15,11 @@ namespace SPICA.Formats.GFL2.Model.Mesh
         public uint VerticesLength;
         public uint IndicesLength;
 
-        public uint Hash;
-        public string Name;
+        public ushort[] Indices;
+
+        public byte[] RawBuffer;
+        public int VertexStride;
+        public PICAAttribute[] Attributes;
+        public PICAFixedAttribute[] FixedAttributes;
     }
 }

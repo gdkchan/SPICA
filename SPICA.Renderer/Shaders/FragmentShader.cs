@@ -7,6 +7,8 @@
 
 precision highp float;
 
+#define LUT_STEP  0.00392156862 //1 / 255
+
 #define FLAG_BUMP_RENORM   1 << 0
 #define FLAG_CLAMP_HLIGHT  1 << 1
 #define FLAG_D0_ENB        1 << 2
@@ -342,6 +344,24 @@ void main() {
     }
 }
 
+float GetLUTVal(int SrcLUT, int Index) {
+    int i = Index >> 2;
+    int j = Index & 3;
+    
+    float Value;
+    
+    switch (SrcLUT) {
+        case LUT_DIST0: Value = Dist0[i][j]; break;
+        case LUT_DIST1: Value = Dist1[i][j]; break;
+        case LUT_FRESNEL: Value = Fresnel[i][j]; break;
+        case LUT_REFLECR: Value = ReflecR[i][j]; break;
+        case LUT_REFLECG: Value = ReflecG[i][j]; break;
+        case LUT_REFLECB: Value = ReflecB[i][j]; break;
+    }
+    
+    return Value;
+}
+
 float GetLUTVal(int SrcLUT) {
     float IndexVal;
     
@@ -361,20 +381,13 @@ float GetLUTVal(int SrcLUT) {
         IndexVal = clamp(IndexVal, 0, 1);
     }
     
-    int Index = int(IndexVal * 0xff);
-    int i = Index >> 2;
-    int j = Index & 3;
+    int Left = int(IndexVal * 0xff);
+    int Right = min(Left + 1, 0xff);
     
-    float Value;
+    float LVal = GetLUTVal(SrcLUT, Left);
+    float RVal = GetLUTVal(SrcLUT, Right);
     
-    switch (SrcLUT) {
-        case LUT_DIST0: Value = Dist0[i][j]; break;
-        case LUT_DIST1: Value = Dist1[i][j]; break;
-        case LUT_FRESNEL: Value = Fresnel[i][j]; break;
-        case LUT_REFLECR: Value = ReflecR[i][j]; break;
-        case LUT_REFLECG: Value = ReflecG[i][j]; break;
-        case LUT_REFLECB: Value = ReflecB[i][j]; break;
-    }
+    float Value = mix(LVal, RVal, (IndexVal - float(Left) * LUT_STEP) / LUT_STEP);
     
     return clamp(Value * LUTs[SrcLUT].Scale, 0, 1);
 }

@@ -2,7 +2,8 @@
 using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
-using System;
+
+using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.Formats.GFL2.Model.Material
@@ -210,6 +211,18 @@ namespace SPICA.Formats.GFL2.Model.Material
             }
 
             Reader.BaseStream.Seek(Position + MaterialSection.Length, SeekOrigin.Begin);
+        }
+
+        public static List<GFMaterial> ReadList(BinaryReader Reader, GFHashName[] Names)
+        {
+            List<GFMaterial> Output = new List<GFMaterial>();
+
+            foreach (GFHashName HN in Names)
+            {
+                Output.Add(new GFMaterial(Reader, HN.Name));
+            }
+
+            return Output;
         }
     }
 }

@@ -32,6 +32,8 @@ namespace SPICA.Renderer
         internal Matrix4[] InverseTransform;
         internal Matrix4[] SkeletonTransform;
 
+        public Animation SkeletalAnimation;
+
         public Model(RenderEngine Renderer, H3D Model, int ModelIndex, int ShaderHandle)
         {
             Parent = Renderer;
@@ -110,14 +112,17 @@ namespace SPICA.Renderer
             {
                 foreach (H3DLUTSampler Sampler in LUT.Samplers)
                 {
+                    string Name = LUT.Name + "/" + Sampler.Name;
+                    bool IsAbs = (Sampler.Flags & H3DLUTFlags.IsAbsolute) != 0;
+
                     int UBOHandle = GL.GenBuffer();
 
                     GL.BindBuffer(BufferTarget.UniformBuffer, UBOHandle);
                     GL.BufferData(BufferTarget.UniformBuffer, 1024, Sampler.Table, BufferUsageHint.StaticRead);
                     GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-                    LUTHandles.Add(LUT.Name + "/" + Sampler.Name, UBOHandle);
-                    IsLUTAbs.Add(LUT.Name + "/" + Sampler.Name, Sampler.Flags == H3DLUTFlags.IsAbsolute);
+                    LUTHandles.Add(Name, UBOHandle);
+                    IsLUTAbs.Add(Name, IsAbs);
                 }
             }
         }
@@ -215,17 +220,17 @@ namespace SPICA.Renderer
             foreach (Mesh Mesh in Meshes) Mesh.Render();
         }
 
-        public int GetTextureId(string Name)
+        internal int GetTextureId(string Name)
         {
             return TextureIds.ContainsKey(Name) ? TextureIds[Name] : -1;
         }
 
-        public int GetLUTHandle(string Name)
+        internal int GetLUTHandle(string Name)
         {
             return LUTHandles.ContainsKey(Name) ? LUTHandles[Name] : -1;
         }
 
-        public bool GetIsLUTAbs(string Name)
+        internal bool GetIsLUTAbs(string Name)
         {
             return IsLUTAbs.ContainsKey(Name) ? IsLUTAbs[Name] : false;
         }

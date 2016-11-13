@@ -123,7 +123,6 @@ namespace SPICA.Formats.GFL2
                     L.Samplers.Add(new H3DLUTSampler
                     {
                         Name = LUT.Name,
-                        Type = LUT.Type,
                         Table = LUT.Table
                     });
                 }

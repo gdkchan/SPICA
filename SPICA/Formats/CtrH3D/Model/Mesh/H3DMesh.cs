@@ -61,20 +61,11 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         public H3DMetaData MetaData;
 
-        [NonSerialized]
-        public byte[] RawBuffer;
-
-        [NonSerialized]
-        public int VertexStride;
-
-        [NonSerialized]
-        public PICAAttribute[] Attributes;
-
-        [NonSerialized]
-        public PICAFixedAttribute[] FixedAttributes;
-
-        [NonSerialized]
-        public Vector4D PositionOffset;
+        [NonSerialized] public byte[] RawBuffer;
+        [NonSerialized] public int VertexStride;
+        [NonSerialized] public PICAAttribute[] Attributes;
+        [NonSerialized] public PICAFixedAttribute[] FixedAttributes;
+        [NonSerialized] public Vector4D PositionOffset;
 
         public H3DMesh()
         {

@@ -91,7 +91,7 @@ namespace SPICA.Renderer
 
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "LightCount"), 1);
 
-            GL.Uniform3(GL.GetUniformLocation(ShaderHandle, "Lights[0].Position"), new Vector3(0, 25, 100));
+            GL.Uniform3(GL.GetUniformLocation(ShaderHandle, "Lights[0].Position"), new Vector3(0, 40, 100));
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Diffuse"), new Vector4(1));
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Specular"), new Vector4(1));
 

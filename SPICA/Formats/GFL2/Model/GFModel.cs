@@ -65,42 +65,22 @@ namespace SPICA.Formats.GFL2.Model
 
             Reader.BaseStream.Seek(UnknownDataOffset + UnknownDataLength, SeekOrigin.Current);
 
-            uint BonesCount = Reader.ReadUInt32();
+            int BonesCount = Reader.ReadInt32();
 
             GFSection.SkipPadding(Reader);
 
-            Skeleton = new List<GFBone>();
-
-            for (int Index = 0; Index < BonesCount; Index++)
-            {
-                Skeleton.Add(new GFBone(Reader));
-            }
+            Skeleton = GFBone.ReadList(Reader, BonesCount);
 
             GFSection.SkipPadding(Reader);
 
-            uint LUTsCount = Reader.ReadUInt32();
+            int LUTsCount = Reader.ReadInt32();
             int LUTLength = Reader.ReadInt32();
 
             GFSection.SkipPadding(Reader);
 
-            LUTs      = new List<GFLUT>();
-            Materials = new List<GFMaterial>();
-            Meshes    = new List<GFMesh>();
-
-            for (int Index = 0; Index < LUTsCount; Index++)
-            {
-                LUTs.Add(new GFLUT(Reader, LUTNames[Index].Name, LUTLength));
-            }
-
-            for (int Index = 0; Index < MaterialNames.Length; Index++)
-            {
-                Materials.Add(new GFMaterial(Reader, MaterialNames[Index].Name));
-            }
-
-            for (int Index = 0; Index < MeshNames.Length; Index++)
-            {
-                Meshes.Add(new GFMesh(Reader));
-            }
+            LUTs = GFLUT.ReadList(Reader, LUTLength, LUTsCount);
+            Materials = GFMaterial.ReadList(Reader, MaterialNames);
+            Meshes = GFMesh.ReadList(Reader, MeshNames.Length);
         }
 
         private GFHashName[] ReadStringTable(BinaryReader Reader)

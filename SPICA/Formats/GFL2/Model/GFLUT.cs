@@ -1,5 +1,7 @@
 ﻿using SPICA.PICA;
 using SPICA.PICA.Commands;
+
+using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.Formats.GFL2.Model
@@ -62,6 +64,18 @@ namespace SPICA.Formats.GFL2.Model
                         break;
                 }
             }
+        }
+
+        public static List<GFLUT> ReadList(BinaryReader Reader, int Length, int Count)
+        {
+            List<GFLUT> Output = new List<GFLUT>();
+
+            for (int Index = 0; Index < Count; Index++)
+            {
+                Output.Add(new GFLUT(Reader, $"Sampler_{Index}", Length));
+            }
+
+            return Output;
         }
 
         public void Write(BinaryWriter Writer)

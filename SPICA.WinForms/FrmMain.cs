@@ -41,10 +41,6 @@ namespace SPICA.WinForms
 
             Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
 
-            //H3D Mdl = new GFModelPack("D:\\suntest.bin").ToH3D();
-
-            //Model = Renderer.AddModel(Mdl);
-
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 
             Vector3 Center = -CenterMax.Item1;

@@ -228,5 +228,17 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
             Reader.BaseStream.Seek(Position + MeshSection.Length, SeekOrigin.Begin);
         }
+
+        public static List<GFMesh> ReadList(BinaryReader Reader, int Count)
+        {
+            List<GFMesh> Output = new List<GFMesh>();
+
+            for (int Index = 0; Index < Count; Index++)
+            {
+                Output.Add(new GFMesh(Reader));
+            }
+
+            return Output;
+        }
     }
 }
