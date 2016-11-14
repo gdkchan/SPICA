@@ -18,6 +18,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             switch (PrimitiveType)
             {
                 case H3DAnimPrimitiveType.Transform: Content = Deserializer.Deserialize<H3DAnimTransform>(); break;
+                case H3DAnimPrimitiveType.QuatTransform: Content = Deserializer.Deserialize<H3DAnimQuatTransform>(); break;
             }
         }
 

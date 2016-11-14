@@ -9,8 +9,8 @@
         Transform,
         RGBA,
         Texture,
-        QuaternionTransform,
+        QuatTransform,
         PackedBoolean,
-        MatrixTransform
+        MtxTransform
     }
 }

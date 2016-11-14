@@ -43,6 +43,11 @@ namespace SPICA.Renderer.SPICA_GL
             return new Vector4(Vector.X, Vector.Y, Vector.Z, Vector.W);
         }
 
+        public static OpenTK.Quaternion ToQuaternion(Math3D.Quaternion Quat)
+        {
+            return new OpenTK.Quaternion(Quat.X, Quat.Y, Quat.Z, Quat.W);
+        }
+
         public static Matrix4 ToMatrix4(Math3D.Matrix3x4 Matrix)
         {
             return new Matrix4

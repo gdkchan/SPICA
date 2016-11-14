@@ -32,10 +32,10 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         private ushort Count;
 
-        private float FrameScale;
-        private float FrameOffset;
         private float ValueScale;
         private float ValueOffset;
+        private float FrameScale;
+        private float InvDuration;
 
         [NonSerialized] public List<H3DFloatKeyFrame> KeyFrames;
 
@@ -56,12 +56,14 @@ namespace SPICA.Formats.CtrH3D.Animation
 
                 switch (SegmentQuantization)
                 {
+                    //Hermite
                     case  H3DSegmentQuantization.Hermite128:
                         KeyFrame.Frame = Deserializer.Reader.ReadSingle();
                         KeyFrame.Value = Deserializer.Reader.ReadSingle();
                         KeyFrame.InSlope = Deserializer.Reader.ReadSingle();
                         KeyFrame.OutSlope = Deserializer.Reader.ReadSingle();
                         break;
+
                     case H3DSegmentQuantization.Hermite64:
                         uint H64Value = Deserializer.Reader.ReadUInt32();
 
@@ -70,6 +72,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                         KeyFrame.InSlope = Deserializer.Reader.ReadInt16() / 256f;
                         KeyFrame.OutSlope = Deserializer.Reader.ReadInt16() / 256f;
                         break;
+
                     case H3DSegmentQuantization.Hermite48:
                         KeyFrame.Frame = Deserializer.Reader.ReadByte();
                         KeyFrame.Value = Deserializer.Reader.ReadUInt16();
@@ -82,33 +85,38 @@ namespace SPICA.Formats.CtrH3D.Animation
                         KeyFrame.OutSlope = ((((Slope1 >> 4) | (Slope2 << 4)) << 20) >> 20) / 32f;
                         break;
 
+                    //Hermite (unified Slope)
                     case H3DSegmentQuantization.UnifiedHermite96:
                         KeyFrame.Frame = Deserializer.Reader.ReadSingle();
                         KeyFrame.Value = Deserializer.Reader.ReadSingle();
                         KeyFrame.InSlope = Deserializer.Reader.ReadSingle();
                         KeyFrame.OutSlope = KeyFrame.InSlope;
                         break;
+
                     case H3DSegmentQuantization.UnifiedHermite48:
                         KeyFrame.Frame = Deserializer.Reader.ReadUInt16() / 32f;
                         KeyFrame.Value = Deserializer.Reader.ReadUInt16();
                         KeyFrame.InSlope = Deserializer.Reader.ReadInt16() / 256f;
                         KeyFrame.OutSlope = KeyFrame.InSlope;
                         break;
+
                     case H3DSegmentQuantization.UnifiedHermite32:
                         KeyFrame.Frame = Deserializer.Reader.ReadByte();
 
                         ushort UH32Value = Deserializer.Reader.ReadUInt16();
-                        byte HighByte = Deserializer.Reader.ReadByte();
+                        byte HighSlope = Deserializer.Reader.ReadByte();
 
                         KeyFrame.Value = UH32Value & 0xfff;
-                        KeyFrame.InSlope = ((((UH32Value >> 12) | (HighByte << 4)) << 20) >> 20) / 32f;
+                        KeyFrame.InSlope = ((((UH32Value >> 12) | (HighSlope << 4)) << 20) >> 20) / 32f;
                         KeyFrame.OutSlope = KeyFrame.InSlope;
                         break;
 
+                    //Step/Linear
                     case H3DSegmentQuantization.StepLinear64:
                         KeyFrame.Frame = Deserializer.Reader.ReadSingle();
                         KeyFrame.Value = Deserializer.Reader.ReadSingle();
                         break;
+
                     case H3DSegmentQuantization.StepLinear32:
                         uint SL32Value = Deserializer.Reader.ReadUInt32();
 
@@ -117,7 +125,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                         break;
                 }
 
-                KeyFrame.Frame = (KeyFrame.Frame * FrameScale) + FrameOffset;
+                KeyFrame.Frame = (KeyFrame.Frame * FrameScale);
                 KeyFrame.Value = (KeyFrame.Value * ValueScale) + ValueOffset;
 
                 KeyFrames.Add(KeyFrame);
@@ -135,31 +143,39 @@ namespace SPICA.Formats.CtrH3D.Animation
             if (KeyFrames.Count == 1) return KeyFrames[0].Value;
 
             H3DFloatKeyFrame Left = KeyFrames.Last(x => x.Frame <= Frame);
-            H3DFloatKeyFrame Right = KeyFrames.First(x => x.Frame > Frame);
+            H3DFloatKeyFrame Right = KeyFrames.First(x => x.Frame >= Frame);
 
-            float Weight = (Frame - Left.Frame) / (Right.Frame - Left.Frame);
-
-            switch (InterpolationType)
+            if (Left.Frame != Right.Frame)
             {
-                case H3DInterpolationType.Step: return Left.Value;
-                case H3DInterpolationType.Linear: return Left.Value * (1 - Weight) + Right.Value * Weight;
-                case H3DInterpolationType.Hermite:
-                    float Dist = Frame - Left.Frame;
-                    float IS = Right.InSlope;
-                    float OS = Left.OutSlope;
-                    float L = Left.Value;
-                    float R = Right.Value;
-                    float W = Weight;
-                    float W1 = W - 1;
+                float F = Frame - Left.Frame;
+                float W = F / (Right.Frame - Left.Frame);
 
-                    float Result;
+                switch (InterpolationType)
+                {
+                    case H3DInterpolationType.Step: return Left.Value;
+                    case H3DInterpolationType.Linear: return Left.Value * (1 - W) + Right.Value * W;
+                    case H3DInterpolationType.Hermite:
+                        float IS = Right.InSlope;
+                        float OS = Left.OutSlope;
 
-                    Result = L + (L - R) * (2 * W - 3) * W * W;
-                    Result += (Dist * W1) * (IS * W + OS * W1);
+                        float L = Left.Value;
+                        float R = Right.Value;
 
-                    return Result;
+                        float W1 = W - 1;
 
-                default: throw new ArgumentException("Invalid Interpolation type!");
+                        float Result;
+
+                        Result = L + (L - R) * (2 * W - 3) * W * W;
+                        Result += (F * W1) * (IS * W + OS * W1);
+
+                        return Result;
+
+                    default: throw new ArgumentException("Invalid Interpolation type!");
+                }
+            }
+            else
+            {
+                return Left.Value;
             }
         }
     }

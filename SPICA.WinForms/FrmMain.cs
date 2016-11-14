@@ -40,6 +40,7 @@ namespace SPICA.WinForms
             Renderer = new RenderEngine(Width, Height);
 
             Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
+            //Model = Renderer.AddModel(new GFModelPack("D:\\suntest.bin").ToH3D());
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 
@@ -55,7 +56,7 @@ namespace SPICA.WinForms
 
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-
+            Model.Animate();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

@@ -9,9 +9,10 @@
     <Import_RootNamespace>SPICA</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimPrimitiveType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimQuatTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTargetType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DFloatKeyFrame.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix4x4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math3D\Quaternion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\RGBA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\RGBAFloat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Vector2D.cs" />

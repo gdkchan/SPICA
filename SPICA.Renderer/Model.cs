@@ -2,6 +2,7 @@
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
@@ -24,13 +25,14 @@ namespace SPICA.Renderer
         public List<Mesh> Meshes;
 
         public PatriciaList<H3DMaterial> Materials;
+        private PatriciaList<H3DBone> Skeleton;
+
+        internal Matrix4[] InverseTransform;
+        internal Matrix4[] SkeletonTransform;
 
         private Dictionary<string, int> TextureIds;
         private Dictionary<string, int> LUTHandles;
         private Dictionary<string, bool> IsLUTAbs;
-
-        internal Matrix4[] InverseTransform;
-        internal Matrix4[] SkeletonTransform;
 
         public Animation SkeletalAnimation;
 
@@ -43,8 +45,7 @@ namespace SPICA.Renderer
             Meshes = new List<Mesh>();
 
             Materials = Model.Models[ModelIndex].Materials;
-
-            PatriciaList<H3DBone> Skeleton = Model.Models[ModelIndex].Skeleton;
+            Skeleton = Model.Models[ModelIndex].Skeleton;
 
             InverseTransform = new Matrix4[Skeleton.Count];
             SkeletonTransform = new Matrix4[Skeleton.Count];
@@ -178,6 +179,16 @@ namespace SPICA.Renderer
             float MaxY = Math.Max(Math.Abs(Min.Y), Math.Abs(Max.Y));
 
             return Tuple.Create((Min + Max) * 0.5f, Math.Max(MaxX, MaxY));
+        }
+
+        public void Animate()
+        {
+            SkeletonTransform = SkeletalAnimation.GetSkeletonTransform(Skeleton);
+        }
+
+        public void SetSkeletalAnimation(H3DAnimation BaseAnimation, float Step = 1)
+        {
+            SkeletalAnimation = new Animation(BaseAnimation, 0, Step);
         }
 
         public void Scale(Vector3 Scale)
