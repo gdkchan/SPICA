@@ -155,8 +155,8 @@ namespace SPICA.Formats.CtrH3D.Animation
                     case H3DInterpolationType.Step: return Left.Value;
                     case H3DInterpolationType.Linear: return Left.Value * (1 - W) + Right.Value * W;
                     case H3DInterpolationType.Hermite:
-                        float IS = Right.InSlope;
-                        float OS = Left.OutSlope;
+                        float LS = Left.OutSlope;
+                        float RS = Right.InSlope;
 
                         float L = Left.Value;
                         float R = Right.Value;
@@ -166,7 +166,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                         float Result;
 
                         Result = L + (L - R) * (2 * W - 3) * W * W;
-                        Result += (F * W1) * (IS * W + OS * W1);
+                        Result += (F * W1) * (LS * W1 + RS * W);
 
                         return Result;
 

@@ -85,65 +85,56 @@ void main() {
     //Apply bone transform
     int b0, b1, b2, b3;
     
-    if (FixedBone.w != 0) {
-        b0 = int(FixedBone[0]);
-        b1 = int(FixedBone[1]);
-        b2 = int(FixedBone[2]);
-        b3 = int(FixedBone[3]);
+    if (FixedBone.x != -1) {
+        b0 = int(FixedBone[0]) & 0x1f;
+        b1 = int(FixedBone[1]) & 0x1f;
+        b2 = int(FixedBone[2]) & 0x1f;
+        b3 = int(FixedBone[3]) & 0x1f;
     } else {
-        b0 = int(a7_bone[0]);
-        b1 = int(a7_bone[1]);
-        b2 = int(a7_bone[2]);
-        b3 = int(a7_bone[3]);
+        b0 = int(a7_bone[0]) & 0x1f;
+        b1 = int(a7_bone[1]) & 0x1f;
+        b2 = int(a7_bone[2]) & 0x1f;
+        b3 = int(a7_bone[3]) & 0x1f;
     }
+
+    vec4 w = vec4(1, 0, 0, 0);
     
-    //Ensure that illegal addresses are not accessed
-    //Some models will put 0xff on unused indices, so this is necessary
-    if (b0 > 0x1f) b0 = 0;
-    if (b1 > 0x1f) b1 = 0;
-    if (b2 > 0x1f) b2 = 0;
-    if (b3 > 0x1f) b3 = 0;
-    
-    if (1 == 1) {
-        vec4 w = vec4(1, 0, 0, 0);
-        
-        if (SmoothSkin != 0) {
-            if (FixedWeight.w != 0) {
-                w[0] = FixedWeight[0];
-                w[1] = FixedWeight[1];
-                w[2] = FixedWeight[2];
-            } else {
-                w = a8_weight * Scales1[WEIGHT];
-            }
+    if (SmoothSkin != 0) {
+        if (FixedWeight.x != 0) {
+            w[0] = min(FixedWeight[0], 1);
+            w[1] = min(FixedWeight[1], 1);
+            w[2] = min(FixedWeight[2], 1);
+        } else {
+            w = a8_weight * Scales1[WEIGHT];
         }
-        
-        vec4 p;
-        
-        p  = (Transforms[b0] * Position) * w[0];
-        p += (Transforms[b1] * Position) * w[1];
-        p += (Transforms[b2] * Position) * w[2];
-        p += (Transforms[b3] * Position) * w[3];
-        
-        vec3 n, t;
-        
-        n  = (mat3(Transforms[b0]) * Normal) * w[0];
-        n += (mat3(Transforms[b1]) * Normal) * w[1];
-        n += (mat3(Transforms[b2]) * Normal) * w[2];
-        n += (mat3(Transforms[b3]) * Normal) * w[3];
-        
-        t  = (mat3(Transforms[b0]) * Tangent) * w[0];
-        t += (mat3(Transforms[b1]) * Tangent) * w[1];
-        t += (mat3(Transforms[b2]) * Tangent) * w[2];
-        t += (mat3(Transforms[b3]) * Tangent) * w[3];
-        
-        float Sum = w[0] + w[1] + w[2] + w[3];
-        
-        Position = (Position * (1 - Sum)) + p;
-        Normal   = (Normal   * (1 - Sum)) + n;
-        Tangent  = (Tangent  * (1 - Sum)) + t;
-        
-        Position.w = 1;
     }
+    
+    vec4 p;
+    
+    p  = (Transforms[b0] * Position) * w[0];
+    p += (Transforms[b1] * Position) * w[1];
+    p += (Transforms[b2] * Position) * w[2];
+    p += (Transforms[b3] * Position) * w[3];
+    
+    vec3 n, t;
+    
+    n  = (mat3(Transforms[b0]) * Normal) * w[0];
+    n += (mat3(Transforms[b1]) * Normal) * w[1];
+    n += (mat3(Transforms[b2]) * Normal) * w[2];
+    n += (mat3(Transforms[b3]) * Normal) * w[3];
+    
+    t  = (mat3(Transforms[b0]) * Tangent) * w[0];
+    t += (mat3(Transforms[b1]) * Tangent) * w[1];
+    t += (mat3(Transforms[b2]) * Tangent) * w[2];
+    t += (mat3(Transforms[b3]) * Tangent) * w[3];
+    
+    float Sum = w[0] + w[1] + w[2] + w[3];
+    
+    Position = (Position * (1 - Sum)) + p;
+    Normal   = (Normal   * (1 - Sum)) + n;
+    Tangent  = (Tangent  * (1 - Sum)) + t;
+    
+    Position.w = 1;
     
     Normal = normalize(mat3(ModelMatrix) * Normal);
     Tangent = normalize(mat3(ModelMatrix) * Tangent);

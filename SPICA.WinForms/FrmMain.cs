@@ -40,7 +40,11 @@ namespace SPICA.WinForms
             Renderer = new RenderEngine(Width, Height);
 
             Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
-            //Model = Renderer.AddModel(new GFModelPack("D:\\suntest.bin").ToH3D());
+
+            //GFModelPack BaseMdl = new GFModelPack("D:\\suntest.bin");
+            //Model = Renderer.AddModel(BaseMdl.ToH3D());
+
+            //Model.SetSkeletalAnimation(new GFMotionPack("D:\\sun_anim_file8.bin")[1].ToH3DSkeletalAnimationList(BaseMdl.Models[0].Skeleton)[0], 0.2f);
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 

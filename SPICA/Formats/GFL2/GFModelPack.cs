@@ -31,9 +31,7 @@ namespace SPICA.Formats.GFL2
 
         public GFModelPack()
         {
-            Models      = new List<GFModel>();
-            Textures    = new List<GFTexture>();
-            FragShaders = new List<GFFragShader>();
+            InitLists();
         }
 
         public GFModelPack(string FileName)
@@ -56,9 +54,7 @@ namespace SPICA.Formats.GFL2
 
         private void GFModelPackImpl(BinaryReader Reader)
         {
-            Models      = new List<GFModel>();
-            Textures    = new List<GFTexture>();
-            FragShaders = new List<GFFragShader>();
+            InitLists();
 
             uint MagicNumber = Reader.ReadUInt32();
 
@@ -93,6 +89,13 @@ namespace SPICA.Formats.GFL2
 
                 PointersAddr += Counts[Sect] * 4;
             }
+        }
+
+        private void InitLists()
+        {
+            Models      = new List<GFModel>();
+            Textures    = new List<GFTexture>();
+            FragShaders = new List<GFFragShader>();
         }
 
         public H3D ToH3D()

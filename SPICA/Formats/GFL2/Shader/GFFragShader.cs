@@ -1,6 +1,7 @@
 ﻿using SPICA.Formats.GFL2.Utils;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
+
 using System.IO;
 
 namespace SPICA.Formats.GFL2.Shader

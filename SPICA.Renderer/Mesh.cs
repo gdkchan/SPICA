@@ -317,7 +317,7 @@ namespace SPICA.Renderer
             int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
 
             GL.Uniform4(FixedColorLocation, new Vector4(-1));
-            GL.Uniform4(FixedBoneLocation, new Vector4(0));
+            GL.Uniform4(FixedBoneLocation, new Vector4(-1));
             GL.Uniform4(FixedWeightLocation, new Vector4(0));
 
             foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)

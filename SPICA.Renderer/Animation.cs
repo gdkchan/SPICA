@@ -139,24 +139,20 @@ namespace SPICA.Renderer
             {
                 Bone B = FrameSkeleton[Index];
 
-                Output[Index] = Matrix4.Identity;
+                Output[Index] = Matrix4.CreateScale(B.Scale);
 
                 while (true)
                 {
-                    Output[Index] *= Matrix4.CreateScale(B.Scale);
-
                     if (B.IsQuatRotation)
-                    {
                         Output[Index] *= Matrix4.CreateFromQuaternion(B.QuatRotation);
-                    }
                     else
-                    {
-                        Output[Index] *= Matrix4.CreateRotationX(B.Rotation.X);
-                        Output[Index] *= Matrix4.CreateRotationY(B.Rotation.Y);
-                        Output[Index] *= Matrix4.CreateRotationZ(B.Rotation.Z);
-                    }
+                        Output[Index] *= Utils.EulerRotate(B.Rotation);
 
-                    Output[Index] *= Matrix4.CreateTranslation(B.Translation);
+                    Vector3 Translation = B.Translation;
+
+                    if (B.ParentIndex != -1) Translation *= FrameSkeleton[B.ParentIndex].Scale;
+
+                    Output[Index] *= Matrix4.CreateTranslation(Translation);
 
                     if (B.ParentIndex == -1) break;
 

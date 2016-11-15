@@ -15,5 +15,10 @@ namespace SPICA.Formats.CtrH3D.Animation
         public H3DMetaData MetaData;
 
         public string ObjectName { get { return Name; } }
+
+        public H3DAnimation()
+        {
+            Elements = new List<H3DAnimationElement>();
+        }
     }
 }

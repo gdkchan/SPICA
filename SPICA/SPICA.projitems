@@ -84,6 +84,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Shader\H3DShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Texture\H3DTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFModelPack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFMotionPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFModel.cs" />
@@ -96,6 +97,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Material\GFTextureWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Mesh\GFMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Mesh\GFSubMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotBoneTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotKeyFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFSkeletonMot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Shader\GFFragShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTextureFormat.cs" />

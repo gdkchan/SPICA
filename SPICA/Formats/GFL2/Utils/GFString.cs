@@ -5,6 +5,18 @@ namespace SPICA.Formats.GFL2.Utils
 {
     static class GFString
     {
+        public static string[] ReadArray(BinaryReader Reader, int Count)
+        {
+            string[] Output = new string[Count];
+
+            for (int Index = 0; Index < Count; Index++)
+            {
+                Output[Index] = ReadLength(Reader, Reader.ReadByte());
+            }
+
+            return Output;
+        }
+
         public static string ReadLength(BinaryReader Reader, int Length)
         {
             if (Length > 0)

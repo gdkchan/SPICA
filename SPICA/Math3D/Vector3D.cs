@@ -83,6 +83,11 @@ namespace SPICA.Math3D
             return new Vector3D(LHS.X * RHS.X, LHS.Y * RHS.Y, LHS.Z * RHS.Z);
         }
 
+        public static Vector3D operator /(Vector3D LHS, Vector3D RHS)
+        {
+            return new Vector3D(LHS.X / RHS.X, LHS.Y / RHS.Y, LHS.Z / RHS.Z);
+        }
+
         public static Vector3D operator -(Vector3D Vector)
         {
             return new Vector3D(-Vector.X, -Vector.Y, -Vector.Z);
@@ -98,9 +103,19 @@ namespace SPICA.Math3D
             return new Vector3D(LHS.X * RHS, LHS.Y * RHS, LHS.Z * RHS);
         }
 
+        public static Vector3D operator /(Vector3D LHS, float RHS)
+        {
+            return new Vector3D(LHS.X / RHS, LHS.Y / RHS, LHS.Z / RHS);
+        }
+
         public override string ToString()
         {
             return string.Format("X: {0} Y: {1} Z: {2}", X, Y, Z);
+        }
+
+        public Vector3D Normalized()
+        {
+            return this / Length;
         }
 
         public static Vector3D Cross(Vector3D LHS, Vector3D RHS)
