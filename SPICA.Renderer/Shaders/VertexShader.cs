@@ -33,6 +33,13 @@ uniform vec4 FixedColor;
 uniform vec4 FixedBone;
 uniform vec4 FixedWeight;
 
+struct UVTransform_t {
+    mat2 Transform;
+    vec2 Translation;
+};
+
+uniform UVTransform_t UVTransforms[3];
+
 #ifdef GL_ARB_explicit_uniform_location
     layout(location = 0) in vec3 a0_pos;
     layout(location = 1) in vec3 a1_norm;
@@ -65,6 +72,8 @@ out vec2 TexCoord0;
 out vec2 TexCoord1;
 out vec2 TexCoord2;
 
+vec2 TransformUV(vec2 UV, int Index);
+
 void main() {
     /*
      * Note: The order in which variables in accessed in important on (some) GPUs, so don't change it!
@@ -78,9 +87,9 @@ void main() {
     
     Color = FixedColor.w != -1 ? FixedColor : a3_col * Scales0[COL];
     
-    TexCoord0 = a4_tex0 * Scales1[TEX0];
-    TexCoord1 = a5_tex1 * Scales1[TEX1];
-    TexCoord2 = a6_tex2 * Scales1[TEX2];
+    TexCoord0 = TransformUV(a4_tex0 * Scales1[TEX0], 0);
+    TexCoord1 = TransformUV(a5_tex1 * Scales1[TEX1], 1);
+    TexCoord2 = TransformUV(a6_tex2 * Scales1[TEX2], 2);
     
     //Apply bone transform
     int b0, b1, b2, b3;
@@ -96,7 +105,7 @@ void main() {
         b2 = int(a7_bone[2]) & 0x1f;
         b3 = int(a7_bone[3]) & 0x1f;
     }
-
+    
     vec4 w = vec4(1, 0, 0, 0);
     
     if (SmoothSkin != 0) {
@@ -143,6 +152,14 @@ void main() {
     WorldPos = vec3(ModelMatrix * Position);
     
     gl_Position = ProjMatrix * ViewMatrix * ModelMatrix * Position;
+}
+
+vec2 TransformUV(vec2 UV, int Index) {
+    UV -= 0.5f;
+    UV = UVTransforms[Index].Transform * UV;
+    UV += UVTransforms[Index].Translation + 0.5f;
+    
+    return UV;
 }
 ";
     }

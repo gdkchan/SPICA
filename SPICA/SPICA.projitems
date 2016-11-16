@@ -11,10 +11,12 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimFloat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimPrimitiveType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimQuatTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTargetType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimVector2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DFloatKeyFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DFloatKeyFrameGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DInterpolationType.cs" />
@@ -97,9 +99,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Material\GFTextureWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Mesh\GFMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Mesh\GFSubMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMaterialMot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotBoneTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotKeyFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotUVTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFSkeletonMot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Shader\GFFragShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTexture.cs" />
@@ -109,6 +113,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CLTS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CMDL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math3D\Interpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix4x4.cs" />

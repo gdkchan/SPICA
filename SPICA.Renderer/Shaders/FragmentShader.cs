@@ -89,7 +89,7 @@ struct Light_t {
 
 uniform Light_t Lights[8];
 
-uniform int LightCount;
+uniform int LightsCount;
 
 struct LUT_t {
     int IsAbs;
@@ -193,7 +193,7 @@ void main() {
     vec4 FragPrimaryColor = MEmission + MAmbient * SAmbient;
     vec4 FragSecondaryColor = vec4(0, 0, 0, 1);
     
-    for (int i = 0; i < LightCount; i++) {
+    for (int i = 0; i < LightsCount; i++) {
         vec3 li = normalize(Lights[i].Position - WorldPos);
         vec3 hi = normalize(li - EyeDir);
         

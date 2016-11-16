@@ -47,7 +47,11 @@ namespace SPICA.Formats.CtrH3D.Animation
 
                     if ((Flags & (4 >> Elem)) == 0)
                     {
-                        //TODO: Use those
+                        /* 
+                         * gdkchan Note:
+                         * Those values have been verified and Start Frame will always be zero on observed BCHs.
+                         * This may or may not change on future versions (probably not), so we can safely ignore it.
+                         */
                         float StartFrame = Deserializer.Reader.ReadSingle();
                         float EndFrame = Deserializer.Reader.ReadSingle();
 

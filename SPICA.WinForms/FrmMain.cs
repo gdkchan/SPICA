@@ -4,9 +4,11 @@ using OpenTK.Input;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.GFL2;
+using SPICA.Formats.GFL2.Motion;
 using SPICA.Renderer;
 
 using System;
+using System.Drawing;
 
 namespace SPICA.WinForms
 {
@@ -39,12 +41,28 @@ namespace SPICA.WinForms
 
             Renderer = new RenderEngine(Width, Height);
 
-            Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
+            //Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
 
-            //GFModelPack BaseMdl = new GFModelPack("D:\\suntest.bin");
-            //Model = Renderer.AddModel(BaseMdl.ToH3D());
+            GFModelPack BaseMdl = new GFModelPack("D:\\suntest.bin");
+            Model = Renderer.AddModel(BaseMdl.ToH3D());
 
-            //Model.SetSkeletalAnimation(new GFMotionPack("D:\\sun_anim_file8.bin")[1].ToH3DSkeletalAnimationList(BaseMdl.Models[0].Skeleton)[0], 0.2f);
+            GFMotion Mot = new GFMotionPack("D:\\sun_anim_file8.bin")[2];
+
+            Model.SkeletalAnimation.SetAnimation(Mot.ToH3DSkeletalAnimation(BaseMdl.Models[0].Skeleton));
+            Model.SkeletalAnimation.Step = 0.2f;
+            Model.SkeletalAnimation.Play();
+
+            Model.MaterialAnimation.SetAnimation(Mot.ToH3DMaterialAnimation());
+            Model.MaterialAnimation.Step = 0.2f;
+            Model.MaterialAnimation.Play();
+
+            /*H3D BCH = H3D.Open("D:\\h3d\\ToyPier.bch");
+
+            Model = Renderer.AddModel(BCH);
+
+            Model.SkeletalAnimation.SetAnimation(BCH.SkeletalAnimations[0]);
+            Model.SkeletalAnimation.Step = 0.2f;
+            Model.SkeletalAnimation.Play();*/
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 
@@ -54,6 +72,16 @@ namespace SPICA.WinForms
             Model.TranslateAbs(Center);
             Zoom = Center.Z - Maximum * 2;
             Step = Maximum * 0.05f;
+
+            Renderer.AddLight(new Light
+            {
+                Position = new Vector3(0, 50, -Zoom),
+                Ambient = new Color4(0f, 0f, 0f, 0f),
+                Diffuse = new Color4(1f, 1f, 1f, 1f),
+                Specular = new Color4(1f, 1f, 1f, 1f)
+            });
+
+            Renderer.SetBackgroundColor(Color.Gray);
 
             UpdateTranslation();
         }

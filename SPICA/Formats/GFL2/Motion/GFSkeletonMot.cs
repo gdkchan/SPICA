@@ -2,6 +2,7 @@
 using SPICA.Formats.GFL2.Model;
 using SPICA.Formats.GFL2.Utils;
 using SPICA.Math3D;
+
 using System.Collections.Generic;
 using System.IO;
 
@@ -18,6 +19,8 @@ namespace SPICA.Formats.GFL2.Motion
 
         public GFSkeletonMot(BinaryReader Reader)
         {
+            Bones = new List<GFMotBoneTransform>();
+
             int BoneNamesCount = Reader.ReadInt32();
             uint BoneNamesLength = Reader.ReadUInt32();
 
@@ -26,8 +29,6 @@ namespace SPICA.Formats.GFL2.Motion
             string[] BoneNames = GFString.ReadArray(Reader, BoneNamesCount);
 
             Reader.BaseStream.Seek(Position + BoneNamesLength, SeekOrigin.Begin);
-
-            Bones = new List<GFMotBoneTransform>();
 
             foreach (string Name in BoneNames)
             {

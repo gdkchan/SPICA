@@ -5,6 +5,7 @@ using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
+using SPICA.Renderer.Animation;
 using SPICA.Renderer.SPICA_GL;
 
 using System;
@@ -40,8 +41,8 @@ namespace SPICA.Renderer
             SubMeshes = BaseMesh.SubMeshes;
             Material = Parent.Materials[Mesh.MaterialIndex];
 
-            MeshCenter = GLConverter.ToVector3(Mesh.MeshCenter);
-            PosOffset = GLConverter.ToVector4(Mesh.PositionOffset);
+            MeshCenter = Mesh.MeshCenter.ToVector3();
+            PosOffset = Mesh.PositionOffset.ToVector4();
 
             IntPtr Length = new IntPtr(Mesh.RawBuffer.Length);
 
@@ -119,7 +120,7 @@ namespace SPICA.Renderer
 
             GL.BlendEquationSeparate(ColorEquation, AlphaEquation);
             GL.BlendFuncSeparate(ColorSrcFunc, ColorDstFunc, AlphaSrcFunc, AlphaDstFunc);
-            GL.BlendColor(GLConverter.ToColor(Params.BlendColor));
+            GL.BlendColor(Params.BlendColor.ToColor4());
 
             //Alpha, Stencil and Depth testing
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestEnb"), Params.AlphaTest.Enabled ? 1 : 0);
@@ -166,10 +167,10 @@ namespace SPICA.Renderer
             int MAmbientLocation = GL.GetUniformLocation(ShaderHandle, "MAmbient");
             int MSpecularLocation = GL.GetUniformLocation(ShaderHandle, "MSpecular");
 
-            GL.Uniform4(MEmissionLocation, GLConverter.ToColor(Params.EmissionColor));
-            GL.Uniform4(MDiffuseLocation, GLConverter.ToColor(Params.DiffuseColor));
-            GL.Uniform4(MAmbientLocation, GLConverter.ToColor(Params.AmbientColor));
-            GL.Uniform4(MSpecularLocation, GLConverter.ToColor(Params.Specular0Color));
+            GL.Uniform4(MEmissionLocation, Params.EmissionColor.ToColor4());
+            GL.Uniform4(MDiffuseLocation, Params.DiffuseColor.ToColor4());
+            GL.Uniform4(MAmbientLocation, Params.AmbientColor.ToColor4());
+            GL.Uniform4(MSpecularLocation, Params.Specular0Color.ToColor4());
 
             //Shader math parameters
             int FragFlagsLocation = GL.GetUniformLocation(ShaderHandle, "FragFlags");
@@ -220,12 +221,12 @@ namespace SPICA.Renderer
 
                 int ColorLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Color");
 
-                GL.Uniform4(ColorLocation, GLConverter.ToColor(Stage.Color));
+                GL.Uniform4(ColorLocation, Stage.Color.ToColor4());
             }
 
             int BuffColorLocation = GL.GetUniformLocation(ShaderHandle, "BuffColor");
 
-            GL.Uniform4(BuffColorLocation, GLConverter.ToColor(Params.TexEnvBufferColor));
+            GL.Uniform4(BuffColorLocation, Params.TexEnvBufferColor.ToColor4());
 
             //Setup LUTs
             for (int Index = 0; Index < 6; Index++)
@@ -267,7 +268,6 @@ namespace SPICA.Renderer
             BindLUT(2, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
             BindLUT(3, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
 
-            //Use Reflectance R values if G/B are not present
             BindLUT(4,
                 Params.LUTReflecGTableName   ?? Params.LUTReflecRTableName, 
                 Params.LUTReflecGSamplerName ?? Params.LUTReflecRSamplerName);
@@ -276,10 +276,17 @@ namespace SPICA.Renderer
                 Params.LUTReflecBTableName   ?? Params.LUTReflecRTableName, 
                 Params.LUTReflecBSamplerName ?? Params.LUTReflecRSamplerName);
 
-            //Vertex related Uniforms
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), PosOffset);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Scales0);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Scales1);
+            //Setup texture transforms
+            UVTransform[] UVTransforms = Parent.MaterialAnimation.GetUVTransforms(Material.Name, Params.TextureCoords);
+
+            for (int Index = 0; Index < UVTransforms.Length; Index++)
+            {
+                int TransformLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Transform");
+                int TranslationLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Translation");
+
+                GL.UniformMatrix2(TransformLocation, false, ref UVTransforms[Index].Transform);
+                GL.Uniform2(TranslationLocation, UVTransforms[Index].Translation);
+            }
 
             //Setup texture units
             if (Material.EnabledTextures[0])
@@ -322,7 +329,7 @@ namespace SPICA.Renderer
 
             foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
             {
-                Vector4 Value = GLConverter.ToVector4(Attrib.Value);
+                Vector4 Value = Attrib.Value.ToVector4();
 
                 switch (Attrib.Name)
                 {
@@ -331,6 +338,11 @@ namespace SPICA.Renderer
                     case PICAAttributeName.BoneWeight: GL.Uniform4(FixedWeightLocation, Value); break;
                 }
             }
+
+            //Vertex related Uniforms
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), PosOffset);
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Scales0);
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Scales1);
 
             //Render all SubMeshes
             GL.BindVertexArray(VAOHandle);

@@ -1,4 +1,5 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.Math3D;
+using SPICA.Serialization;
 using SPICA.Utils;
 
 using System;
@@ -147,28 +148,21 @@ namespace SPICA.Formats.CtrH3D.Animation
 
             if (Left.Frame != Right.Frame)
             {
-                float F = Frame - Left.Frame;
-                float W = F / (Right.Frame - Left.Frame);
+                float FrameDiff = Frame - Left.Frame;
+                float Weight = FrameDiff / (Right.Frame - Left.Frame);
 
                 switch (InterpolationType)
                 {
                     case H3DInterpolationType.Step: return Left.Value;
-                    case H3DInterpolationType.Linear: return Left.Value * (1 - W) + Right.Value * W;
+                    case H3DInterpolationType.Linear: return Interpolation.Lerp(Left.Value, Right.Value, Weight);
                     case H3DInterpolationType.Hermite:
-                        float LS = Left.OutSlope;
-                        float RS = Right.InSlope;
-
-                        float L = Left.Value;
-                        float R = Right.Value;
-
-                        float W1 = W - 1;
-
-                        float Result;
-
-                        Result = L + (L - R) * (2 * W - 3) * W * W;
-                        Result += (F * W1) * (LS * W1 + RS * W);
-
-                        return Result;
+                        return Interpolation.Herp(
+                            Left.Value,
+                            Right.Value,
+                            Left.OutSlope,
+                            Right.InSlope,
+                            FrameDiff,
+                            Weight);
 
                     default: throw new ArgumentException("Invalid Interpolation type!");
                 }

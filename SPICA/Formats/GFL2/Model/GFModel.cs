@@ -78,9 +78,9 @@ namespace SPICA.Formats.GFL2.Model
 
             GFSection.SkipPadding(Reader);
 
-            LUTs = GFLUT.ReadList(Reader, LUTLength, LUTsCount);
+            LUTs      = GFLUT.ReadList(Reader, LUTLength, LUTsCount);
             Materials = GFMaterial.ReadList(Reader, MaterialNames);
-            Meshes = GFMesh.ReadList(Reader, MeshNames.Length);
+            Meshes    = GFMesh.ReadList(Reader, MeshNames.Length);
         }
 
         private GFHashName[] ReadStringTable(BinaryReader Reader)
@@ -269,6 +269,5 @@ namespace SPICA.Formats.GFL2.Model
         {
             //TODO
         }
-
     }
 }

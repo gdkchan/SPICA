@@ -2,13 +2,13 @@
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
-using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Converters;
+using SPICA.Renderer.Animation;
 using SPICA.Renderer.SPICA_GL;
 
 using System;
@@ -34,7 +34,8 @@ namespace SPICA.Renderer
         private Dictionary<string, int> LUTHandles;
         private Dictionary<string, bool> IsLUTAbs;
 
-        public Animation SkeletalAnimation;
+        public SkeletalAnim SkeletalAnimation;
+        public MaterialAnim MaterialAnimation;
 
         public Model(RenderEngine Renderer, H3D Model, int ModelIndex, int ShaderHandle)
         {
@@ -52,7 +53,7 @@ namespace SPICA.Renderer
 
             for (int Index = 0; Index < Skeleton.Count; Index++)
             {
-                InverseTransform[Index] = GLConverter.ToMatrix4(Skeleton[Index].InverseTransform);
+                InverseTransform[Index] = Skeleton[Index].InverseTransform.ToMatrix4();
                 SkeletonTransform[Index] = InverseTransform[Index].Inverted();
             }
 
@@ -126,6 +127,9 @@ namespace SPICA.Renderer
                     IsLUTAbs.Add(Name, IsAbs);
                 }
             }
+
+            SkeletalAnimation = new SkeletalAnim();
+            MaterialAnimation = new MaterialAnim();
         }
 
         public Vector3 GetMassCenter()
@@ -157,8 +161,8 @@ namespace SPICA.Renderer
 
                 if (IsFirst)
                 {
-                    Min = GLConverter.ToVector3(Vertices[0].Position);
-                    Max = GLConverter.ToVector3(Vertices[0].Position);
+                    Min = Vertices[0].Position.ToVector3();
+                    Max = Vertices[0].Position.ToVector3();
 
                     IsFirst = false;
                 }
@@ -184,11 +188,9 @@ namespace SPICA.Renderer
         public void Animate()
         {
             SkeletonTransform = SkeletalAnimation.GetSkeletonTransform(Skeleton);
-        }
 
-        public void SetSkeletalAnimation(H3DAnimation BaseAnimation, float Step = 1)
-        {
-            SkeletalAnimation = new Animation(BaseAnimation, 0, Step);
+            SkeletalAnimation.AdvanceFrame();
+            MaterialAnimation.AdvanceFrame();
         }
 
         public void Scale(Vector3 Scale)

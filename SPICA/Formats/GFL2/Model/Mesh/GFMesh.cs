@@ -33,6 +33,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
         public GFMesh(BinaryReader Reader)
         {
+            SubMeshes = new List<GFSubMesh>();
+
             GFSection MeshSection = new GFSection(Reader);
 
             long Position = Reader.BaseStream.Position;
@@ -77,8 +79,6 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
             //Add SubMesh with Hash, Name and Bone Indices
             //The rest is added latter (because the data is split inside the file)
-            SubMeshes = new List<GFSubMesh>();
-
             for (int MeshIndex = 0; MeshIndex < SubMeshesCount; MeshIndex++)
             {
                 uint Hash = Reader.ReadUInt32();

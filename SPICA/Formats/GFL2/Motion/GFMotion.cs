@@ -24,17 +24,13 @@ namespace SPICA.Formats.GFL2.Motion
 
         public uint FramesCount;
 
-        public List<GFSkeletonMot> SkeletalAnimations;
+        public GFSkeletonMot SkeletalAnimation;
+        public GFMaterialMot MaterialAnimation;
 
-        public GFMotion()
-        {
-            SkeletalAnimations = new List<GFSkeletonMot>();
-        }
+        public GFMotion() { }
 
         public GFMotion(BinaryReader Reader)
         {
-            SkeletalAnimations = new List<GFSkeletonMot>();
-
             long Position = Reader.BaseStream.Position;
 
             uint MagicNumber = Reader.ReadUInt32();
@@ -51,7 +47,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                 if (AnimSections[Anim].Exists)
                 {
-                    AnimSections[Anim].Count = Reader.ReadUInt32();
+                    AnimSections[Anim].Count = Reader.ReadUInt32(); //TODO: Fix this, not a count it seems
                     AnimSections[Anim].Length = Reader.ReadUInt32();
                     AnimSections[Anim].Address = Reader.ReadUInt32();
                 }
@@ -68,34 +64,28 @@ namespace SPICA.Formats.GFL2.Motion
             uint AnimHash = Reader.ReadUInt32();
 
             //Content
-            for (int Anim = 0; Anim < 1; Anim++)
+            for (int Anim = 0; Anim < 2; Anim++)
             {
                 Reader.BaseStream.Seek(Position + AnimSections[Anim].Address, SeekOrigin.Begin);
 
-                for (int Index = 0; Index < AnimSections[Anim].Count; Index++)
+                if (!AnimSections[Anim].Exists) continue;
+
+                switch (Anim)
                 {
-                    switch (Anim)
-                    {
-                        case 0: SkeletalAnimations.Add(new GFSkeletonMot(Reader)); break;
-                    }
+                    case 0: SkeletalAnimation = new GFSkeletonMot(Reader); break;
+                    case 1: MaterialAnimation = new GFMaterialMot(Reader); break;
                 }
             }
         }
 
-        public PatriciaList<H3DAnimation> ToH3DSkeletalAnimationList(List<GFBone> Skeleton)
+        public H3DAnimation ToH3DSkeletalAnimation(List<GFBone> Skeleton)
         {
-            PatriciaList<H3DAnimation> Output = new PatriciaList<H3DAnimation>();
+            return SkeletalAnimation.ToH3DAnimation(Skeleton, FramesCount);
+        }
 
-            for (int Index = 0; Index < SkeletalAnimations.Count; Index++)
-            {
-                H3DAnimation Anim = SkeletalAnimations[Index].ToH3DAnimation(Skeleton, FramesCount);
-
-                Anim.Name = $"SklMot_{Index}";
-
-                Output.Add(Anim);
-            }
-
-            return Output;
+        public H3DAnimation ToH3DMaterialAnimation()
+        {
+            return MaterialAnimation.ToH3DAnimation(FramesCount);
         }
     }
 }

@@ -28,6 +28,7 @@ namespace SPICA.Renderer
         private Matrix4 ViewMtx;
 
         private List<Model> Models;
+        private List<Light> Lights;
 
         public Vector4 SceneAmbient;
 
@@ -35,6 +36,7 @@ namespace SPICA.Renderer
         {
             //Set initial and default values
             Models = new List<Model>();
+            Lights = new List<Light>();
 
             SceneAmbient = new Vector4(0.1f);
 
@@ -78,6 +80,7 @@ namespace SPICA.Renderer
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture0"), 0);
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture1"), 1);
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "Texture2"), 2);
+
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "TextureCube"), 3);
 
             GL.UniformBlockBinding(ShaderHandle, GL.GetUniformBlockIndex(ShaderHandle, "UBDist0"), 0);
@@ -89,17 +92,15 @@ namespace SPICA.Renderer
 
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "SAmbient"), SceneAmbient);
 
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "LightCount"), 1);
-
-            GL.Uniform3(GL.GetUniformLocation(ShaderHandle, "Lights[0].Position"), new Vector3(0, 40, 100));
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Diffuse"), new Vector4(1));
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Lights[0].Specular"), new Vector4(1));
-
             GL.Enable(EnableCap.DepthTest);
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-            GL.ClearColor(Color.DimGray);
         }
 
+        public void SetBackgroundColor(Color Color)
+        {
+            GL.ClearColor(Color);
+        }
+        
         public Model AddModel(H3D BaseModel, int ModelIndex = 0)
         {
             Model Model = new Model(this, BaseModel, ModelIndex, ShaderHandle);
@@ -154,6 +155,42 @@ namespace SPICA.Renderer
             ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 1, 1000);
 
             GL.UniformMatrix4(ProjMtxLocation, false, ref ProjMtx);
+        }
+
+        public void AddLight(Light Light)
+        {
+            Lights.Add(Light);
+            UpdateLights();
+        }
+
+        public void RemoveLight(Light Light)
+        {
+            Lights.Remove(Light);
+            UpdateLights();
+        }
+
+        public void ClearLights(Light Light)
+        {
+            Lights.Clear();
+            UpdateLights();
+        }
+
+        private void UpdateLights()
+        {
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "LightsCount"), Lights.Count);
+
+            for (int Index = 0; Index < Lights.Count; Index++)
+            {
+                int LightPositionLocation = GL.GetUniformLocation(ShaderHandle, $"Lights[{Index}].Position");
+                int LightAmbientLocation = GL.GetUniformLocation(ShaderHandle, $"Lights[{Index}].Ambient");
+                int LightDiffuseLocation = GL.GetUniformLocation(ShaderHandle, $"Lights[{Index}].Diffuse");
+                int LightSpecularLocation = GL.GetUniformLocation(ShaderHandle, $"Lights[{Index}].Specular");
+
+                GL.Uniform3(LightPositionLocation, Lights[Index].Position);
+                GL.Uniform4(LightAmbientLocation, Lights[Index].Ambient);
+                GL.Uniform4(LightDiffuseLocation, Lights[Index].Diffuse);
+                GL.Uniform4(LightSpecularLocation, Lights[Index].Specular);
+            }
         }
 
         private bool Disposed;
