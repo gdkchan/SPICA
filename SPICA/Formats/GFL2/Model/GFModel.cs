@@ -67,7 +67,7 @@ namespace SPICA.Formats.GFL2.Model
 
             int BonesCount = Reader.ReadInt32();
 
-            GFSection.SkipPadding(Reader);
+            Reader.BaseStream.Seek(0xc, SeekOrigin.Current);
 
             Skeleton = GFBone.ReadList(Reader, BonesCount);
 

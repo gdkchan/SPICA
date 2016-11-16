@@ -43,10 +43,10 @@ namespace SPICA.WinForms
 
             //Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
 
-            GFModelPack BaseMdl = new GFModelPack("D:\\suntest.bin");
+            GFModelPack BaseMdl = new GFModelPack("D:\\plum_mdl.bin");
             Model = Renderer.AddModel(BaseMdl.ToH3D());
 
-            GFMotion Mot = new GFMotionPack("D:\\sun_anim_file8.bin")[2];
+            GFMotion Mot = new GFMotionPack("D:\\plum_anim.bin")[2];
 
             Model.SkeletalAnimation.SetAnimation(Mot.ToH3DSkeletalAnimation(BaseMdl.Models[0].Skeleton));
             Model.SkeletalAnimation.Step = 0.2f;
@@ -55,14 +55,6 @@ namespace SPICA.WinForms
             Model.MaterialAnimation.SetAnimation(Mot.ToH3DMaterialAnimation());
             Model.MaterialAnimation.Step = 0.2f;
             Model.MaterialAnimation.Play();
-
-            /*H3D BCH = H3D.Open("D:\\h3d\\ToyPier.bch");
-
-            Model = Renderer.AddModel(BCH);
-
-            Model.SkeletalAnimation.SetAnimation(BCH.SkeletalAnimations[0]);
-            Model.SkeletalAnimation.Step = 0.2f;
-            Model.SkeletalAnimation.Play();*/
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 
