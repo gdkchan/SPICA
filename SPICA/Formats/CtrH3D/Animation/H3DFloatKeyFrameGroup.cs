@@ -1,6 +1,5 @@
 ﻿using SPICA.Math3D;
 using SPICA.Serialization;
-using SPICA.Utils;
 
 using System;
 using System.Collections.Generic;
@@ -14,19 +13,10 @@ namespace SPICA.Formats.CtrH3D.Animation
         public float StartFrame;
         public float EndFrame;
 
-        private uint FrameFlags;
+        public H3DLoopType PreRepeat;
+        public H3DLoopType PostRepeat;
 
-        public H3DLoopType PreRepeat
-        {
-            get { return (H3DLoopType)BitUtils.GetBits(FrameFlags, 0, 8); }
-            set { FrameFlags = BitUtils.SetBits(FrameFlags, (uint)value, 0, 8); }
-        }
-
-        public H3DLoopType PostRepeat
-        {
-            get { return (H3DLoopType)BitUtils.GetBits(FrameFlags, 8, 8); }
-            set { FrameFlags = BitUtils.SetBits(FrameFlags, (uint)value, 8, 8); }
-        }
+        public ushort CurveIndex;
 
         public H3DInterpolationType InterpolationType;
         private H3DSegmentQuantization SegmentQuantization;
@@ -136,6 +126,30 @@ namespace SPICA.Formats.CtrH3D.Animation
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             throw new NotImplementedException();
+        }
+
+        internal static H3DFloatKeyFrameGroup ReadGroup(BinaryDeserializer Deserializer, bool Constant)
+        {
+            H3DFloatKeyFrameGroup FrameGrp = new H3DFloatKeyFrameGroup();
+
+            if (Constant)
+            {
+                FrameGrp.KeyFrames.Add(new H3DFloatKeyFrame
+                {
+                    Frame = 0,
+                    Value = Deserializer.Reader.ReadSingle()
+                });
+            }
+            else
+            {
+                uint Address = Deserializer.Reader.ReadUInt32();
+
+                Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
+
+                FrameGrp = Deserializer.Deserialize<H3DFloatKeyFrameGroup>();
+            }
+
+            return FrameGrp;
         }
 
         public float GetFrameValue(float Frame)

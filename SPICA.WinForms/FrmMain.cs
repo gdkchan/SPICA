@@ -46,14 +46,14 @@ namespace SPICA.WinForms
             GFModelPack BaseMdl = new GFModelPack("D:\\plum_mdl.bin");
             Model = Renderer.AddModel(BaseMdl.ToH3D());
 
-            GFMotion Mot = new GFMotionPack("D:\\plum_anim.bin")[2];
+            GFMotion Mot = new GFMotionPack("D:\\plum_anim.bin")[1];
 
             Model.SkeletalAnimation.SetAnimation(Mot.ToH3DSkeletalAnimation(BaseMdl.Models[0].Skeleton));
-            Model.SkeletalAnimation.Step = 0.2f;
+            Model.SkeletalAnimation.Step = 0.3f;
             Model.SkeletalAnimation.Play();
 
             Model.MaterialAnimation.SetAnimation(Mot.ToH3DMaterialAnimation());
-            Model.MaterialAnimation.Step = 0.2f;
+            Model.MaterialAnimation.Step = 0.3f;
             Model.MaterialAnimation.Play();
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
@@ -67,7 +67,7 @@ namespace SPICA.WinForms
 
             Renderer.AddLight(new Light
             {
-                Position = new Vector3(0, 50, -Zoom),
+                Position = new Vector3(0, -Center.Y, -Zoom),
                 Ambient = new Color4(0f, 0f, 0f, 0f),
                 Diffuse = new Color4(1f, 1f, 1f, 1f),
                 Specular = new Color4(1f, 1f, 1f, 1f)

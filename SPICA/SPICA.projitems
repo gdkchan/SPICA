@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimFloat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimMtxTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimPrimitiveType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimQuatTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTargetType.cs" />

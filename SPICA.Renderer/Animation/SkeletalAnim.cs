@@ -22,7 +22,10 @@ namespace SPICA.Renderer.Animation
             public Quaternion QuatRotation;
 
             public bool IsQuatRotation;
+            public bool HasMtxTransform;
         }
+
+        private const string InvalidPrimitiveTypeEx = "Invalid Primitive type used on Skeleton Bone!";
 
         internal Matrix4[] GetSkeletonTransform(PatriciaList<H3DBone> Skeleton)
         {
@@ -64,6 +67,7 @@ namespace SPICA.Renderer.Animation
                             if (Transform.TranslationX.HasData) B.Translation.X = Transform.TranslationX.GetFrameValue(Frame);
                             if (Transform.TranslationY.HasData) B.Translation.Y = Transform.TranslationY.GetFrameValue(Frame);
                             if (Transform.TranslationZ.HasData) B.Translation.Z = Transform.TranslationZ.GetFrameValue(Frame);
+
                             break;
 
                         case H3DAnimPrimitiveType.QuatTransform:
@@ -95,9 +99,19 @@ namespace SPICA.Renderer.Animation
 
                                 B.Translation = Vector3.Lerp(L, R, Weight);
                             }
+
                             break;
 
-                        default: throw new NotImplementedException();
+                        case H3DAnimPrimitiveType.MtxTransform:
+                            H3DAnimMtxTransform MtxTransform = (H3DAnimMtxTransform)Element.Content;
+
+                            Output[Index] = MtxTransform.GetTransform((int)Frame).ToMatrix4();
+
+                            B.HasMtxTransform = true;
+
+                            break;
+
+                        default: throw new InvalidOperationException(InvalidPrimitiveTypeEx);
                     }
                 }
 
@@ -107,6 +121,8 @@ namespace SPICA.Renderer.Animation
             for (Index = 0; Index < Skeleton.Count; Index++)
             {
                 Bone B = FrameSkeleton[Index];
+
+                if (B.HasMtxTransform) continue;
 
                 Output[Index] = Matrix4.CreateScale(B.Scale);
 

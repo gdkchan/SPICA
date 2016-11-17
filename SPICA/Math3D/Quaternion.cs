@@ -11,7 +11,6 @@ namespace SPICA.Math3D
         public float W;
 
         public static Quaternion Empty { get { return new Quaternion(0, 0, 0, 0); } }
-
         public static Quaternion Identity { get { return new Quaternion(0, 0, 0, 1); } }
 
         public Quaternion(float X, float Y, float Z, float W)

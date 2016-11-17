@@ -56,24 +56,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 
                     if (Exists)
                     {
-                        H3DFloatKeyFrameGroup FrameGrp = new H3DFloatKeyFrameGroup();
-
-                        if (Constant)
-                        {
-                            FrameGrp.KeyFrames.Add(new H3DFloatKeyFrame
-                            {
-                                Frame = 0,
-                                Value = Deserializer.Reader.ReadSingle()
-                            });
-                        }
-                        else
-                        {
-                            uint Address = Deserializer.Reader.ReadUInt32();
-
-                            Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
-
-                            FrameGrp = Deserializer.Deserialize<H3DFloatKeyFrameGroup>();
-                        }
+                        H3DFloatKeyFrameGroup FrameGrp = H3DFloatKeyFrameGroup.ReadGroup(Deserializer, Constant);
 
                         switch (Elem)
                         {
