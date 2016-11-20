@@ -1,9 +1,4 @@
-﻿namespace SPICA.Renderer.Shaders
-{
-    static class FragmentShader
-    {
-        public const string Code = @"
-#version 150
+﻿#version 150
 
 precision highp float;
 
@@ -102,6 +97,7 @@ uniform LUT_t LUTs[6];
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 uniform sampler2D Texture2;
+
 uniform samplerCube TextureCube;
 
 uniform UBDist0 { vec4 Dist0[64]; };
@@ -137,10 +133,10 @@ vec3 Dot3v(vec4 l, vec4 r);
 vec3 Dot4v(vec4 l, vec4 r);
 
 void main() {
-    vec3 r = reflect(EyeDir, Normal);
+	vec3 r = reflect(EyeDir, Normal);
     float rz = r.z + 1;
     float m = 2 * sqrt(r.x * r.x + r.y * r.y + rz * rz);
-    vec2 SphereUV = r.xy / m + 0.5;
+	vec2 SphereUV = r.xy / m + 0.5;
     
     vec4 Color0, Color1, Color2, Color3;
     
@@ -406,7 +402,4 @@ vec3 Dot3v(vec4 l, vec4 r) {
 
 vec3 Dot4v(vec4 l, vec4 r) {
     return vec3(1) * Dot4(l, r);
-}
-";
-    }
 }

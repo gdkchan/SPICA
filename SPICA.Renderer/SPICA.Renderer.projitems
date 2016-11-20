@@ -14,12 +14,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animation\UVTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\GUILabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shaders\FragmentShader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shaders\VertexShader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shaders\Shader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Matrix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICABlendEquation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICABlendFunc.cs" />
@@ -29,5 +30,19 @@
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\RGBA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Vector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Shaders\GUIVertexShader.glsl">
+      <LogicalName>SPICA.Shader.GUIVertexShader</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Shaders\GUIFragmentShader.glsl">
+      <LogicalName>SPICA.Shader.GUIFragmentShader</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Shaders\MdlFragmentShader.glsl">
+      <LogicalName>SPICA.Shader.MdlFragmentShader</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Shaders\MdlVertexShader.glsl">
+      <LogicalName>SPICA.Shader.MdlVertexShader</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

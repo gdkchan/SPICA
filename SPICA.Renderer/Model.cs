@@ -18,7 +18,7 @@ namespace SPICA.Renderer
 {
     public class Model : IDisposable
     {
-        private RenderEngine Parent;
+        private int ShaderHandle;
 
         public Matrix4 Transform;
 
@@ -37,9 +37,9 @@ namespace SPICA.Renderer
         public SkeletalAnim SkeletalAnimation;
         public MaterialAnim MaterialAnimation;
 
-        public Model(RenderEngine Renderer, H3D Model, int ModelIndex, int ShaderHandle)
+        public Model(H3D Model, int ModelIndex, int ShaderHandle)
         {
-            Parent = Renderer;
+            this.ShaderHandle = ShaderHandle;
 
             UpdateView(Transform = Matrix4.Identity);
 
@@ -225,7 +225,9 @@ namespace SPICA.Renderer
 
         private void UpdateView(Matrix4 Mtx)
         {
-            GL.UniformMatrix4(Parent.ModelMtxLocation, false, ref Transform);
+            GL.UseProgram(ShaderHandle);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(ShaderHandle, "ModelMatrix"), false, ref Transform);
         }
 
         public void Render()

@@ -108,9 +108,9 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
         }
 
-        public PICAVertex[] ToVertices()
+        public PICAVertex[] ToVertices(bool Transform = false)
         {
-            return VerticesConverter.GetVertices(RawBuffer, VertexStride, Attributes);
+            return VerticesConverter.GetVertices(this, Transform);
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)

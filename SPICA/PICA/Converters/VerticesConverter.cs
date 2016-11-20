@@ -1,4 +1,5 @@
-﻿using SPICA.Math3D;
+﻿using SPICA.Formats.CtrH3D.Model.Mesh;
+using SPICA.Math3D;
 using SPICA.PICA.Commands;
 
 using System.Collections.Generic;
@@ -8,11 +9,11 @@ namespace SPICA.PICA.Converters
 {
     static class VerticesConverter
     {
-        public static PICAVertex[] GetVertices(byte[] RawBuffer, int VertexStride, PICAAttribute[] Attributes)
+        public static PICAVertex[] GetVertices(H3DMesh Mesh, bool Transform)
         {
-            PICAVertex[] Output = new PICAVertex[RawBuffer.Length / VertexStride];
+            PICAVertex[] Output = new PICAVertex[Mesh.RawBuffer.Length / Mesh.VertexStride];
 
-            using (MemoryStream MS = new MemoryStream(RawBuffer))
+            using (MemoryStream MS = new MemoryStream(Mesh.RawBuffer))
             {
                 BinaryReader Reader = new BinaryReader(MS);
 
@@ -20,9 +21,9 @@ namespace SPICA.PICA.Converters
                 {
                     PICAVertex O = new PICAVertex();
 
-                    MS.Seek(Index * VertexStride, SeekOrigin.Begin);
+                    MS.Seek(Index * Mesh.VertexStride, SeekOrigin.Begin);
 
-                    foreach (PICAAttribute Attrib in Attributes)
+                    foreach (PICAAttribute Attrib in Mesh.Attributes)
                     {
                         Vector4D V = new Vector4D();
 
@@ -35,6 +36,13 @@ namespace SPICA.PICA.Converters
                                 case PICAAttributeFormat.Short: V[Elem] = Reader.ReadInt16(); break;
                                 case PICAAttributeFormat.Float: V[Elem] = Reader.ReadSingle(); break;
                             }
+                        }
+
+                        if (Transform)
+                        {
+                            V *= Attrib.Scale;
+
+                            if (Attrib.Name == PICAAttributeName.Position) V -= Mesh.PositionOffset;
                         }
 
                         switch (Attrib.Name)

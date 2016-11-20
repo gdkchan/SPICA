@@ -1,9 +1,4 @@
-﻿namespace SPICA.Renderer.Shaders
-{
-    static class VertexShader
-    {
-        public const string Code = @"
-#version 330 core
+﻿#version 330 core
 #extension GL_ARB_explicit_uniform_location: enable
 
 precision highp float;
@@ -160,7 +155,4 @@ vec2 TransformUV(vec2 UV, int Index) {
     UV += UVTransforms[Index].Translation + 0.5f;
     
     return UV;
-}
-";
-    }
 }
