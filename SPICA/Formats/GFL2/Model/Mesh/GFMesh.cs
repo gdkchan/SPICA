@@ -162,10 +162,14 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                 {
                     if (((BufferFormats >> (48 + Index)) & 1) != 0)
                     {
+                        PICAAttributeName Name = (PICAAttributeName)((BufferPermutation >> Index * 4) & 0xf);
+
+                        float Scale = Name != PICAAttributeName.BoneIndex ? Scales[1] : 1;
+
                         FixedAttributes[Index - AttributesCount] = new PICAFixedAttribute
                         {
-                            Name = (PICAAttributeName)((BufferPermutation >> Index * 4) & 0xf),
-                            Value = Fixed[Index]
+                            Name = Name,
+                            Value = Fixed[Index] * Scale
                         };
                     }
                     else
@@ -181,6 +185,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                             Elements = (AttributeFmt >> 2) + 1,
                             Scale = Scales[AttributeFmt & 3]
                         };
+
+                        if (Attrib.Name == PICAAttributeName.BoneIndex) Attrib.Scale = 1;
 
                         Attributes[Index] = Attrib;
                     }

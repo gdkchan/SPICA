@@ -1,6 +1,7 @@
 ﻿using SPICA.Serialization.Attributes;
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -143,6 +144,15 @@ namespace SPICA.Math3D
             }
 
             return SB.ToString();
+        }
+
+        public string ToSerializableString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15}",
+                M11, M12, M13, M14,
+                M21, M22, M23, M24,
+                M31, M32, M33, M34,
+                M41, M42, M43, M44);
         }
 
         public void Write(BinaryWriter Writer)

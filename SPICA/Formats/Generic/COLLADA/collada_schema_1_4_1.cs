@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml;
@@ -12,20 +11,15 @@ using System.Xml.Serialization;
 
 namespace SPICA.Formats.Generic.COLLADA
 {
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class COLLADA
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("library_animation_clips", typeof(library_animation_clips))]
         [XmlElement("library_animations", typeof(library_animations))]
         [XmlElement("library_cameras", typeof(library_cameras))]
@@ -43,58 +37,42 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("library_visual_scenes", typeof(library_visual_scenes))]
         public object[] Items;
 
-        /// <remarks/>
         public COLLADAScene scene;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public VersionType version;
 
-        /// <remarks/>
         [XmlAttribute(Form = XmlSchemaForm.Qualified, Namespace = "http://www.w3.org/XML/1998/namespace")]
         public string @base;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class asset
     {
-
-        /// <remarks/>
         [XmlElement("contributor")]
         public assetContributor[] contributor;
 
-        /// <remarks/>
         public DateTime created;
 
-        /// <remarks/>
         public string keywords;
 
-        /// <remarks/>
         public DateTime modified;
 
-        /// <remarks/>
         public string revision;
 
-        /// <remarks/>
         public string subject;
 
-        /// <remarks/>
         public string title;
 
-        /// <remarks/>
         public assetUnit unit;
 
-        /// <remarks/>
         [DefaultValue(UpAxisType.Y_UP)]
         public UpAxisType up_axis;
 
@@ -104,48 +82,35 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class assetContributor
     {
-
-        /// <remarks/>
         public string author;
 
-        /// <remarks/>
         public string authoring_tool;
 
-        /// <remarks/>
         public string comments;
 
-        /// <remarks/>
         public string copyright;
 
-        /// <remarks/>
         [XmlElement(DataType = "anyURI")]
         public string source_data;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_clearstencil_common
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string index;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public sbyte Value;
 
         public fx_clearstencil_common()
@@ -154,22 +119,17 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_cleardepth_common
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string index;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public double Value;
 
         public fx_cleardepth_common()
@@ -178,22 +138,17 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_clearcolor_common
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string index;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
 
         public fx_clearcolor_common()
@@ -202,36 +157,28 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_stenciltarget_common
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string index;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(fx_surface_face_enum.POSITIVE_X)]
         public fx_surface_face_enum face;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string mip;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string slice;
 
-        /// <remarks/>
         [XmlText(DataType = "NCName")]
         public string Value;
 
@@ -244,62 +191,45 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_surface_face_enum
     {
-
-        /// <remarks/>
         POSITIVE_X,
 
-        /// <remarks/>
         NEGATIVE_X,
 
-        /// <remarks/>
         POSITIVE_Y,
 
-        /// <remarks/>
         NEGATIVE_Y,
 
-        /// <remarks/>
         POSITIVE_Z,
 
-        /// <remarks/>
         NEGATIVE_Z,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_depthtarget_common
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string index;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(fx_surface_face_enum.POSITIVE_X)]
         public fx_surface_face_enum face;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string mip;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string slice;
 
-        /// <remarks/>
         [XmlText(DataType = "NCName")]
         public string Value;
 
@@ -312,36 +242,28 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_colortarget_common
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string index;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(fx_surface_face_enum.POSITIVE_X)]
         public fx_surface_face_enum face;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string mip;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         [DefaultValue("0")]
         public string slice;
 
-        /// <remarks/>
         [XmlText(DataType = "NCName")]
         public string Value;
 
@@ -354,49 +276,37 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_code_profile
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_from_common
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(uint), "0")]
         public uint mip;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(uint), "0")]
         public uint slice;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(fx_surface_face_enum.POSITIVE_X)]
         public fx_surface_face_enum face;
 
-        /// <remarks/>
         [XmlText(DataType = "IDREF")]
         public string Value;
 
@@ -408,284 +318,197 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_newparam
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string semantic;
 
-        /// <remarks/>
         public fx_modifier_enum_common modifier;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool modifierSpecified;
 
-        /// <remarks/>
         public bool @bool;
 
-        /// <remarks/>
         public string bool2;
 
-        /// <remarks/>
         public string bool3;
 
-        /// <remarks/>
         public string bool4;
 
-        /// <remarks/>
         public long @int;
 
-        /// <remarks/>
         public string int2;
 
-        /// <remarks/>
         public string int3;
 
-        /// <remarks/>
         public string int4;
 
-        /// <remarks/>
         public double @float;
 
-        /// <remarks/>
         public string float2;
 
-        /// <remarks/>
         public string float3;
 
-        /// <remarks/>
         public string float4;
 
-        /// <remarks/>
         public double float1x1;
 
-        /// <remarks/>
         public string float1x2;
 
-        /// <remarks/>
         public string float1x3;
 
-        /// <remarks/>
         public string float1x4;
 
-        /// <remarks/>
         public string float2x1;
 
-        /// <remarks/>
         public string float2x2;
 
-        /// <remarks/>
         public string float2x3;
 
-        /// <remarks/>
         public string float2x4;
 
-        /// <remarks/>
         public string float3x1;
 
-        /// <remarks/>
         public string float3x2;
 
-        /// <remarks/>
         public string float3x3;
 
-        /// <remarks/>
         public string float3x4;
 
-        /// <remarks/>
         public string float4x1;
 
-        /// <remarks/>
         public string float4x2;
 
-        /// <remarks/>
         public string float4x3;
 
-        /// <remarks/>
         public string float4x4;
 
-        /// <remarks/>
         public fx_surface_common surface;
 
-        /// <remarks/>
         public gles_texture_pipeline texture_pipeline;
 
-        /// <remarks/>
         public gles_sampler_state sampler_state;
 
-        /// <remarks/>
         public gles_texture_unit texture_unit;
 
-        /// <remarks/>
         public string @enum;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_annotate_common
     {
-
-        /// <remarks/>
         public bool @bool;
 
-        /// <remarks/>
         public string bool2;
 
-        /// <remarks/>
         public string bool3;
 
-        /// <remarks/>
         public string bool4;
 
-        /// <remarks/>
         public long @int;
 
-        /// <remarks/>
         public string int2;
 
-        /// <remarks/>
         public string int3;
 
-        /// <remarks/>
         public string int4;
 
-        /// <remarks/>
         public double @float;
 
-        /// <remarks/>
         public string float2;
 
-        /// <remarks/>
         public string float3;
 
-        /// <remarks/>
         public string float4;
 
-        /// <remarks/>
         public string float2x2;
 
-        /// <remarks/>
         public string float3x3;
 
-        /// <remarks/>
         public string float4x4;
 
-        /// <remarks/>
         public string @string;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_modifier_enum_common
     {
-
-        /// <remarks/>
         CONST,
 
-        /// <remarks/>
         UNIFORM,
 
-        /// <remarks/>
         VARYING,
 
-        /// <remarks/>
         STATIC,
 
-        /// <remarks/>
         VOLATILE,
 
-        /// <remarks/>
         EXTERN,
 
-        /// <remarks/>
         SHARED,
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(cg_surface_type))]
     [XmlInclude(typeof(glsl_surface_type))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_common
     {
-
-        /// <remarks/>
         public object init_as_null;
 
-        /// <remarks/>
         public object init_as_target;
 
-        /// <remarks/>
         public fx_surface_init_cube_common init_cube;
 
-        /// <remarks/>
         public fx_surface_init_volume_common init_volume;
 
-        /// <remarks/>
         public fx_surface_init_planar_common init_planar;
 
-        /// <remarks/>
         [XmlElement("init_from")]
         public fx_surface_init_from_common[] init_from;
 
-        /// <remarks/>
         [XmlElement(DataType = "token")]
         public string format;
 
-        /// <remarks/>
         public fx_surface_format_hint_common format_hint;
 
-        /// <remarks/>
         [XmlElement("size", typeof(long))]
         [XmlElement("viewport_ratio", typeof(double))]
         public object Item;
 
-        /// <remarks/>
         [DefaultValue(typeof(uint), "0")]
         public uint mip_levels;
 
-        /// <remarks/>
         public bool mipmap_generate;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool mipmap_generateSpecified;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public fx_surface_type_enum type;
 
         public fx_surface_common()
@@ -694,618 +517,440 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_cube_common
     {
-
-        /// <remarks/>
         [XmlElement("all", typeof(fx_surface_init_cube_commonAll))]
         [XmlElement("face", typeof(fx_surface_init_cube_commonFace))]
         [XmlElement("primary", typeof(fx_surface_init_cube_commonPrimary))]
         public object[] Items;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_cube_commonAll
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "IDREF")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_cube_commonFace
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "IDREF")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_cube_commonPrimary
     {
-
-        /// <remarks/>
         [XmlElement("order")]
         public fx_surface_face_enum[] order;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "IDREF")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_volume_common
     {
-
-        /// <remarks/>
         [XmlElement("all", typeof(fx_surface_init_volume_commonAll))]
         [XmlElement("primary", typeof(fx_surface_init_volume_commonPrimary))]
         public object Item;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_volume_commonAll
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "IDREF")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_volume_commonPrimary
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "IDREF")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_planar_common
     {
-
-        /// <remarks/>
         [XmlElement("all")]
         public fx_surface_init_planar_commonAll Item;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_init_planar_commonAll
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "IDREF")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_surface_format_hint_common
     {
-
-        /// <remarks/>
         public fx_surface_format_hint_channels_enum channels;
 
-        /// <remarks/>
         public fx_surface_format_hint_range_enum range;
 
-        /// <remarks/>
         public fx_surface_format_hint_precision_enum precision;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool precisionSpecified;
 
-        /// <remarks/>
         [XmlElement("option")]
         public fx_surface_format_hint_option_enum[] option;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_surface_format_hint_channels_enum
     {
-
-        /// <remarks/>
         RGB,
 
-        /// <remarks/>
         RGBA,
 
-        /// <remarks/>
         L,
 
-        /// <remarks/>
         LA,
 
-        /// <remarks/>
         D,
 
-        /// <remarks/>
         XYZ,
 
-        /// <remarks/>
         XYZW,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_surface_format_hint_range_enum
     {
-
-        /// <remarks/>
         SNORM,
 
-        /// <remarks/>
         UNORM,
 
-        /// <remarks/>
         SINT,
 
-        /// <remarks/>
         UINT,
 
-        /// <remarks/>
         FLOAT,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_surface_format_hint_precision_enum
     {
-
-        /// <remarks/>
         LOW,
 
-        /// <remarks/>
         MID,
 
-        /// <remarks/>
         HIGH,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_surface_format_hint_option_enum
     {
-
-        /// <remarks/>
         SRGB_GAMMA,
 
-        /// <remarks/>
         NORMALIZED3,
 
-        /// <remarks/>
         NORMALIZED4,
 
-        /// <remarks/>
         COMPRESSABLE,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class extra
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         public string type;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class technique
     {
-
-        /// <remarks/>
-        [XmlAnyElement()]
+        [XmlAnyElement]
         public XmlElement[] Any;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         public string profile;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_surface_type_enum
     {
-
-        /// <remarks/>
         UNTYPED,
 
-        /// <remarks/>
         [XmlEnum("1D")]
         Item1D,
 
-        /// <remarks/>
         [XmlEnum("2D")]
         Item2D,
 
-        /// <remarks/>
         [XmlEnum("3D")]
         Item3D,
 
-        /// <remarks/>
         RECT,
 
-        /// <remarks/>
         CUBE,
 
-        /// <remarks/>
         DEPTH,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_surface_type : fx_surface_common
     {
-
-        /// <remarks/>
         public cg_surface_typeGenerator generator;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_surface_typeGenerator
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("code", typeof(fx_code_profile))]
         [XmlElement("include", typeof(fx_include_common))]
         public object[] Items;
 
-        /// <remarks/>
         public cg_surface_typeGeneratorName name;
 
-        /// <remarks/>
         [XmlElement("setparam")]
         public cg_setparam_simple[] setparam;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_include_common
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string url;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_surface_typeGeneratorName
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [XmlText(DataType = "NCName")]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_setparam_simple
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_surface_type : fx_surface_common
     {
-
-        /// <remarks/>
         public glsl_surface_typeGenerator generator;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_surface_typeGenerator
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("code", typeof(fx_code_profile))]
         [XmlElement("include", typeof(fx_include_common))]
         public object[] Items;
 
-        /// <remarks/>
         public glsl_surface_typeGeneratorName name;
 
-        /// <remarks/>
         [XmlElement("setparam")]
         public glsl_setparam_simple[] setparam;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_surface_typeGeneratorName
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [XmlText(DataType = "NCName")]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_setparam_simple
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texture_pipeline
     {
-
-        /// <remarks/>
         [XmlElement("extra", typeof(extra))]
         [XmlElement("texcombiner", typeof(gles_texcombiner_command_type))]
         [XmlElement("texenv", typeof(gles_texenv_command_type))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texcombiner_command_type
     {
-
-        /// <remarks/>
         public gles_texture_constant_type constant;
 
-        /// <remarks/>
         public gles_texcombiner_commandRGB_type RGB;
 
-        /// <remarks/>
         public gles_texcombiner_commandAlpha_type alpha;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texture_constant_type
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texcombiner_commandRGB_type
     {
-
-        /// <remarks/>
         [XmlElement("argument")]
         public gles_texcombiner_argumentRGB_type[] argument;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public gles_texcombiner_operatorRGB_enums @operator;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool operatorSpecified;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public float scale;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool scaleSpecified;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texcombiner_argumentRGB_type
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public gles_texcombiner_source_enums source;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool sourceSpecified;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gles_texcombiner_operandRGB_enums.SRC_COLOR)]
         public gles_texcombiner_operandRGB_enums operand;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string unit;
 
@@ -1315,131 +960,91 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_texcombiner_source_enums
     {
-
-        /// <remarks/>
         TEXTURE,
 
-        /// <remarks/>
         CONSTANT,
 
-        /// <remarks/>
         PRIMARY,
 
-        /// <remarks/>
         PREVIOUS,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_texcombiner_operandRGB_enums
     {
-
-        /// <remarks/>
         SRC_COLOR,
 
-        /// <remarks/>
         ONE_MINUS_SRC_COLOR,
 
-        /// <remarks/>
         SRC_ALPHA,
 
-        /// <remarks/>
         ONE_MINUS_SRC_ALPHA,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_texcombiner_operatorRGB_enums
     {
-
-        /// <remarks/>
         REPLACE,
 
-        /// <remarks/>
         MODULATE,
 
-        /// <remarks/>
         ADD,
 
-        /// <remarks/>
         ADD_SIGNED,
 
-        /// <remarks/>
         INTERPOLATE,
 
-        /// <remarks/>
         SUBTRACT,
 
-        /// <remarks/>
         DOT3_RGB,
 
-        /// <remarks/>
         DOT3_RGBA,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texcombiner_commandAlpha_type
     {
-
-        /// <remarks/>
         [XmlElement("argument")]
         public gles_texcombiner_argumentAlpha_type[] argument;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public gles_texcombiner_operatorAlpha_enums @operator;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool operatorSpecified;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public float scale;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool scaleSpecified;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texcombiner_argumentAlpha_type
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public gles_texcombiner_source_enums source;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool sourceSpecified;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gles_texcombiner_operandAlpha_enums.SRC_ALPHA)]
         public gles_texcombiner_operandAlpha_enums operand;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string unit;
 
@@ -1449,136 +1054,95 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_texcombiner_operandAlpha_enums
     {
-
-        /// <remarks/>
         SRC_ALPHA,
 
-        /// <remarks/>
         ONE_MINUS_SRC_ALPHA,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_texcombiner_operatorAlpha_enums
     {
-
-        /// <remarks/>
         REPLACE,
 
-        /// <remarks/>
         MODULATE,
 
-        /// <remarks/>
         ADD,
 
-        /// <remarks/>
         ADD_SIGNED,
 
-        /// <remarks/>
         INTERPOLATE,
 
-        /// <remarks/>
         SUBTRACT,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texenv_command_type
     {
-
-        /// <remarks/>
         public gles_texture_constant_type constant;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public gles_texenv_mode_enums @operator;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool operatorSpecified;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string unit;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_texenv_mode_enums
     {
-
-        /// <remarks/>
         REPLACE,
 
-        /// <remarks/>
         MODULATE,
 
-        /// <remarks/>
         DECAL,
 
-        /// <remarks/>
         BLEND,
 
-        /// <remarks/>
         ADD,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_sampler_state
     {
-
-        /// <remarks/>
         [DefaultValue(gles_sampler_wrap.REPEAT)]
         public gles_sampler_wrap wrap_s;
 
-        /// <remarks/>
         [DefaultValue(gles_sampler_wrap.REPEAT)]
         public gles_sampler_wrap wrap_t;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common minfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common magfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common mipfilter;
 
-        /// <remarks/>
         [DefaultValue(typeof(byte), "255")]
         public byte mipmap_maxlevel;
 
-        /// <remarks/>
         [DefaultValue(typeof(float), "0")]
         public float mipmap_bias;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
@@ -1594,248 +1158,179 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_sampler_wrap
     {
-
-        /// <remarks/>
         REPEAT,
 
-        /// <remarks/>
         CLAMP,
 
-        /// <remarks/>
         CLAMP_TO_EDGE,
 
-        /// <remarks/>
         MIRRORED_REPEAT,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_sampler_filter_common
     {
-
-        /// <remarks/>
         NONE,
 
-        /// <remarks/>
         NEAREST,
 
-        /// <remarks/>
         LINEAR,
 
-        /// <remarks/>
         NEAREST_MIPMAP_NEAREST,
 
-        /// <remarks/>
         LINEAR_MIPMAP_NEAREST,
 
-        /// <remarks/>
         NEAREST_MIPMAP_LINEAR,
 
-        /// <remarks/>
         LINEAR_MIPMAP_LINEAR,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texture_unit
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string surface;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string sampler_state;
 
-        /// <remarks/>
         public gles_texture_unitTexcoord texcoord;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gles_texture_unitTexcoord
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string semantic;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_newparam
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string semantic;
 
-        /// <remarks/>
         public fx_modifier_enum_common modifier;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool modifierSpecified;
 
-        /// <remarks/>
         [XmlElement("array", typeof(cg_newarray_type))]
         [XmlElement("usertype", typeof(cg_setuser_type))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_newarray_type
     {
-
-        /// <remarks/>
         [XmlElement("array", typeof(cg_newarray_type))]
         [XmlElement("connect_param", typeof(cg_connect_param))]
         [XmlElement("usertype", typeof(cg_setuser_type))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "positiveInteger")]
         public string length;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_connect_param
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_setuser_type
     {
-
-        /// <remarks/>
         [XmlElement("array", typeof(cg_setarray_type))]
         [XmlElement("connect_param", typeof(cg_connect_param))]
         [XmlElement("setparam", typeof(cg_setparam))]
         [XmlElement("usertype", typeof(cg_setuser_type))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string name;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string source;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_setarray_type
     {
-
-        /// <remarks/>
         [XmlElement("array", typeof(cg_setarray_type))]
         [XmlElement("usertype", typeof(cg_setuser_type))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "positiveInteger")]
         public string length;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_setparam
     {
-
-        /// <remarks/>
         [XmlElement("array", typeof(cg_setarray_type))]
         [XmlElement("connect_param", typeof(cg_connect_param))]
         [XmlElement("usertype", typeof(cg_setuser_type))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string @ref;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string program;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_newparam_type
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string semantic;
 
-        /// <remarks/>
         [XmlElement("float", typeof(double))]
         [XmlElement("float2", typeof(double))]
         [XmlElement("float3", typeof(double))]
@@ -1845,62 +1340,48 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlChoiceIdentifier("ItemElementName")]
         public object Item;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public ItemChoiceType ItemElementName;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(cg_sampler2D))]
     [XmlInclude(typeof(gl_sampler2D))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_sampler2D_common
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_s;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_t;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common minfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common magfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common mipfilter;
 
-        /// <remarks/>
         public string border_color;
 
-        /// <remarks/>
         [DefaultValue(typeof(byte), "255")]
         public byte mipmap_maxlevel;
 
-        /// <remarks/>
         [DefaultValue(typeof(float), "0")]
         public float mipmap_bias;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
@@ -1916,156 +1397,113 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_sampler_wrap_common
     {
-
-        /// <remarks/>
         NONE,
 
-        /// <remarks/>
         WRAP,
 
-        /// <remarks/>
         MIRROR,
 
-        /// <remarks/>
         CLAMP,
 
-        /// <remarks/>
         BORDER,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_sampler2D : fx_sampler2D_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gl_sampler2D : fx_sampler2D_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IncludeInSchema = false)]
     public enum ItemChoiceType
     {
-
-        /// <remarks/>
         @float,
 
-        /// <remarks/>
         float2,
 
-        /// <remarks/>
         float3,
 
-        /// <remarks/>
         float4,
 
-        /// <remarks/>
         sampler2D,
 
-        /// <remarks/>
         surface,
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(common_transparent_type))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_color_or_texture_type
     {
-
-        /// <remarks/>
         [XmlElement("color", typeof(common_color_or_texture_typeColor))]
         [XmlElement("param", typeof(common_color_or_texture_typeParam))]
         [XmlElement("texture", typeof(common_color_or_texture_typeTexture))]
         public object Item;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_color_or_texture_typeColor
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_color_or_texture_typeParam
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_color_or_texture_typeTexture
     {
-
-        /// <remarks/>
         public extra extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string texture;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string texcoord;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_transparent_type : common_color_or_texture_type
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(fx_opaque_enum.A_ONE)]
         public fx_opaque_enum opaque;
 
@@ -2075,194 +1513,142 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum fx_opaque_enum
     {
-
-        /// <remarks/>
         A_ONE,
 
-        /// <remarks/>
         RGB_ZERO,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_float_or_param_type
     {
-
-        /// <remarks/>
         [XmlElement("float", typeof(common_float_or_param_typeFloat))]
         [XmlElement("param", typeof(common_float_or_param_typeParam))]
         public object Item;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_float_or_param_typeFloat
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public double Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class common_float_or_param_typeParam
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_setparam
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("array")]
         public glsl_setarray_type Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string @ref;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string program;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_setarray_type
     {
-
-        /// <remarks/>
         [XmlElement("array")]
         public glsl_setarray_type[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "positiveInteger")]
         public string length;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_newparam
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string semantic;
 
-        /// <remarks/>
         public fx_modifier_enum_common modifier;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool modifierSpecified;
 
-        /// <remarks/>
         [XmlElement("array")]
         public glsl_newarray_type Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class glsl_newarray_type
     {
-
-        /// <remarks/>
         [XmlElement("array")]
         public glsl_newarray_type[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "positiveInteger")]
         public string length;
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(cg_samplerDEPTH))]
     [XmlInclude(typeof(gl_samplerDEPTH))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_samplerDEPTH_common
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_s;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_t;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common minfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common magfilter;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
@@ -2275,73 +1661,57 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_samplerDEPTH : fx_samplerDEPTH_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gl_samplerDEPTH : fx_samplerDEPTH_common
     {
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(cg_samplerRECT))]
     [XmlInclude(typeof(gl_samplerRECT))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_samplerRECT_common
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_s;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_t;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common minfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common magfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common mipfilter;
 
-        /// <remarks/>
         public string border_color;
 
-        /// <remarks/>
         [DefaultValue(typeof(byte), "255")]
         public byte mipmap_maxlevel;
 
-        /// <remarks/>
         [DefaultValue(typeof(float), "0")]
         public float mipmap_bias;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
@@ -2357,77 +1727,60 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_samplerRECT : fx_samplerRECT_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gl_samplerRECT : fx_samplerRECT_common
     {
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(cg_samplerCUBE))]
     [XmlInclude(typeof(gl_samplerCUBE))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_samplerCUBE_common
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_s;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_t;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_p;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common minfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common magfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common mipfilter;
 
-        /// <remarks/>
         public string border_color;
 
-        /// <remarks/>
         [DefaultValue(typeof(byte), "255")]
         public byte mipmap_maxlevel;
 
-        /// <remarks/>
         [DefaultValue(typeof(float), "0")]
         public float mipmap_bias;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
@@ -2444,77 +1797,60 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_samplerCUBE : fx_samplerCUBE_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gl_samplerCUBE : fx_samplerCUBE_common
     {
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(cg_sampler3D))]
     [XmlInclude(typeof(gl_sampler3D))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_sampler3D_common
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_s;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_t;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_p;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common minfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common magfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common mipfilter;
 
-        /// <remarks/>
         public string border_color;
 
-        /// <remarks/>
         [DefaultValue(typeof(byte), "255")]
         public byte mipmap_maxlevel;
 
-        /// <remarks/>
         [DefaultValue(typeof(float), "0")]
         public float mipmap_bias;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
@@ -2531,69 +1867,54 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_sampler3D : fx_sampler3D_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gl_sampler3D : fx_sampler3D_common
     {
     }
 
-    /// <remarks/>
     [XmlInclude(typeof(cg_sampler1D))]
     [XmlInclude(typeof(gl_sampler1D))]
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_sampler1D_common
     {
-
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_wrap_common.WRAP)]
         public fx_sampler_wrap_common wrap_s;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common minfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common magfilter;
 
-        /// <remarks/>
         [DefaultValue(fx_sampler_filter_common.NONE)]
         public fx_sampler_filter_common mipfilter;
 
-        /// <remarks/>
         public string border_color;
 
-        /// <remarks/>
         [DefaultValue(typeof(byte), "0")]
         public byte mipmap_maxlevel;
 
-        /// <remarks/>
         [DefaultValue(typeof(float), "0")]
         public float mipmap_bias;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
@@ -2608,345 +1929,247 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cg_sampler1D : fx_sampler1D_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class gl_sampler1D : fx_sampler1D_common
     {
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class InputGlobal
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         public string semantic;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string source;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class fx_newparam_common
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string semantic;
 
-        /// <remarks/>
         public fx_modifier_enum_common modifier;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool modifierSpecified;
 
-        /// <remarks/>
         public bool @bool;
 
-        /// <remarks/>
         public string bool2;
 
-        /// <remarks/>
         public string bool3;
 
-        /// <remarks/>
         public string bool4;
 
-        /// <remarks/>
         public long @int;
 
-        /// <remarks/>
         public string int2;
 
-        /// <remarks/>
         public string int3;
 
-        /// <remarks/>
         public string int4;
 
-        /// <remarks/>
         public double @float;
 
-        /// <remarks/>
         public string float2;
 
-        /// <remarks/>
         public string float3;
 
-        /// <remarks/>
         public string float4;
 
-        /// <remarks/>
         public double float1x1;
 
-        /// <remarks/>
         public string float1x2;
 
-        /// <remarks/>
         public string float1x3;
 
-        /// <remarks/>
         public string float1x4;
 
-        /// <remarks/>
         public string float2x1;
 
-        /// <remarks/>
         public string float2x2;
 
-        /// <remarks/>
         public string float2x3;
 
-        /// <remarks/>
         public string float2x4;
 
-        /// <remarks/>
         public string float3x1;
 
-        /// <remarks/>
         public string float3x2;
 
-        /// <remarks/>
         public string float3x3;
 
-        /// <remarks/>
         public string float3x4;
 
-        /// <remarks/>
         public string float4x1;
 
-        /// <remarks/>
         public string float4x2;
 
-        /// <remarks/>
         public string float4x3;
 
-        /// <remarks/>
         public string float4x4;
 
-        /// <remarks/>
         public fx_surface_common surface;
 
-        /// <remarks/>
         public fx_sampler1D_common sampler1D;
 
-        /// <remarks/>
         public fx_sampler2D_common sampler2D;
 
-        /// <remarks/>
         public fx_sampler3D_common sampler3D;
 
-        /// <remarks/>
         public fx_samplerCUBE_common samplerCUBE;
 
-        /// <remarks/>
         public fx_samplerRECT_common samplerRECT;
 
-        /// <remarks/>
         public fx_samplerDEPTH_common samplerDEPTH;
 
-        /// <remarks/>
         public string @enum;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class InputLocalOffset
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong offset;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         public string semantic;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public string source;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong set;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool setSpecified;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class TargetableFloat
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public double Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class InputLocal
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         public string semantic;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public string source;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class instance_material
     {
-
-        /// <remarks/>
         [XmlElement("bind")]
         public instance_materialBind[] bind;
 
-        /// <remarks/>
         [XmlElement("bind_vertex_input")]
         public instance_materialBind_vertex_input[] bind_vertex_input;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string symbol;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string target;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_materialBind
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string semantic;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string target;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_materialBind_vertex_input
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string semantic;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string input_semantic;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong input_set;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool input_setSpecified;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class assetUnit
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double meter;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         [DefaultValue("meter")]
         public string name;
@@ -2958,93 +2181,68 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum UpAxisType
     {
-
-        /// <remarks/>
         X_UP,
 
-        /// <remarks/>
         Y_UP,
 
-        /// <remarks/>
         Z_UP,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_animation_clips
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("animation_clip")]
         public animation_clip[] animation_clip;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class animation_clip
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("instance_animation")]
         public InstanceWithExtra[] instance_animation;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double start;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double end;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool endSpecified;
 
         public animation_clip()
@@ -3053,148 +2251,110 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot("instance_camera", Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class InstanceWithExtra
     {
-
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string url;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_animations
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("animation")]
         public animation[] animation;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class animation
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("animation", typeof(animation))]
         [XmlElement("channel", typeof(channel))]
         [XmlElement("sampler", typeof(sampler))]
         [XmlElement("source", typeof(source))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class channel
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public string source;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string target;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class sampler
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocal[] input;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class source
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("IDREF_array", typeof(IDREF_array))]
         [XmlElement("Name_array", typeof(Name_array))]
         [XmlElement("bool_array", typeof(bool_array))]
@@ -3202,137 +2362,103 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("int_array", typeof(int_array))]
         public object Item;
 
-        /// <remarks/>
         public sourceTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class IDREF_array
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlText(DataType = "IDREFS")]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class Name_array
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class bool_array
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class float_array
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(short), "6")]
         public short digits;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(short), "38")]
         public short magnitude;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
 
         public float_array()
@@ -3342,40 +2468,31 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class int_array
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "integer")]
         [DefaultValue("-2147483648")]
         public string minInclusive;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "integer")]
         [DefaultValue("2147483647")]
         public string maxInclusive;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
 
         public int_array()
@@ -3385,48 +2502,36 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class sourceTechnique_common
     {
-
-        /// <remarks/>
         public accessor accessor;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class accessor
     {
-
-        /// <remarks/>
         [XmlElement("param")]
         public param[] param;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(ulong), "0")]
         public ulong offset;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string source;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(ulong), "1")]
         public ulong stride;
 
@@ -3437,331 +2542,241 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class param
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         public string semantic;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NMTOKEN")]
         public string type;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_cameras
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("camera")]
         public camera[] camera;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class camera
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         public cameraOptics optics;
 
-        /// <remarks/>
         public cameraImager imager;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cameraOptics
     {
-
-        /// <remarks/>
         public cameraOpticsTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cameraOpticsTechnique_common
     {
-
-        /// <remarks/>
         [XmlElement("orthographic", typeof(cameraOpticsTechnique_commonOrthographic))]
         [XmlElement("perspective", typeof(cameraOpticsTechnique_commonPerspective))]
         public object Item;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cameraOpticsTechnique_commonOrthographic
     {
-
-        /// <remarks/>
         [XmlElement("aspect_ratio", typeof(TargetableFloat))]
         [XmlElement("xmag", typeof(TargetableFloat))]
         [XmlElement("ymag", typeof(TargetableFloat))]
         [XmlChoiceIdentifier("ItemsElementName")]
         public TargetableFloat[] Items;
 
-        /// <remarks/>
         [XmlElement("ItemsElementName")]
-        [XmlIgnore()]
+        [XmlIgnore]
         public ItemsChoiceType[] ItemsElementName;
 
-        /// <remarks/>
         public TargetableFloat znear;
 
-        /// <remarks/>
         public TargetableFloat zfar;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IncludeInSchema = false)]
     public enum ItemsChoiceType
     {
-
-        /// <remarks/>
         aspect_ratio,
 
-        /// <remarks/>
         xmag,
 
-        /// <remarks/>
         ymag,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cameraOpticsTechnique_commonPerspective
     {
-
-        /// <remarks/>
         [XmlElement("aspect_ratio", typeof(TargetableFloat))]
         [XmlElement("xfov", typeof(TargetableFloat))]
         [XmlElement("yfov", typeof(TargetableFloat))]
         [XmlChoiceIdentifier("ItemsElementName")]
         public TargetableFloat[] Items;
 
-        /// <remarks/>
         [XmlElement("ItemsElementName")]
-        [XmlIgnore()]
+        [XmlIgnore]
         public ItemsChoiceType1[] ItemsElementName;
 
-        /// <remarks/>
         public TargetableFloat znear;
 
-        /// <remarks/>
         public TargetableFloat zfar;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IncludeInSchema = false)]
     public enum ItemsChoiceType1
     {
-
-        /// <remarks/>
         aspect_ratio,
 
-        /// <remarks/>
         xfov,
 
-        /// <remarks/>
         yfov,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class cameraImager
     {
-
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_controllers
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("controller")]
         public controller[] controller;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class controller
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("morph", typeof(morph))]
         [XmlElement("skin", typeof(skin))]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class morph
     {
-
-        /// <remarks/>
         [XmlElement("source")]
         public source[] source;
 
-        /// <remarks/>
         public morphTargets targets;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(MorphMethodType.NORMALIZED)]
         public MorphMethodType method;
 
-        /// <remarks/>
         [XmlAttribute("source", DataType = "anyURI")]
         public string source1;
 
@@ -3771,243 +2786,178 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class morphTargets
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocal[] input;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum MorphMethodType
     {
-
-        /// <remarks/>
         NORMALIZED,
 
-        /// <remarks/>
         RELATIVE,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class skin
     {
-
-        /// <remarks/>
         public string bind_shape_matrix;
 
-        /// <remarks/>
         [XmlElement("source")]
         public source[] source;
 
-        /// <remarks/>
         public skinJoints joints;
 
-        /// <remarks/>
         public skinVertex_weights vertex_weights;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute("source", DataType = "anyURI")]
         public string source1;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class skinJoints
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocal[] input;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class skinVertex_weights
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         public string vcount;
 
-        /// <remarks/>
         public string v;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_effects
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("effect")]
         public effect[] effect;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class effect
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("image")]
         public image[] image;
 
-        /// <remarks/>
         [XmlElement("newparam")]
         public fx_newparam_common[] newparam;
 
-        /// <remarks/>
         [XmlElement("profile_CG", typeof(effectFx_profile_abstractProfile_CG))]
         [XmlElement("profile_COMMON", typeof(effectFx_profile_abstractProfile_COMMON))]
         [XmlElement("profile_GLES", typeof(effectFx_profile_abstractProfile_GLES))]
         [XmlElement("profile_GLSL", typeof(effectFx_profile_abstractProfile_GLSL))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class image
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("data", typeof(byte[]), DataType = "hexBinary")]
         [XmlElement("init_from", typeof(string), DataType = "anyURI")]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string format;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong height;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool heightSpecified;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong width;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool widthSpecified;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(ulong), "1")]
         public ulong depth;
 
@@ -4017,42 +2967,32 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot("profile_CG", Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class effectFx_profile_abstractProfile_CG
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("code", typeof(fx_code_profile))]
         [XmlElement("include", typeof(fx_include_common))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(cg_newparam))]
         public object[] Items1;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public effectFx_profile_abstractProfile_CGTechnique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         [DefaultValue("PC")]
         public string platform;
@@ -4063,91 +3003,68 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_CGTechnique
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("code", typeof(fx_code_profile))]
         [XmlElement("include", typeof(fx_include_common))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(cg_newparam))]
         [XmlElement("setparam", typeof(cg_setparam))]
         public object[] Items1;
 
-        /// <remarks/>
         [XmlElement("pass")]
         public effectFx_profile_abstractProfile_CGTechniquePass[] pass;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_CGTechniquePass
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("color_target")]
         public fx_colortarget_common[] color_target;
 
-        /// <remarks/>
         [XmlElement("depth_target")]
         public fx_depthtarget_common[] depth_target;
 
-        /// <remarks/>
         [XmlElement("stencil_target")]
         public fx_stenciltarget_common[] stencil_target;
 
-        /// <remarks/>
         [XmlElement("color_clear")]
         public fx_clearcolor_common[] color_clear;
 
-        /// <remarks/>
         [XmlElement("depth_clear")]
         public fx_cleardepth_common[] depth_clear;
 
-        /// <remarks/>
         [XmlElement("stencil_clear")]
         public fx_clearstencil_common[] stencil_clear;
 
-        /// <remarks/>
         public string draw;
 
-        /// <remarks/>
         [XmlElement("alpha_func", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_func))]
         [XmlElement("alpha_test_enable", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_test_enable))]
         [XmlElement("auto_normal_enable", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassAuto_normal_enable))]
@@ -4260,46 +3177,34 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("texture_env_mode", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassTexture_env_mode))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_func
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_funcFunc func;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_funcValue value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_funcFunc
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4309,53 +3214,37 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_func_type
     {
-
-        /// <remarks/>
         NEVER,
 
-        /// <remarks/>
         LESS,
 
-        /// <remarks/>
         LEQUAL,
 
-        /// <remarks/>
         EQUAL,
 
-        /// <remarks/>
         GREATER,
 
-        /// <remarks/>
         NOTEQUAL,
 
-        /// <remarks/>
         GEQUAL,
 
-        /// <remarks/>
         ALWAYS,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_funcValue
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(float), "0")]
         public float value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4365,21 +3254,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4389,21 +3273,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassAuto_normal_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4413,20 +3292,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_color
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4440,21 +3314,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4464,21 +3333,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_equation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_equation_type.FUNC_ADD)]
         public gl_blend_equation_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4488,60 +3352,42 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_blend_equation_type
     {
-
-        /// <remarks/>
         FUNC_ADD,
 
-        /// <remarks/>
         FUNC_SUBTRACT,
 
-        /// <remarks/>
         FUNC_REVERSE_SUBTRACT,
 
-        /// <remarks/>
         MIN,
 
-        /// <remarks/>
         MAX,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_equation_separate
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_equation_separateRgb rgb;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_equation_separateAlpha alpha;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_equation_separateRgb
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_equation_type.FUNC_ADD)]
         public gl_blend_equation_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4551,21 +3397,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_equation_separateAlpha
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_equation_type.FUNC_ADD)]
         public gl_blend_equation_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4575,37 +3416,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_funcSrc src;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_funcDest dest;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_funcSrc
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ONE)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4615,74 +3446,51 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_blend_type
     {
-
-        /// <remarks/>
         ZERO,
 
-        /// <remarks/>
         ONE,
 
-        /// <remarks/>
         SRC_COLOR,
 
-        /// <remarks/>
         ONE_MINUS_SRC_COLOR,
 
-        /// <remarks/>
         DEST_COLOR,
 
-        /// <remarks/>
         ONE_MINUS_DEST_COLOR,
 
-        /// <remarks/>
         SRC_ALPHA,
 
-        /// <remarks/>
         ONE_MINUS_SRC_ALPHA,
 
-        /// <remarks/>
         DST_ALPHA,
 
-        /// <remarks/>
         ONE_MINUS_DST_ALPHA,
 
-        /// <remarks/>
         CONSTANT_COLOR,
 
-        /// <remarks/>
         ONE_MINUS_CONSTANT_COLOR,
 
-        /// <remarks/>
         CONSTANT_ALPHA,
 
-        /// <remarks/>
         ONE_MINUS_CONSTANT_ALPHA,
 
-        /// <remarks/>
         SRC_ALPHA_SATURATE,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_funcDest
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ZERO)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4692,43 +3500,31 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separate
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateSrc_rgb src_rgb;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateDest_rgb dest_rgb;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateSrc_alpha src_alpha;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateDest_alpha dest_alpha;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateSrc_rgb
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ONE)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4738,21 +3534,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateDest_rgb
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ZERO)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4762,21 +3553,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateSrc_alpha
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ONE)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4786,21 +3572,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassBlend_func_separateDest_alpha
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ZERO)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4810,20 +3591,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassClear_color
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4837,21 +3613,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassClear_depth
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4861,21 +3632,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassClear_stencil
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(long), "0")]
         public long value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4885,24 +3651,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassClip_plane
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -4916,25 +3676,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassClip_plane_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -4944,21 +3698,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassColor_logic_op_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4968,20 +3717,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassColor_mask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public bool[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -4995,37 +3739,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassColor_material
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassColor_materialFace face;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassColor_materialMode mode;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassColor_materialFace
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_face_type.FRONT_AND_BACK)]
         public gl_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5035,38 +3769,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_face_type
     {
-
-        /// <remarks/>
         FRONT,
 
-        /// <remarks/>
         BACK,
 
-        /// <remarks/>
         FRONT_AND_BACK,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassColor_materialMode
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_material_type.AMBIENT_AND_DIFFUSE)]
         public gl_material_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5076,44 +3799,31 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_material_type
     {
-
-        /// <remarks/>
         EMISSION,
 
-        /// <remarks/>
         AMBIENT,
 
-        /// <remarks/>
         DIFFUSE,
 
-        /// <remarks/>
         SPECULAR,
 
-        /// <remarks/>
         AMBIENT_AND_DIFFUSE,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassColor_material_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(true)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5123,21 +3833,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassCull_face
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_face_type.BACK)]
         public gl_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5147,21 +3852,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassCull_face_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5171,39 +3871,29 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDepth_bounds
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDepth_bounds_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5213,21 +3903,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDepth_clamp_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5237,21 +3922,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDepth_func
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5261,21 +3941,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDepth_mask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(true)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5285,20 +3960,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDepth_range
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5310,21 +3980,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDepth_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5334,21 +3999,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassDither_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(true)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5358,20 +4018,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFog_color
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5385,21 +4040,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFog_coord_src
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_fog_coord_src_type.FOG_COORDINATE)]
         public gl_fog_coord_src_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5409,35 +4059,25 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_fog_coord_src_type
     {
-
-        /// <remarks/>
         FOG_COORDINATE,
 
-        /// <remarks/>
         FRAGMENT_DEPTH,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFog_density
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5447,21 +4087,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFog_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5471,21 +4106,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFog_end
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5495,21 +4125,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFog_mode
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_fog_type.EXP)]
         public gl_fog_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5519,38 +4144,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_fog_type
     {
-
-        /// <remarks/>
         LINEAR,
 
-        /// <remarks/>
         EXP,
 
-        /// <remarks/>
         EXP2,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFog_start
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5560,21 +4174,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassFront_face
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_front_face_type.CCW)]
         public gl_front_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5584,38 +4193,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_front_face_type
     {
-
-        /// <remarks/>
         CW,
 
-        /// <remarks/>
         CCW,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_ambient
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5629,25 +4227,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_constant_attenuation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5657,24 +4249,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_diffuse
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5688,25 +4274,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5716,25 +4296,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_linear_attenuation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5744,20 +4318,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_model_ambient
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5771,21 +4340,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_model_color_control
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_light_model_color_control_type.SINGLE_COLOR)]
         public gl_light_model_color_control_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5795,35 +4359,25 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_light_model_color_control_type
     {
-
-        /// <remarks/>
         SINGLE_COLOR,
 
-        /// <remarks/>
         SEPARATE_SPECULAR_COLOR,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_model_local_viewer_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5833,21 +4387,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_model_two_side_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -5857,24 +4406,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_position
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5888,25 +4431,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_quadratic_attenuation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5916,24 +4453,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_specular
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5947,25 +4478,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_spot_cutoff
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(180D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -5975,24 +4500,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_spot_direction
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -6005,25 +4524,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLight_spot_exponent
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -6033,21 +4546,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLighting_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6057,21 +4565,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLine_smooth_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6081,20 +4584,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLine_stipple
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public long[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6106,21 +4604,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLine_stipple_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6130,21 +4623,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLine_width
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6154,21 +4642,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLogic_op
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_logic_op_type.COPY)]
         public gl_logic_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6178,74 +4661,51 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_logic_op_type
     {
-
-        /// <remarks/>
         CLEAR,
 
-        /// <remarks/>
         AND,
 
-        /// <remarks/>
         AND_REVERSE,
 
-        /// <remarks/>
         COPY,
 
-        /// <remarks/>
         AND_INVERTED,
 
-        /// <remarks/>
         NOOP,
 
-        /// <remarks/>
         XOR,
 
-        /// <remarks/>
         OR,
 
-        /// <remarks/>
         NOR,
 
-        /// <remarks/>
         EQUIV,
 
-        /// <remarks/>
         INVERT,
 
-        /// <remarks/>
         OR_REVERSE,
 
-        /// <remarks/>
         COPY_INVERTED,
 
-        /// <remarks/>
         NAND,
 
-        /// <remarks/>
         SET,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassLogic_op_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6255,20 +4715,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassMaterial_ambient
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6282,20 +4737,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassMaterial_diffuse
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6309,20 +4759,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassMaterial_emission
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6336,21 +4781,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassMaterial_shininess
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6360,20 +4800,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassMaterial_specular
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6387,20 +4822,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassModel_view_matrix
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6426,21 +4856,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassMultisample_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6450,21 +4875,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassNormalize_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6474,20 +4894,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPoint_distance_attenuation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6500,21 +4915,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPoint_fade_threshold_size
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6524,21 +4934,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPoint_size
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6548,21 +4953,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPoint_size_max
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6572,21 +4972,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPoint_size_min
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6596,21 +4991,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPoint_smooth_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6620,37 +5010,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_mode
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_modeFace face;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_modeMode mode;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_modeFace
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_face_type.FRONT_AND_BACK)]
         public gl_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6660,21 +5040,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_modeMode
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_polygon_mode_type.FILL)]
         public gl_polygon_mode_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6684,37 +5059,26 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_polygon_mode_type
     {
-
-        /// <remarks/>
         POINT,
 
-        /// <remarks/>
         LINE,
 
-        /// <remarks/>
         FILL,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_offset
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6726,21 +5090,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_offset_fill_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6750,21 +5109,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_offset_line_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6774,21 +5128,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_offset_point_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6798,21 +5147,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_smooth_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6822,21 +5166,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassPolygon_stipple_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6846,20 +5185,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassProjection_matrix
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6885,21 +5219,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassRescale_normal_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6909,21 +5238,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassSample_alpha_to_coverage_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6933,21 +5257,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassSample_alpha_to_one_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6957,21 +5276,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassSample_coverage_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -6981,39 +5295,29 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassScissor
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public long[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassScissor_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7023,21 +5327,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassShade_model
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_shade_model_type.SMOOTH)]
         public gl_shade_model_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7047,167 +5346,118 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_shade_model_type
     {
-
-        /// <remarks/>
         FLAT,
 
-        /// <remarks/>
         SMOOTH,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_CGTechniquePassShader
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_CGTechniquePassShaderCompiler_target compiler_target;
 
-        /// <remarks/>
         public string compiler_options;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_CGTechniquePassShaderName name;
 
-        /// <remarks/>
         [XmlElement("bind")]
         public effectFx_profile_abstractProfile_CGTechniquePassShaderBind[] bind;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public cg_pipeline_stage stage;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool stageSpecified;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_CGTechniquePassShaderCompiler_target
     {
-
-        /// <remarks/>
         [XmlText(DataType = "NMTOKEN")]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_CGTechniquePassShaderName
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [XmlText(DataType = "NCName")]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_CGTechniquePassShaderBind
     {
-
-        /// <remarks/>
         [XmlElement("param")]
         public effectFx_profile_abstractProfile_CGTechniquePassShaderBindParam Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string symbol;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_CGTechniquePassShaderBindParam
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum cg_pipeline_stage
     {
-
-        /// <remarks/>
         VERTEX,
 
-        /// <remarks/>
         FRAGMENT,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_funcFunc func;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_funcRef @ref;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_funcMask mask;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_funcFunc
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7217,21 +5467,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_funcRef
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(byte), "0")]
         public byte value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7241,21 +5486,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_funcMask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(byte), "255")]
         public byte value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7265,43 +5505,31 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separate
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateFront front;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateBack back;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateRef @ref;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateMask mask;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateFront
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7311,21 +5539,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateBack
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7335,21 +5558,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateRef
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(byte), "0")]
         public byte value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7359,21 +5577,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_func_separateMask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(byte), "255")]
         public byte value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7383,21 +5596,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_mask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(long), "4294967295")]
         public long value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7407,37 +5615,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_mask_separate
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_mask_separateFace face;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_mask_separateMask mask;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_mask_separateFace
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_face_type.FRONT_AND_BACK)]
         public gl_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7447,21 +5645,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_mask_separateMask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(byte), "255")]
         public byte value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7471,40 +5664,29 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_opFail fail;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_opZfail zfail;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_opZpass zpass;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_opFail
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_stencil_op_type.KEEP)]
         public gl_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7514,53 +5696,37 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gl_stencil_op_type
     {
-
-        /// <remarks/>
         KEEP,
 
-        /// <remarks/>
         ZERO,
 
-        /// <remarks/>
         REPLACE,
 
-        /// <remarks/>
         INCR,
 
-        /// <remarks/>
         DECR,
 
-        /// <remarks/>
         INVERT,
 
-        /// <remarks/>
         INCR_WRAP,
 
-        /// <remarks/>
         DECR_WRAP,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_opZfail
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_stencil_op_type.KEEP)]
         public gl_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7570,21 +5736,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_opZpass
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_stencil_op_type.KEEP)]
         public gl_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7594,43 +5755,31 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separate
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateFace face;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateFail fail;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateZfail zfail;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateZpass zpass;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateFace
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_face_type.FRONT_AND_BACK)]
         public gl_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7640,21 +5789,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateFail
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_stencil_op_type.KEEP)]
         public gl_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7664,21 +5808,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateZfail
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_stencil_op_type.KEEP)]
         public gl_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7688,21 +5827,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_op_separateZpass
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_stencil_op_type.KEEP)]
         public gl_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7712,21 +5846,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassStencil_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -7736,44 +5865,33 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture1D
     {
-
-        /// <remarks/>
         [XmlElement("param", typeof(string), DataType = "NCName")]
         [XmlElement("value", typeof(gl_sampler1D))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture1D_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -7783,44 +5901,33 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture2D
     {
-
-        /// <remarks/>
         [XmlElement("param", typeof(string), DataType = "NCName")]
         [XmlElement("value", typeof(gl_sampler2D))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture2D_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -7830,44 +5937,33 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture3D
     {
-
-        /// <remarks/>
         [XmlElement("param", typeof(string), DataType = "NCName")]
         [XmlElement("value", typeof(gl_sampler3D))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture3D_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -7877,44 +5973,33 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTextureCUBE
     {
-
-        /// <remarks/>
         [XmlElement("param", typeof(string), DataType = "NCName")]
         [XmlElement("value", typeof(gl_samplerCUBE))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTextureCUBE_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -7924,44 +6009,33 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTextureDEPTH
     {
-
-        /// <remarks/>
         [XmlElement("param", typeof(string), DataType = "NCName")]
         [XmlElement("value", typeof(gl_samplerDEPTH))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTextureDEPTH_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -7971,44 +6045,33 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTextureRECT
     {
-
-        /// <remarks/>
         [XmlElement("param", typeof(string), DataType = "NCName")]
         [XmlElement("value", typeof(gl_samplerRECT))]
         public object Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTextureRECT_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -8018,290 +6081,206 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture_env_color
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassTexture_env_mode
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public string value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot("profile_COMMON", Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class effectFx_profile_abstractProfile_COMMON
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(common_newparam_type))]
         public object[] Items;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_COMMONTechnique technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_COMMONTechnique
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(common_newparam_type))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("blinn", typeof(effectFx_profile_abstractProfile_COMMONTechniqueBlinn))]
         [XmlElement("constant", typeof(effectFx_profile_abstractProfile_COMMONTechniqueConstant))]
         [XmlElement("lambert", typeof(effectFx_profile_abstractProfile_COMMONTechniqueLambert))]
         [XmlElement("phong", typeof(effectFx_profile_abstractProfile_COMMONTechniquePhong))]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_COMMONTechniqueBlinn
     {
-
-        /// <remarks/>
         public common_color_or_texture_type emission;
 
-        /// <remarks/>
         public common_color_or_texture_type ambient;
 
-        /// <remarks/>
         public common_color_or_texture_type diffuse;
 
-        /// <remarks/>
         public common_color_or_texture_type specular;
 
-        /// <remarks/>
         public common_float_or_param_type shininess;
 
-        /// <remarks/>
         public common_color_or_texture_type reflective;
 
-        /// <remarks/>
         public common_float_or_param_type reflectivity;
 
-        /// <remarks/>
         public common_transparent_type transparent;
 
-        /// <remarks/>
         public common_float_or_param_type transparency;
 
-        /// <remarks/>
         public common_float_or_param_type index_of_refraction;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_COMMONTechniqueConstant
     {
-
-        /// <remarks/>
         public common_color_or_texture_type emission;
 
-        /// <remarks/>
         public common_color_or_texture_type reflective;
 
-        /// <remarks/>
         public common_float_or_param_type reflectivity;
 
-        /// <remarks/>
         public common_transparent_type transparent;
 
-        /// <remarks/>
         public common_float_or_param_type transparency;
 
-        /// <remarks/>
         public common_float_or_param_type index_of_refraction;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_COMMONTechniqueLambert
     {
-
-        /// <remarks/>
         public common_color_or_texture_type emission;
 
-        /// <remarks/>
         public common_color_or_texture_type ambient;
 
-        /// <remarks/>
         public common_color_or_texture_type diffuse;
 
-        /// <remarks/>
         public common_color_or_texture_type reflective;
 
-        /// <remarks/>
         public common_float_or_param_type reflectivity;
 
-        /// <remarks/>
         public common_transparent_type transparent;
 
-        /// <remarks/>
         public common_float_or_param_type transparency;
 
-        /// <remarks/>
         public common_float_or_param_type index_of_refraction;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_COMMONTechniquePhong
     {
-
-        /// <remarks/>
         public common_color_or_texture_type emission;
 
-        /// <remarks/>
         public common_color_or_texture_type ambient;
 
-        /// <remarks/>
         public common_color_or_texture_type diffuse;
 
-        /// <remarks/>
         public common_color_or_texture_type specular;
 
-        /// <remarks/>
         public common_float_or_param_type shininess;
 
-        /// <remarks/>
         public common_color_or_texture_type reflective;
 
-        /// <remarks/>
         public common_float_or_param_type reflectivity;
 
-        /// <remarks/>
         public common_transparent_type transparent;
 
-        /// <remarks/>
         public common_float_or_param_type transparency;
 
-        /// <remarks/>
         public common_float_or_param_type index_of_refraction;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot("profile_GLES", Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class effectFx_profile_abstractProfile_GLES
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(gles_newparam))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public effectFx_profile_abstractProfile_GLESTechnique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         [DefaultValue("PC")]
         public string platform;
@@ -8312,208 +6291,146 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechnique
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(gles_newparam))]
         [XmlElement("setparam", typeof(effectFx_profile_abstractProfile_GLESTechniqueSetparam))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("pass")]
         public effectFx_profile_abstractProfile_GLESTechniquePass[] pass;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniqueSetparam
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         public bool @bool;
 
-        /// <remarks/>
         public string bool2;
 
-        /// <remarks/>
         public string bool3;
 
-        /// <remarks/>
         public string bool4;
 
-        /// <remarks/>
         public long @int;
 
-        /// <remarks/>
         public string int2;
 
-        /// <remarks/>
         public string int3;
 
-        /// <remarks/>
         public string int4;
 
-        /// <remarks/>
         public double @float;
 
-        /// <remarks/>
         public string float2;
 
-        /// <remarks/>
         public string float3;
 
-        /// <remarks/>
         public string float4;
 
-        /// <remarks/>
         public double float1x1;
 
-        /// <remarks/>
         public string float1x2;
 
-        /// <remarks/>
         public string float1x3;
 
-        /// <remarks/>
         public string float1x4;
 
-        /// <remarks/>
         public string float2x1;
 
-        /// <remarks/>
         public string float2x2;
 
-        /// <remarks/>
         public string float2x3;
 
-        /// <remarks/>
         public string float2x4;
 
-        /// <remarks/>
         public string float3x1;
 
-        /// <remarks/>
         public string float3x2;
 
-        /// <remarks/>
         public string float3x3;
 
-        /// <remarks/>
         public string float3x4;
 
-        /// <remarks/>
         public string float4x1;
 
-        /// <remarks/>
         public string float4x2;
 
-        /// <remarks/>
         public string float4x3;
 
-        /// <remarks/>
         public string float4x4;
 
-        /// <remarks/>
         public fx_surface_common surface;
 
-        /// <remarks/>
         public gles_texture_pipeline texture_pipeline;
 
-        /// <remarks/>
         public gles_sampler_state sampler_state;
 
-        /// <remarks/>
         public gles_texture_unit texture_unit;
 
-        /// <remarks/>
         public string @enum;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePass
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string color_target;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string depth_target;
 
-        /// <remarks/>
         [XmlElement(DataType = "NCName")]
         public string stencil_target;
 
-        /// <remarks/>
         public string color_clear;
 
-        /// <remarks/>
         public double depth_clear;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool depth_clearSpecified;
 
-        /// <remarks/>
         public sbyte stencil_clear;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool stencil_clearSpecified;
 
-        /// <remarks/>
         public string draw;
 
-        /// <remarks/>
         [XmlElement("alpha_func", typeof(effectFx_profile_abstractProfile_GLESTechniquePassAlpha_func))]
         [XmlElement("alpha_test_enable", typeof(effectFx_profile_abstractProfile_GLESTechniquePassAlpha_test_enable))]
         [XmlElement("blend_enable", typeof(effectFx_profile_abstractProfile_GLESTechniquePassBlend_enable))]
@@ -8589,46 +6506,34 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("texture_pipeline_enable", typeof(effectFx_profile_abstractProfile_GLESTechniquePassTexture_pipeline_enable))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassAlpha_func
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassAlpha_funcFunc func;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassAlpha_funcValue value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassAlpha_funcFunc
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8638,21 +6543,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassAlpha_funcValue
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(float), "0")]
         public float value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8662,21 +6562,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassAlpha_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8686,21 +6581,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassBlend_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8710,37 +6600,27 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassBlend_func
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassBlend_funcSrc src;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassBlend_funcDest dest;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassBlend_funcSrc
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ONE)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8750,21 +6630,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassBlend_funcDest
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_blend_type.ZERO)]
         public gl_blend_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8774,109 +6649,80 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassClear_color
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassClear_depth
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double value;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool valueSpecified;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassClear_stencil
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public long value;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool valueSpecified;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassClip_plane
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public bool[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassClip_plane_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -8886,21 +6732,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassColor_logic_op_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8910,39 +6751,29 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassColor_mask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public bool[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassColor_material_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(true)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8952,21 +6783,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassCull_face
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_face_type.BACK)]
         public gl_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -8976,21 +6802,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassCull_face_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9000,21 +6821,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassDepth_func
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9024,21 +6840,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassDepth_mask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9048,20 +6859,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassDepth_range
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9073,21 +6879,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassDepth_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9097,21 +6898,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassDither_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9121,20 +6917,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassFog_color
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9148,21 +6939,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassFog_density
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9172,21 +6958,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassFog_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9196,21 +6977,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassFog_end
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9220,21 +6996,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassFog_mode
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_fog_type.EXP)]
         public gl_fog_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9244,21 +7015,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassFog_start
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9268,21 +7034,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassFront_face
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_front_face_type.CCW)]
         public gl_front_face_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9292,24 +7053,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_ambient
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9323,25 +7078,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_constant_attenuation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9351,24 +7100,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_diffuse
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9382,25 +7125,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9410,25 +7147,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_linear_attenutation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9438,20 +7169,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_model_ambient
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9465,21 +7191,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_model_two_side_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9489,24 +7210,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_position
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9520,25 +7235,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_quadratic_attenuation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9548,24 +7257,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_specular
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9579,25 +7282,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_spot_cutoff
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(180D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9607,24 +7304,18 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_spot_direction
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9637,25 +7328,19 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLight_spot_exponent
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string index;
 
@@ -9665,21 +7350,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLighting_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9689,21 +7369,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLine_smooth_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9713,21 +7388,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLine_width
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9737,21 +7407,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassLogic_op
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_logic_op_type.COPY)]
         public gl_logic_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9761,20 +7426,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassMaterial_ambient
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9788,20 +7448,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassMaterial_diffuse
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9815,20 +7470,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassMaterial_emission
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9842,21 +7492,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassMaterial_shininess
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9866,20 +7511,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassMaterial_specular
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9893,20 +7533,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassModel_view_matrix
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9932,21 +7567,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassMultisample_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9956,21 +7586,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassNormalize_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -9980,20 +7605,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPoint_distance_attenuation
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10006,21 +7626,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPoint_fade_threshold_size
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10030,21 +7645,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPoint_size
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10054,21 +7664,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPoint_size_max
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(1D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10078,21 +7683,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPoint_size_min
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(0D)]
         public double value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10102,21 +7702,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPoint_smooth_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10126,20 +7721,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPolygon_offset
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10151,21 +7741,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassPolygon_offset_fill_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10175,20 +7760,15 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassProjection_matrix
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public double[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10214,21 +7794,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassRescale_normal_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10238,21 +7813,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassSample_alpha_to_coverage_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10262,21 +7832,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassSample_alpha_to_one_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10286,21 +7851,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassSample_coverage_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10310,39 +7870,29 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassScissor
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public long[] value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassScissor_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10352,21 +7902,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassShade_model
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_shade_model_type.SMOOTH)]
         public gl_shade_model_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10376,40 +7921,29 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_func
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassStencil_funcFunc func;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassStencil_funcRef @ref;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassStencil_funcMask mask;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_funcFunc
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gl_func_type.ALWAYS)]
         public gl_func_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10419,21 +7953,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_funcRef
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(byte), "0")]
         public byte value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10443,21 +7972,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_funcMask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(byte), "255")]
         public byte value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10467,21 +7991,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_mask
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(typeof(long), "4294967295")]
         public long value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10491,40 +8010,29 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_op
     {
-
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassStencil_opFail fail;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassStencil_opZfail zfail;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLESTechniquePassStencil_opZpass zpass;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_opFail
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gles_stencil_op_type.KEEP)]
         public gles_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10534,47 +8042,33 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum gles_stencil_op_type
     {
-
-        /// <remarks/>
         KEEP,
 
-        /// <remarks/>
         ZERO,
 
-        /// <remarks/>
         REPLACE,
 
-        /// <remarks/>
         INCR,
 
-        /// <remarks/>
         DECR,
 
-        /// <remarks/>
         INVERT,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_opZfail
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gles_stencil_op_type.KEEP)]
         public gles_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10584,21 +8078,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_opZpass
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(gles_stencil_op_type.KEEP)]
         public gles_stencil_op_type value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10608,21 +8097,16 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassStencil_test_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10632,38 +8116,28 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassTexture_pipeline
     {
-
-        /// <remarks/>
         public gles_texture_pipeline value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLESTechniquePassTexture_pipeline_enable
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool value;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string param;
 
@@ -10673,124 +8147,93 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot("profile_GLSL", Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class effectFx_profile_abstractProfile_GLSL
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("code", typeof(fx_code_profile))]
         [XmlElement("include", typeof(fx_include_common))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(glsl_newparam))]
         public object[] Items1;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public effectFx_profile_abstractProfile_GLSLTechnique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechnique
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("code", typeof(fx_code_profile))]
         [XmlElement("include", typeof(fx_include_common))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("image", typeof(image))]
         [XmlElement("newparam", typeof(glsl_newparam))]
         [XmlElement("setparam", typeof(glsl_setparam))]
         public object[] Items1;
 
-        /// <remarks/>
         [XmlElement("pass")]
         public effectFx_profile_abstractProfile_GLSLTechniquePass[] pass;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePass
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         [XmlElement("color_target")]
         public fx_colortarget_common[] color_target;
 
-        /// <remarks/>
         [XmlElement("depth_target")]
         public fx_depthtarget_common[] depth_target;
 
-        /// <remarks/>
         [XmlElement("stencil_target")]
         public fx_stenciltarget_common[] stencil_target;
 
-        /// <remarks/>
         [XmlElement("color_clear")]
         public fx_clearcolor_common[] color_clear;
 
-        /// <remarks/>
         [XmlElement("depth_clear")]
         public fx_cleardepth_common[] depth_clear;
 
-        /// <remarks/>
         [XmlElement("stencil_clear")]
         public fx_clearstencil_common[] stencil_clear;
 
-        /// <remarks/>
         public string draw;
 
-        /// <remarks/>
         [XmlElement("alpha_func", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_func))]
         [XmlElement("alpha_test_enable", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassAlpha_test_enable))]
         [XmlElement("auto_normal_enable", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassAuto_normal_enable))]
@@ -10903,268 +8346,195 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("texture_env_mode", typeof(effectFx_profile_abstractProfile_GLSLTechniquePassTexture_env_mode))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassShader
     {
-
-        /// <remarks/>
         [XmlElement("annotate")]
         public fx_annotate_common[] annotate;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassShaderCompiler_target compiler_target;
 
-        /// <remarks/>
         public string compiler_options;
 
-        /// <remarks/>
         public effectFx_profile_abstractProfile_GLSLTechniquePassShaderName name;
 
-        /// <remarks/>
         [XmlElement("bind")]
         public effectFx_profile_abstractProfile_GLSLTechniquePassShaderBind[] bind;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public glsl_pipeline_stage stage;
 
-        /// <remarks/>
-        [XmlIgnore()]
+        [XmlIgnore]
         public bool stageSpecified;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassShaderCompiler_target
     {
-
-        /// <remarks/>
         [XmlText(DataType = "NMTOKEN")]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassShaderName
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string source;
 
-        /// <remarks/>
         [XmlText(DataType = "NCName")]
         public string Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassShaderBind
     {
-
-        /// <remarks/>
         [XmlElement("param")]
         public effectFx_profile_abstractProfile_GLSLTechniquePassShaderBindParam Item;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string symbol;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class effectFx_profile_abstractProfile_GLSLTechniquePassShaderBindParam
     {
-
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum glsl_pipeline_stage
     {
-
-        /// <remarks/>
         VERTEXPROGRAM,
 
-        /// <remarks/>
         FRAGMENTPROGRAM,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_force_fields
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("force_field")]
         public force_field[] force_field;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class force_field
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_geometries
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("geometry")]
         public geometry[] geometry;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class geometry
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("convex_mesh", typeof(convex_mesh))]
         [XmlElement("mesh", typeof(mesh))]
         [XmlElement("spline", typeof(spline))]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class convex_mesh
     {
-
-        /// <remarks/>
         [XmlElement("source")]
         public source[] source;
 
-        /// <remarks/>
         public vertices vertices;
 
-        /// <remarks/>
         [XmlElement("lines", typeof(lines))]
         [XmlElement("linestrips", typeof(linestrips))]
         [XmlElement("polygons", typeof(polygons))]
@@ -11174,323 +8544,239 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("tristrips", typeof(tristrips))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string convex_hull_of;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class vertices
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocal[] input;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class lines
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         public string p;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string material;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class linestrips
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         [XmlElement("p")]
         public string[] p;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string material;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class polygons
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         [XmlElement("p", typeof(string))]
         [XmlElement("ph", typeof(polygonsPH))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string material;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class polygonsPH
     {
-
-        /// <remarks/>
         public string p;
 
-        /// <remarks/>
         [XmlElement("h")]
         public string[] h;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class polylist
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         public string vcount;
 
-        /// <remarks/>
         public string p;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string material;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class triangles
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         public string p;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string material;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class trifans
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         [XmlElement("p")]
         public string[] p;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string material;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class tristrips
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocalOffset[] input;
 
-        /// <remarks/>
         [XmlElement("p")]
         public string[] p;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         public ulong count;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string material;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class mesh
     {
-
-        /// <remarks/>
         [XmlElement("source")]
         public source[] source;
 
-        /// <remarks/>
         public vertices vertices;
 
-        /// <remarks/>
         [XmlElement("lines", typeof(lines))]
         [XmlElement("linestrips", typeof(linestrips))]
         [XmlElement("polygons", typeof(polygons))]
@@ -11500,34 +8786,26 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("tristrips", typeof(tristrips))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class spline
     {
-
-        /// <remarks/>
         [XmlElement("source")]
         public source[] source;
 
-        /// <remarks/>
         public splineControl_vertices control_vertices;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(false)]
         public bool closed;
 
@@ -11537,127 +8815,93 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class splineControl_vertices
     {
-
-        /// <remarks/>
         [XmlElement("input")]
         public InputLocal[] input;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_images
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("image")]
         public image[] image;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_lights
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("light")]
         public light[] light;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class light
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         public lightTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class lightTechnique_common
     {
-
-        /// <remarks/>
         [XmlElement("ambient", typeof(lightTechnique_commonAmbient))]
         [XmlElement("directional", typeof(lightTechnique_commonDirectional))]
         [XmlElement("point", typeof(lightTechnique_commonPoint))]
@@ -11665,383 +8909,270 @@ namespace SPICA.Formats.Generic.COLLADA
         public object Item;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class lightTechnique_commonAmbient
     {
-
-        /// <remarks/>
         public TargetableFloat3 color;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot("scale", Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class TargetableFloat3
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class lightTechnique_commonDirectional
     {
-
-        /// <remarks/>
         public TargetableFloat3 color;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class lightTechnique_commonPoint
     {
-
-        /// <remarks/>
         public TargetableFloat3 color;
 
-        /// <remarks/>
         public TargetableFloat constant_attenuation;
 
-        /// <remarks/>
         public TargetableFloat linear_attenuation;
 
-        /// <remarks/>
         public TargetableFloat quadratic_attenuation;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class lightTechnique_commonSpot
     {
-
-        /// <remarks/>
         public TargetableFloat3 color;
 
-        /// <remarks/>
         public TargetableFloat constant_attenuation;
 
-        /// <remarks/>
         public TargetableFloat linear_attenuation;
 
-        /// <remarks/>
         public TargetableFloat quadratic_attenuation;
 
-        /// <remarks/>
         public TargetableFloat falloff_angle;
 
-        /// <remarks/>
         public TargetableFloat falloff_exponent;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_materials
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("material")]
         public material[] material;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class material
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         public instance_effect instance_effect;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class instance_effect
     {
-
-        /// <remarks/>
         [XmlElement("technique_hint")]
         public instance_effectTechnique_hint[] technique_hint;
 
-        /// <remarks/>
         [XmlElement("setparam")]
         public instance_effectSetparam[] setparam;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string url;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_effectTechnique_hint
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string platform;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string profile;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_effectSetparam
     {
-
-        /// <remarks/>
         public bool @bool;
 
-        /// <remarks/>
         public string bool2;
 
-        /// <remarks/>
         public string bool3;
 
-        /// <remarks/>
         public string bool4;
 
-        /// <remarks/>
         public long @int;
 
-        /// <remarks/>
         public string int2;
 
-        /// <remarks/>
         public string int3;
 
-        /// <remarks/>
         public string int4;
 
-        /// <remarks/>
         public double @float;
 
-        /// <remarks/>
         public string float2;
 
-        /// <remarks/>
         public string float3;
 
-        /// <remarks/>
         public string float4;
 
-        /// <remarks/>
         public double float1x1;
 
-        /// <remarks/>
         public string float1x2;
 
-        /// <remarks/>
         public string float1x3;
 
-        /// <remarks/>
         public string float1x4;
 
-        /// <remarks/>
         public string float2x1;
 
-        /// <remarks/>
         public string float2x2;
 
-        /// <remarks/>
         public string float2x3;
 
-        /// <remarks/>
         public string float2x4;
 
-        /// <remarks/>
         public string float3x1;
 
-        /// <remarks/>
         public string float3x2;
 
-        /// <remarks/>
         public string float3x3;
 
-        /// <remarks/>
         public string float3x4;
 
-        /// <remarks/>
         public string float4x1;
 
-        /// <remarks/>
         public string float4x2;
 
-        /// <remarks/>
         public string float4x3;
 
-        /// <remarks/>
         public string float4x4;
 
-        /// <remarks/>
         public fx_surface_common surface;
 
-        /// <remarks/>
         public fx_sampler1D_common sampler1D;
 
-        /// <remarks/>
         public fx_sampler2D_common sampler2D;
 
-        /// <remarks/>
         public fx_sampler3D_common sampler3D;
 
-        /// <remarks/>
         public fx_samplerCUBE_common samplerCUBE;
 
-        /// <remarks/>
         public fx_samplerRECT_common samplerRECT;
 
-        /// <remarks/>
         public fx_samplerDEPTH_common samplerDEPTH;
 
-        /// <remarks/>
         public string @enum;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "token")]
         public string @ref;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_nodes
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("node")]
         public node[] node;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class node
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("lookat", typeof(lookat))]
         [XmlElement("matrix", typeof(matrix))]
         [XmlElement("rotate", typeof(rotate))]
@@ -12051,57 +9182,44 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlChoiceIdentifier("ItemsElementName")]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("ItemsElementName")]
-        [XmlIgnore()]
+        [XmlIgnore]
         public ItemsChoiceType2[] ItemsElementName;
 
-        /// <remarks/>
         [XmlElement("instance_camera")]
         public InstanceWithExtra[] instance_camera;
 
-        /// <remarks/>
         [XmlElement("instance_controller")]
         public instance_controller[] instance_controller;
 
-        /// <remarks/>
         [XmlElement("instance_geometry")]
         public instance_geometry[] instance_geometry;
 
-        /// <remarks/>
         [XmlElement("instance_light")]
         public InstanceWithExtra[] instance_light;
 
-        /// <remarks/>
         [XmlElement("instance_node")]
         public InstanceWithExtra[] instance_node;
 
-        /// <remarks/>
         [XmlElement("node")]
         public node[] node1;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlAttribute()]
+        [XmlAttribute]
         [DefaultValue(NodeType.NODE)]
         public NodeType type;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "Name")]
         public string[] layer;
 
@@ -12111,468 +9229,339 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class lookat
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class matrix
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class rotate
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class skew
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public string Text;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IncludeInSchema = false)]
     public enum ItemsChoiceType2
     {
-
-        /// <remarks/>
         lookat,
 
-        /// <remarks/>
         matrix,
 
-        /// <remarks/>
         rotate,
 
-        /// <remarks/>
         scale,
 
-        /// <remarks/>
         skew,
 
-        /// <remarks/>
         translate,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class instance_controller
     {
-
-        /// <remarks/>
         [XmlElement("skeleton", DataType = "anyURI")]
         public string[] skeleton;
 
-        /// <remarks/>
         public bind_material bind_material;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string url;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class bind_material
     {
-
-        /// <remarks/>
         [XmlElement("param")]
         public param[] param;
 
-        /// <remarks/>
         [XmlArrayItem("instance_material", IsNullable = false)]
         public instance_material[] technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class instance_geometry
     {
-
-        /// <remarks/>
         public bind_material bind_material;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string url;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum NodeType
     {
-
-        /// <remarks/>
         JOINT,
 
-        /// <remarks/>
         NODE,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_physics_materials
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("physics_material")]
         public physics_material[] physics_material;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class physics_material
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         public physics_materialTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class physics_materialTechnique_common
     {
-
-        /// <remarks/>
         public TargetableFloat dynamic_friction;
 
-        /// <remarks/>
         public TargetableFloat restitution;
 
-        /// <remarks/>
         public TargetableFloat static_friction;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_physics_models
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("physics_model")]
         public physics_model[] physics_model;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class physics_model
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("rigid_body")]
         public rigid_body[] rigid_body;
 
-        /// <remarks/>
         [XmlElement("rigid_constraint")]
         public rigid_constraint[] rigid_constraint;
 
-        /// <remarks/>
         [XmlElement("instance_physics_model")]
         public instance_physics_model[] instance_physics_model;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class rigid_body
     {
-
-        /// <remarks/>
         public rigid_bodyTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_bodyTechnique_common
     {
-
-        /// <remarks/>
         public rigid_bodyTechnique_commonDynamic dynamic;
 
-        /// <remarks/>
         public TargetableFloat mass;
 
-        /// <remarks/>
         [XmlArrayItem("rotate", typeof(rotate), IsNullable = false)]
         [XmlArrayItem("translate", typeof(TargetableFloat3), IsNullable = false)]
         public object[] mass_frame;
 
-        /// <remarks/>
         public TargetableFloat3 inertia;
 
-        /// <remarks/>
         [XmlElement("instance_physics_material", typeof(InstanceWithExtra))]
         [XmlElement("physics_material", typeof(physics_material))]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("shape")]
         public rigid_bodyTechnique_commonShape[] shape;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_bodyTechnique_commonDynamic
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public bool Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_bodyTechnique_commonShape
     {
-
-        /// <remarks/>
         public rigid_bodyTechnique_commonShapeHollow hollow;
 
-        /// <remarks/>
         public TargetableFloat mass;
 
-        /// <remarks/>
         public TargetableFloat density;
 
-        /// <remarks/>
         [XmlElement("instance_physics_material", typeof(InstanceWithExtra))]
         [XmlElement("physics_material", typeof(physics_material))]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("box", typeof(box))]
         [XmlElement("capsule", typeof(capsule))]
         [XmlElement("cylinder", typeof(cylinder))]
@@ -12583,532 +9572,383 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("tapered_cylinder", typeof(tapered_cylinder))]
         public object Item1;
 
-        /// <remarks/>
         [XmlElement("rotate", typeof(rotate))]
         [XmlElement("translate", typeof(TargetableFloat3))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_bodyTechnique_commonShapeHollow
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public bool Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class box
     {
-
-        /// <remarks/>
         public string half_extents;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class capsule
     {
-
-        /// <remarks/>
         public double height;
 
-        /// <remarks/>
         public string radius;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class cylinder
     {
-
-        /// <remarks/>
         public double height;
 
-        /// <remarks/>
         public string radius;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class plane
     {
-
-        /// <remarks/>
         public string equation;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class sphere
     {
-
-        /// <remarks/>
         public double radius;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class tapered_capsule
     {
-
-        /// <remarks/>
         public double height;
 
-        /// <remarks/>
         public string radius1;
 
-        /// <remarks/>
         public string radius2;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class tapered_cylinder
     {
-
-        /// <remarks/>
         public double height;
 
-        /// <remarks/>
         public string radius1;
 
-        /// <remarks/>
         public string radius2;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class rigid_constraint
     {
-
-        /// <remarks/>
         public rigid_constraintRef_attachment ref_attachment;
 
-        /// <remarks/>
         public rigid_constraintAttachment attachment;
 
-        /// <remarks/>
         public rigid_constraintTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintRef_attachment
     {
-
-        /// <remarks/>
         [XmlElement("extra", typeof(extra))]
         [XmlElement("rotate", typeof(rotate))]
         [XmlElement("translate", typeof(TargetableFloat3))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string rigid_body;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintAttachment
     {
-
-        /// <remarks/>
         [XmlElement("extra", typeof(extra))]
         [XmlElement("rotate", typeof(rotate))]
         [XmlElement("translate", typeof(TargetableFloat3))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string rigid_body;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_common
     {
-
-        /// <remarks/>
         public rigid_constraintTechnique_commonEnabled enabled;
 
-        /// <remarks/>
         public rigid_constraintTechnique_commonInterpenetrate interpenetrate;
 
-        /// <remarks/>
         public rigid_constraintTechnique_commonLimits limits;
 
-        /// <remarks/>
         public rigid_constraintTechnique_commonSpring spring;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonEnabled
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public bool Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonInterpenetrate
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public bool Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonLimits
     {
-
-        /// <remarks/>
         public rigid_constraintTechnique_commonLimitsSwing_cone_and_twist swing_cone_and_twist;
 
-        /// <remarks/>
         public rigid_constraintTechnique_commonLimitsLinear linear;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonLimitsSwing_cone_and_twist
     {
-
-        /// <remarks/>
         public TargetableFloat3 min;
 
-        /// <remarks/>
         public TargetableFloat3 max;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonLimitsLinear
     {
-
-        /// <remarks/>
         public TargetableFloat3 min;
 
-        /// <remarks/>
         public TargetableFloat3 max;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonSpring
     {
-
-        /// <remarks/>
         public rigid_constraintTechnique_commonSpringAngular angular;
 
-        /// <remarks/>
         public rigid_constraintTechnique_commonSpringLinear linear;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonSpringAngular
     {
-
-        /// <remarks/>
         public TargetableFloat stiffness;
 
-        /// <remarks/>
         public TargetableFloat damping;
 
-        /// <remarks/>
         public TargetableFloat target_value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class rigid_constraintTechnique_commonSpringLinear
     {
-
-        /// <remarks/>
         public TargetableFloat stiffness;
 
-        /// <remarks/>
         public TargetableFloat damping;
 
-        /// <remarks/>
         public TargetableFloat target_value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class instance_physics_model
     {
-
-        /// <remarks/>
         [XmlElement("instance_force_field")]
         public InstanceWithExtra[] instance_force_field;
 
-        /// <remarks/>
         [XmlElement("instance_rigid_body")]
         public instance_rigid_body[] instance_rigid_body;
 
-        /// <remarks/>
         [XmlElement("instance_rigid_constraint")]
         public instance_rigid_constraint[] instance_rigid_constraint;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string url;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string parent;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class instance_rigid_body
     {
-
-        /// <remarks/>
         public instance_rigid_bodyTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string body;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string target;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_rigid_bodyTechnique_common
     {
-
-        /// <remarks/>
         [DefaultValue("0.0 0.0 0.0")]
         public string angular_velocity;
 
-        /// <remarks/>
         [DefaultValue("0.0 0.0 0.0")]
         public string velocity;
 
-        /// <remarks/>
         public instance_rigid_bodyTechnique_commonDynamic dynamic;
 
-        /// <remarks/>
         public TargetableFloat mass;
 
-        /// <remarks/>
         [XmlArrayItem("rotate", typeof(rotate), IsNullable = false)]
         [XmlArrayItem("translate", typeof(TargetableFloat3), IsNullable = false)]
         public object[] mass_frame;
 
-        /// <remarks/>
         public TargetableFloat3 inertia;
 
-        /// <remarks/>
         [XmlElement("instance_physics_material", typeof(InstanceWithExtra))]
         [XmlElement("physics_material", typeof(physics_material))]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("shape")]
         public instance_rigid_bodyTechnique_commonShape[] shape;
 
@@ -13119,48 +9959,35 @@ namespace SPICA.Formats.Generic.COLLADA
         }
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_rigid_bodyTechnique_commonDynamic
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public bool Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_rigid_bodyTechnique_commonShape
     {
-
-        /// <remarks/>
         public instance_rigid_bodyTechnique_commonShapeHollow hollow;
 
-        /// <remarks/>
         public TargetableFloat mass;
 
-        /// <remarks/>
         public TargetableFloat density;
 
-        /// <remarks/>
         [XmlElement("instance_physics_material", typeof(InstanceWithExtra))]
         [XmlElement("physics_material", typeof(physics_material))]
         public object Item;
 
-        /// <remarks/>
         [XmlElement("box", typeof(box))]
         [XmlElement("capsule", typeof(capsule))]
         [XmlElement("cylinder", typeof(cylinder))]
@@ -13171,299 +9998,218 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("tapered_cylinder", typeof(tapered_cylinder))]
         public object Item1;
 
-        /// <remarks/>
         [XmlElement("rotate", typeof(rotate))]
         [XmlElement("translate", typeof(TargetableFloat3))]
         public object[] Items;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class instance_rigid_bodyTechnique_commonShapeHollow
     {
-
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
-        [XmlText()]
+        [XmlText]
         public bool Value;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class instance_rigid_constraint
     {
-
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string constraint;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string sid;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_physics_scenes
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("physics_scene")]
         public physics_scene[] physics_scene;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class physics_scene
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("instance_force_field")]
         public InstanceWithExtra[] instance_force_field;
 
-        /// <remarks/>
         [XmlElement("instance_physics_model")]
         public instance_physics_model[] instance_physics_model;
 
-        /// <remarks/>
         public physics_sceneTechnique_common technique_common;
 
-        /// <remarks/>
         [XmlElement("technique")]
         public technique[] technique;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class physics_sceneTechnique_common
     {
-
-        /// <remarks/>
         public TargetableFloat3 gravity;
 
-        /// <remarks/>
         public TargetableFloat time_step;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class library_visual_scenes
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("visual_scene")]
         public visual_scene[] visual_scene;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class visual_scene
     {
-
-        /// <remarks/>
         public asset asset;
 
-        /// <remarks/>
         [XmlElement("node")]
         public node[] node;
 
-        /// <remarks/>
         [XmlElement("evaluate_scene")]
         public visual_sceneEvaluate_scene[] evaluate_scene;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "ID")]
         public string id;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class visual_sceneEvaluate_scene
     {
-
-        /// <remarks/>
         [XmlElement("render")]
         public visual_sceneEvaluate_sceneRender[] render;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "NCName")]
         public string name;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class visual_sceneEvaluate_sceneRender
     {
-
-        /// <remarks/>
         [XmlElement("layer", DataType = "NCName")]
         public string[] layer;
 
-        /// <remarks/>
         public instance_effect instance_effect;
 
-        /// <remarks/>
         [XmlAttribute(DataType = "anyURI")]
         public string camera_node;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public partial class COLLADAScene
     {
-
-        /// <remarks/>
         [XmlElement("instance_physics_scene")]
         public InstanceWithExtra[] instance_physics_scene;
 
-        /// <remarks/>
         public InstanceWithExtra instance_visual_scene;
 
-        /// <remarks/>
         [XmlElement("extra")]
         public extra[] extra;
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
+    [Serializable]
     [XmlType(Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public enum VersionType
     {
-
-        /// <remarks/>
         [XmlEnum("1.4.0")]
         Item140,
 
-        /// <remarks/>
         [XmlEnum("1.4.1")]
         Item141,
     }
 
-    /// <remarks/>
-    [GeneratedCode("xsd", "4.6.1055.0")]
-    [Serializable()]
-    [DebuggerStepThrough()]
+    [Serializable]
+    [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     [XmlRoot(Namespace = "http://www.collada.org/2005/11/COLLADASchema", IsNullable = false)]
     public partial class ellipsoid
     {
-
-        /// <remarks/>
         public string size;
     }
 }

@@ -6,6 +6,7 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.Generic.COLLADA;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Motion;
+using SPICA.PICA.Commands;
 using SPICA.Renderer;
 
 using System;
@@ -58,9 +59,9 @@ namespace SPICA.WinForms
             Model.MaterialAnimation.Step = 0.3f;
             Model.MaterialAnimation.Play();
 
-            COLLADA c = new COLLADA(BCH);
+            /*COLLADA c = new COLLADA(BCH);
 
-            c.Save("D:\\ace.dae");
+            c.Save("D:\\ace.dae");*/
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 

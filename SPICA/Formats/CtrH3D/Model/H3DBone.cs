@@ -30,6 +30,22 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public H3DMetaData MetaData;
 
+        public Matrix3x4 Transform
+        {
+            get
+            {
+                Matrix3x4 Transform;
+
+                Transform = Matrix3x4.Scale(Scale);
+                Transform *= Matrix3x4.RotateX(Rotation.X);
+                Transform *= Matrix3x4.RotateY(Rotation.Y);
+                Transform *= Matrix3x4.RotateZ(Rotation.Z);
+                Transform *= Matrix3x4.Translate(Translation);
+
+                return Transform;
+            }
+        }
+
         public H3DBone()
         {
             InverseTransform = new Matrix3x4();
@@ -43,11 +59,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
             while (true)
             {
-                Transform *= Matrix3x4.Scale(Bone.Scale);
-                Transform *= Matrix3x4.RotateX(Bone.Rotation.X);
-                Transform *= Matrix3x4.RotateY(Bone.Rotation.Y);
-                Transform *= Matrix3x4.RotateZ(Bone.Rotation.Z);
-                Transform *= Matrix3x4.Translate(Bone.Translation);
+                Transform *= Bone.Transform;
 
                 if (Bone.ParentIndex == -1) break;
 

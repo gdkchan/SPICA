@@ -105,9 +105,9 @@ void main() {
     
     if (SmoothSkin != 0) {
         if (FixedWeight.x != 0) {
-            w[0] = min(FixedWeight[0], 1);
-            w[1] = min(FixedWeight[1], 1);
-            w[2] = min(FixedWeight[2], 1);
+            w[0] = FixedWeight[0];
+            w[1] = FixedWeight[1];
+            w[2] = FixedWeight[2];
         } else {
             w = a8_weight * Scales1[WEIGHT];
         }

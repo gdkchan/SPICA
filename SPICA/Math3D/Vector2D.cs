@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 
 namespace SPICA.Math3D
@@ -94,6 +95,11 @@ namespace SPICA.Math3D
         public override string ToString()
         {
             return string.Format("X: {0} Y: {1}", X, Y);
+        }
+
+        public string ToSerializableString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1}", X, Y);
         }
 
         public void Write(BinaryWriter Writer)

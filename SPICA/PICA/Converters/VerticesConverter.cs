@@ -60,16 +60,16 @@ namespace SPICA.PICA.Converters
                             case PICAAttributeName.TexCoord2: O.TexCoord2 = new Vector2D(V.X, V.Y); break;
 
                             case PICAAttributeName.BoneIndex:
-                                for (int Node = 0; Node < Attrib.Elements; Node++)
-                                {
-                                    O.Indices[Node] = (int)V[Node];
-                                }
+                                O.Indices[0] = (int)V[0];
+                                O.Indices[1] = (int)V[1];
+                                O.Indices[2] = (int)V[2];
+                                O.Indices[3] = (int)V[3];
                                 break;
                             case PICAAttributeName.BoneWeight:
-                                for (int Node = 0; Node < Attrib.Elements; Node++)
-                                {
-                                    O.Weights[Node] = V[Node];
-                                }
+                                O.Weights[0] = V[0];
+                                O.Weights[1] = V[1];
+                                O.Weights[2] = V[2];
+                                O.Weights[3] = V[3];
                                 break;
                         }
                     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 
 namespace SPICA.Math3D
@@ -134,6 +135,11 @@ namespace SPICA.Math3D
             float Z = LHS.Z * RHS.Z;
 
             return X + Y + Z;
+        }
+
+        public string ToSerializableString()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", X, Y, Z);
         }
 
         public void Write(BinaryWriter Writer)

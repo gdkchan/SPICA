@@ -1,6 +1,9 @@
 ﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
+using SPICA.Formats.CtrH3D.Model.Material;
+using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
+using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
@@ -9,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -32,9 +36,21 @@ namespace SPICA.Formats.Generic.COLLADA
                 }
             };
 
+            List<image> Imgs = new List<image>();
+            List<material> Mats = new List<material>();
+            List<effect> Effs = new List<effect>();
             List<geometry> Geos = new List<geometry>();
             List<controller> Ctrls = new List<controller>();
             List<visual_scene> VScns = new List<visual_scene>();
+
+            foreach (H3DTexture Tex in BaseModel.Textures)
+            {
+                Imgs.Add(new image
+                {
+                    id = Tex.Name,
+                    Item = "./" + Tex.Name + ".png"
+                });
+            }
 
             for (int MdlIndex = 0; MdlIndex < BaseModel.Models.Count; MdlIndex++)
             {
@@ -42,12 +58,141 @@ namespace SPICA.Formats.Generic.COLLADA
 
                 List<node> Nodes = new List<node>();
 
-                /*
-                 * Mesh
-                 */
+                //Materials
+                foreach (H3DMaterial Mtl in Mdl.Materials)
+                {
+                    string MtlName = MdlIndex.ToString("D2") + "_" + Mtl.Name;
+
+                    effect Eff = new effect();
+
+                    Eff.id = MtlName + "_eff_id";
+                    Eff.name = Mtl.Name;
+
+                    common_newparam_type ImgSurface = new common_newparam_type
+                    {
+                        sid = Mtl.Name + "_surface",
+                        ItemElementName = ItemChoiceType.surface,
+                        Item = new fx_surface_common
+                        {
+                            type = fx_surface_type_enum.Item2D,
+                            init_from = new fx_surface_init_from_common[] 
+                            {
+                                new fx_surface_init_from_common { Value = Mtl.Texture0Name }
+                            },
+                            format = "PNG" 
+                        }
+                    };
+
+                    common_newparam_type ImgSampler = new common_newparam_type
+                    {
+                        sid = Mtl.Name + "_sampler",
+                        ItemElementName = ItemChoiceType.sampler2D,
+                        Item = new fx_sampler2D_common
+                        {
+                            source = ImgSurface.sid,
+                            wrap_s = GetWrap(Mtl.TextureMappers[0].WrapU),
+                            wrap_t = GetWrap(Mtl.TextureMappers[0].WrapV),
+                            minfilter = fx_sampler_filter_common.LINEAR,
+                            magfilter = fx_sampler_filter_common.LINEAR,
+                            mipfilter = fx_sampler_filter_common.LINEAR
+                        }
+                    };
+
+                    Eff.Items = new object[]
+                    {
+                        new effectFx_profile_abstractProfile_COMMON
+                        {
+                            Items = new common_newparam_type[] { ImgSurface, ImgSampler },
+                            technique = new effectFx_profile_abstractProfile_COMMONTechnique
+                            {
+                                Item = new effectFx_profile_abstractProfile_COMMONTechniquePhong
+                                {
+                                    emission = GetColor(Mtl.MaterialParams.EmissionColor),
+                                    ambient = GetColor(Mtl.MaterialParams.AmbientColor),
+                                    diffuse = new common_color_or_texture_type
+                                    {
+                                        Item = new common_color_or_texture_typeTexture
+                                        {
+                                            texture = ImgSampler.sid,
+                                            texcoord = string.Empty
+                                        }
+                                    },
+                                    specular = GetColor(Mtl.MaterialParams.Specular0Color)
+                                }
+                            }
+                        }
+                    };
+
+                    Effs.Add(Eff);
+                    Mats.Add(new material
+                    {
+                        id = MtlName + "_id",
+                        name = Mtl.Name,
+                        instance_effect = new instance_effect { url = "#" + Eff.id }
+                    });
+                }
+
+                //Skeleton nodes
+                string RootBoneId = string.Empty;
+
+                if ((Mdl.Skeleton?.Count ?? 0) > 0)
+                {
+                    Queue<Tuple<H3DBone, node>> ChildBones = new Queue<Tuple<H3DBone, node>>();
+
+                    node RootNode = new node();
+
+                    ChildBones.Enqueue(Tuple.Create(Mdl.Skeleton[0], RootNode));
+
+                    RootBoneId = "#" + Mdl.Skeleton[0].Name + "_bone_id";
+
+                    while (ChildBones.Count > 0)
+                    {
+                        Tuple<H3DBone, node> Bone_Node = ChildBones.Dequeue();
+
+                        H3DBone Bone = Bone_Node.Item1;
+
+                        Bone_Node.Item2.id = Bone.Name + "_bone_id";
+                        Bone_Node.Item2.name = Bone.Name;
+                        Bone_Node.Item2.sid = Bone.Name;
+                        Bone_Node.Item2.type = NodeType.JOINT;
+                        Bone_Node.Item2.ItemsElementName = new ItemsChoiceType2[]
+                        {
+                            ItemsChoiceType2.matrix
+                        };
+                        Bone_Node.Item2.Items = new object[]
+                        {
+                            new matrix { Text = Bone.Transform.ToSerializableString() + " 0 0 0 1" }
+                        };
+
+                        List<node> ChildNodes = new List<node>();
+
+                        foreach (H3DBone B in Mdl.Skeleton)
+                        {
+                            if (B.ParentIndex == -1) continue;
+
+                            H3DBone ParentBone = Mdl.Skeleton[B.ParentIndex];
+
+                            if (ParentBone == Bone)
+                            {
+                                node Node = new node();
+
+                                ChildBones.Enqueue(Tuple.Create(B, Node));
+                                ChildNodes.Add(Node);
+                            }
+                        }
+
+                        Bone_Node.Item2.node1 = ChildNodes.ToArray();
+                    }
+
+                    Nodes.Add(RootNode);
+                }
+
+                //Mesh
                 for (int MeshIndex = 0; MeshIndex < Mdl.Meshes.Count; MeshIndex++)
                 {
                     H3DMesh Mesh = Mdl.Meshes[MeshIndex];
+
+                    string MtlName = MdlIndex.ToString("D2") + "_" + Mdl.Materials[Mesh.MaterialIndex].Name;
 
                     for (int SMIndex = 0; SMIndex < Mesh.SubMeshes.Count; SMIndex++)
                     {
@@ -62,7 +207,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                         PICAVertex[] Vertices = Mesh.ToVertices(true);
 
-                        // *** Geometry ***
+                        //Geometry
                         List<source> GeoSources = new List<source>();
 
                         List<InputLocal> VtxInputs = new List<InputLocal>();
@@ -83,32 +228,32 @@ namespace SPICA.Formats.Generic.COLLADA
                             string SrcName = MeshName + "_" + Attr.Name;
                             string SrcId = SrcName + "_id";
 
-                            //Geometry
-                            float_array Array = new float_array
-                            {
-                                id = SrcName + "_array_id",
-                                count = (ulong)(Vertices.Length * Attr.Elements)
-                            };
+                            string[] Values = new string[Vertices.Length];
 
-                            StringBuilder SB = new StringBuilder();
-
-                            foreach (PICAVertex Vertex in Vertices)
+                            for (int Index = 0; Index < Vertices.Length; Index++)
                             {
+                                PICAVertex V = Vertices[Index];
+
                                 switch (Attr.Name)
                                 {
-                                    case PICAAttributeName.Color: Append(SB, Vertex.Color); break;
+                                    case PICAAttributeName.Color:     Values[Index] = V.Color.ToSerializableString();     break;
 
-                                    case PICAAttributeName.Position: Append(SB, Vertex.Position); break;
-                                    case PICAAttributeName.Normal: Append(SB, Vertex.Normal); break;
-                                    case PICAAttributeName.Tangent: Append(SB, Vertex.Tangent); break;
+                                    case PICAAttributeName.Position:  Values[Index] = V.Position.ToSerializableString();  break;
+                                    case PICAAttributeName.Normal:    Values[Index] = V.Normal.ToSerializableString();    break;
+                                    case PICAAttributeName.Tangent:   Values[Index] = V.Tangent.ToSerializableString();   break;
 
-                                    case PICAAttributeName.TexCoord0: Append(SB, Vertex.TexCoord0); break;
-                                    case PICAAttributeName.TexCoord1: Append(SB, Vertex.TexCoord1); break;
-                                    case PICAAttributeName.TexCoord2: Append(SB, Vertex.TexCoord2); break;
+                                    case PICAAttributeName.TexCoord0: Values[Index] = V.TexCoord0.ToSerializableString(); break;
+                                    case PICAAttributeName.TexCoord1: Values[Index] = V.TexCoord1.ToSerializableString(); break;
+                                    case PICAAttributeName.TexCoord2: Values[Index] = V.TexCoord2.ToSerializableString(); break;
                                 }
                             }
 
-                            Array.Text = SB.ToString().TrimEnd();
+                            float_array Array = new float_array
+                            {
+                                id = SrcName + "_array_id",
+                                count = (ulong)(Vertices.Length * Attr.Elements),
+                                Text = string.Join(" ", Values)
+                            };
 
                             accessor Accessor = new accessor();
 
@@ -139,11 +284,11 @@ namespace SPICA.Formats.Generic.COLLADA
 
                                 switch (Attr.Name)
                                 {
-                                    case PICAAttributeName.Color: Semantic = "COLOR"; break;
+                                    case PICAAttributeName.Color:    Semantic = "COLOR";    break;
 
                                     case PICAAttributeName.Position: Semantic = "POSITION"; break;
-                                    case PICAAttributeName.Normal: Semantic = "NORMAL"; break;
-                                    case PICAAttributeName.Tangent: Semantic = "TANGENT"; break;
+                                    case PICAAttributeName.Normal:   Semantic = "NORMAL";   break;
+                                    case PICAAttributeName.Tangent:  Semantic = "TANGENT";  break;
                                 }
 
                                 VtxInputs.Add(new InputLocal
@@ -180,6 +325,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                         triangles Tris = new triangles
                         {
+                            material = "_" + MtlName,
                             count = (ulong)SM.Indices.Length,
                             input = TriInputs.ToArray(),
                             p = string.Join(" ", SM.Indices)
@@ -199,24 +345,24 @@ namespace SPICA.Formats.Generic.COLLADA
                             }
                         });
 
-                        // *** Controller ***
+                        //Controller
                         string CtrlName = MeshName + "_ctrl";
                         string CtrlId = CtrlName + "_id";
 
-                        StringBuilder BoneNames = new StringBuilder();
-                        StringBuilder BindPoses = new StringBuilder();
+                        string[] BoneNames = new string[SM.BoneIndicesCount];
+                        string[] BindPoses = new string[SM.BoneIndicesCount];
 
                         for (int Index = 0; Index < SM.BoneIndicesCount; Index++)
                         {
-                            BoneNames.Append(Mdl.Skeleton[SM.BoneIndices[Index]].Name + " ");
-                            Append(BindPoses, Mdl.Skeleton[SM.BoneIndices[Index]].InverseTransform);
+                            BoneNames[Index] = Mdl.Skeleton[SM.BoneIndices[Index]].Name;
+                            BindPoses[Index] = Mdl.Skeleton[SM.BoneIndices[Index]].InverseTransform.ToSerializableString() + " 0 0 0 1";
                         }
 
                         string SrcNamesName = CtrlName + "_names";
                         string SrcPosesName = CtrlName + "_poses";
                         string SrcWeightsName = CtrlName + "_weights";
 
-                        //Accessors
+                        //Controller accessors
                         accessor NamesAcc = new accessor
                         {
                             source = "#" + SrcNamesName + "_array_id",
@@ -239,7 +385,7 @@ namespace SPICA.Formats.Generic.COLLADA
                             }
                         };
 
-                        //Sources
+                        //Controller sources
                         source SrcNames = new source
                         {
                             id = SrcNamesName + "_id",
@@ -247,7 +393,7 @@ namespace SPICA.Formats.Generic.COLLADA
                             {
                                 id = SrcNamesName + "_array_id",
                                 count = SM.BoneIndicesCount,
-                                Text = BoneNames.ToString().TrimEnd()
+                                Text = string.Join(" ", BoneNames)
                             },
                             technique_common = new sourceTechnique_common { accessor = NamesAcc }
                         };
@@ -259,42 +405,82 @@ namespace SPICA.Formats.Generic.COLLADA
                             {
                                 id = SrcPosesName + "_array_id",
                                 count = (ulong)(SM.BoneIndicesCount * 16),
-                                Text = BindPoses.ToString().TrimEnd()
+                                Text = string.Join(" ", BindPoses)
                             },
                             technique_common = new sourceTechnique_common { accessor = PosesAcc }
                         };
 
-                        //Indices and weights
+                        //Controller indices and weights
                         StringBuilder v = new StringBuilder();
                         StringBuilder vcount = new StringBuilder();
 
                         Dictionary<string, int> Weights = new Dictionary<string, int>();
 
-                        foreach (PICAVertex Vertex in Vertices)
+                        bool HasFixedIndices = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneIndex);
+                        bool HasFixedWeights = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneWeight);
+
+                        PICAVectorFloat24 FixedIndices = default(PICAVectorFloat24);
+                        PICAVectorFloat24 FixedWeights = default(PICAVectorFloat24);
+
+                        if (HasFixedIndices || HasFixedWeights)
                         {
-                            int Index;
-
-                            for (Index = 0; Index < 4; Index++)
+                            foreach (PICAFixedAttribute Attr in Mesh.FixedAttributes)
                             {
-                                if (Vertex.Weights[Index] == 0) break;
-
-                                string WStr = Vertex.Weights[Index].ToString(CultureInfo.InvariantCulture);
-
-                                v.Append(Vertex.Indices[Index] + " ");
-
-                                if (Weights.ContainsKey(WStr))
+                                switch (Attr.Name)
                                 {
-                                    v.Append(Weights[WStr] + " ");
-                                }
-                                else
-                                {
-                                    v.Append(Weights.Count + " ");
-
-                                    Weights.Add(WStr, Weights.Count);
+                                    case PICAAttributeName.BoneIndex: FixedIndices = Attr.Value; break;
+                                    case PICAAttributeName.BoneWeight: FixedWeights = Attr.Value; break;
                                 }
                             }
+                        }
 
-                            vcount.Append((Index + 1) + " ");
+                        if (SM.Skinning == H3DSubMeshSkinning.Smooth)
+                        {
+                            foreach (PICAVertex Vertex in Vertices)
+                            {
+                                int Count = 0;
+
+                                for (int Index = 0; Index < 4; Index++)
+                                {
+                                    float BIndex = HasFixedIndices ? FixedIndices[Index] : Vertex.Indices[Index];
+                                    float Weight = HasFixedWeights ? FixedWeights[Index] : Vertex.Weights[Index];
+
+                                    if (Weight == 0) break;
+
+                                    string WStr = Weight.ToString(CultureInfo.InvariantCulture);
+
+                                    v.Append((int)BIndex + " ");
+
+                                    if (Weights.ContainsKey(WStr))
+                                    {
+                                        v.Append(Weights[WStr] + " ");
+                                    }
+                                    else
+                                    {
+                                        v.Append(Weights.Count + " ");
+
+                                        Weights.Add(WStr, Weights.Count);
+                                    }
+
+                                    Count++;
+                                }
+
+                                vcount.Append(Count + " ");
+                            }
+                        }
+                        else
+                        {
+                            foreach (PICAVertex Vertex in Vertices)
+                            {
+                                if (HasFixedIndices)
+                                    v.Append((int)FixedIndices[0] + " 1 ");
+                                else
+                                    v.Append(Vertex.Indices[0] + " 1 ");
+
+                                vcount.Append("1 ");
+                            }
+
+                            Weights.Add("1", 0);
                         }
 
                         accessor WeightsAcc = new accessor
@@ -358,7 +544,7 @@ namespace SPICA.Formats.Generic.COLLADA
                             Item = Skin
                         });
 
-                        // *** Visual Scene ***
+                        //Visual Scene
                         Nodes.Add(new node
                         {
                             id = MeshName + "_node_id",
@@ -368,7 +554,19 @@ namespace SPICA.Formats.Generic.COLLADA
                             {
                                 new instance_controller
                                 {
-                                    url = "#" + CtrlId
+                                    url = "#" + CtrlId,
+                                    skeleton = new string[] { RootBoneId },
+                                    bind_material = new bind_material
+                                    {
+                                        technique_common = new instance_material[]
+                                        {
+                                            new instance_material
+                                            {
+                                                symbol = "_" + MtlName,
+                                                target = "#" + MtlName + "_id"
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         });
@@ -395,6 +593,9 @@ namespace SPICA.Formats.Generic.COLLADA
 
             Items = new object[]
             {
+                new library_images { image = Imgs.ToArray() },
+                new library_materials { material = Mats.ToArray() },
+                new library_effects { effect = Effs.ToArray() },
                 new library_geometries { geometry = Geos.ToArray() },
                 new library_controllers { controller = Ctrls.ToArray() },
                 new library_visual_scenes { visual_scene = VScns.ToArray() }
@@ -402,6 +603,34 @@ namespace SPICA.Formats.Generic.COLLADA
         }
 
         public COLLADA() { }
+
+        private fx_sampler_wrap_common GetWrap(H3DTextureWrap Wrap)
+        {
+            switch (Wrap)
+            {
+                case H3DTextureWrap.ClampToEdge:   return fx_sampler_wrap_common.CLAMP;
+                case H3DTextureWrap.ClampToBorder: return fx_sampler_wrap_common.BORDER;
+                case H3DTextureWrap.Repeat:        return fx_sampler_wrap_common.WRAP;
+                case H3DTextureWrap.Mirror:        return fx_sampler_wrap_common.MIRROR;
+
+                default: throw new ArgumentException("Invalid Texture wrap!");
+            }
+        }
+
+        private common_color_or_texture_type GetColor(RGBA Color)
+        {
+            return new common_color_or_texture_type
+            {
+                Item = new common_color_or_texture_typeColor
+                {
+                    Text = string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3}",
+                        Color.R / (float)byte.MaxValue,
+                        Color.G / (float)byte.MaxValue,
+                        Color.B / (float)byte.MaxValue,
+                        Color.A / (float)byte.MaxValue)
+                }
+            };
+        }
 
         private param[] GetParams(params string[] Names)
         {
@@ -417,47 +646,6 @@ namespace SPICA.Formats.Generic.COLLADA
             }
 
             return Output;
-        }
-
-        private void Append(StringBuilder SB, Matrix3x4 Matrix)
-        {
-            SB.Append(Matrix.M11.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M12.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M13.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M14.ToString(CultureInfo.InvariantCulture) + " ");
-
-            SB.Append(Matrix.M21.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M22.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M23.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M24.ToString(CultureInfo.InvariantCulture) + " ");
-
-            SB.Append(Matrix.M31.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M32.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M33.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Matrix.M34.ToString(CultureInfo.InvariantCulture) + " ");
-
-            SB.Append("0 0 0 1 ");
-        }
-
-        private void Append(StringBuilder SB, RGBAFloat Color)
-        {
-            SB.Append(Color.R.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Color.G.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Color.B.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Color.A.ToString(CultureInfo.InvariantCulture) + " ");
-        }
-
-        private void Append(StringBuilder SB, Vector3D Vector)
-        {
-            SB.Append(Vector.X.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Vector.Y.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Vector.Z.ToString(CultureInfo.InvariantCulture) + " ");
-        }
-
-        private void Append(StringBuilder SB, Vector2D Vector)
-        {
-            SB.Append(Vector.X.ToString(CultureInfo.InvariantCulture) + " ");
-            SB.Append(Vector.Y.ToString(CultureInfo.InvariantCulture) + " ");
         }
 
         public void Save(string FileName)
