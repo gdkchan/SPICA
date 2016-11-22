@@ -8,8 +8,8 @@ namespace SPICA.Formats.GFL2.Texture
         RGB565 = 0x2,
         RGB8 = 0x3,
         RGBA8 = 0x4,
+        RGBA4 = 0x16,
         RGBA5551 = 0x17,
-        RGBA4 = 0x18, //???
         LA8 = 0x23,
         HiLo8 = 0x24,
         L8 = 0x25,
@@ -30,8 +30,8 @@ namespace SPICA.Formats.GFL2.Texture
                 case GFTextureFormat.RGB565:   return PICATextureFormat.RGB565;
                 case GFTextureFormat.RGB8:     return PICATextureFormat.RGB8;
                 case GFTextureFormat.RGBA8:    return PICATextureFormat.RGBA8;
-                case GFTextureFormat.RGBA5551: return PICATextureFormat.RGBA5551;
                 case GFTextureFormat.RGBA4:    return PICATextureFormat.RGBA4;
+                case GFTextureFormat.RGBA5551: return PICATextureFormat.RGBA5551;
                 case GFTextureFormat.LA8:      return PICATextureFormat.LA8;
                 case GFTextureFormat.HiLo8:    return PICATextureFormat.HiLo8;
                 case GFTextureFormat.L8:       return PICATextureFormat.L8;

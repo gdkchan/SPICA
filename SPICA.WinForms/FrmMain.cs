@@ -6,11 +6,12 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.Generic.COLLADA;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Motion;
-using SPICA.PICA.Commands;
 using SPICA.Renderer;
 
 using System;
 using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 
 namespace SPICA.WinForms
 {
@@ -43,25 +44,46 @@ namespace SPICA.WinForms
 
             Renderer = new RenderEngine(Width, Height);
 
-            //Model = Renderer.AddModel(H3D.Open("D:\\may.bch"));
+            using (OpenFileDialog OpenDlg = new OpenFileDialog())
+            {
+                OpenDlg.Filter = "Binary Citra H3D|*.bch|Pokémon SM Character|*.cm;*.bin";
 
-            GFModelPack BaseMdl = new GFModelPack("D:\\plum_mdl.bin");
-            H3D BCH = BaseMdl.ToH3D();
-            Model = Renderer.AddModel(BCH);
+                if (OpenDlg.ShowDialog() == DialogResult.OK)
+                {
+                    switch (OpenDlg.FilterIndex)
+                    {
+                        case 1:
+                            Model = Renderer.AddModel(H3D.Open(OpenDlg.FileName));
+                            break;
 
-            GFMotion Mot = new GFMotionPack("D:\\plum_anim.bin")[1];
+                        case 2:
+                            using (FileStream FS = new FileStream(OpenDlg.FileName, FileMode.Open))
+                            {
+                                BinaryReader Reader = new BinaryReader(FS);
 
-            Model.SkeletalAnimation.SetAnimation(Mot.ToH3DSkeletalAnimation(BaseMdl.Models[0].Skeleton));
-            Model.SkeletalAnimation.Step = 0.3f;
-            Model.SkeletalAnimation.Play();
+                                FS.Seek(4, SeekOrigin.Begin);
+                                FS.Seek(Reader.ReadUInt32(), SeekOrigin.Begin);
 
-            Model.MaterialAnimation.SetAnimation(Mot.ToH3DMaterialAnimation());
-            Model.MaterialAnimation.Step = 0.3f;
-            Model.MaterialAnimation.Play();
+                                GFModelPack BaseMdl = new GFModelPack(FS);
+                                Model = Renderer.AddModel(BaseMdl.ToH3D());
 
-            /*COLLADA c = new COLLADA(BCH);
+                                FS.Seek(8, SeekOrigin.Begin);
+                                FS.Seek(Reader.ReadUInt32(), SeekOrigin.Begin);
 
-            c.Save("D:\\ace.dae");*/
+                                GFMotion Mot = new GFMotionPack(FS)[1];
+
+                                Model.SkeletalAnimation.SetAnimation(Mot.ToH3DSkeletalAnimation(BaseMdl.Models[0].Skeleton));
+                                Model.SkeletalAnimation.Step = 0.3f;
+                                Model.SkeletalAnimation.Play();
+
+                                Model.MaterialAnimation.SetAnimation(Mot.ToH3DMaterialAnimation());
+                                Model.MaterialAnimation.Step = 0.3f;
+                                Model.MaterialAnimation.Play();
+                            }
+                            break;
+                    }
+                }
+            }
 
             Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 
@@ -122,7 +144,7 @@ namespace SPICA.WinForms
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
-            if (e.Mouse.LeftButton == ButtonState.Pressed)
+            if (e.Mouse.LeftButton == OpenTK.Input.ButtonState.Pressed)
             {
                 float RY = (float)(((e.X - InitialRot.X) / Width) * Math.PI);
                 float RX = (float)(((e.Y - InitialRot.Y) / Height) * Math.PI);
@@ -130,7 +152,7 @@ namespace SPICA.WinForms
                 Model.Rotate(new Vector3(RX, RY, 0));
             }
 
-            if (e.Mouse.RightButton == ButtonState.Pressed)
+            if (e.Mouse.RightButton == OpenTK.Input.ButtonState.Pressed)
             {
                 float TX = (InitialMov.X - e.X) + FinalMov.X;
                 float TY = (InitialMov.Y - e.Y) + FinalMov.Y;
@@ -145,7 +167,7 @@ namespace SPICA.WinForms
 
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
-            if (e.Mouse.RightButton == ButtonState.Released)
+            if (e.Mouse.RightButton == OpenTK.Input.ButtonState.Released)
             {
                 if (e.Delta > 0)
                     Zoom += Step;

@@ -56,6 +56,8 @@ namespace SPICA.Formats.GFL2
         {
             InitLists();
 
+            long Position = Reader.BaseStream.Position;
+
             uint MagicNumber = Reader.ReadUInt32();
 
             uint[] Counts = new uint[5];
@@ -72,12 +74,12 @@ namespace SPICA.Formats.GFL2
                 for (int Entry = 0; Entry < Counts[Sect]; Entry++)
                 {
                     Reader.BaseStream.Seek(PointersAddr + Entry * 4, SeekOrigin.Begin);
-                    Reader.BaseStream.Seek(Reader.ReadUInt32(), SeekOrigin.Begin);
+                    Reader.BaseStream.Seek(Position + Reader.ReadUInt32(), SeekOrigin.Begin);
 
                     string Name = GFString.ReadLength(Reader, Reader.ReadByte());
                     uint Address = Reader.ReadUInt32();
 
-                    Reader.BaseStream.Seek(Address, SeekOrigin.Begin);
+                    Reader.BaseStream.Seek(Position + Address, SeekOrigin.Begin);
 
                     switch ((Section)Sect)
                     {

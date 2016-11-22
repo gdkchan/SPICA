@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
@@ -22,6 +23,8 @@ namespace SPICA.Formats.Generic.COLLADA
     {
         public COLLADA(H3D BaseModel)
         {
+            version = VersionType.Item141;
+
             asset = new asset
             {
                 created = DateTime.Now,
@@ -36,21 +39,13 @@ namespace SPICA.Formats.Generic.COLLADA
                 }
             };
 
+            List<animation> Anims = new List<animation>();
             List<image> Imgs = new List<image>();
             List<material> Mats = new List<material>();
             List<effect> Effs = new List<effect>();
             List<geometry> Geos = new List<geometry>();
             List<controller> Ctrls = new List<controller>();
             List<visual_scene> VScns = new List<visual_scene>();
-
-            foreach (H3DTexture Tex in BaseModel.Textures)
-            {
-                Imgs.Add(new image
-                {
-                    id = Tex.Name,
-                    Item = "./" + Tex.Name + ".png"
-                });
-            }
 
             for (int MdlIndex = 0; MdlIndex < BaseModel.Models.Count; MdlIndex++)
             {
@@ -236,11 +231,11 @@ namespace SPICA.Formats.Generic.COLLADA
 
                                 switch (Attr.Name)
                                 {
-                                    case PICAAttributeName.Color:     Values[Index] = V.Color.ToSerializableString();     break;
-
                                     case PICAAttributeName.Position:  Values[Index] = V.Position.ToSerializableString();  break;
                                     case PICAAttributeName.Normal:    Values[Index] = V.Normal.ToSerializableString();    break;
                                     case PICAAttributeName.Tangent:   Values[Index] = V.Tangent.ToSerializableString();   break;
+
+                                    case PICAAttributeName.Color:     Values[Index] = V.Color.ToSerializableString();     break;
 
                                     case PICAAttributeName.TexCoord0: Values[Index] = V.TexCoord0.ToSerializableString(); break;
                                     case PICAAttributeName.TexCoord1: Values[Index] = V.TexCoord1.ToSerializableString(); break;
@@ -261,21 +256,11 @@ namespace SPICA.Formats.Generic.COLLADA
                             Accessor.count = (ulong)Vertices.Length;
                             Accessor.stride = (ulong)Attr.Elements;
 
-                            switch (Attr.Name)
+                            switch (Attr.Elements)
                             {
-                                case PICAAttributeName.Color: Accessor.param = GetParams("R", "G", "B", "A"); break;
-
-                                case PICAAttributeName.Position:
-                                case PICAAttributeName.Normal:
-                                case PICAAttributeName.Tangent:
-                                    Accessor.param = GetParams("X", "Y", "Z");
-                                    break;
-
-                                case PICAAttributeName.TexCoord0:
-                                case PICAAttributeName.TexCoord1:
-                                case PICAAttributeName.TexCoord2:
-                                    Accessor.param = GetParams("S", "T");
-                                    break;
+                                case 4: Accessor.param = GetParams("R", "G", "B", "A"); break;
+                                case 3: Accessor.param = GetParams("X", "Y", "Z"); break;
+                                case 2: Accessor.param = GetParams("S", "T"); break;
                             }
 
                             if (Attr.Name < PICAAttributeName.TexCoord0)
@@ -590,6 +575,21 @@ namespace SPICA.Formats.Generic.COLLADA
                     };
                 }
             } //Model Loop
+
+
+            foreach (H3DTexture Tex in BaseModel.Textures)
+            {
+                Imgs.Add(new image
+                {
+                    id = Tex.Name,
+                    Item = "./" + Tex.Name + ".png"
+                });
+            }
+
+            foreach (H3DAnimation SklAnim in BaseModel.SkeletalAnimations)
+            {
+
+            }
 
             Items = new object[]
             {
