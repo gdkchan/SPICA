@@ -1,18 +1,13 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.ES30;
+
 using SPICA.Formats.CtrH3D;
 using SPICA.Renderer;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
+
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms
@@ -53,6 +48,11 @@ namespace SPICA.WinForms
             Viewport.Resize     += Viewport_Resize;
 
             MainContainer.Panel1.Controls.Add(Viewport);
+
+            for (int Index = 0; Index < 100; Index++)
+            {
+                ModelsList.AddItem($"Item_{Index}");
+            }
 
             TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);

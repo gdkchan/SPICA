@@ -165,7 +165,7 @@ namespace SPICA.Renderer
 
             float AR = Width / (float)Height;
 
-            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 1, 1000);
+            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.1f, 1000);
 
             GL.UseProgram(MdlShaderHandle);
 

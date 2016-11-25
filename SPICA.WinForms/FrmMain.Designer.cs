@@ -35,19 +35,27 @@
             this.MenuOpenFile = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuHelpRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.TopIcons = new System.Windows.Forms.ToolStrip();
+            this.MenuSeparatorShowHideJustIgnore = new System.Windows.Forms.ToolStripSeparator();
             this.ToolButtonOpen = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonSave = new System.Windows.Forms.ToolStripButton();
-            this.MenuSeparatorShowHideJustIgnore = new System.Windows.Forms.ToolStripSeparator();
             this.MenuButtonWireframeMode = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonShowGrid = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonShowAxis = new System.Windows.Forms.ToolStripButton();
             this.MenuButtonShowBones = new System.Windows.Forms.ToolStripButton();
             this.MenuButtonShowInfo = new System.Windows.Forms.ToolStripButton();
             this.MenuButtonShowSideMenu = new System.Windows.Forms.ToolStripButton();
+            this.SideTabs = new SPICA.WinForms.GUI.SUITabControl();
+            this.TabPageModels = new System.Windows.Forms.TabPage();
+            this.ModelsList = new SPICA.WinForms.GUI.SUIList();
+            this.TabPageTextures = new System.Windows.Forms.TabPage();
+            this.TabPageMdlAnims = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).BeginInit();
+            this.MainContainer.Panel2.SuspendLayout();
             this.MainContainer.SuspendLayout();
             this.TopMenu.SuspendLayout();
             this.TopIcons.SuspendLayout();
+            this.SideTabs.SuspendLayout();
+            this.TabPageModels.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainContainer
@@ -55,13 +63,17 @@
             this.MainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.MainContainer.Location = new System.Drawing.Point(0, 54);
             this.MainContainer.Name = "MainContainer";
+            // 
+            // MainContainer.Panel2
+            // 
+            this.MainContainer.Panel2.Controls.Add(this.SideTabs);
             this.MainContainer.Size = new System.Drawing.Size(784, 507);
             this.MainContainer.SplitterDistance = 580;
             this.MainContainer.TabIndex = 0;
             // 
             // TopMenu
             // 
-            this.TopMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
+            this.TopMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
             this.TopMenu.ForeColor = System.Drawing.Color.White;
             this.TopMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuFileRoot,
@@ -82,7 +94,7 @@
             // MenuOpenFile
             // 
             this.MenuOpenFile.Name = "MenuOpenFile";
-            this.MenuOpenFile.Size = new System.Drawing.Size(152, 22);
+            this.MenuOpenFile.Size = new System.Drawing.Size(103, 22);
             this.MenuOpenFile.Text = "&Open";
             this.MenuOpenFile.Click += new System.EventHandler(this.MenuOpenFile_Click);
             // 
@@ -113,6 +125,11 @@
             this.TopIcons.TabIndex = 3;
             this.TopIcons.Text = "toolStrip1";
             // 
+            // MenuSeparatorShowHideJustIgnore
+            // 
+            this.MenuSeparatorShowHideJustIgnore.Name = "MenuSeparatorShowHideJustIgnore";
+            this.MenuSeparatorShowHideJustIgnore.Size = new System.Drawing.Size(6, 30);
+            // 
             // ToolButtonOpen
             // 
             this.ToolButtonOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -133,11 +150,6 @@
             this.ToolButtonSave.Name = "ToolButtonSave";
             this.ToolButtonSave.Size = new System.Drawing.Size(28, 27);
             this.ToolButtonSave.ToolTipText = "Save";
-            // 
-            // MenuSeparatorShowHideJustIgnore
-            // 
-            this.MenuSeparatorShowHideJustIgnore.Name = "MenuSeparatorShowHideJustIgnore";
-            this.MenuSeparatorShowHideJustIgnore.Size = new System.Drawing.Size(6, 30);
             // 
             // MenuButtonWireframeMode
             // 
@@ -205,6 +217,69 @@
             this.MenuButtonShowSideMenu.Size = new System.Drawing.Size(28, 27);
             this.MenuButtonShowSideMenu.ToolTipText = "Show/Hide side menu";
             // 
+            // SideTabs
+            // 
+            this.SideTabs.Alignment = System.Windows.Forms.TabAlignment.Right;
+            this.SideTabs.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
+            this.SideTabs.Controls.Add(this.TabPageModels);
+            this.SideTabs.Controls.Add(this.TabPageTextures);
+            this.SideTabs.Controls.Add(this.TabPageMdlAnims);
+            this.SideTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SideTabs.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SideTabs.ForegroundColor = System.Drawing.Color.White;
+            this.SideTabs.Location = new System.Drawing.Point(0, 0);
+            this.SideTabs.Multiline = true;
+            this.SideTabs.Name = "SideTabs";
+            this.SideTabs.SelectedForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(183)))), ((int)(((byte)(123)))));
+            this.SideTabs.SelectedIndex = 0;
+            this.SideTabs.Size = new System.Drawing.Size(200, 507);
+            this.SideTabs.TabIndex = 0;
+            // 
+            // TabPageModels
+            // 
+            this.TabPageModels.BackColor = System.Drawing.Color.Transparent;
+            this.TabPageModels.Controls.Add(this.ModelsList);
+            this.TabPageModels.Location = new System.Drawing.Point(4, 4);
+            this.TabPageModels.Name = "TabPageModels";
+            this.TabPageModels.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageModels.Size = new System.Drawing.Size(169, 499);
+            this.TabPageModels.TabIndex = 0;
+            this.TabPageModels.Text = "Models";
+            // 
+            // ModelsList
+            // 
+            this.ModelsList.BackColor = System.Drawing.Color.Transparent;
+            this.ModelsList.BarColor = System.Drawing.Color.White;
+            this.ModelsList.BarColorHover = System.Drawing.Color.Gray;
+            this.ModelsList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ModelsList.ForeColor = System.Drawing.Color.White;
+            this.ModelsList.Location = new System.Drawing.Point(3, 3);
+            this.ModelsList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.ModelsList.Name = "ModelsList";
+            this.ModelsList.SelectionColor = System.Drawing.Color.Orange;
+            this.ModelsList.Size = new System.Drawing.Size(163, 493);
+            this.ModelsList.TabIndex = 0;
+            // 
+            // TabPageTextures
+            // 
+            this.TabPageTextures.BackColor = System.Drawing.Color.Transparent;
+            this.TabPageTextures.Location = new System.Drawing.Point(4, 4);
+            this.TabPageTextures.Name = "TabPageTextures";
+            this.TabPageTextures.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageTextures.Size = new System.Drawing.Size(169, 499);
+            this.TabPageTextures.TabIndex = 1;
+            this.TabPageTextures.Text = "Textures";
+            // 
+            // TabPageMdlAnims
+            // 
+            this.TabPageMdlAnims.BackColor = System.Drawing.Color.Transparent;
+            this.TabPageMdlAnims.Location = new System.Drawing.Point(4, 4);
+            this.TabPageMdlAnims.Name = "TabPageMdlAnims";
+            this.TabPageMdlAnims.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageMdlAnims.Size = new System.Drawing.Size(169, 499);
+            this.TabPageMdlAnims.TabIndex = 2;
+            this.TabPageMdlAnims.Text = "Model anims.";
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -214,16 +289,21 @@
             this.Controls.Add(this.MainContainer);
             this.Controls.Add(this.TopIcons);
             this.Controls.Add(this.TopMenu);
+            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ForeColor = System.Drawing.Color.White;
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SPICA";
             this.Load += new System.EventHandler(this.FrmMain_Load);
+            this.MainContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).EndInit();
             this.MainContainer.ResumeLayout(false);
             this.TopMenu.ResumeLayout(false);
             this.TopMenu.PerformLayout();
             this.TopIcons.ResumeLayout(false);
             this.TopIcons.PerformLayout();
+            this.SideTabs.ResumeLayout(false);
+            this.TabPageModels.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -246,5 +326,10 @@
         private System.Windows.Forms.ToolStripButton MenuButtonWireframeMode;
         private System.Windows.Forms.ToolStripButton MenuButtonShowInfo;
         private System.Windows.Forms.ToolStripButton MenuButtonShowSideMenu;
+        private GUI.SUITabControl SideTabs;
+        private System.Windows.Forms.TabPage TabPageModels;
+        private System.Windows.Forms.TabPage TabPageTextures;
+        private System.Windows.Forms.TabPage TabPageMdlAnims;
+        private GUI.SUIList ModelsList;
     }
 }
