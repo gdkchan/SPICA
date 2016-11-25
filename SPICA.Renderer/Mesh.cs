@@ -142,7 +142,6 @@ namespace SPICA.Renderer
             GL.StencilOp(Fail, ZFail, ZPass);
 
             GL.DepthFunc(DepthFunc);
-            GL.DepthMask(Params.DepthColorMask.DepthWrite);
             
             GL.CullFace(Params.FaceCulling.ToCullFaceMode());
 
@@ -281,9 +280,11 @@ namespace SPICA.Renderer
 
             for (int Index = 0; Index < UVTransforms.Length; Index++)
             {
+                int ScaleLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Scale");
                 int TransformLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Transform");
                 int TranslationLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Translation");
 
+                GL.Uniform2(ScaleLocation, UVTransforms[Index].Scale);
                 GL.UniformMatrix2(TransformLocation, false, ref UVTransforms[Index].Transform);
                 GL.Uniform2(TranslationLocation, UVTransforms[Index].Translation);
             }
@@ -304,18 +305,24 @@ namespace SPICA.Renderer
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, TextureId);
                 }
+
+                SetWrap(0);
             }
 
             if (Material.EnabledTextures[1])
             {
                 GL.ActiveTexture(TextureUnit.Texture1);
                 GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture1Name));
+
+                SetWrap(1);
             }
 
             if (Material.EnabledTextures[2])
             {
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture2Name));
+
+                SetWrap(2);
             }
 
             //Setup Fixed attributes
@@ -373,6 +380,9 @@ namespace SPICA.Renderer
             }
 
             GL.BindVertexArray(0);
+
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.BindTexture(TextureTarget.TextureCubeMap, 0);
         }
 
         private void BindLUT(int Index, string TableName, string SamplerName)
@@ -386,6 +396,28 @@ namespace SPICA.Renderer
 
                 GL.BindBufferBase(BufferRangeTarget.UniformBuffer, Index, UBOHandle);
                 GL.Uniform1(LUTIsAbsLocation, Parent.GetIsLUTAbs(Name) ? 1 : 0);
+            }
+        }
+
+        private void SetWrap(int Unit)
+        {
+            int WrapS = (int)GetWrap(Material.TextureMappers[Unit].WrapU);
+            int WrapT = (int)GetWrap(Material.TextureMappers[Unit].WrapV);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, WrapS);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, WrapT);
+        }
+
+        private static All GetWrap(H3DTextureWrap Wrap)
+        {
+            switch (Wrap)
+            {
+                case H3DTextureWrap.ClampToEdge:   return All.ClampToEdge;
+                case H3DTextureWrap.ClampToBorder: return All.ClampToBorder;
+                case H3DTextureWrap.Repeat:        return All.Repeat;
+                case H3DTextureWrap.Mirror:        return All.MirroredRepeat;
+
+                default: throw new ArgumentException("Invalid wrap mode!");
             }
         }
 

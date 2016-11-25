@@ -59,7 +59,7 @@ namespace SPICA.Formats.GFL2
 
                 Reader.BaseStream.Seek(Position + Address, SeekOrigin.Begin);
 
-                Animations.Add(new GFMotion(Reader));
+                Animations.Add(new GFMotion(Reader, Index));
             }
         }
 

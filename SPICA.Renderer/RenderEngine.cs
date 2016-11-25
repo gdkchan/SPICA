@@ -113,6 +113,20 @@ namespace SPICA.Renderer
             return Model;
         }
 
+        public void RemoveModel(Model Model)
+        {
+            Model.Dispose();
+
+            Models.Remove(Model);
+        }
+
+        public void ClearModels()
+        {
+            foreach (Model Mdl in Models) Mdl.Dispose();
+
+            Models.Clear();
+        }
+
         public void Rotate(Vector3 Rotation)
         {
             ViewMtx *= Utils.EulerRotate(Rotation); UpdateView();
@@ -146,6 +160,8 @@ namespace SPICA.Renderer
             this.Height = Height;
 
             GL.Viewport(0, 0, Width, Height);
+
+            foreach (GUIControl Ctrl in Controls) Ctrl.Resize();
 
             float AR = Width / (float)Height;
 
@@ -196,6 +212,16 @@ namespace SPICA.Renderer
             }
         }
 
+        public void AddControl(GUIControl Control)
+        {
+            Controls.Add(Control);
+        }
+
+        public void RemoveControl(GUIControl Control)
+        {
+            Controls.Remove(Control);
+        }
+
         public void RenderScene()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
@@ -204,7 +230,7 @@ namespace SPICA.Renderer
 
             GL.UseProgram(MdlShaderHandle);
 
-            foreach (Model Model in Models) Model.Render();
+            foreach (Model Mdl in Models) Mdl.Render();
 
             GL.UseProgram(GUIShaderHandle);
 

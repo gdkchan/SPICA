@@ -1,6 +1,5 @@
-﻿using OpenTK;
-
-using System;
+﻿using System;
+using System.Windows.Forms;
 
 namespace SPICA.WinForms
 {
@@ -9,10 +8,9 @@ namespace SPICA.WinForms
         [STAThread]
         static void Main()
         {
-            using (GameWindow Window = new FrmMain())
-            {
-                Window.Run(60);
-            }
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new FrmMain());
         }
     }
 }

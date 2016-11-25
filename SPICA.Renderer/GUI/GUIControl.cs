@@ -6,18 +6,24 @@ using System.Drawing;
 
 namespace SPICA.Renderer.GUI
 {
-    abstract class GUIControl : IDisposable
+    public abstract class GUIControl : IDisposable
     {
         private int VBOHandle;
         private int VAOHandle;
 
         private int TextureId;
 
-        public Vector2 Position;
+        private int X;
+        private int Y;
 
-        public GUIControl(Vector2 Position)
+        private GUIDockMode DockMode;
+
+        public GUIControl(int X, int Y, GUIDockMode DockMode)
         {
-            this.Position = Position;
+            this.X = X;
+            this.Y = Y;
+
+            this.DockMode = DockMode;
         }
 
         internal abstract void Focus();
@@ -25,6 +31,8 @@ namespace SPICA.Renderer.GUI
         internal abstract void KeyDown();
 
         internal abstract void Render();
+
+        internal abstract void Resize();
 
         protected void RenderQuad()
         {
@@ -44,10 +52,32 @@ namespace SPICA.Renderer.GUI
                 GL.DeleteVertexArray(VAOHandle);
             }
 
-            float SX = Position.X;
-            float SY = (1 - Position.Y) - Size.Y;
-            float EX = SX + Size.X;
-            float EY = SY + Size.Y;
+            int[] Viewport = new int[4];
+
+            GL.GetInteger(GetPName.Viewport, Viewport);
+
+            float ScrnWidth = Viewport[2];
+            float ScrnHeight = Viewport[3];
+
+            float SzX = Size.X / ScrnWidth;
+            float SzY = Size.Y / ScrnHeight;
+
+            float PosX = X / ScrnWidth;
+            float PosY = Y / ScrnHeight;
+
+            float InvX = (1 - PosX) - SzX;
+            float InvY = (1 - PosY) - SzY;
+
+            float SX = 0.5f - SzX * 0.5f;
+            float SY = 0.5f - SzY * 0.5f;
+
+            if ((DockMode & GUIDockMode.Top)    != 0) SY = InvY;
+            if ((DockMode & GUIDockMode.Left)   != 0) SX = PosX;
+            if ((DockMode & GUIDockMode.Right)  != 0) SX = InvX;
+            if ((DockMode & GUIDockMode.Bottom) != 0) SY = PosY;
+
+            float EX = SX + SzX;
+            float EY = SY + SzY;
 
             Vector4[] Buffer = new Vector4[]
             {

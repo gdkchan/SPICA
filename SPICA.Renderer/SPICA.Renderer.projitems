@@ -14,6 +14,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animation\UVTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIDockMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUILabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />

@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.ES30;
 
 using System;
 using System.Drawing;
@@ -8,7 +7,7 @@ using System.Drawing.Text;
 
 namespace SPICA.Renderer.GUI
 {
-    class GUILabel : GUIControl
+    public class GUILabel : GUIControl
     {
         private Font TextFont;
         private Brush TextBrush;
@@ -18,10 +17,10 @@ namespace SPICA.Renderer.GUI
         public string Text
         {
             get { return _Text; }
-            set { _Text = value; SetNewText(); }
+            set { _Text = value; UploadNewText(); }
         }
 
-        public GUILabel(Vector2 Position, string Text) : base(Position)
+        public GUILabel(int X, int Y, GUIDockMode DockMode, string Text) : base(X, Y, DockMode)
         {
             TextFont = new Font(FontFamily.GenericMonospace, 14, FontStyle.Bold);
             TextBrush = Brushes.White;
@@ -44,18 +43,16 @@ namespace SPICA.Renderer.GUI
             if (Text != null) RenderQuad();
         }
 
-        private void SetNewText()
+        internal override void Resize()
+        {
+            GetTextSize();
+        }
+
+        private void UploadNewText()
         {
             int[] Viewport = new int[4];
 
-            GL.GetInteger(GetPName.Viewport, Viewport);
-
-            int ScrnWidth = Viewport[2];
-            int ScrnHeight = Viewport[3];
-
             SizeF TextSize = GetTextSize();
-
-            CreateQuad(new Vector2(TextSize.Width / ScrnWidth, TextSize.Height / ScrnHeight));
 
             using (Bitmap Img = new Bitmap((int)TextSize.Width, (int)TextSize.Height))
             {
@@ -79,13 +76,19 @@ namespace SPICA.Renderer.GUI
         private SizeF GetTextSize()
         {
             //TODO: Find a less hacky way to measure the text
+            SizeF Size;
+
             using (Bitmap Img = new Bitmap(1, 1))
             {
                 using (Graphics g = Graphics.FromImage(Img))
                 {
-                    return g.MeasureString(_Text, TextFont);
+                    Size = g.MeasureString(_Text, TextFont);
                 }
             }
+
+            CreateQuad(new Vector2(Size.Width, Size.Height));
+
+            return Size;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace SPICA.Renderer.Animation
             {
                 Scale[Index] = TexCoords[Index].Scale.ToVector2();
                 Rot[Index]   = TexCoords[Index].Rotation;
-                Trans[Index] = TexCoords[Index].Scale.ToVector2();
+                Trans[Index] = TexCoords[Index].Translation.ToVector2();
             }
 
             if (BaseAnimation != null)
@@ -64,8 +64,8 @@ namespace SPICA.Renderer.Animation
 
             for (int Index = 0; Index < 3; Index++)
             {
-                Transforms[Index].Transform = Matrix2.CreateScale(Scale[Index]);
-                Transforms[Index].Transform *= Matrix2.CreateRotation(Rot[Index]);
+                Transforms[Index].Scale       = Scale[Index];
+                Transforms[Index].Transform   = Matrix2.CreateRotation(Rot[Index]);
                 Transforms[Index].Translation = Trans[Index];
             }
 

@@ -29,6 +29,7 @@ uniform vec4 FixedBone;
 uniform vec4 FixedWeight;
 
 struct UVTransform_t {
+	vec2 Scale;
     mat2 Transform;
     vec2 Translation;
 };
@@ -150,9 +151,10 @@ void main() {
 }
 
 vec2 TransformUV(vec2 UV, int Index) {
-    UV -= 0.5f;
+	//Note: The 0.5 offset is to rotate around the center
+    UV = (UV * UVTransforms[Index].Scale) - 0.5f;
     UV = UVTransforms[Index].Transform * UV;
     UV += UVTransforms[Index].Translation + 0.5f;
-    
+
     return UV;
 }

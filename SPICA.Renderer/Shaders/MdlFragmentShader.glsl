@@ -231,7 +231,7 @@ void main() {
         FragPrimaryColor += Diffuse;
         FragSecondaryColor += Specular;
     }
-    
+
     vec4 CombBuffer = BuffColor;
     
     for (int Stage = 0; Stage < 6; Stage++) {

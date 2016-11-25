@@ -27,10 +27,14 @@ namespace SPICA.Formats.GFL2.Motion
         public GFSkeletonMot SkeletalAnimation;
         public GFMaterialMot MaterialAnimation;
 
+        public int Index;
+
         public GFMotion() { }
 
-        public GFMotion(BinaryReader Reader)
+        public GFMotion(BinaryReader Reader, int Index)
         {
+            this.Index = Index;
+
             long Position = Reader.BaseStream.Position;
 
             uint MagicNumber = Reader.ReadUInt32();
