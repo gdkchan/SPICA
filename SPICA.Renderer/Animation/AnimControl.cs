@@ -21,6 +21,8 @@ namespace SPICA.Renderer.Animation
         public void SetAnimation(H3DAnimation BaseAnimation)
         {
             this.BaseAnimation = BaseAnimation;
+
+            Frame = 0;
         }
 
         public void AdvanceFrame()
@@ -33,7 +35,28 @@ namespace SPICA.Renderer.Animation
                 {
                     Frame -= BaseAnimation.FramesCount;
                 }
+                else if (Frame < 0)
+                {
+                    Frame += BaseAnimation.FramesCount;
+                }
             }
+        }
+
+        public void SlowDown()
+        {
+            if (State == AnimState.Playing && Step > 0.125f) Step *= 0.5f;
+        }
+
+        public void SpeedUp()
+        {
+            if (State == AnimState.Playing && Step < 8) Step *= 2;
+        }
+
+        public void Play(float Step)
+        {
+            this.Step = Step;
+
+            Play();
         }
 
         public void Play()
@@ -49,6 +72,7 @@ namespace SPICA.Renderer.Animation
         public void Stop()
         {
             Pause();
+
             Frame = 0;
         }
     }

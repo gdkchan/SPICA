@@ -2,12 +2,14 @@
 using OpenTK.Graphics;
 
 using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Renderer;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
 
 using System;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -15,15 +17,18 @@ namespace SPICA.WinForms
 {
     public partial class FrmMain : Form
     {
-        RenderEngine Renderer;
+        private Timer Animator;
+        private GLControl Viewport;
+        private RenderEngine Renderer;
 
         private H3D SceneData;
+        private Model Model;
 
         private Bitmap[] CachedTextures;
 
-        Vector2 InitialRot;
-        Vector2 InitialMov;
-        Vector2 FinalMov;
+        private Vector2 InitialRot;
+        private Vector2 InitialMov;
+        private Vector2 FinalMov;
 
         private Vector3 MdlCenter;
 
@@ -31,19 +36,24 @@ namespace SPICA.WinForms
         private float Zoom;
         private float Step;
 
-        private Model Model;
-
-        GLControl Viewport;
-
         private bool IgnoreClicks;
 
         public FrmMain()
         {
             InitializeComponent();
 
+            Animator = new Timer();
+
+            Animator.Interval = 16; //1000 / 60 = ~16 for 60 fps
+
+            Animator.Tick += Animator_Tick;
+
             Toolkit.Init();
 
             Viewport = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8));
+
+            Viewport.CreateControl();
+            Viewport.MakeCurrent();
 
             Viewport.VSync = true;
             Viewport.Dock = DockStyle.Fill;
@@ -59,15 +69,15 @@ namespace SPICA.WinForms
 
             TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);
-        }
 
-        private void FrmMain_Load(object sender, EventArgs e)
-        {
             Renderer = new RenderEngine(Viewport.Width, Viewport.Height);
 
             Renderer.SetBackgroundColor(Color.Gray);
         }
 
+        //
+        // Viewport controls
+        //
         private void Viewport_MouseDown(object sender, MouseEventArgs e)
         {
             if (!IgnoreClicks)
@@ -113,7 +123,7 @@ namespace SPICA.WinForms
 
                 InitialRot = new Vector2(e.X, e.Y);
 
-                Viewport.Invalidate();
+                UpdateViewport();
             }
         }
 
@@ -128,15 +138,13 @@ namespace SPICA.WinForms
 
                 UpdateTranslation();
 
-                Viewport.Invalidate();
+                UpdateViewport();
             }
         }
 
         private void Viewport_Paint(object sender, PaintEventArgs e)
         {
             Viewport.MakeCurrent();
-
-            Model?.Animate();
 
             Renderer.RenderScene();
 
@@ -147,7 +155,7 @@ namespace SPICA.WinForms
         {
             Renderer?.UpdateResolution(Viewport.Width, Viewport.Height);
 
-            Viewport.Invalidate();
+            UpdateViewport();
         }
 
         //Menu items
@@ -229,9 +237,10 @@ namespace SPICA.WinForms
 
             IgnoreClicks = false;
 
-            Viewport.Invalidate();
+            UpdateViewport();
         }
 
+        //Side menu
         private void ModelsList_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ModelsList.SelectedIndex != -1 && Model != null)
@@ -258,7 +267,7 @@ namespace SPICA.WinForms
 
             UpdateTranslation();
 
-            Viewport.Invalidate();
+            UpdateViewport();
         }
 
         private void UpdateTranslation()
@@ -300,6 +309,134 @@ namespace SPICA.WinForms
             for (int Index = 0; Index < CachedTextures.Length; Index++)
             {
                 CachedTextures[Index] = SceneData.Textures[Index].ToBitmap();
+            }
+        }
+
+        //Viewport update management
+        private void Animator_Tick(object sender, EventArgs e)
+        {
+            Model.Animate();
+
+            AnimSeekBar.Value = Model.SkeletalAnimation.Frame;
+
+            Viewport.Invalidate();
+        }
+
+        private void EnableAnimator()
+        {
+            Animator.Enabled = true;
+        }
+
+        private void DisableAnimator()
+        {
+            Animator.Enabled = false; Viewport.Invalidate();
+        }
+
+        private void UpdateViewport()
+        {
+            if (!Animator.Enabled) Viewport.Invalidate();
+        }
+
+        //
+        // Animation playback controls
+        //
+
+        //Side menu
+        private void SklAnimsList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (SklAnimsList.SelectedIndex != -1)
+            {
+                H3DAnimation SklAnim = SceneData.SkeletalAnimations[SklAnimsList.SelectedIndex];
+
+                Model.SkeletalAnimation.SetAnimation(SklAnim);
+
+                AnimSeekBar.Maximum = SklAnim.FramesCount;
+
+                int MatAnimIndex = SceneData.MaterialAnimations.FindIndex(SklAnim.Name);
+
+                if (MatAnimIndex != -1)
+                {
+                    Model.MaterialAnimation.SetAnimation(SceneData.MaterialAnimations[MatAnimIndex]);
+                }
+            }
+        }
+
+        //Playback bar
+        private void AnimButtonPlayBackward_Click(object sender, EventArgs e)
+        {
+            if (Model != null)
+            {
+                Model.SkeletalAnimation.Play(-1);
+                Model.MaterialAnimation.Play(-1);
+
+                EnableAnimator();
+            }
+        }
+
+        private void AnimButtonPlayForward_Click(object sender, EventArgs e)
+        {
+            if (Model != null)
+            {
+                Model.SkeletalAnimation.Play(1);
+                Model.MaterialAnimation.Play(1);
+
+                EnableAnimator();
+            }
+        }
+
+        private void AnimButtonPause_Click(object sender, EventArgs e)
+        {
+            if (Model != null)
+            {
+                Model.SkeletalAnimation.Pause();
+                Model.MaterialAnimation.Pause();
+
+                DisableAnimator();
+            }
+        }
+
+        private void AnimButtonStop_Click(object sender, EventArgs e)
+        {
+            if (Model != null)
+            {
+                Model.SkeletalAnimation.Stop();
+                Model.MaterialAnimation.Stop();
+
+                DisableAnimator();
+            }
+        }
+
+        private void AnimButtonSlowDown_Click(object sender, EventArgs e)
+        {
+            Model?.SkeletalAnimation.SlowDown();
+            Model?.MaterialAnimation.SlowDown();
+        }
+
+        private void AnimButtonSpeedUp_Click(object sender, EventArgs e)
+        {
+            Model?.SkeletalAnimation.SpeedUp();
+            Model?.MaterialAnimation.SpeedUp();
+        }
+
+        private void AnimSeekBar_MouseUp(object sender, MouseEventArgs e)
+        {
+            Model?.SkeletalAnimation.Play();
+            Model?.MaterialAnimation.Play();
+        }
+
+        private void AnimSeekBar_Seek(object sender, EventArgs e)
+        {
+            if (Model != null)
+            {
+                Model.SkeletalAnimation.Pause();
+                Model.MaterialAnimation.Pause();
+
+                Model.SkeletalAnimation.Frame = AnimSeekBar.Value;
+                Model.MaterialAnimation.Frame = AnimSeekBar.Value;
+
+                Model.UpdateSkeletonTransform();
+
+                UpdateViewport();
             }
         }
     }

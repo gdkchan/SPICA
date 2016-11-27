@@ -225,10 +225,15 @@ namespace SPICA.Renderer
 
         public void Animate()
         {
-            SkeletonTransform[CurrModel] = SkeletalAnimation.GetSkeletonTransform(Skeletons[CurrModel]);
+            UpdateSkeletonTransform();
 
             SkeletalAnimation.AdvanceFrame();
             MaterialAnimation.AdvanceFrame();
+        }
+
+        public void UpdateSkeletonTransform()
+        {
+            SkeletonTransform[CurrModel] = SkeletalAnimation.GetSkeletonTransform(Skeletons[CurrModel]);
         }
 
         public void ResetTransform()

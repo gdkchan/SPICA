@@ -9,8 +9,22 @@ namespace SPICA.WinForms.GUI
     {
         private bool Hover;
 
+        private Bitmap _Icon;
+
         [Category("Appearance"), Description("Icon of the button.")]
-        public Bitmap Icon { get; set; }
+        public Bitmap Icon
+        {
+            get
+            {
+                return _Icon;
+            }
+            set
+            {
+                _Icon = value;
+
+                Invalidate();
+            }
+        }
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -20,13 +34,13 @@ namespace SPICA.WinForms.GUI
                 new SolidBrush(Color.FromArgb(0x3f, Color.Black)),
                 new Rectangle(0, 1, Width, Height - 2));
 
-            if (Icon != null)
+            if (_Icon != null)
             {
-                e.Graphics.DrawImage(Icon, new Rectangle(
-                    (Width / 2) - (Icon.Width / 2),
-                    (Height / 2) - (Icon.Height / 2),
-                    Icon.Width,
-                    Icon.Height));
+                e.Graphics.DrawImage(_Icon, new Rectangle(
+                    (Width / 2) - (_Icon.Width / 2),
+                    (Height / 2) - (_Icon.Height / 2),
+                    _Icon.Width,
+                    _Icon.Height));
             }
         }
 

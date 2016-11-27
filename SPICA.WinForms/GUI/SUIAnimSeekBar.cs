@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms.GUI
@@ -90,82 +91,88 @@ namespace SPICA.WinForms.GUI
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.Clear(BackColor);
-
-            Rectangle Rect = new Rectangle(MarginX, 1, Width - MarginX * 2, Height - 2);
-
-            int CurX = (int)(Max > 0 ? ((Value / Max) * Rect.Width) : 0) + Rect.X - 1;
-
-            //Cursor line
-            e.Graphics.DrawLine(
-                new Pen(CursorColor), 
-                new Point(CurX, Rect.Y), 
-                new Point(CurX, Rect.Y + Rect.Height - 1));
-
-            //Draw a triangle on the bottom side of the cursor
-            int HalfH = Rect.Height >> 1;
-
-            Point[] Points = new Point[3];
-
-            Points[0] = new Point(CurX - 4, Rect.Y + Rect.Height); //Left
-            Points[1] = new Point(CurX + 4, Rect.Y + Rect.Height); //Right
-            Points[2] = new Point(CurX, Rect.Y + HalfH); //Middle
-
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            e.Graphics.FillPolygon(new SolidBrush(CursorColor), Points);
+
+            e.Graphics.Clear(Parent.BackColor);
+
+            Brush TextBrush = new SolidBrush(ForeColor);
+            Rectangle Rect = new Rectangle(MarginX, 3, Width - MarginX * 2, Height - 6);
+
+            e.Graphics.FillRectangle(new SolidBrush(BackColor), Rect);
+
+            int HalfH = Rect.Height >> 1;
 
             //"Ruler"
             if (Max > 0)
             {
-                double LastFrame = 0;
+                int Index = 1;
 
                 float PartStep = Rect.Width / Max;
+                float FrameStep = Math.Max(RulerMinDist / PartStep, 1);
 
-                float RulerStep = Math.Max(RulerMinDist / PartStep, 1);
-
-                if (RulerStep > 1) PartStep *= RulerStep;
+                if (FrameStep > 1) PartStep = RulerMinDist;
 
                 int HalfStep = (int)PartStep >> 1;
 
-                for (int Index = 1; LastFrame < Max; Index++)
+                for (float Frame = FrameStep; Frame <= Max; Frame += FrameStep, Index++)
                 {
-                    LastFrame = Math.Round(Index * RulerStep);
-
                     int RulerX = (int)(Index * PartStep) + Rect.X - 1;
 
-                    //Middle line
+                    //Short line
                     e.Graphics.DrawLine(
                         new Pen(ForeColor),
-                        new Point(RulerX - HalfStep, Rect.Y),
-                        new Point(RulerX - HalfStep, Rect.Y + HalfH >> 1));
+                        new Point(RulerX - HalfStep, Rect.Y + 1),
+                        new Point(RulerX - HalfStep, Rect.Y + 1 + HalfH >> 1));
 
-                    if (RulerX >= Rect.X + Rect.Width) break;
-
-                    //Bigger line
+                    //Longer line
                     e.Graphics.DrawLine(
                         new Pen(ForeColor), 
-                        new Point(RulerX, Rect.Y), 
-                        new Point(RulerX, Rect.Y + HalfH));
+                        new Point(RulerX, Rect.Y + 1), 
+                        new Point(RulerX, Rect.Y + 1 + HalfH));
 
                     //Frame number
-                    string Text = LastFrame.ToString();
+                    string Text = Frame.ToString("0.0", CultureInfo.InvariantCulture);
                     int TextWidth = (int)e.Graphics.MeasureString(Text, Font).Width;
 
-                    Brush TestBrush = new SolidBrush(ForeColor);
                     Point TextPt = new Point(RulerX - TextWidth, Rect.Y);
 
-                    e.Graphics.DrawString(Text, Font, TestBrush, TextPt);
+                    e.Graphics.DrawString(Text, Font, TextBrush, TextPt);
                 }
             }
 
-            //Draw inward box shade effect
-            Pen DarkShade = new Pen(Color.FromArgb(0x3f, Color.Black));
-            Pen BrighShade = new Pen(Color.FromArgb(0x3f, Color.White));
+            //Draw inset box shade effect
+            int L = Rect.X + 1;
+            int T = Rect.Y + 1;
 
-            e.Graphics.DrawLine(DarkShade, Point.Empty, new Point(Width - 1, 0));
-            e.Graphics.DrawLine(DarkShade, Point.Empty, new Point(0, Height - 1));
-            e.Graphics.DrawLine(BrighShade, new Point(Width - 1, Height - 1), new Point(Width - 1, 0));
-            e.Graphics.DrawLine(BrighShade, new Point(Width - 1, Height - 1), new Point(0, Height - 1));
+            int R = L + Rect.Width - 2;
+            int B = T + Rect.Height - 2;
+
+            Pen DarkShade = new Pen(Color.FromArgb(0x3f, Color.Black), 2);
+            Pen BrighShade = new Pen(Color.FromArgb(0x3f, Color.White), 2);
+
+            e.Graphics.DrawLine(DarkShade, new Point(L, T), new Point(R, T));
+            e.Graphics.DrawLine(DarkShade, new Point(L, T), new Point(L, B));
+            e.Graphics.DrawLine(BrighShade, new Point(R, B), new Point(R, T));
+            e.Graphics.DrawLine(BrighShade, new Point(R, B), new Point(L, B));
+
+            e.Graphics.DrawRectangle(new Pen(Parent.BackColor), Rect);
+
+            //Cursor line
+            int CurX = (int)(Max > 0 ? ((Value / Max) * Rect.Width) : 0) + Rect.X - 1;
+
+            e.Graphics.DrawLine(
+                new Pen(CursorColor),
+                new Point(CurX, Rect.Y + 1),
+                new Point(CurX, Rect.Y + 1 + Rect.Height - 2));
+
+            //Draw a triangle on the bottom side of the cursor
+            Point[] Points = new Point[3];
+
+            Points[0] = new Point(CurX - 4, Rect.Y + 1 + Rect.Height - 2); //Left
+            Points[1] = new Point(CurX + 4, Rect.Y + 1 + Rect.Height - 2); //Right
+            Points[2] = new Point(CurX,     Rect.Y + 1 + HalfH); //Middle
+
+            e.Graphics.FillPolygon(new SolidBrush(CursorColor), Points);
         }
 
         protected override void OnMouseDown(MouseEventArgs e)

@@ -36,7 +36,6 @@
             this.AnimControlsPanel = new System.Windows.Forms.Panel();
             this.LblAnimSpeed = new System.Windows.Forms.Label();
             this.LblAnimLoopMode = new System.Windows.Forms.Label();
-            this.MainContainer = new System.Windows.Forms.SplitContainer();
             this.ToolButtonOpen = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonSave = new System.Windows.Forms.ToolStripButton();
             this.MenuSeparatorShowHideJustIgnore = new System.Windows.Forms.ToolStripSeparator();
@@ -47,6 +46,7 @@
             this.MenuButtonShowInfo = new System.Windows.Forms.ToolStripButton();
             this.MenuButtonShowSideMenu = new System.Windows.Forms.ToolStripButton();
             this.TopIcons = new System.Windows.Forms.ToolStrip();
+            this.MainContainer = new System.Windows.Forms.SplitContainer();
             this.SideTabs = new SPICA.WinForms.GUI.SUITabControl();
             this.TabPageModels = new System.Windows.Forms.TabPage();
             this.ModelsList = new SPICA.WinForms.GUI.SUIList();
@@ -57,18 +57,20 @@
             this.TabPageMdlAnims = new System.Windows.Forms.TabPage();
             this.SklAnimsList = new SPICA.WinForms.GUI.SUIList();
             this.AnimSeekBar = new SPICA.WinForms.GUI.SUIAnimSeekBar();
-            this.suiIconButton6 = new SPICA.WinForms.GUI.SUIIconButton();
-            this.suiIconButton5 = new SPICA.WinForms.GUI.SUIIconButton();
-            this.suiIconButton4 = new SPICA.WinForms.GUI.SUIIconButton();
-            this.suiIconButton3 = new SPICA.WinForms.GUI.SUIIconButton();
-            this.suiIconButton2 = new SPICA.WinForms.GUI.SUIIconButton();
-            this.suiIconButton1 = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonPrev = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonSlowDown = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonPlayBackward = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonPlayForward = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonPause = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonStop = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonSpeedUp = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonNext = new SPICA.WinForms.GUI.SUIIconButton();
             this.TopMenu.SuspendLayout();
             this.AnimControlsPanel.SuspendLayout();
+            this.TopIcons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).BeginInit();
             this.MainContainer.Panel2.SuspendLayout();
             this.MainContainer.SuspendLayout();
-            this.TopIcons.SuspendLayout();
             this.SideTabs.SuspendLayout();
             this.TabPageModels.SuspendLayout();
             this.TabPageTextures.SuspendLayout();
@@ -112,12 +114,14 @@
             // AnimControlsPanel
             // 
             this.AnimControlsPanel.Controls.Add(this.AnimSeekBar);
-            this.AnimControlsPanel.Controls.Add(this.suiIconButton6);
-            this.AnimControlsPanel.Controls.Add(this.suiIconButton5);
-            this.AnimControlsPanel.Controls.Add(this.suiIconButton4);
-            this.AnimControlsPanel.Controls.Add(this.suiIconButton3);
-            this.AnimControlsPanel.Controls.Add(this.suiIconButton2);
-            this.AnimControlsPanel.Controls.Add(this.suiIconButton1);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonPrev);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonSlowDown);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonPlayBackward);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonPlayForward);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonPause);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonStop);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonSpeedUp);
+            this.AnimControlsPanel.Controls.Add(this.AnimButtonNext);
             this.AnimControlsPanel.Controls.Add(this.LblAnimSpeed);
             this.AnimControlsPanel.Controls.Add(this.LblAnimLoopMode);
             this.AnimControlsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -148,19 +152,6 @@
             this.LblAnimLoopMode.TabIndex = 0;
             this.LblAnimLoopMode.Text = "1 GO";
             this.LblAnimLoopMode.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // MainContainer
-            // 
-            this.MainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MainContainer.Location = new System.Drawing.Point(0, 54);
-            this.MainContainer.Name = "MainContainer";
-            // 
-            // MainContainer.Panel2
-            // 
-            this.MainContainer.Panel2.Controls.Add(this.SideTabs);
-            this.MainContainer.Size = new System.Drawing.Size(784, 477);
-            this.MainContainer.SplitterDistance = 580;
-            this.MainContainer.TabIndex = 0;
             // 
             // ToolButtonOpen
             // 
@@ -274,6 +265,19 @@
             this.TopIcons.Size = new System.Drawing.Size(784, 30);
             this.TopIcons.TabIndex = 3;
             this.TopIcons.Text = "toolStrip1";
+            // 
+            // MainContainer
+            // 
+            this.MainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MainContainer.Location = new System.Drawing.Point(0, 54);
+            this.MainContainer.Name = "MainContainer";
+            // 
+            // MainContainer.Panel2
+            // 
+            this.MainContainer.Panel2.Controls.Add(this.SideTabs);
+            this.MainContainer.Size = new System.Drawing.Size(784, 477);
+            this.MainContainer.SplitterDistance = 580;
+            this.MainContainer.TabIndex = 0;
             // 
             // SideTabs
             // 
@@ -392,79 +396,100 @@
             this.SklAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
             this.SklAnimsList.Size = new System.Drawing.Size(163, 463);
             this.SklAnimsList.TabIndex = 3;
+            this.SklAnimsList.SelectedIndexChanged += new System.EventHandler(this.SklAnimsList_SelectedIndexChanged);
             // 
             // AnimSeekBar
             // 
             this.AnimSeekBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
-            this.AnimSeekBar.CursorColor = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(183)))), ((int)(((byte)(123)))));
+            this.AnimSeekBar.CursorColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(209)))), ((int)(((byte)(134)))));
             this.AnimSeekBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AnimSeekBar.ForeColor = System.Drawing.Color.White;
+            this.AnimSeekBar.ForeColor = System.Drawing.Color.Gainsboro;
             this.AnimSeekBar.Location = new System.Drawing.Point(1, 1);
-            this.AnimSeekBar.Maximum = 0F;
+            this.AnimSeekBar.Maximum = 10F;
             this.AnimSeekBar.Name = "AnimSeekBar";
-            this.AnimSeekBar.Size = new System.Drawing.Size(534, 27);
+            this.AnimSeekBar.Size = new System.Drawing.Size(478, 27);
             this.AnimSeekBar.TabIndex = 8;
-            this.AnimSeekBar.Value = 0F;
+            this.AnimSeekBar.Value = 2F;
+            this.AnimSeekBar.Seek += new System.EventHandler(this.AnimSeekBar_Seek);
+            this.AnimSeekBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AnimSeekBar_MouseUp);
             // 
-            // suiIconButton6
+            // AnimButtonPrev
             // 
-            this.suiIconButton6.Dock = System.Windows.Forms.DockStyle.Right;
-            this.suiIconButton6.Icon = null;
-            this.suiIconButton6.Location = new System.Drawing.Point(535, 1);
-            this.suiIconButton6.Name = "suiIconButton6";
-            this.suiIconButton6.Size = new System.Drawing.Size(28, 27);
-            this.suiIconButton6.TabIndex = 7;
-            this.suiIconButton6.Text = "suiIconButton6";
+            this.AnimButtonPrev.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPrev.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPrev.Icon")));
+            this.AnimButtonPrev.Location = new System.Drawing.Point(479, 1);
+            this.AnimButtonPrev.Name = "AnimButtonPrev";
+            this.AnimButtonPrev.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPrev.TabIndex = 9;
             // 
-            // suiIconButton5
+            // AnimButtonSlowDown
             // 
-            this.suiIconButton5.Dock = System.Windows.Forms.DockStyle.Right;
-            this.suiIconButton5.Icon = null;
-            this.suiIconButton5.Location = new System.Drawing.Point(563, 1);
-            this.suiIconButton5.Name = "suiIconButton5";
-            this.suiIconButton5.Size = new System.Drawing.Size(28, 27);
-            this.suiIconButton5.TabIndex = 6;
-            this.suiIconButton5.Text = "suiIconButton5";
+            this.AnimButtonSlowDown.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonSlowDown.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSlowDown.Icon")));
+            this.AnimButtonSlowDown.Location = new System.Drawing.Point(507, 1);
+            this.AnimButtonSlowDown.Name = "AnimButtonSlowDown";
+            this.AnimButtonSlowDown.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonSlowDown.TabIndex = 10;
+            this.AnimButtonSlowDown.Click += new System.EventHandler(this.AnimButtonSlowDown_Click);
             // 
-            // suiIconButton4
+            // AnimButtonPlayBackward
             // 
-            this.suiIconButton4.Dock = System.Windows.Forms.DockStyle.Right;
-            this.suiIconButton4.Icon = null;
-            this.suiIconButton4.Location = new System.Drawing.Point(591, 1);
-            this.suiIconButton4.Name = "suiIconButton4";
-            this.suiIconButton4.Size = new System.Drawing.Size(28, 27);
-            this.suiIconButton4.TabIndex = 5;
-            this.suiIconButton4.Text = "suiIconButton4";
+            this.AnimButtonPlayBackward.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPlayBackward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayBackward.Icon")));
+            this.AnimButtonPlayBackward.Location = new System.Drawing.Point(535, 1);
+            this.AnimButtonPlayBackward.Name = "AnimButtonPlayBackward";
+            this.AnimButtonPlayBackward.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPlayBackward.TabIndex = 7;
+            this.AnimButtonPlayBackward.Click += new System.EventHandler(this.AnimButtonPlayBackward_Click);
             // 
-            // suiIconButton3
+            // AnimButtonPlayForward
             // 
-            this.suiIconButton3.Dock = System.Windows.Forms.DockStyle.Right;
-            this.suiIconButton3.Icon = null;
-            this.suiIconButton3.Location = new System.Drawing.Point(619, 1);
-            this.suiIconButton3.Name = "suiIconButton3";
-            this.suiIconButton3.Size = new System.Drawing.Size(28, 27);
-            this.suiIconButton3.TabIndex = 4;
-            this.suiIconButton3.Text = "suiIconButton3";
+            this.AnimButtonPlayForward.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPlayForward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayForward.Icon")));
+            this.AnimButtonPlayForward.Location = new System.Drawing.Point(563, 1);
+            this.AnimButtonPlayForward.Name = "AnimButtonPlayForward";
+            this.AnimButtonPlayForward.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPlayForward.TabIndex = 6;
+            this.AnimButtonPlayForward.Click += new System.EventHandler(this.AnimButtonPlayForward_Click);
             // 
-            // suiIconButton2
+            // AnimButtonPause
             // 
-            this.suiIconButton2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.suiIconButton2.Icon = null;
-            this.suiIconButton2.Location = new System.Drawing.Point(647, 1);
-            this.suiIconButton2.Name = "suiIconButton2";
-            this.suiIconButton2.Size = new System.Drawing.Size(28, 27);
-            this.suiIconButton2.TabIndex = 3;
-            this.suiIconButton2.Text = "suiIconButton2";
+            this.AnimButtonPause.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPause.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPause.Icon")));
+            this.AnimButtonPause.Location = new System.Drawing.Point(591, 1);
+            this.AnimButtonPause.Name = "AnimButtonPause";
+            this.AnimButtonPause.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPause.TabIndex = 5;
+            this.AnimButtonPause.Click += new System.EventHandler(this.AnimButtonPause_Click);
             // 
-            // suiIconButton1
+            // AnimButtonStop
             // 
-            this.suiIconButton1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.suiIconButton1.Icon = null;
-            this.suiIconButton1.Location = new System.Drawing.Point(675, 1);
-            this.suiIconButton1.Name = "suiIconButton1";
-            this.suiIconButton1.Size = new System.Drawing.Size(28, 27);
-            this.suiIconButton1.TabIndex = 2;
-            this.suiIconButton1.Text = "suiIconButton1";
+            this.AnimButtonStop.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonStop.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonStop.Icon")));
+            this.AnimButtonStop.Location = new System.Drawing.Point(619, 1);
+            this.AnimButtonStop.Name = "AnimButtonStop";
+            this.AnimButtonStop.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonStop.TabIndex = 4;
+            this.AnimButtonStop.Click += new System.EventHandler(this.AnimButtonStop_Click);
+            // 
+            // AnimButtonSpeedUp
+            // 
+            this.AnimButtonSpeedUp.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonSpeedUp.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSpeedUp.Icon")));
+            this.AnimButtonSpeedUp.Location = new System.Drawing.Point(647, 1);
+            this.AnimButtonSpeedUp.Name = "AnimButtonSpeedUp";
+            this.AnimButtonSpeedUp.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonSpeedUp.TabIndex = 3;
+            this.AnimButtonSpeedUp.Click += new System.EventHandler(this.AnimButtonSpeedUp_Click);
+            // 
+            // AnimButtonNext
+            // 
+            this.AnimButtonNext.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonNext.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonNext.Icon")));
+            this.AnimButtonNext.Location = new System.Drawing.Point(675, 1);
+            this.AnimButtonNext.Name = "AnimButtonNext";
+            this.AnimButtonNext.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonNext.TabIndex = 2;
             // 
             // FrmMain
             // 
@@ -481,15 +506,14 @@
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SPICA";
-            this.Load += new System.EventHandler(this.FrmMain_Load);
             this.TopMenu.ResumeLayout(false);
             this.TopMenu.PerformLayout();
             this.AnimControlsPanel.ResumeLayout(false);
+            this.TopIcons.ResumeLayout(false);
+            this.TopIcons.PerformLayout();
             this.MainContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).EndInit();
             this.MainContainer.ResumeLayout(false);
-            this.TopIcons.ResumeLayout(false);
-            this.TopIcons.PerformLayout();
             this.SideTabs.ResumeLayout(false);
             this.TabPageModels.ResumeLayout(false);
             this.TabPageTextures.ResumeLayout(false);
@@ -520,12 +544,12 @@
         private System.Windows.Forms.Label LblAnimSpeed;
         private System.Windows.Forms.Label LblAnimLoopMode;
         private GUI.SUIAnimSeekBar AnimSeekBar;
-        private GUI.SUIIconButton suiIconButton6;
-        private GUI.SUIIconButton suiIconButton5;
-        private GUI.SUIIconButton suiIconButton4;
-        private GUI.SUIIconButton suiIconButton3;
-        private GUI.SUIIconButton suiIconButton2;
-        private GUI.SUIIconButton suiIconButton1;
+        private GUI.SUIIconButton AnimButtonPlayBackward;
+        private GUI.SUIIconButton AnimButtonPlayForward;
+        private GUI.SUIIconButton AnimButtonPause;
+        private GUI.SUIIconButton AnimButtonStop;
+        private GUI.SUIIconButton AnimButtonSpeedUp;
+        private GUI.SUIIconButton AnimButtonNext;
         private System.Windows.Forms.ToolStripButton ToolButtonOpen;
         private System.Windows.Forms.ToolStripButton ToolButtonSave;
         private System.Windows.Forms.ToolStripSeparator MenuSeparatorShowHideJustIgnore;
@@ -536,5 +560,7 @@
         private System.Windows.Forms.ToolStripButton MenuButtonShowInfo;
         private System.Windows.Forms.ToolStripButton MenuButtonShowSideMenu;
         private System.Windows.Forms.ToolStrip TopIcons;
+        private GUI.SUIIconButton AnimButtonSlowDown;
+        private GUI.SUIIconButton AnimButtonPrev;
     }
 }
