@@ -78,6 +78,12 @@
     <Compile Include="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\SUIAnimSeekBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="GUI\SUIIconButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI\SUIList.cs">
       <SubType>UserControl</SubType>
     </Compile>

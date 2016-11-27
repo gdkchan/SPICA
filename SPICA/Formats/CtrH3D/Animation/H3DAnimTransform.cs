@@ -1,4 +1,5 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 using System;
 using System.IO;
@@ -9,17 +10,17 @@ namespace SPICA.Formats.CtrH3D.Animation
     {
         private uint Flags;
 
-        [NonSerialized] public H3DFloatKeyFrameGroup ScaleX;
-        [NonSerialized] public H3DFloatKeyFrameGroup ScaleY;
-        [NonSerialized] public H3DFloatKeyFrameGroup ScaleZ;
+        [Ignore] public H3DFloatKeyFrameGroup ScaleX;
+        [Ignore] public H3DFloatKeyFrameGroup ScaleY;
+        [Ignore] public H3DFloatKeyFrameGroup ScaleZ;
 
-        [NonSerialized] public H3DFloatKeyFrameGroup RotationX;
-        [NonSerialized] public H3DFloatKeyFrameGroup RotationY;
-        [NonSerialized] public H3DFloatKeyFrameGroup RotationZ;
+        [Ignore] public H3DFloatKeyFrameGroup RotationX;
+        [Ignore] public H3DFloatKeyFrameGroup RotationY;
+        [Ignore] public H3DFloatKeyFrameGroup RotationZ;
 
-        [NonSerialized] public H3DFloatKeyFrameGroup TranslationX;
-        [NonSerialized] public H3DFloatKeyFrameGroup TranslationY;
-        [NonSerialized] public H3DFloatKeyFrameGroup TranslationZ;
+        [Ignore] public H3DFloatKeyFrameGroup TranslationX;
+        [Ignore] public H3DFloatKeyFrameGroup TranslationY;
+        [Ignore] public H3DFloatKeyFrameGroup TranslationZ;
 
         public H3DAnimTransform()
         {

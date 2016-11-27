@@ -2,6 +2,7 @@
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System;
@@ -28,15 +29,15 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 
-        [NonSerialized] public byte[] RawBufferXPos;
-        [NonSerialized] public byte[] RawBufferXNeg;
-        [NonSerialized] public byte[] RawBufferYPos;
-        [NonSerialized] public byte[] RawBufferYNeg;
-        [NonSerialized] public byte[] RawBufferZPos;
-        [NonSerialized] public byte[] RawBufferZNeg;
+        [Ignore] public byte[] RawBufferXPos;
+        [Ignore] public byte[] RawBufferXNeg;
+        [Ignore] public byte[] RawBufferYPos;
+        [Ignore] public byte[] RawBufferYNeg;
+        [Ignore] public byte[] RawBufferZPos;
+        [Ignore] public byte[] RawBufferZNeg;
 
-        [NonSerialized] public uint Width;
-        [NonSerialized] public uint Height;
+        [Ignore] public uint Width;
+        [Ignore] public uint Height;
 
         public H3DTexture() { }
 

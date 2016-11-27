@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
@@ -6,8 +6,8 @@ namespace SPICA.Formats.CtrH3D.Animation
     {
         private uint Flags;
 
-        [NonSerialized] public H3DFloatKeyFrameGroup X;
-        [NonSerialized] public H3DFloatKeyFrameGroup Y;
+        [Ignore] public H3DFloatKeyFrameGroup X;
+        [Ignore] public H3DFloatKeyFrameGroup Y;
 
         public H3DAnimVector2D()
         {

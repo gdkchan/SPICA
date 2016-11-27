@@ -104,9 +104,9 @@ namespace SPICA.Renderer
             }
         }
         
-        public Model AddModel(H3D BaseModel, int ModelIndex = 0)
+        public Model AddModel(H3D BaseModel)
         {
-            Model Model = new Model(BaseModel, ModelIndex, MdlShaderHandle);
+            Model Model = new Model(BaseModel, MdlShaderHandle);
 
             Models.Add(Model);
 
@@ -125,6 +125,11 @@ namespace SPICA.Renderer
             foreach (Model Mdl in Models) Mdl.Dispose();
 
             Models.Clear();
+        }
+
+        public void ResetView()
+        {
+            ViewMtx = Matrix4.Identity; UpdateView();
         }
 
         public void Rotate(Vector3 Rotation)
@@ -219,7 +224,16 @@ namespace SPICA.Renderer
 
         public void RemoveControl(GUIControl Control)
         {
+            Control.Dispose();
+
             Controls.Remove(Control);
+        }
+
+        public void ClearControls()
+        {
+            foreach (GUIControl Ctrl in Controls) Ctrl.Dispose();
+
+            Controls.Clear();
         }
 
         public void RenderScene()

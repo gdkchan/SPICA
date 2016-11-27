@@ -7,8 +7,6 @@ using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
-using System;
-
 namespace SPICA.Formats.CtrH3D.Model.Material
 {
     [Inline]
@@ -33,9 +31,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public string ObjectName { get { return Name; } }
 
-        [NonSerialized] public bool[] EnabledTextures;
+        [Ignore] public bool[] EnabledTextures;
 
-        [NonSerialized] public int[] TextureSources;
+        [Ignore] public int[] TextureSources;
 
         //This is a default material with 1 texture and default settings
         public static H3DMaterial Default

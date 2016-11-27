@@ -23,23 +23,23 @@ namespace SPICA.Renderer
         private Model Parent;
 
         public H3DMesh BaseMesh;
-        private List<H3DSubMesh> SubMeshes;
         private H3DMaterial Material;
+        private List<H3DSubMesh> SubMeshes;
 
         public Vector3 MeshCenter;
         private Vector4 PosOffset;
         private Vector4 Scales0;
         private Vector4 Scales1;
 
-        public Mesh(Model Parent, H3DMesh Mesh, int ShaderHandle)
+        public Mesh(Model Parent, H3DMesh Mesh, H3DMaterial Mat, int ShaderHandle)
         {
             this.ShaderHandle = ShaderHandle;
             
             this.Parent = Parent;
 
             BaseMesh = Mesh;
+            Material = Mat;
             SubMeshes = BaseMesh.SubMeshes;
-            Material = Parent.Materials[Mesh.MaterialIndex];
 
             MeshCenter = Mesh.MeshCenter.ToVector3();
             PosOffset = Mesh.PositionOffset.ToVector4();
@@ -362,11 +362,11 @@ namespace SPICA.Renderer
 
                 for (int Index = 0; Index < SubMesh.BoneIndicesCount; Index++)
                 {
-                    Matrix4 Transform = Parent.SkeletonTransform[SubMesh.BoneIndices[Index]];
+                    Matrix4 Transform = Parent.GetSkeletonTransform(SubMesh.BoneIndices[Index]);
 
                     if (SmoothSkin)
                     {
-                        Transform = Parent.InverseTransform[SubMesh.BoneIndices[Index]] * Transform;
+                        Transform = Parent.GetInverseTransform(SubMesh.BoneIndices[Index]) * Transform;
                     }
 
                     int Location = GL.GetUniformLocation(ShaderHandle, $"Transforms[{Index}]");

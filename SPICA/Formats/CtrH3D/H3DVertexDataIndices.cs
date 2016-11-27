@@ -1,7 +1,7 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
-using System;
 using System.IO;
 
 namespace SPICA.Formats.CtrH3D
@@ -27,8 +27,7 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
-        [NonSerialized]
-        public ushort[] Indices;
+        [Ignore] public ushort[] Indices;
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {

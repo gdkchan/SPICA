@@ -3,13 +3,13 @@
 
 precision highp float;
 
-#define POS	 0
-#define NORM	1
-#define TAN	 2
-#define COL	 3
-#define TEX0	0
-#define TEX1	1
-#define TEX2	2
+#define POS	    0
+#define NORM    1
+#define TAN	    2
+#define COL	    3
+#define TEX0    0
+#define TEX1    1
+#define TEX2    2
 #define WEIGHT  3
 
 uniform mat4 ProjMatrix;

@@ -1,4 +1,5 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,8 @@ namespace SPICA.Formats.CtrH3D
 {
     public class PatriciaTree : ICustomSerialization, IEnumerable<PatriciaTreeNode>
     {
-        [NonSerialized]
-        private List<PatriciaTreeNode> Nodes;
-
-        [NonSerialized]
-        private List<string> Names;
+        [Ignore] private List<PatriciaTreeNode> Nodes;
+        [Ignore] private List<string> Names;
 
         public PatriciaTreeNode this[int Index]
         {

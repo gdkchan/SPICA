@@ -8,7 +8,6 @@ namespace SPICA.PICA.Converters
 {
     static class TextureCompression
     {
-        //TODO: Alpha is probably wrong for ETC1A4
         private static byte[] XT = { 0, 4, 0, 4 };
         private static byte[] YT = { 0, 0, 4, 4 };
 
@@ -46,7 +45,9 @@ namespace SPICA.PICA.Converters
 
                                     Buffer.BlockCopy(Tile, TileOffset, Output, OOffs, 3);
 
-                                    byte A = (byte)((AlphaBlock >> TileOffset) & 0xf);
+                                    int AlphaShift = ((PX & 3) * 4 + (PY & 3)) << 2;
+
+                                    byte A = (byte)((AlphaBlock >> AlphaShift) & 0xf);
 
                                     Output[OOffs + 3] = (byte)((A << 4) | A);
 

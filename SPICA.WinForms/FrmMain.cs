@@ -7,6 +7,7 @@ using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
 
 using System;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -16,10 +17,17 @@ namespace SPICA.WinForms
     {
         RenderEngine Renderer;
 
+        private H3D SceneData;
+
+        private Bitmap[] CachedTextures;
+
         Vector2 InitialRot;
         Vector2 InitialMov;
         Vector2 FinalMov;
 
+        private Vector3 MdlCenter;
+
+        private float CamDist;
         private float Zoom;
         private float Step;
 
@@ -48,11 +56,6 @@ namespace SPICA.WinForms
             Viewport.Resize     += Viewport_Resize;
 
             MainContainer.Panel1.Controls.Add(Viewport);
-
-            for (int Index = 0; Index < 100; Index++)
-            {
-                ModelsList.AddItem($"Item_{Index}");
-            }
 
             TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);
@@ -147,11 +150,6 @@ namespace SPICA.WinForms
             Viewport.Invalidate();
         }
 
-        private void UpdateTranslation()
-        {
-            Renderer.TranslateAbs(new Vector3(-FinalMov.X, FinalMov.Y, Zoom));
-        }
-
         //Menu items
         private void MenuOpenFile_Click(object sender, EventArgs e)
         {
@@ -169,9 +167,9 @@ namespace SPICA.WinForms
 
                 if (OpenDlg.ShowDialog() == DialogResult.OK)
                 {
-                    H3D BCH = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileName);
+                    SceneData = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileName);
 
-                    if (BCH == null)
+                    if (SceneData == null)
                     {
                         MessageBox.Show(
                             "Unsupported file format!",
@@ -182,34 +180,45 @@ namespace SPICA.WinForms
                         return;
                     }
 
+                    //Bind Lists to H3D contents
+                    CacheTextures();
+
+                    SceneData.Textures.CollectionChanged +=
+                        delegate (object _sender, NotifyCollectionChangedEventArgs _e)
+                        {
+                            CacheTextures();
+                        };
+
+                    ModelsList.Bind(SceneData.Models);
+                    TexturesList.Bind(SceneData.Textures);
+                    SklAnimsList.Bind(SceneData.SkeletalAnimations);
+
+                    //Setup Renderer
                     Renderer.ClearModels();
 
-                    Model = Renderer.AddModel(BCH);
+                    Model = Renderer.AddModel(SceneData);
 
                     Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
 
-                    Vector3 Center = -CenterMax.Item1;
-                    float Maximum = CenterMax.Item2;
-
-                    Model.TranslateAbs(Center);
-                    Zoom = Center.Z - Maximum * 2;
-                    Step = Maximum * 0.05f;
+                    MdlCenter = -CenterMax.Item1;
+                    CamDist = CenterMax.Item2;
 
                     Renderer.ClearLights();
 
                     Renderer.AddLight(new Light
                     {
-                        Position = new Vector3(0, -Center.Y, -Zoom),
+                        Position = new Vector3(
+                            0, 
+                            -MdlCenter.Y, 
+                            -(MdlCenter.Z - CamDist * 2)),
                         Ambient = new Color4(0f, 0f, 0f, 0f),
                         Diffuse = new Color4(0.5f, 0.5f, 0.5f, 1f),
                         Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
                     });
 
-                    InitialRot = Vector2.Zero;
-                    InitialMov = Vector2.Zero;
-                    FinalMov = Vector2.Zero;
+                    if (SceneData.Models.Count > 0) ModelsList.Select(0);
 
-                    UpdateTranslation();
+                    ResetView();
                 }
             }
 
@@ -221,6 +230,77 @@ namespace SPICA.WinForms
             IgnoreClicks = false;
 
             Viewport.Invalidate();
+        }
+
+        private void ModelsList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ModelsList.SelectedIndex != -1 && Model != null)
+            {
+                Model.CurrentModelIndex = ModelsList.SelectedIndex;
+
+                ResetView();
+            }
+        }
+
+        private void ResetView()
+        {
+            Model.ResetTransform();
+
+            Model.TranslateAbs(MdlCenter);
+            Zoom = MdlCenter.Z - CamDist * 2;
+            Step = CamDist * 0.05f;
+
+            InitialRot = Vector2.Zero;
+            InitialMov = Vector2.Zero;
+            FinalMov = Vector2.Zero;
+
+            Renderer.ResetView();
+
+            UpdateTranslation();
+
+            Viewport.Invalidate();
+        }
+
+        private void UpdateTranslation()
+        {
+            Renderer.TranslateAbs(new Vector3(-FinalMov.X, FinalMov.Y, Zoom));
+        }
+
+        private void TexturesList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int Index = TexturesList.SelectedIndex;
+
+            if (Index != -1)
+            {
+                TexturePreview.Image = CachedTextures[Index];
+                TextureInfo.Text = string.Format("{0} {1}x{2} {3}",
+                    SceneData.Textures[Index].MipmapSize,
+                    SceneData.Textures[Index].Width,
+                    SceneData.Textures[Index].Height,
+                    SceneData.Textures[Index].Format);
+            }
+            else
+            {
+                TexturePreview.Image = null;
+                TextureInfo.Text = string.Empty;
+            }
+        }
+
+        private void CacheTextures()
+        {
+            if (CachedTextures != null)
+            {
+                foreach (Bitmap Img in CachedTextures) Img.Dispose();
+            }
+
+            //Cache the textures converted to bitmap to avoid making the conversion over and over again
+            //The cache needs to be updated when the original collection changes
+            CachedTextures = new Bitmap[SceneData.Textures.Count];
+
+            for (int Index = 0; Index < CachedTextures.Length; Index++)
+            {
+                CachedTextures[Index] = SceneData.Textures[Index].ToBitmap();
+            }
         }
     }
 }

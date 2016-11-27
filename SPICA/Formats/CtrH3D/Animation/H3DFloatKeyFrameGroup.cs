@@ -1,5 +1,6 @@
 ﻿using SPICA.Math3D;
 using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace SPICA.Formats.CtrH3D.Animation
         private float FrameScale;
         private float InvDuration;
 
-        [NonSerialized] public List<H3DFloatKeyFrame> KeyFrames;
+        [Ignore] public List<H3DFloatKeyFrame> KeyFrames;
 
         public bool HasData { get { return KeyFrames.Count > 0; } }
 

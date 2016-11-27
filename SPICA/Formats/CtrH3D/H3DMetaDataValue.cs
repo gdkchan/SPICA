@@ -1,4 +1,5 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System;
@@ -18,8 +19,7 @@ namespace SPICA.Formats.CtrH3D
 
         public H3DMetaDataType Type;
 
-        [NonSerialized]
-        public List<object> Values;
+        [Ignore] public List<object> Values;
 
         public object this[int Index]
         {

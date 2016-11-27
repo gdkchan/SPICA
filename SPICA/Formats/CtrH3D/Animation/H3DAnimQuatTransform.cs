@@ -1,8 +1,9 @@
 ﻿using SPICA.Math3D;
 using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -12,9 +13,9 @@ namespace SPICA.Formats.CtrH3D.Animation
     {
         private uint Flags;
 
-        [NonSerialized] public List<Vector3D> Scales;
-        [NonSerialized] public List<Quaternion> Rotations;
-        [NonSerialized] public List<Vector3D> Translations;
+        [Ignore] public List<Vector3D> Scales;
+        [Ignore] public List<Quaternion> Rotations;
+        [Ignore] public List<Vector3D> Translations;
 
         public bool HasScale { get { return Scales.Count > 0; } }
         public bool HasRotation { get { return Rotations.Count > 0; } }

@@ -102,6 +102,8 @@ namespace SPICA.Formats.GFL2.Model
         {
             H3DModel Output = new H3DModel();
 
+            Output.Name = Name;
+
             //Skeleton
             foreach (GFBone Bone in Skeleton)
             {

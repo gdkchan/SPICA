@@ -1,4 +1,5 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 using System;
 
@@ -11,7 +12,7 @@ namespace SPICA.Formats.CtrH3D.Animation
         public H3DAnimTargetType TargetType;
         public H3DAnimPrimitiveType PrimitiveType;
 
-        [NonSerialized] public object Content;
+        [Ignore] public object Content;
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {

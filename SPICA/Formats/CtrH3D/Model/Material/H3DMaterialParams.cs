@@ -6,8 +6,6 @@ using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Utils;
 
-using System;
-
 namespace SPICA.Formats.CtrH3D.Model.Material
 {
     public class H3DMaterialParams : ICustomSerialization, INamed
@@ -22,8 +20,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public H3DMaterialShader MaterialShader;
 
-        [Inline, FixedLength(3)]
-        public H3DTextureCoord[] TextureCoords;
+        [Inline, FixedLength(3)] public H3DTextureCoord[] TextureCoords;
 
         public ushort LightSetIndex;
         public ushort FogIndex;
@@ -100,42 +97,42 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMetaData MetaData;
 
         //LookUp Table
-        [NonSerialized] public PICALUTInputAbs LUTInputAbs;
-        [NonSerialized] public PICALUTInputSel LUTInputSel;
-        [NonSerialized] public PICALUTInputScaleSel LUTInputScaleSel;
+        [Ignore] public PICALUTInputAbs LUTInputAbs;
+        [Ignore] public PICALUTInputSel LUTInputSel;
+        [Ignore] public PICALUTInputScaleSel LUTInputScaleSel;
 
         //Fragment Lighting
-        [NonSerialized] public PICATexEnvStage[] TexEnvStages;
-        [NonSerialized] public PICATexEnvColor TexEnvBufferColor;
+        [Ignore] public PICATexEnvStage[] TexEnvStages;
+        [Ignore] public PICATexEnvColor TexEnvBufferColor;
 
-        [NonSerialized] public PICAColorOperation ColorOperation;
+        [Ignore] public PICAColorOperation ColorOperation;
 
-        [NonSerialized] public PICABlendFunction BlendFunction;
+        [Ignore] public PICABlendFunction BlendFunction;
 
-        [NonSerialized] public PICALogicalOperation LogicalOperation;
+        [Ignore] public PICALogicalOperation LogicalOperation;
 
-        [NonSerialized] public PICAAlphaTest AlphaTest;
+        [Ignore] public PICAAlphaTest AlphaTest;
 
-        [NonSerialized] public PICAStencilTest StencilTest;
+        [Ignore] public PICAStencilTest StencilTest;
 
-        [NonSerialized] public PICAStencilOperation StencilOperation;
+        [Ignore] public PICAStencilOperation StencilOperation;
 
-        [NonSerialized] public PICADepthColorMask DepthColorMask;
+        [Ignore] public PICADepthColorMask DepthColorMask;
 
-        [NonSerialized] public PICAFaceCulling FaceCulling;
+        [Ignore] public PICAFaceCulling FaceCulling;
 
-        [NonSerialized] public bool ColorBufferRead;
-        [NonSerialized] public bool ColorBufferWrite;
+        [Ignore] public bool ColorBufferRead;
+        [Ignore] public bool ColorBufferWrite;
 
-        [NonSerialized] public bool StencilBufferRead;
-        [NonSerialized] public bool StencilBufferWrite;
+        [Ignore] public bool StencilBufferRead;
+        [Ignore] public bool StencilBufferWrite;
 
-        [NonSerialized] public bool DepthBufferRead;
-        [NonSerialized] public bool DepthBufferWrite;
+        [Ignore] public bool DepthBufferRead;
+        [Ignore] public bool DepthBufferWrite;
 
-        [NonSerialized] public float[] TextureSources;
+        [Ignore] public float[] TextureSources;
 
-        [NonSerialized] internal H3DMaterial Parent;
+        [Ignore] internal H3DMaterial Parent;
 
         public string ObjectName { get { return Parent?.Name; } }
 

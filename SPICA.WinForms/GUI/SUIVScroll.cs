@@ -7,7 +7,6 @@ namespace SPICA.WinForms.GUI
 {
     class SUIVScroll : Control
     {
-
         //Private fields
         private Color CurrBarColor;
 
@@ -17,18 +16,44 @@ namespace SPICA.WinForms.GUI
         private int Max;
         private int ScrollY;
         private int BarY;
-
         private int BarHeight;
+
+        private Color _BarColor = Color.White;
+        private Color _BarColorHover = Color.Gray;
 
         //Public properties
         [Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
         public override string Text { get; set; }
 
         [Category("Appearance"), Description("Normal bar color.")]
-        public Color BarColor { get; set; } = Color.White;
+        public Color BarColor
+        {
+            get
+            {
+                return _BarColor;
+            }
+            set
+            {
+                _BarColor = value;
+
+                Invalidate();
+            }
+        }
 
         [Category("Appearance"), Description("Bar color when the mouse is hovering it.")]
-        public Color BarColorHover { get; set; } = Color.Gray;
+        public Color BarColorHover
+        {
+            get
+            {
+                return _BarColorHover;
+            }
+            set
+            {
+                _BarColorHover = value;
+
+                Invalidate();
+            }
+        }
 
         [Category("Behavior"), Description("Maximum scroll value that the bar can have.")]
         public int Maximum
@@ -46,18 +71,10 @@ namespace SPICA.WinForms.GUI
 
                 Max = value;
 
-                if (ScrollY > value)
-                {
-                    ScrollY = value;
-
-                    BarY = Math.Max(Height - BarHeight, 0);
-
-                    Invalidate();
-                }
+                if (ScrollY > Max)
+                    Value = Max; 
                 else
-                {
                     CalculateBarHeight();
-                }
             }
         }
 
@@ -76,6 +93,8 @@ namespace SPICA.WinForms.GUI
                 }
 
                 ScrollY = value;
+
+                ScrollChanged?.Invoke(this, EventArgs.Empty);
 
                 CalculateBarHeight();
             }

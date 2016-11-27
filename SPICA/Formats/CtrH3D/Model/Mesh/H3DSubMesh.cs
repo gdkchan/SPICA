@@ -36,9 +36,9 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
         }
 
-        [NonSerialized] internal ushort BoolUniforms;
+        [Ignore] internal ushort BoolUniforms;
 
-        [NonSerialized] public ushort[] Indices;
+        [Ignore] public ushort[] Indices;
 
         public H3DSubMesh()
         {

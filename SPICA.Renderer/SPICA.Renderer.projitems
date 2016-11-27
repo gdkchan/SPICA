@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Range.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shaders\Shader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Matrix.cs" />

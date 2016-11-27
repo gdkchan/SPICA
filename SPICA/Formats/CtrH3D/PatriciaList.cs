@@ -1,12 +1,13 @@
 ﻿using SPICA.Serialization.Attributes;
 
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace SPICA.Formats.CtrH3D
 {
     [Inline]
-    public class PatriciaList<T> : IEnumerable<T> where T : INamed
+    public class PatriciaList<T> : INotifyCollectionChanged, IEnumerable<T> where T : INamed
     {
         private List<T> Contents;
         private PatriciaTree NameTree;
@@ -25,6 +26,8 @@ namespace SPICA.Formats.CtrH3D
 
         public int Count { get { return Contents.Count; } }
 
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
         public PatriciaList()
         {
             Contents = new List<T>();
@@ -41,29 +44,42 @@ namespace SPICA.Formats.CtrH3D
             return GetEnumerator();
         }
 
+        private void OnCollectionChanged(NotifyCollectionChangedAction Action, T NewItem, int Index = -1)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(Action, NewItem, Index));
+        }
+
         //List management methods
         public void Add(T Value)
         {
             Contents.Add(Value);
             NameTree.Add(((INamed)Value).ObjectName);
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, Value);
         }
 
         public void Insert(int Index, T Value)
         {
             Contents.Insert(Index, Value);
             NameTree.Insert(Index, ((INamed)Value).ObjectName);
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Replace, Value, Index);
         }
 
         public void Remove(T Value)
         {
             Contents.Remove(Value);
             NameTree.Remove(((INamed)Value).ObjectName);
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Remove, Value);
         }
 
         public void Clear()
         {
             Contents.Clear();
             NameTree.Clear();
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Reset, default(T));
         }
 
         public int FindIndex(string Name)

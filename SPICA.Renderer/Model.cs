@@ -4,7 +4,6 @@ using OpenTK.Graphics.ES30;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
-using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Converters;
@@ -24,11 +23,10 @@ namespace SPICA.Renderer
 
         public List<Mesh> Meshes;
 
-        public PatriciaList<H3DMaterial> Materials;
-        private PatriciaList<H3DBone> Skeleton;
+        private PatriciaList<H3DBone>[] Skeletons;
 
-        internal Matrix4[] InverseTransform;
-        internal Matrix4[] SkeletonTransform;
+        private Matrix4[][] InverseTransform;
+        private Matrix4[][] SkeletonTransform;
 
         private Dictionary<string, int> TextureIds;
         private Dictionary<string, int> LUTHandles;
@@ -37,34 +35,76 @@ namespace SPICA.Renderer
         public SkeletalAnim SkeletalAnimation;
         public MaterialAnim MaterialAnimation;
 
-        public Model(H3D Model, int ModelIndex, int ShaderHandle)
+        //This is used to know the range of each Model
+        //Each model is basically a range of meshes
+        private Range[] MeshRanges;
+
+        private int CurrModel;
+
+        public int CurrentModelIndex
+        {
+            get
+            {
+                return CurrModel;
+            }
+            set
+            {
+                if (value < 0 || value >= MeshRanges.Length)
+                {
+                    throw new ArgumentOutOfRangeException(string.Format(InvalidModelIndexEx, MeshRanges.Length));
+                }
+
+                CurrModel = value;
+            }
+        }
+
+        private const string InvalidModelIndexEx = "Expected a value >= 0 and < {0}!";
+
+        public Model(H3D SceneData, int ShaderHandle)
         {
             this.ShaderHandle = ShaderHandle;
 
-            UpdateView(Transform = Matrix4.Identity);
+            ResetTransform();
 
             Meshes = new List<Mesh>();
 
-            Materials = Model.Models[ModelIndex].Materials;
-            Skeleton = Model.Models[ModelIndex].Skeleton;
+            Skeletons = new PatriciaList<H3DBone>[SceneData.Models.Count];
 
-            InverseTransform = new Matrix4[Skeleton.Count];
-            SkeletonTransform = new Matrix4[Skeleton.Count];
+            InverseTransform = new Matrix4[SceneData.Models.Count][];
+            SkeletonTransform = new Matrix4[SceneData.Models.Count][];
 
-            for (int Index = 0; Index < Skeleton.Count; Index++)
+            MeshRanges = new Range[SceneData.Models.Count];
+
+            int MeshStart = 0;
+
+            for (int Mdl = 0; Mdl < SceneData.Models.Count; Mdl++)
             {
-                InverseTransform[Index] = Skeleton[Index].InverseTransform.ToMatrix4();
-                SkeletonTransform[Index] = InverseTransform[Index].Inverted();
-            }
+                H3DModel Model = SceneData.Models[Mdl];
 
-            foreach (H3DMesh Mesh in Model.Models[ModelIndex].Meshes)
-            {
-                Meshes.Add(new Mesh(this, Mesh, ShaderHandle));
+                Skeletons[Mdl] = Model.Skeleton;
+
+                PatriciaList<H3DBone> Skeleton = Skeletons[Mdl];
+
+                InverseTransform[Mdl] = new Matrix4[Skeleton.Count];
+                SkeletonTransform[Mdl] = new Matrix4[Skeleton.Count];
+
+                for (int Bone = 0; Bone < Skeleton.Count; Bone++)
+                {
+                    InverseTransform[Mdl][Bone] = Skeleton[Bone].InverseTransform.ToMatrix4();
+                    SkeletonTransform[Mdl][Bone] = InverseTransform[Mdl][Bone].Inverted();
+                }
+
+                foreach (H3DMesh Mesh in Model.Meshes)
+                {
+                    Meshes.Add(new Mesh(this, Mesh, Model.Materials[Mesh.MaterialIndex], ShaderHandle));
+                }
+
+                MeshRanges[Mdl] = new Range(MeshStart, MeshStart += Model.Meshes.Count);
             }
 
             TextureIds = new Dictionary<string, int>();
 
-            foreach (H3DTexture Texture in Model.Textures)
+            foreach (H3DTexture Texture in SceneData.Textures)
             {
                 int TextureId = GL.GenTexture();
 
@@ -110,22 +150,20 @@ namespace SPICA.Renderer
             LUTHandles = new Dictionary<string, int>();
             IsLUTAbs = new Dictionary<string, bool>();
 
-            foreach (H3DLUT LUT in Model.LUTs)
+            foreach (H3DLUT LUT in SceneData.LUTs)
+            foreach (H3DLUTSampler Sampler in LUT.Samplers)
             {
-                foreach (H3DLUTSampler Sampler in LUT.Samplers)
-                {
-                    string Name = LUT.Name + "/" + Sampler.Name;
-                    bool IsAbs = (Sampler.Flags & H3DLUTFlags.IsAbsolute) != 0;
+                string Name = LUT.Name + "/" + Sampler.Name;
+                bool IsAbs = (Sampler.Flags & H3DLUTFlags.IsAbsolute) != 0;
 
-                    int UBOHandle = GL.GenBuffer();
+                int UBOHandle = GL.GenBuffer();
 
-                    GL.BindBuffer(BufferTarget.UniformBuffer, UBOHandle);
-                    GL.BufferData(BufferTarget.UniformBuffer, 1024, Sampler.Table, BufferUsageHint.StaticRead);
-                    GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+                GL.BindBuffer(BufferTarget.UniformBuffer, UBOHandle);
+                GL.BufferData(BufferTarget.UniformBuffer, 1024, Sampler.Table, BufferUsageHint.StaticRead);
+                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-                    LUTHandles.Add(Name, UBOHandle);
-                    IsLUTAbs.Add(Name, IsAbs);
-                }
+                LUTHandles.Add(Name, UBOHandle);
+                IsLUTAbs.Add(Name, IsAbs);
             }
 
             SkeletalAnimation = new SkeletalAnim();
@@ -187,43 +225,48 @@ namespace SPICA.Renderer
 
         public void Animate()
         {
-            SkeletonTransform = SkeletalAnimation.GetSkeletonTransform(Skeleton);
+            SkeletonTransform[CurrModel] = SkeletalAnimation.GetSkeletonTransform(Skeletons[CurrModel]);
 
             SkeletalAnimation.AdvanceFrame();
             MaterialAnimation.AdvanceFrame();
         }
 
+        public void ResetTransform()
+        {
+            Transform = Matrix4.Identity; UpdateTransform();
+        }
+
         public void Scale(Vector3 Scale)
         {
-            UpdateView(Transform *= Matrix4.CreateScale(Scale));
+            Transform *= Matrix4.CreateScale(Scale); UpdateTransform();
         }
 
         public void Rotate(Vector3 Rotation)
         {
-            UpdateView(Transform *= Utils.EulerRotate(Rotation));
+            Transform *= Utils.EulerRotate(Rotation); UpdateTransform();
         }
 
         public void Translate(Vector3 Translation)
         {
-            UpdateView(Transform *= Matrix4.CreateTranslation(Translation));
+            Transform *= Matrix4.CreateTranslation(Translation); UpdateTransform();
         }
 
         public void ScaleAbs(Vector3 Scale)
         {
-            UpdateView(Transform = (Transform.ClearScale() * Matrix4.CreateScale(Scale)));
+            Transform = Transform.ClearScale() * Matrix4.CreateScale(Scale); UpdateTransform();
         }
 
         public void RotateAbs(Vector3 Rotation)
         {
-            UpdateView(Transform = (Transform.ClearRotation() * Utils.EulerRotate(Rotation)));
+            Transform = Transform.ClearRotation() * Utils.EulerRotate(Rotation); UpdateTransform();
         }
 
         public void TranslateAbs(Vector3 Translation)
         {
-            UpdateView(Transform = (Transform.ClearTranslation() * Matrix4.CreateTranslation(Translation)));
+            Transform = Transform.ClearTranslation() * Matrix4.CreateTranslation(Translation); UpdateTransform();
         }
 
-        private void UpdateView(Matrix4 Mtx)
+        private void UpdateTransform()
         {
             GL.UseProgram(ShaderHandle);
 
@@ -232,7 +275,23 @@ namespace SPICA.Renderer
 
         public void Render()
         {
-            foreach (Mesh Mesh in Meshes) Mesh.Render();
+            int Index;
+
+            for (
+                Index = MeshRanges[CurrModel].Start;
+                Index < MeshRanges[CurrModel].End; 
+                Index++)
+                Meshes[Index].Render();
+        }
+
+        internal Matrix4 GetSkeletonTransform(int MeshIndex)
+        {
+            return SkeletonTransform[CurrModel][MeshIndex];
+        }
+
+        internal Matrix4 GetInverseTransform(int MeshIndex)
+        {
+            return InverseTransform[CurrModel][MeshIndex];
         }
 
         internal int GetTextureId(string Name)

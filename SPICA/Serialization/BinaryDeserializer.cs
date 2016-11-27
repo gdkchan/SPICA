@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SPICA.Serialization
@@ -182,7 +183,9 @@ namespace SPICA.Serialization
 
                 foreach (FieldInfo Info in ObjectType.GetFields(Binding))
                 {
-                    if (!Info.IsDefined(typeof(NonSerializedAttribute)))
+                    if (!(
+                        Info.IsDefined(typeof(IgnoreAttribute)) || 
+                        Info.IsDefined(typeof(CompilerGeneratedAttribute))))
                     {
                         Type Type = Info.FieldType;
 

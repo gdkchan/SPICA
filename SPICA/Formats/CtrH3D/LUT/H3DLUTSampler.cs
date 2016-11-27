@@ -1,7 +1,6 @@
 ﻿using SPICA.PICA;
 using SPICA.Serialization;
-
-using System;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrH3D.LUT
 {
@@ -15,7 +14,7 @@ namespace SPICA.Formats.CtrH3D.LUT
 
         public string Name;
 
-        [NonSerialized] public float[] Table;
+        [Ignore] public float[] Table;
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {

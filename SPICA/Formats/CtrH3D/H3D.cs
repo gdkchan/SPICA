@@ -9,9 +9,9 @@ using SPICA.Formats.CtrH3D.Scene;
 using SPICA.Formats.CtrH3D.Shader;
 using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
-using System;
 using System.IO;
 
 namespace SPICA.Formats.CtrH3D
@@ -34,17 +34,12 @@ namespace SPICA.Formats.CtrH3D
         public PatriciaList<H3DAnimation>      FogAnimations;
         public PatriciaList<H3DScene>          Scenes;
 
-        [NonSerialized]
-        public ushort ConverterVersion;
+        [Ignore] public ushort ConverterVersion;
 
-        [NonSerialized]
-        public byte BackwardCompatibility;
+        [Ignore] public byte BackwardCompatibility;
+        [Ignore] public byte ForwardCompatibility;
 
-        [NonSerialized]
-        public byte ForwardCompatibility;
-
-        [NonSerialized]
-        public H3DFlags Flags;
+        [Ignore] public H3DFlags Flags;
 
         public H3D()
         {

@@ -7,7 +7,6 @@ using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 using SPICA.Utils;
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -61,11 +60,11 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         public H3DMetaData MetaData;
 
-        [NonSerialized] public byte[] RawBuffer;
-        [NonSerialized] public int VertexStride;
-        [NonSerialized] public PICAAttribute[] Attributes;
-        [NonSerialized] public PICAFixedAttribute[] FixedAttributes;
-        [NonSerialized] public Vector4D PositionOffset;
+        [Ignore] public byte[] RawBuffer;
+        [Ignore] public int VertexStride;
+        [Ignore] public PICAAttribute[] Attributes;
+        [Ignore] public PICAFixedAttribute[] FixedAttributes;
+        [Ignore] public Vector4D PositionOffset;
 
         public H3DMesh()
         {
