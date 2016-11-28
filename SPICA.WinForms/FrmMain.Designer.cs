@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
+            this.Viewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(32), 24, 8));
             this.TopMenu = new System.Windows.Forms.MenuStrip();
             this.MenuFileRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuOpenFile = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,6 +49,7 @@
             this.MenuButtonShowSideMenu = new System.Windows.Forms.ToolStripButton();
             this.TopIcons = new System.Windows.Forms.ToolStrip();
             this.MainContainer = new System.Windows.Forms.SplitContainer();
+            this.Animator = new System.Windows.Forms.Timer(this.components);
             this.SideTabs = new SPICA.WinForms.GUI.SUITabControl();
             this.TabPageModels = new System.Windows.Forms.TabPage();
             this.ModelsList = new SPICA.WinForms.GUI.SUIList();
@@ -69,6 +72,7 @@
             this.AnimControlsPanel.SuspendLayout();
             this.TopIcons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).BeginInit();
+            this.MainContainer.Panel1.SuspendLayout();
             this.MainContainer.Panel2.SuspendLayout();
             this.MainContainer.SuspendLayout();
             this.SideTabs.SuspendLayout();
@@ -77,6 +81,23 @@
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             this.TabPageMdlAnims.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // Viewport
+            // 
+            this.Viewport.BackColor = System.Drawing.Color.Gray;
+            this.Viewport.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Viewport.Location = new System.Drawing.Point(0, 0);
+            this.Viewport.Name = "Viewport";
+            this.Viewport.Size = new System.Drawing.Size(580, 477);
+            this.Viewport.TabIndex = 0;
+            this.Viewport.VSync = true;
+            this.Viewport.Load += new System.EventHandler(this.Viewport_Load);
+            this.Viewport.Paint += new System.Windows.Forms.PaintEventHandler(this.Viewport_Paint);
+            this.Viewport.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Viewport_MouseDown);
+            this.Viewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Viewport_MouseMove);
+            this.Viewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Viewport_MouseUp);
+            this.Viewport.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.Viewport_MouseWheel);
+            this.Viewport.Resize += new System.EventHandler(this.Viewport_Resize);
             // 
             // TopMenu
             // 
@@ -272,12 +293,21 @@
             this.MainContainer.Location = new System.Drawing.Point(0, 54);
             this.MainContainer.Name = "MainContainer";
             // 
+            // MainContainer.Panel1
+            // 
+            this.MainContainer.Panel1.Controls.Add(this.Viewport);
+            // 
             // MainContainer.Panel2
             // 
             this.MainContainer.Panel2.Controls.Add(this.SideTabs);
             this.MainContainer.Size = new System.Drawing.Size(784, 477);
             this.MainContainer.SplitterDistance = 580;
             this.MainContainer.TabIndex = 0;
+            // 
+            // Animator
+            // 
+            this.Animator.Interval = 16;
+            this.Animator.Tick += new System.EventHandler(this.Animator_Tick);
             // 
             // SideTabs
             // 
@@ -511,6 +541,7 @@
             this.AnimControlsPanel.ResumeLayout(false);
             this.TopIcons.ResumeLayout(false);
             this.TopIcons.PerformLayout();
+            this.MainContainer.Panel1.ResumeLayout(false);
             this.MainContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).EndInit();
             this.MainContainer.ResumeLayout(false);
@@ -526,6 +557,7 @@
 
         #endregion
 
+        private OpenTK.GLControl Viewport;
         private System.Windows.Forms.SplitContainer MainContainer;
         private System.Windows.Forms.MenuStrip TopMenu;
         private System.Windows.Forms.ToolStripMenuItem MenuFileRoot;
@@ -562,5 +594,6 @@
         private System.Windows.Forms.ToolStrip TopIcons;
         private GUI.SUIIconButton AnimButtonSlowDown;
         private GUI.SUIIconButton AnimButtonPrev;
+        private System.Windows.Forms.Timer Animator;
     }
 }

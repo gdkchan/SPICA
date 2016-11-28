@@ -17,8 +17,6 @@ namespace SPICA.WinForms
 {
     public partial class FrmMain : Form
     {
-        private Timer Animator;
-        private GLControl Viewport;
         private RenderEngine Renderer;
 
         private H3D SceneData;
@@ -42,42 +40,23 @@ namespace SPICA.WinForms
         {
             InitializeComponent();
 
-            Animator = new Timer();
-
-            Animator.Interval = 16; //1000 / 60 = ~16 for 60 fps
-
-            Animator.Tick += Animator_Tick;
-
-            Toolkit.Init();
-
-            Viewport = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8));
-
-            Viewport.CreateControl();
-            Viewport.MakeCurrent();
-
-            Viewport.VSync = true;
-            Viewport.Dock = DockStyle.Fill;
-            
-            Viewport.MouseDown  += Viewport_MouseDown;
-            Viewport.MouseUp    += Viewport_MouseUp;
-            Viewport.MouseMove  += Viewport_MouseMove;
-            Viewport.MouseWheel += Viewport_MouseWheel;
-            Viewport.Paint      += Viewport_Paint;
-            Viewport.Resize     += Viewport_Resize;
-
-            MainContainer.Panel1.Controls.Add(Viewport);
-
             TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);
+        }
+
+        //
+        // Viewport controls
+        //
+        private void Viewport_Load(object sender, EventArgs e)
+        {
+            //Note: Setting up OpenGL stuff only works after the control has loaded on the Form
+            Viewport.MakeCurrent();
 
             Renderer = new RenderEngine(Viewport.Width, Viewport.Height);
 
             Renderer.SetBackgroundColor(Color.Gray);
         }
 
-        //
-        // Viewport controls
-        //
         private void Viewport_MouseDown(object sender, MouseEventArgs e)
         {
             if (!IgnoreClicks)
@@ -144,8 +123,6 @@ namespace SPICA.WinForms
 
         private void Viewport_Paint(object sender, PaintEventArgs e)
         {
-            Viewport.MakeCurrent();
-
             Renderer.RenderScene();
 
             Viewport.SwapBuffers();
