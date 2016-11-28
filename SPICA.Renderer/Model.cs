@@ -280,9 +280,7 @@ namespace SPICA.Renderer
 
         public void Render()
         {
-            int Index;
-
-            for (
+            for (int
                 Index = MeshRanges[CurrModel].Start;
                 Index < MeshRanges[CurrModel].End; 
                 Index++)

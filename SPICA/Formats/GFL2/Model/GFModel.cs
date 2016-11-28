@@ -173,6 +173,19 @@ namespace SPICA.Formats.GFL2.Model
                     Mat.TextureMappers[Unit].MinLOD = (byte)Material.TextureCoords[Unit].MinLOD;
                 }
 
+                Params.EmissionColor  = Material.EmissionColor;
+                Params.AmbientColor   = Material.AmbientColor;
+                Params.DiffuseColor   = Material.DiffuseColor;
+                Params.Specular0Color = Material.Specular0Color;
+                Params.Specular1Color = Material.Specular1Color;
+                Params.Constant0Color = Material.Constant0Color;
+                Params.Constant1Color = Material.Constant1Color;
+                Params.Constant2Color = Material.Constant2Color;
+                Params.Constant3Color = Material.Constant3Color;
+                Params.Constant4Color = Material.Constant4Color;
+                Params.Constant5Color = Material.Constant5Color;
+                Params.BlendColor     = Material.BlendColor;
+
                 Params.LUTInputAbs      = Material.LUTInputAbs;
                 Params.LUTInputSel      = Material.LUTInputSel;
                 Params.LUTInputScaleSel = Material.LUTInputScaleSel;

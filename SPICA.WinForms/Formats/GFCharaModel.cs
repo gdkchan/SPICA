@@ -30,11 +30,19 @@ namespace SPICA.WinForms.Formats
                 H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation(MdlPack.Models[0].Skeleton);
                 H3DAnimation MatAnim = Mot.ToH3DMaterialAnimation();
 
-                SklAnim.Name = $"Motion_{Mot.Index}";
-                MatAnim.Name = $"Motion_{Mot.Index}";
+                if (SklAnim != null)
+                {
+                    SklAnim.Name = $"Motion_{Mot.Index}";
 
-                Output.SkeletalAnimations.Add(SklAnim);
-                Output.MaterialAnimations.Add(MatAnim);
+                    Output.SkeletalAnimations.Add(SklAnim);
+                }
+
+                if (MatAnim != null)
+                {
+                    MatAnim.Name = $"Motion_{Mot.Index}";
+
+                    Output.MaterialAnimations.Add(MatAnim);
+                }
             }
 
             return Output;

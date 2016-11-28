@@ -1,5 +1,7 @@
 ﻿using SPICA.Formats.CtrH3D.Animation;
 
+using System;
+
 namespace SPICA.Renderer.Animation
 {
     public class AnimControl
@@ -44,12 +46,12 @@ namespace SPICA.Renderer.Animation
 
         public void SlowDown()
         {
-            if (State == AnimState.Playing && Step > 0.125f) Step *= 0.5f;
+            if (State == AnimState.Playing && Math.Abs(Step) > 0.125f) Step *= 0.5f;
         }
 
         public void SpeedUp()
         {
-            if (State == AnimState.Playing && Step < 8) Step *= 2;
+            if (State == AnimState.Playing && Math.Abs(Step) < 8) Step *= 2;
         }
 
         public void Play(float Step)

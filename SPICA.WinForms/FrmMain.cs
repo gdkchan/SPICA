@@ -9,7 +9,6 @@ using SPICA.WinForms.GUI;
 
 using System;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -165,15 +164,15 @@ namespace SPICA.WinForms
                         return;
                     }
 
-                    //Bind Lists to H3D contents
+                    Animator.Enabled = false;
+
                     CacheTextures();
 
                     SceneData.Textures.CollectionChanged +=
                         delegate (object _sender, NotifyCollectionChangedEventArgs _e)
-                        {
-                            CacheTextures();
-                        };
+                            { CacheTextures(); };
 
+                    //Bind Lists to H3D contents
                     ModelsList.Bind(SceneData.Models);
                     TexturesList.Bind(SceneData.Textures);
                     SklAnimsList.Bind(SceneData.SkeletalAnimations);
@@ -231,8 +230,8 @@ namespace SPICA.WinForms
         private void ResetView()
         {
             Model.ResetTransform();
-
             Model.TranslateAbs(MdlCenter);
+
             Zoom = MdlCenter.Z - CamDist * 2;
             Step = CamDist * 0.05f;
 
@@ -301,7 +300,7 @@ namespace SPICA.WinForms
 
         private void EnableAnimator()
         {
-            Animator.Enabled = true;
+            Animator.Enabled = true; UpdateSpeedLbl();
         }
 
         private void DisableAnimator()
@@ -327,6 +326,7 @@ namespace SPICA.WinForms
 
                 Model.SkeletalAnimation.SetAnimation(SklAnim);
 
+                AnimSeekBar.Value = 0;
                 AnimSeekBar.Maximum = SklAnim.FramesCount;
 
                 int MatAnimIndex = SceneData.MaterialAnimations.FindIndex(SklAnim.Name);
@@ -385,20 +385,24 @@ namespace SPICA.WinForms
 
         private void AnimButtonSlowDown_Click(object sender, EventArgs e)
         {
-            Model?.SkeletalAnimation.SlowDown();
-            Model?.MaterialAnimation.SlowDown();
+            if (Model != null)
+            {
+                Model.SkeletalAnimation.SlowDown();
+                Model.MaterialAnimation.SlowDown();
+
+                UpdateSpeedLbl();
+            }
         }
 
         private void AnimButtonSpeedUp_Click(object sender, EventArgs e)
         {
-            Model?.SkeletalAnimation.SpeedUp();
-            Model?.MaterialAnimation.SpeedUp();
-        }
+            if (Model != null)
+            {
+                Model.SkeletalAnimation.SpeedUp();
+                Model.MaterialAnimation.SpeedUp();
 
-        private void AnimSeekBar_MouseUp(object sender, MouseEventArgs e)
-        {
-            Model?.SkeletalAnimation.Play();
-            Model?.MaterialAnimation.Play();
+                UpdateSpeedLbl();
+            }
         }
 
         private void AnimSeekBar_Seek(object sender, EventArgs e)
@@ -415,6 +419,17 @@ namespace SPICA.WinForms
 
                 UpdateViewport();
             }
+        }
+
+        private void AnimSeekBar_MouseUp(object sender, MouseEventArgs e)
+        {
+            Model?.SkeletalAnimation.Play();
+            Model?.MaterialAnimation.Play();
+        }
+
+        private void UpdateSpeedLbl()
+        {
+            LblAnimSpeed.Text = string.Format("{0:N2}x", Math.Abs(Model.SkeletalAnimation.Step));
         }
     }
 }

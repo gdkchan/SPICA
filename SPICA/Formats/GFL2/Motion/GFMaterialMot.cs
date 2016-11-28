@@ -21,8 +21,13 @@ namespace SPICA.Formats.GFL2.Motion
 
             int MaterialNamesCount = Reader.ReadInt32();
             uint MaterialNamesLength = Reader.ReadUInt32();
-            Reader.ReadUInt32();
-            Reader.ReadUInt32();
+            
+            for (int Index = 0; Index < MaterialNamesCount; Index++)
+            {
+                //Per material value that is usually 0x1, but other observed values are 0x8 and 0xc.
+                //Peharps the interpolation type or some kind of flag? TODO: Investigate
+                Reader.ReadUInt32();
+            }
 
             long Position = Reader.BaseStream.Position;
 

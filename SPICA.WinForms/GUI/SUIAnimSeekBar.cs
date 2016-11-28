@@ -2,17 +2,16 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Globalization;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms.GUI
 {
     class SUIAnimSeekBar : Control
     {
-        private float Max;
-        private float Cursor;
-
         private Color _CursorColor = Color.Orange;
+
+        private float _Maximum;
+        private float _Value;
 
         [Category("Appearance"), Description("Color of the animation cursor.")]
         public Color CursorColor
@@ -34,7 +33,7 @@ namespace SPICA.WinForms.GUI
         {
             get
             {
-                return Max;
+                return _Maximum;
             }
             set
             {
@@ -43,9 +42,9 @@ namespace SPICA.WinForms.GUI
                     throw new ArgumentException(MaxTooLowEx);
                 }
 
-                Max = value;
+                _Maximum = value;
 
-                Cursor = Math.Min(Cursor, Max);
+                _Value = Math.Min(_Value, _Maximum);
 
                 Invalidate();
             }
@@ -56,16 +55,16 @@ namespace SPICA.WinForms.GUI
         {
             get
             {
-                return Cursor;
+                return _Value;
             }
             set
             {
                 if (value < 0 || value > Maximum)
                 {
-                    throw new ArgumentOutOfRangeException(string.Format(ValueOutOfRangeEx, Max));
+                    throw new ArgumentOutOfRangeException(string.Format(ValueOutOfRangeEx, _Maximum));
                 }
 
-                Cursor = value;
+                _Value = value;
 
                 Invalidate();
             }
@@ -95,7 +94,7 @@ namespace SPICA.WinForms.GUI
 
             e.Graphics.Clear(Parent.BackColor);
 
-            Brush TextBrush = new SolidBrush(ForeColor);
+            Brush TxtBrush = new SolidBrush(ForeColor);
             Rectangle Rect = new Rectangle(MarginX, 3, Width - MarginX * 2, Height - 6);
 
             e.Graphics.FillRectangle(new SolidBrush(BackColor), Rect);
@@ -103,18 +102,18 @@ namespace SPICA.WinForms.GUI
             int HalfH = Rect.Height >> 1;
 
             //"Ruler"
-            if (Max > 0)
+            if (_Maximum > 0)
             {
                 int Index = 1;
 
-                float PartStep = Rect.Width / Max;
+                float PartStep = Rect.Width / _Maximum;
                 float FrameStep = Math.Max(RulerMinDist / PartStep, 1);
 
                 if (FrameStep > 1) PartStep = RulerMinDist;
 
                 int HalfStep = (int)PartStep >> 1;
 
-                for (float Frame = FrameStep; Frame <= Max; Frame += FrameStep, Index++)
+                for (float Frame = FrameStep; Frame <= _Maximum; Frame += FrameStep, Index++)
                 {
                     int RulerX = (int)(Index * PartStep) + Rect.X - 1;
 
@@ -131,12 +130,12 @@ namespace SPICA.WinForms.GUI
                         new Point(RulerX, Rect.Y + 1 + HalfH));
 
                     //Frame number
-                    string Text = Frame.ToString("0.0", CultureInfo.InvariantCulture);
+                    string Text = Frame.ToString("0.0");
                     int TextWidth = (int)e.Graphics.MeasureString(Text, Font).Width;
 
                     Point TextPt = new Point(RulerX - TextWidth, Rect.Y);
 
-                    e.Graphics.DrawString(Text, Font, TextBrush, TextPt);
+                    e.Graphics.DrawString(Text, Font, TxtBrush, TextPt);
                 }
             }
 
@@ -157,9 +156,23 @@ namespace SPICA.WinForms.GUI
 
             e.Graphics.DrawRectangle(new Pen(Parent.BackColor), Rect);
 
-            //Cursor line
-            int CurX = (int)(Max > 0 ? ((Value / Max) * Rect.Width) : 0) + Rect.X - 1;
+            //Frame number text
+            int CurX = (int)(_Maximum > 0 ? ((_Value / _Maximum) * Rect.Width) : 0) + Rect.X - 1;
 
+            string FrmTxt = _Value.ToString("0.0");
+
+            SizeF FrmTxtSz = e.Graphics.MeasureString(FrmTxt, Font);
+            Rectangle FrmTxtRect = new Rectangle(
+                Math.Max(CurX - (int)FrmTxtSz.Width, Rect.X),
+                Rect.Y,
+                (int)FrmTxtSz.Width,
+                (int)FrmTxtSz.Height
+                );
+
+            e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(0xbf, Color.Black)), FrmTxtRect);
+            e.Graphics.DrawString(FrmTxt, Font, TxtBrush, FrmTxtRect.Location);
+
+            //Cursor line
             e.Graphics.DrawLine(
                 new Pen(CursorColor),
                 new Point(CurX, Rect.Y + 1),
@@ -191,7 +204,7 @@ namespace SPICA.WinForms.GUI
 
         private void MoveTo(int X)
         {
-            Cursor = Math.Max(Math.Min(((float)(X - MarginX) / (Width - MarginX * 2)) * Max, Max), 0);
+            _Value = Math.Max(Math.Min(((float)(X - MarginX) / (Width - MarginX * 2)) * _Maximum, _Maximum), 0);
 
             Seek?.Invoke(this, EventArgs.Empty);
 

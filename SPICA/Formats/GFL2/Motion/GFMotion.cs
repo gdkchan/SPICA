@@ -84,12 +84,12 @@ namespace SPICA.Formats.GFL2.Motion
 
         public H3DAnimation ToH3DSkeletalAnimation(List<GFBone> Skeleton)
         {
-            return SkeletalAnimation.ToH3DAnimation(Skeleton, FramesCount);
+            return SkeletalAnimation?.ToH3DAnimation(Skeleton, FramesCount);
         }
 
         public H3DAnimation ToH3DMaterialAnimation()
         {
-            return MaterialAnimation.ToH3DAnimation(FramesCount);
+            return MaterialAnimation?.ToH3DAnimation(FramesCount);
         }
     }
 }
