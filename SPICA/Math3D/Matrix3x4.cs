@@ -59,10 +59,10 @@ namespace SPICA.Math3D
         {
             return new Matrix3x4
             {
-                M22 = (float)Math.Cos(Angle),
+                M22 =  (float)Math.Cos(Angle),
                 M23 = -(float)Math.Sin(Angle),
-                M32 = (float)Math.Sin(Angle),
-                M33 = (float)Math.Cos(Angle)
+                M32 =  (float)Math.Sin(Angle),
+                M33 =  (float)Math.Cos(Angle)
             };
         }
 
@@ -70,10 +70,10 @@ namespace SPICA.Math3D
         {
             return new Matrix3x4
             {
-                M11 = (float)Math.Cos(Angle),
-                M13 = (float)Math.Sin(Angle),
+                M11 =  (float)Math.Cos(Angle),
+                M13 =  (float)Math.Sin(Angle),
                 M31 = -(float)Math.Sin(Angle),
-                M33 = (float)Math.Cos(Angle)
+                M33 =  (float)Math.Cos(Angle)
             };
         }
 
@@ -81,10 +81,10 @@ namespace SPICA.Math3D
         {
             return new Matrix3x4
             {
-                M11 = (float)Math.Cos(Angle),
+                M11 =  (float)Math.Cos(Angle),
                 M12 = -(float)Math.Sin(Angle),
-                M21 = (float)Math.Sin(Angle),
-                M22 = (float)Math.Cos(Angle)
+                M21 =  (float)Math.Sin(Angle),
+                M22 =  (float)Math.Cos(Angle)
             };
         }
 
@@ -108,24 +108,24 @@ namespace SPICA.Math3D
             };
         }
 
-        public static Matrix3x4 operator *(Matrix3x4 LHS, Matrix3x4 RHS)
+        public static Matrix3x4 operator *(Matrix3x4 RHS, Matrix3x4 LHS)
         {
             Matrix3x4 Output = new Matrix3x4();
 
-            Output.M11 = (RHS.M11 * LHS.M11) + (RHS.M12 * LHS.M21) + (RHS.M13 * LHS.M31);
-            Output.M12 = (RHS.M11 * LHS.M12) + (RHS.M12 * LHS.M22) + (RHS.M13 * LHS.M32);
-            Output.M13 = (RHS.M11 * LHS.M13) + (RHS.M12 * LHS.M23) + (RHS.M13 * LHS.M33);
-            Output.M14 = (RHS.M11 * LHS.M14) + (RHS.M12 * LHS.M24) + (RHS.M13 * LHS.M34) + RHS.M14;
+            Output.M11 = (LHS.M11 * RHS.M11) + (LHS.M12 * RHS.M21) + (LHS.M13 * RHS.M31);
+            Output.M12 = (LHS.M11 * RHS.M12) + (LHS.M12 * RHS.M22) + (LHS.M13 * RHS.M32);
+            Output.M13 = (LHS.M11 * RHS.M13) + (LHS.M12 * RHS.M23) + (LHS.M13 * RHS.M33);
+            Output.M14 = (LHS.M11 * RHS.M14) + (LHS.M12 * RHS.M24) + (LHS.M13 * RHS.M34) + LHS.M14;
 
-            Output.M21 = (RHS.M21 * LHS.M11) + (RHS.M22 * LHS.M21) + (RHS.M23 * LHS.M31);
-            Output.M22 = (RHS.M21 * LHS.M12) + (RHS.M22 * LHS.M22) + (RHS.M23 * LHS.M32);
-            Output.M23 = (RHS.M21 * LHS.M13) + (RHS.M22 * LHS.M23) + (RHS.M23 * LHS.M33);
-            Output.M24 = (RHS.M21 * LHS.M14) + (RHS.M22 * LHS.M24) + (RHS.M23 * LHS.M34) + RHS.M24;
+            Output.M21 = (LHS.M21 * RHS.M11) + (LHS.M22 * RHS.M21) + (LHS.M23 * RHS.M31);
+            Output.M22 = (LHS.M21 * RHS.M12) + (LHS.M22 * RHS.M22) + (LHS.M23 * RHS.M32);
+            Output.M23 = (LHS.M21 * RHS.M13) + (LHS.M22 * RHS.M23) + (LHS.M23 * RHS.M33);
+            Output.M24 = (LHS.M21 * RHS.M14) + (LHS.M22 * RHS.M24) + (LHS.M23 * RHS.M34) + LHS.M24;
 
-            Output.M31 = (RHS.M31 * LHS.M11) + (RHS.M32 * LHS.M21) + (RHS.M33 * LHS.M31);
-            Output.M32 = (RHS.M31 * LHS.M12) + (RHS.M32 * LHS.M22) + (RHS.M33 * LHS.M32);
-            Output.M33 = (RHS.M31 * LHS.M13) + (RHS.M32 * LHS.M23) + (RHS.M33 * LHS.M33);
-            Output.M34 = (RHS.M31 * LHS.M14) + (RHS.M32 * LHS.M24) + (RHS.M33 * LHS.M34) + RHS.M34;
+            Output.M31 = (LHS.M31 * RHS.M11) + (LHS.M32 * RHS.M21) + (LHS.M33 * RHS.M31);
+            Output.M32 = (LHS.M31 * RHS.M12) + (LHS.M32 * RHS.M22) + (LHS.M33 * RHS.M32);
+            Output.M33 = (LHS.M31 * RHS.M13) + (LHS.M32 * RHS.M23) + (LHS.M33 * RHS.M33);
+            Output.M34 = (LHS.M31 * RHS.M14) + (LHS.M32 * RHS.M24) + (LHS.M33 * RHS.M34) + LHS.M34;
 
             return Output;
         }
@@ -181,7 +181,8 @@ namespace SPICA.Math3D
 
         public string ToSerializableString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}",
+            return string.Format(CultureInfo.InvariantCulture,
+                "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}",
                 M11, M12, M13, M14,
                 M21, M22, M23, M24,
                 M31, M32, M33, M34);

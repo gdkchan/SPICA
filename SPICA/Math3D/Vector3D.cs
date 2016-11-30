@@ -14,6 +14,8 @@ namespace SPICA.Math3D
 
         public float Length { get { return (float)Math.Sqrt(Dot(this, this)); } }
 
+        public Vector3D(float Value) : this(Value, Value, Value) { }
+
         public Vector3D(float X, float Y, float Z)
         {
             this.X = X;
@@ -122,7 +124,7 @@ namespace SPICA.Math3D
         public static Vector3D Cross(Vector3D LHS, Vector3D RHS)
         {
             float X = LHS.Y * RHS.Z - LHS.Z * RHS.Y;
-            float Y = LHS.X * RHS.Z - LHS.Z * RHS.X;
+            float Y = LHS.Z * RHS.X - LHS.X * RHS.Z;
             float Z = LHS.X * RHS.Y - LHS.Y * RHS.X;
 
             return new Vector3D(X, Y, Z);

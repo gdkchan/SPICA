@@ -61,6 +61,8 @@ namespace SPICA.PICA.Commands
             }
         }
 
+        public PICAVectorFloat24(float Value) : this(Value, Value, Value, Value) { }
+
         public PICAVectorFloat24(float X, float Y, float Z, float W)
         {
             this.X = X;
@@ -103,6 +105,11 @@ namespace SPICA.PICA.Commands
             return new PICAVectorFloat24(LHS.X * RHS.X, LHS.Y * RHS.Y, LHS.Z * RHS.Z, LHS.W * RHS.W);
         }
 
+        public static PICAVectorFloat24 operator /(PICAVectorFloat24 LHS, PICAVectorFloat24 RHS)
+        {
+            return new PICAVectorFloat24(LHS.X / RHS.X, LHS.Y / RHS.Y, LHS.Z / RHS.Z, LHS.W / RHS.W);
+        }
+
         public static PICAVectorFloat24 operator -(PICAVectorFloat24 Vector)
         {
             return new PICAVectorFloat24(-Vector.X, -Vector.Y, -Vector.Z, -Vector.W);
@@ -116,6 +123,11 @@ namespace SPICA.PICA.Commands
         public static PICAVectorFloat24 operator *(PICAVectorFloat24 LHS, float RHS)
         {
             return new PICAVectorFloat24(LHS.X * RHS, LHS.Y * RHS, LHS.Z * RHS, LHS.W * RHS);
+        }
+
+        public static PICAVectorFloat24 operator /(PICAVectorFloat24 LHS, float RHS)
+        {
+            return new PICAVectorFloat24(LHS.X / RHS, LHS.Y / RHS, LHS.Z / RHS, LHS.W / RHS);
         }
 
         public override string ToString()
@@ -167,20 +179,10 @@ namespace SPICA.PICA.Commands
 
         private uint GetWord24(float Value)
         {
-            uint Word;
+            uint Word = IOUtils.ToUInt32(Value);
 
-            if (Value == 0)
+            if ((Word & 0x7fffffff) != 0)
             {
-                Word = 0;
-            }
-            else if (Value == -0)
-            {
-                Word = 0x800000;
-            }
-            else
-            {
-                Word = IOUtils.ToUInt32(Value);
-
                 uint Mantissa = Word & 0x7fffff;
                 uint Exponent = ((Word >> 23) & 0xff) - 64;
                 uint SignBit = Word >> 31;
@@ -188,6 +190,10 @@ namespace SPICA.PICA.Commands
                 Word = Mantissa >> 7;
                 Word |= (Exponent & 0x7f) << 16;
                 Word |= SignBit << 23;
+            }
+            else
+            {
+                Word >>= 8;
             }
 
             return Word;

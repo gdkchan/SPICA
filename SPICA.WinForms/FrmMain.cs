@@ -168,9 +168,7 @@ namespace SPICA.WinForms
 
                     CacheTextures();
 
-                    SceneData.Textures.CollectionChanged +=
-                        delegate (object _sender, NotifyCollectionChangedEventArgs _e)
-                            { CacheTextures(); };
+                    SceneData.Textures.CollectionChanged += TexturesList_CollectionChanged;
 
                     //Bind Lists to H3D contents
                     ModelsList.Bind(SceneData.Models);
@@ -214,6 +212,28 @@ namespace SPICA.WinForms
             IgnoreClicks = false;
 
             UpdateViewport();
+        }
+
+        private void TexturesList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            CacheTextures();
+        }
+
+        private void CacheTextures()
+        {
+            if (CachedTextures != null)
+            {
+                foreach (Bitmap Img in CachedTextures) Img.Dispose();
+            }
+
+            //Cache the textures converted to bitmap to avoid making the conversion over and over again
+            //The cache needs to be updated when the original collection changes
+            CachedTextures = new Bitmap[SceneData.Textures.Count];
+
+            for (int Index = 0; Index < CachedTextures.Length; Index++)
+            {
+                CachedTextures[Index] = SceneData.Textures[Index].ToBitmap();
+            }
         }
 
         //Side menu
@@ -268,23 +288,6 @@ namespace SPICA.WinForms
             {
                 TexturePreview.Image = null;
                 TextureInfo.Text = string.Empty;
-            }
-        }
-
-        private void CacheTextures()
-        {
-            if (CachedTextures != null)
-            {
-                foreach (Bitmap Img in CachedTextures) Img.Dispose();
-            }
-
-            //Cache the textures converted to bitmap to avoid making the conversion over and over again
-            //The cache needs to be updated when the original collection changes
-            CachedTextures = new Bitmap[SceneData.Textures.Count];
-
-            for (int Index = 0; Index < CachedTextures.Length; Index++)
-            {
-                CachedTextures[Index] = SceneData.Textures[Index].ToBitmap();
             }
         }
 

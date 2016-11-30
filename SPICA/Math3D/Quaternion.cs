@@ -11,6 +11,8 @@ namespace SPICA.Math3D
         public float Z;
         public float W;
 
+        public Vector3D VectorPart { get { return new Vector3D(X, Y, Z); } }
+
         public static Quaternion Empty { get { return new Quaternion(0, 0, 0, 0); } }
         public static Quaternion Identity { get { return new Quaternion(0, 0, 0, 1); } }
 
@@ -32,20 +34,10 @@ namespace SPICA.Math3D
 
         public static Quaternion FromEuler(Vector3D Rotation)
         {
-            float c1 = (float)Math.Cos(Rotation.X * 0.5f);
-            float c2 = (float)Math.Cos(Rotation.Y * 0.5f);
-            float c3 = (float)Math.Cos(Rotation.Z * 0.5f);
-            float s1 = (float)Math.Sin(Rotation.X * 0.5f);
-            float s2 = (float)Math.Sin(Rotation.Y * 0.5f);
-            float s3 = (float)Math.Sin(Rotation.Z * 0.5f);
-
-            return new Quaternion
-            {
-                X = s1 * c2 * c3 + c1 * s2 * s3,
-                Y = c1 * s2 * c3 - s1 * c2 * s3,
-                Z = c1 * c2 * s3 + s1 * s2 * c3,
-                W = c1 * c2 * c3 - s1 * s2 * s3
-            };
+            return
+                FromAxisAngle(new Vector3D(1, 0, 0), Rotation.X) *
+                FromAxisAngle(new Vector3D(0, 1, 0), Rotation.Y) *
+                FromAxisAngle(new Vector3D(0, 0, 1), Rotation.Z);
         }
 
         public static Quaternion FromAxisHalvedAngle(Vector3D Axis, float Angle)
@@ -84,9 +76,65 @@ namespace SPICA.Math3D
             return !(LHS == RHS);
         }
 
+        public static Quaternion operator +(Quaternion LHS, Quaternion RHS)
+        {
+            return new Quaternion(LHS.X + RHS.X, LHS.Y + RHS.Y, LHS.Z + RHS.Z, LHS.W + RHS.W);
+        }
+
+        public static Quaternion operator *(Quaternion RHS, Quaternion LHS)
+        {
+            Vector3D VL = LHS.VectorPart;
+            Vector3D VR = RHS.VectorPart;
+
+            Vector3D Cross = Vector3D.Cross(VL, VR);
+
+            return new Quaternion
+            {
+                X = LHS.X * RHS.W + LHS.W * RHS.X + Cross.X,
+                Y = LHS.Y * RHS.W + LHS.W * RHS.Y + Cross.Y,
+                Z = LHS.Z * RHS.W + LHS.W * RHS.Z + Cross.Z,
+                W = LHS.W * RHS.W - Vector3D.Dot(VL, VR)
+            };
+        }
+
+        public static Quaternion operator /(Quaternion RHS, Quaternion LHS)
+        {
+            float Inverse = 1f / Dot(RHS, RHS);
+
+            RHS = new Quaternion
+            {
+                X = -RHS.X * Inverse,
+                Y = -RHS.Y * Inverse,
+                Z = -RHS.Z * Inverse,
+                W =  RHS.W * Inverse
+            };
+
+            return RHS * LHS;
+        }
+
+        public static Quaternion operator -(Quaternion Quat)
+        {
+            return new Quaternion(-Quat.X, -Quat.Y, -Quat.Z, -Quat.W);
+        }
+
+        public static Quaternion operator -(Quaternion LHS, Quaternion RHS)
+        {
+            return LHS + (-RHS);
+        }
+
         public override string ToString()
         {
             return string.Format("X: {0} Y: {1} Z: {2} W: {3}", X, Y, Z, W);
+        }
+
+        public static float Dot(Quaternion LHS, Quaternion RHS)
+        {
+            float X = LHS.X * RHS.X;
+            float Y = LHS.Y * RHS.Y;
+            float Z = LHS.Z * RHS.Z;
+            float W = LHS.W * RHS.W;
+
+            return X + Y + Z + W;
         }
 
         public string ToSerializableString()

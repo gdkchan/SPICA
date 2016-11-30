@@ -13,6 +13,8 @@ namespace SPICA.Math3D
 
         public static Vector4D Empty { get { return new Vector4D(0, 0, 0, 0); } }
 
+        public Vector4D(float Value) : this(Value, Value, Value, Value) { }
+
         public Vector4D(float X, float Y, float Z, float W)
         {
             this.X = X;
@@ -87,6 +89,11 @@ namespace SPICA.Math3D
             return new Vector4D(LHS.X * RHS.X, LHS.Y * RHS.Y, LHS.Z * RHS.Z, LHS.W * RHS.W);
         }
 
+        public static Vector4D operator /(Vector4D LHS, Vector4D RHS)
+        {
+            return new Vector4D(LHS.X / RHS.X, LHS.Y / RHS.Y, LHS.Z / RHS.Z, LHS.W / RHS.W);
+        }
+
         public static Vector4D operator -(Vector4D Vector)
         {
             return new Vector4D(-Vector.X, -Vector.Y, -Vector.Z, -Vector.W);
@@ -100,6 +107,11 @@ namespace SPICA.Math3D
         public static Vector4D operator *(Vector4D LHS, float RHS)
         {
             return new Vector4D(LHS.X * RHS, LHS.Y * RHS, LHS.Z * RHS, LHS.W * RHS);
+        }
+
+        public static Vector4D operator /(Vector4D LHS, float RHS)
+        {
+            return new Vector4D(LHS.X / RHS, LHS.Y / RHS, LHS.Z / RHS, LHS.W / RHS);
         }
 
         public override string ToString()
