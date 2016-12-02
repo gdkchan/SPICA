@@ -15,6 +15,8 @@ namespace SPICA.WinForms.GUI
 
         private int OldIndex;
 
+        private int _SelectedIndex;
+
         private int _ItemHeight = 16;
 
         private Color _SelectionColor = Color.Orange;
@@ -25,7 +27,19 @@ namespace SPICA.WinForms.GUI
         public bool IsBound { get; private set; }
 
         [Browsable(false)]
-        public int SelectedIndex { get; private set; }
+        public int SelectedIndex
+        {
+            get
+            {
+                return _SelectedIndex;
+            }
+            set
+            {
+                _SelectedIndex = value;
+
+                Invalidate();
+            }
+        }
 
         [Category("Behavior"), Description("The fixed height of each list Item.")]
         public int ItemHeight
@@ -91,7 +105,7 @@ namespace SPICA.WinForms.GUI
 
             Items = new List<string>();
 
-            SelectedIndex = -1;
+            _SelectedIndex = -1;
             OldIndex = -1;
         }
 
@@ -106,7 +120,7 @@ namespace SPICA.WinForms.GUI
             {
                 int Y = ScrollY + Index * ItemHeight;
 
-                if (Index == SelectedIndex)
+                if (Index == _SelectedIndex)
                 {
                     e.Graphics.FillRectangle(new SolidBrush(SelectionColor), new Rectangle(0, Y, Width, ItemHeight));
                 }
@@ -152,44 +166,49 @@ namespace SPICA.WinForms.GUI
         {
             switch (keyData)
             {
-                case Keys.Up:
-                    if (SelectedIndex > 0)
-                    {
-                        Select(SelectedIndex - 1);
-
-                        if (SelectedIndex * ItemHeight < ListScroll.Value)
-                        {
-                            ListScroll.Value = Math.Max(SelectedIndex * ItemHeight, 0);
-                        }
-                    }
-                    break;
-
-                case Keys.Down:
-                    if (SelectedIndex + 1 < Items.Count)
-                    {
-                        Select(SelectedIndex + 1);
-
-                        if (SelectedIndex * ItemHeight > ListScroll.Value + Height - ItemHeight)
-                        {
-                            ListScroll.Value = Math.Min(SelectedIndex * ItemHeight - Height + ItemHeight, ListScroll.Maximum);
-                        }
-                    }
-                    break;
+                case Keys.Up: SelectUp(); break;
+                case Keys.Down: SelectDown(); break;
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        public void SelectUp()
+        {
+            if (_SelectedIndex > 0)
+            {
+                Select(_SelectedIndex - 1);
+
+                if (_SelectedIndex * ItemHeight < ListScroll.Value)
+                {
+                    ListScroll.Value = Math.Max(_SelectedIndex * ItemHeight, 0);
+                }
+            }
+        }
+
+        public void SelectDown()
+        {
+            if (_SelectedIndex + 1 < Items.Count)
+            {
+                Select(_SelectedIndex + 1);
+
+                if (_SelectedIndex * ItemHeight > ListScroll.Value + Height - ItemHeight)
+                {
+                    ListScroll.Value = Math.Min(_SelectedIndex * ItemHeight - Height + ItemHeight, ListScroll.Maximum);
+                }
+            }
+        }
+
         public void Select(int Index)
         {
             if (Index >= Items.Count || Index < 0)
-                SelectedIndex = -1;
+                _SelectedIndex = -1;
             else
-                SelectedIndex = Index;
+                _SelectedIndex = Index;
 
-            if (SelectedIndex != OldIndex)
+            if (_SelectedIndex != OldIndex)
             {
-                OldIndex = SelectedIndex;
+                OldIndex = _SelectedIndex;
 
                 SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
 

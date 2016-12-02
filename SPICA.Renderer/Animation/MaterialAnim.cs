@@ -23,7 +23,7 @@ namespace SPICA.Renderer.Animation
                 Trans[Index] = TexCoords[Index].Translation.ToVector2();
             }
 
-            if (BaseAnimation != null)
+            if (BaseAnimation != null && State != AnimState.Stopped)
             {
                 foreach (H3DAnimationElement Elem in BaseAnimation.Elements.Where(x => x.Name == MaterialName))
                 {

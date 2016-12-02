@@ -2,6 +2,7 @@
 {
     public enum AnimState
     {
+        Stopped,
         Paused,
         Playing
     }

@@ -16,6 +16,7 @@ namespace SPICA.WinForms
 {
     public partial class FrmMain : Form
     {
+        private GLControl Viewport;
         private RenderEngine Renderer;
 
         private H3D SceneData;
@@ -35,9 +36,40 @@ namespace SPICA.WinForms
 
         private bool IgnoreClicks;
 
+        private enum AnimType
+        {
+            None,
+            Skeletal,
+            Material
+        }
+
+        private AnimType CurrAnimType;
+
         public FrmMain()
         {
+            //We need to add the control here cause we need to call the constructor with Graphics Mode
+            //This enables the higher precision Depth Buffer and a Stencil Buffer
+            Viewport = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8));
+
+            Viewport.BackColor = Color.Gray;
+            Viewport.Dock = DockStyle.Fill;
+            Viewport.Location = Point.Empty;
+            Viewport.Name = "Viewport";
+            Viewport.Size = new Size(256, 256);
+            Viewport.TabIndex = 0;
+            Viewport.VSync = true;
+
+            Viewport.Load       += Viewport_Load;
+            Viewport.Paint      += Viewport_Paint;
+            Viewport.MouseDown  += Viewport_MouseDown;
+            Viewport.MouseMove  += Viewport_MouseMove;
+            Viewport.MouseUp    += Viewport_MouseUp;
+            Viewport.MouseWheel += Viewport_MouseWheel;
+            Viewport.Resize     += Viewport_Resize;
+
             InitializeComponent();
+
+            MainContainer.Panel1.Controls.Add(Viewport);
 
             TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);
@@ -174,6 +206,7 @@ namespace SPICA.WinForms
                     ModelsList.Bind(SceneData.Models);
                     TexturesList.Bind(SceneData.Textures);
                     SklAnimsList.Bind(SceneData.SkeletalAnimations);
+                    MatAnimsList.Bind(SceneData.MaterialAnimations);
 
                     //Setup Renderer
                     Renderer.ClearModels();
@@ -199,6 +232,14 @@ namespace SPICA.WinForms
                     });
 
                     if (SceneData.Models.Count > 0) ModelsList.Select(0);
+
+                    AnimSeekBar.Value = 0;
+                    AnimSeekBar.Maximum = 0;
+
+                    LblAnimSpeed.Text = string.Empty;
+                    LblAnimLoopMode.Text = string.Empty;
+
+                    CurrAnimType = AnimType.None;
 
                     ResetView();
                 }
@@ -296,7 +337,11 @@ namespace SPICA.WinForms
         {
             Model.Animate();
 
-            AnimSeekBar.Value = Model.SkeletalAnimation.Frame;
+            switch (CurrAnimType)
+            {
+                case AnimType.Skeletal: AnimSeekBar.Value = Model.SkeletalAnimation.Frame; break;
+                case AnimType.Material: AnimSeekBar.Value = Model.MaterialAnimation.Frame; break;
+            }
 
             Viewport.Invalidate();
         }
@@ -323,22 +368,56 @@ namespace SPICA.WinForms
         //Side menu
         private void SklAnimsList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            //Here we automatically select materials with a matching name for convenience
+            //If an material anim with matching name isn't found, then it is disabled
             if (SklAnimsList.SelectedIndex != -1)
             {
                 H3DAnimation SklAnim = SceneData.SkeletalAnimations[SklAnimsList.SelectedIndex];
 
                 Model.SkeletalAnimation.SetAnimation(SklAnim);
 
-                AnimSeekBar.Value = 0;
-                AnimSeekBar.Maximum = SklAnim.FramesCount;
-
                 int MatAnimIndex = SceneData.MaterialAnimations.FindIndex(SklAnim.Name);
 
                 if (MatAnimIndex != -1)
                 {
+                    MatAnimsList.SelectedIndex = MatAnimIndex;
+
                     Model.MaterialAnimation.SetAnimation(SceneData.MaterialAnimations[MatAnimIndex]);
                 }
+                else
+                {
+                    Model.MaterialAnimation.SetAnimation(null);
+                }
+
+                SetAnimationControls(SklAnim, AnimType.Skeletal);
             }
+        }
+
+        private void MatAnimsList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (MatAnimsList.SelectedIndex != -1)
+            {
+                H3DAnimation MatAnim = SceneData.MaterialAnimations[MatAnimsList.SelectedIndex];
+
+                Model.SkeletalAnimation.SetAnimation(null);
+                Model.MaterialAnimation.SetAnimation(MatAnim);
+
+                SetAnimationControls(MatAnim, AnimType.Material);
+            }
+        }
+
+        private void SetAnimationControls(H3DAnimation Anim, AnimType Type)
+        {
+            AnimSeekBar.Value = 0;
+            AnimSeekBar.Maximum = Anim.FramesCount;
+
+            UpdateSpeedLbl();
+
+            bool Loop = (Anim.AnimationFlags & H3DAnimationFlags.IsLooping) != 0;
+
+            LblAnimLoopMode.Text = Loop ? "LOOP" : "1 GO";
+
+            CurrAnimType = Type;
         }
 
         //Playback bar
@@ -383,6 +462,8 @@ namespace SPICA.WinForms
                 Model.MaterialAnimation.Stop();
 
                 DisableAnimator();
+
+                AnimSeekBar.Value = 0;
             }
         }
 
@@ -405,6 +486,24 @@ namespace SPICA.WinForms
                 Model.MaterialAnimation.SpeedUp();
 
                 UpdateSpeedLbl();
+            }
+        }
+
+        private void AnimButtonPrev_Click(object sender, EventArgs e)
+        {
+            switch (CurrAnimType)
+            {
+                case AnimType.Skeletal: SklAnimsList.SelectUp(); break;
+                case AnimType.Material: MatAnimsList.SelectUp(); break;
+            }
+        }
+
+        private void AnimButtonNext_Click(object sender, EventArgs e)
+        {
+            switch (CurrAnimType)
+            {
+                case AnimType.Skeletal: SklAnimsList.SelectDown(); break;
+                case AnimType.Material: MatAnimsList.SelectDown(); break;
             }
         }
 

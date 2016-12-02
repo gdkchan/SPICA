@@ -47,7 +47,7 @@ namespace SPICA.Renderer.Animation
 
                 int Elem = BaseAnimation?.Elements.FindIndex(x => x.Name == Bone.Name) ?? -1;
 
-                if (Elem != -1)
+                if (Elem != -1 && State != AnimState.Stopped)
                 {
                     H3DAnimationElement Element = BaseAnimation.Elements[Elem];
 

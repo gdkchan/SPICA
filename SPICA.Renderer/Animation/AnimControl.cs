@@ -73,7 +73,7 @@ namespace SPICA.Renderer.Animation
 
         public void Stop()
         {
-            Pause();
+            State = AnimState.Stopped;
 
             Frame = 0;
         }

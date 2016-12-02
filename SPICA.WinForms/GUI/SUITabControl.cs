@@ -43,22 +43,42 @@ namespace SPICA.WinForms.GUI
             for (int Index = 0; Index < TabCount; Index++)
             {
                 bool IsSelected = Index == SelectedIndex;
+                bool VertAlign = (Alignment & TabAlignment.Left) != 0;
+                bool HasImgKey = ImageList.Images.ContainsKey(TabPages[Index].ImageKey);
+                bool HasImgIdx = ImageList.Images.Count > TabPages[Index].ImageIndex && TabPages[Index].ImageIndex > -1;
 
                 Rectangle Rect = RemoveMargin(GetTabRect(Index), 2, 2, 2, 2);
+                SizeF TextSize = e.Graphics.MeasureString(TabPages[Index].Text, Font);
 
                 if (IsSelected) e.Graphics.FillRectangle(new SolidBrush(BackgroundColor), Rect);
 
-                if ((Alignment & TabAlignment.Left) != 0)
+                if (ImageList != null && (HasImgKey || HasImgIdx))
+                {
+                    Image Icon = HasImgKey
+                        ? ImageList.Images[TabPages[Index].ImageKey]
+                        : ImageList.Images[TabPages[Index].ImageIndex];
+
+                    int RW =  VertAlign ? Rect.Width  : Rect.Width  - (int)TextSize.Width;
+                    int RH = !VertAlign ? Rect.Height : Rect.Height - (int)TextSize.Height;
+
+                    Point IconPt = new Point(
+                        Rect.X + (RW >> 1) - (Icon.Width >> 1),
+                        Rect.Y + (RH >> 1) - (Icon.Height >> 1));
+
+                    e.Graphics.DrawImageUnscaled(Icon, IconPt);
+                }
+
+                if (VertAlign)
                 {
                     //Left or Right Tab aligment (text is on vertical position and needs rotation)
-                    e.Graphics.TranslateTransform(Rect.Left + (Rect.Width >> 1), Rect.Top + (Rect.Height >> 1));
+                    e.Graphics.TranslateTransform(Rect.X + (Rect.Width >> 1), Rect.Y + (Rect.Height >> 1));
                     e.Graphics.RotateTransform(Alignment == TabAlignment.Right ? 90 : 270);
 
                     Rect = new Rectangle(
                         -Rect.Height >> 1,
                         -Rect.Width  >> 1,
-                        Rect.Height,
-                        Rect.Width);
+                         Rect.Height,
+                         Rect.Width);
                 }
 
                 Brush TextBrush = new SolidBrush(IsSelected ? SelectedForeColor : ForegroundColor);
