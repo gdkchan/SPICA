@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.GFL2.Model
 {
-    struct GFHashName
+    public struct GFHashName
     {
         public uint Hash;
         public string Name;

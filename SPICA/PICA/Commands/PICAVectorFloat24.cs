@@ -44,7 +44,7 @@ namespace SPICA.PICA.Commands
                     case 2: return Z;
                     case 3: return W;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-3 (X-W) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-3 (X-W) range!");
                 }
             }
             set
@@ -56,7 +56,7 @@ namespace SPICA.PICA.Commands
                     case 2: Z = value; break;
                     case 3: W = value; break;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-3 (X-W) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-3 (X-W) range!");
                 }
             }
         }

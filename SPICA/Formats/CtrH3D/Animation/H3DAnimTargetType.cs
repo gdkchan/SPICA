@@ -55,6 +55,9 @@
         CameraAspectRatio,
         CameraHeight,
 
+        MeshNodeVisibility,
+        ModelVisibility,
+
         FogColor
     }
 }

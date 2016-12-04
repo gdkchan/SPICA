@@ -99,7 +99,7 @@ namespace SPICA.Formats.CtrH3D.Texture
                 case 4: return RawBufferZPos;
                 case 5: return RawBufferZNeg;
 
-                default: throw new IndexOutOfRangeException("Expected a value in 0-6 range!");
+                default: throw new ArgumentOutOfRangeException("Expected a value in 0-6 range!");
             }
         }
 

@@ -8,7 +8,7 @@ using System.Text;
 namespace SPICA.Math3D
 {
     [Inline]
-    class Matrix4x4
+    public class Matrix4x4
     {
         [FixedLength(4 * 4), Inline]
         private float[] Elems;

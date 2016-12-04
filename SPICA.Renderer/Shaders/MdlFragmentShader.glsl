@@ -29,6 +29,14 @@ precision highp float;
 #define FLAG_PRI  1
 #define FLAG_SEC  2
 
+struct UVTransform_t {
+	vec2 Scale;
+	mat2 Transform;
+	vec2 Translation;
+};
+
+uniform UVTransform_t UVTransforms[3];
+
 uniform int AlphaTestEnb;
 uniform int AlphaTestFunc;
 uniform int AlphaTestRef;
@@ -126,6 +134,7 @@ in vec2 TexCoord2;
 
 out vec4 Output;
 
+vec2 TransformUV(vec2 UV, int Index);
 float GetLUTVal(int SrcLUT);
 float Dot3(vec4 l, vec4 r);
 float Dot4(vec4 l, vec4 r);
@@ -141,25 +150,25 @@ void main() {
 	vec4 Color0, Color1, Color2, Color3;
 	
 	switch (TexUnit0Source) {
-		case 0: Color0 = texture(Texture0, TexCoord0); break;
-		case 1: Color0 = texture(Texture0, TexCoord1); break;
-		case 2: Color0 = texture(Texture0, TexCoord2); break;
+		case 0: Color0 = texture(Texture0, TransformUV(TexCoord0, 0)); break;
+		case 1: Color0 = texture(Texture0, TransformUV(TexCoord1, 0)); break;
+		case 2: Color0 = texture(Texture0, TransformUV(TexCoord2, 0)); break;
 		case 3: Color0 = texture(TextureCube, r); break;
 		case 4: Color0 = texture(Texture0, SphereUV); break;
 	}
 	
 	switch (TexUnit1Source) {
-		case 0: Color1 = texture(Texture1, TexCoord0); break;
-		case 1: Color1 = texture(Texture1, TexCoord1); break;
-		case 2: Color1 = texture(Texture1, TexCoord2); break;
+		case 0: Color1 = texture(Texture1, TransformUV(TexCoord0, 1)); break;
+		case 1: Color1 = texture(Texture1, TransformUV(TexCoord1, 1)); break;
+		case 2: Color1 = texture(Texture1, TransformUV(TexCoord2, 1)); break;
 		case 3: Color1 = texture(TextureCube, r); break;
 		case 4: Color1 = texture(Texture1, SphereUV); break;
 	}
 	
 	switch (TexUnit2Source) {
-		case 0: Color2 = texture(Texture2, TexCoord0); break;
-		case 1: Color2 = texture(Texture2, TexCoord1); break;
-		case 2: Color2 = texture(Texture2, TexCoord2); break;
+		case 0: Color2 = texture(Texture2, TransformUV(TexCoord0, 2)); break;
+		case 1: Color2 = texture(Texture2, TransformUV(TexCoord1, 2)); break;
+		case 2: Color2 = texture(Texture2, TransformUV(TexCoord2, 2)); break;
 		case 3: Color2 = texture(TextureCube, r); break;
 		case 4: Color2 = texture(Texture2, SphereUV); break;
 	}
@@ -194,8 +203,8 @@ void main() {
 		vec3 hi = normalize(li - EyeDir);
 		
 		nh = dot(n, hi);
-		vh = dot(EyeDir, hi);
-		nv = dot(n, EyeDir);
+		vh = dot(-EyeDir, hi);
+		nv = dot(n, -EyeDir);
 		ln = dot(li, n);
 		//TODO: lp
 		//TODO: cp
@@ -338,6 +347,14 @@ void main() {
 		
 		if (!Pass) discard;
 	}
+}
+
+vec2 TransformUV(vec2 UV, int Index) {
+	//Note: The 0.5 offset is to rotate around the center
+	UV = (UV - UVTransforms[Index].Translation) * UVTransforms[Index].Scale;
+	UV = UVTransforms[Index].Transform * (UV - 0.5f) + 0.5f;
+
+	return UV;
 }
 
 float GetLUTVal(int SrcLUT, int Index) {

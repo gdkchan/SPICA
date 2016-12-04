@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Shader
 {
-    class GFFragShader
+    public class GFFragShader
     {
         public string Name;
 
@@ -23,7 +23,7 @@ namespace SPICA.Formats.GFL2.Shader
             }
         }
 
-        public GFFragShader(BinaryReader Reader)
+        public GFFragShader(BinaryReader Reader) : this()
         {
             uint MagicNumber = Reader.ReadUInt32();
             uint ShaderCount = Reader.ReadUInt32();
@@ -50,13 +50,6 @@ namespace SPICA.Formats.GFL2.Shader
             for (int Index = 0; Index < Commands.Length; Index++)
             {
                 Commands[Index] = Reader.ReadUInt32();
-            }
-
-            TexEnvStages = new PICATexEnvStage[6];
-
-            for (int Index = 0; Index < TexEnvStages.Length; Index++)
-            {
-                TexEnvStages[Index] = new PICATexEnvStage();
             }
 
             PICACommandReader CmdReader = new PICACommandReader(Commands);

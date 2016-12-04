@@ -10,7 +10,7 @@
         RGBA,
         Texture,
         QuatTransform,
-        PackedBoolean,
+        Boolean,
         MtxTransform
     }
 }

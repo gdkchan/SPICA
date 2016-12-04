@@ -84,7 +84,7 @@ namespace SPICA.Formats.CtrH3D
 
         public bool ContainsName(string Name)
         {
-            return FindIndex(Name) != -1;
+            return NameTree.Contains(Name);
         }
 
         public int FindIndex(string Name)

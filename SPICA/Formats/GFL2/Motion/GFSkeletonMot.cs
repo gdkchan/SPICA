@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Motion
 {
-    class GFSkeletonMot
+    public class GFSkeletonMot
     {
         public List<GFMotBoneTransform> Bones;
 
@@ -17,10 +17,8 @@ namespace SPICA.Formats.GFL2.Motion
             Bones = new List<GFMotBoneTransform>();
         }
 
-        public GFSkeletonMot(BinaryReader Reader)
+        public GFSkeletonMot(BinaryReader Reader) : this()
         {
-            Bones = new List<GFMotBoneTransform>();
-
             int BoneNamesCount = Reader.ReadInt32();
             uint BoneNamesLength = Reader.ReadUInt32();
 

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Motion
 {
-    class GFMaterialMot
+    public class GFMaterialMot
     {
         public List<GFMotUVTransform> Materials;
 
@@ -15,18 +15,16 @@ namespace SPICA.Formats.GFL2.Motion
             Materials = new List<GFMotUVTransform>();
         }
 
-        public GFMaterialMot(BinaryReader Reader)
+        public GFMaterialMot(BinaryReader Reader) : this()
         {
-            Materials = new List<GFMotUVTransform>();
-
             int MaterialNamesCount = Reader.ReadInt32();
             uint MaterialNamesLength = Reader.ReadUInt32();
+
+            uint[] Units = new uint[MaterialNamesCount];
             
-            for (int Index = 0; Index < MaterialNamesCount; Index++)
+            for (int Index = 0; Index < Units.Length; Index++)
             {
-                //Per material value that is usually 0x1, but other observed values are 0x8 and 0xc.
-                //Peharps the interpolation type or some kind of flag? TODO: Investigate
-                Reader.ReadUInt32();
+                Units[Index] = Reader.ReadUInt32();
             }
 
             long Position = Reader.BaseStream.Position;
@@ -35,9 +33,12 @@ namespace SPICA.Formats.GFL2.Motion
 
             Reader.BaseStream.Seek(Position + MaterialNamesLength, SeekOrigin.Begin);
 
-            foreach (string Name in MaterialNames)
+            for (int Index = 0; Index < MaterialNames.Length; Index++)
             {
-                Materials.Add(new GFMotUVTransform(Reader, Name));
+                for (int Unit = 0; Unit < Units[Index]; Unit++)
+                {
+                    Materials.Add(new GFMotUVTransform(Reader, MaterialNames[Index]));
+                }
             }
         }
 
@@ -50,13 +51,15 @@ namespace SPICA.Formats.GFL2.Motion
 
             foreach (GFMotUVTransform Mat in Materials)
             {
+                ushort Unit = (ushort)(Mat.UnitIndex * 3);
+
                 if ((Mat.ScaleX.Count | Mat.ScaleY.Count) > 0)
                 {
                     Output.Elements.Add(new H3DAnimationElement
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimVector2D(Mat.ScaleX, Mat.ScaleY, FramesCount),
-                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Scale,
+                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Scale + Unit,
                         PrimitiveType = H3DAnimPrimitiveType.Vector2D
                     });
                 }
@@ -67,7 +70,7 @@ namespace SPICA.Formats.GFL2.Motion
                     {
                         Name          = Mat.Name,
                         Content       = new H3DAnimFloat { Value = GetKeyFrames(Mat.Rotation, FramesCount) },
-                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Rot,
+                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Rot + Unit,
                         PrimitiveType = H3DAnimPrimitiveType.Float
                     });
                 }
@@ -78,7 +81,7 @@ namespace SPICA.Formats.GFL2.Motion
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimVector2D(Mat.TranslationX, Mat.TranslationY, FramesCount),
-                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Trans,
+                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Trans + Unit,
                         PrimitiveType = H3DAnimPrimitiveType.Vector2D
                     });
                 }

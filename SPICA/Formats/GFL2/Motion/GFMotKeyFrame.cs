@@ -3,7 +3,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Motion
 {
-    struct GFMotKeyFrame
+    public struct GFMotKeyFrame
     {
         public byte Frame;
         public float Value;

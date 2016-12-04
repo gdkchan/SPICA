@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.GFL2.Model.Mesh
 {
-    class GFSubMesh
+    public class GFSubMesh
     {
         public uint Hash;
         public string Name;

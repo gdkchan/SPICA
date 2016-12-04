@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimBoolean.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimFloat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimMtxTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimPrimitiveType.cs" />
@@ -104,10 +105,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\Mesh\GFSubMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMaterialMot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotBoneTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotBoolean.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotKeyFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFMotUVTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFSkeletonMot.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Motion\GFVisibilityMot.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Shader\GFFragShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTextureFormat.cs" />

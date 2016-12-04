@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Model.Material
 {
-    class GFMaterial
+    public class GFMaterial
     {
         public string Name;
 
@@ -41,7 +41,26 @@ namespace SPICA.Formats.GFL2.Model.Material
         public float PhongPower;
         public float PhongScale;
 
-        public Vector4D ShaderParams;
+        public bool IDEdgeOffsetEnable;
+        public int EdgeMapAlphaMask;
+
+        public int BakeTexture0;
+        public int BakeTexture1;
+        public int BakeTexture2;
+
+        public int BakeConstant0;
+        public int BakeConstant1;
+        public int BakeConstant2;
+        public int BakeConstant3;
+        public int BakeConstant4;
+        public int BakeConstant5;
+
+        public uint VertexShaderType;
+
+        public float ShaderParam0;
+        public float ShaderParam1;
+        public float ShaderParam2;
+        public float ShaderParam3;
 
         //LookUp Table
         public PICALUTInputAbs LUTInputAbs;
@@ -83,7 +102,7 @@ namespace SPICA.Formats.GFL2.Model.Material
             TextureCoords = new GFTextureCoord[3];
         }
 
-        public GFMaterial(BinaryReader Reader, string MaterialName)
+        public GFMaterial(BinaryReader Reader, string MaterialName) : this()
         {
             Name = MaterialName;
 
@@ -136,13 +155,28 @@ namespace SPICA.Formats.GFL2.Model.Material
             PhongPower = Reader.ReadSingle();
             PhongScale = Reader.ReadSingle();
 
-            Reader.BaseStream.Seek(0x30, SeekOrigin.Current);
+            IDEdgeOffsetEnable = (Reader.ReadUInt32() & 1) != 0;
+            EdgeMapAlphaMask = Reader.ReadInt32();
 
-            ShaderParams = new Vector4D(Reader);
+            BakeTexture0 = Reader.ReadInt32();
+            BakeTexture1 = Reader.ReadInt32();
+            BakeTexture2 = Reader.ReadInt32();
+
+            BakeConstant0 = Reader.ReadInt32();
+            BakeConstant1 = Reader.ReadInt32();
+            BakeConstant2 = Reader.ReadInt32();
+            BakeConstant3 = Reader.ReadInt32();
+            BakeConstant4 = Reader.ReadInt32();
+            BakeConstant5 = Reader.ReadInt32();
+
+            VertexShaderType = Reader.ReadUInt32();
+
+            ShaderParam0 = Reader.ReadSingle();
+            ShaderParam1 = Reader.ReadSingle();
+            ShaderParam2 = Reader.ReadSingle();
+            ShaderParam3 = Reader.ReadSingle();
 
             uint UnitsCount = Reader.ReadUInt32();
-
-            TextureCoords = new GFTextureCoord[3];
 
             for (int Unit = 0; Unit < UnitsCount; Unit++)
             {

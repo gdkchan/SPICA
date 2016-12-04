@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Model.Mesh
 {
-    class GFMesh
+    public class GFMesh
     {
         private static float[] Scales =
         {
@@ -31,10 +31,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             SubMeshes = new List<GFSubMesh>();
         }
 
-        public GFMesh(BinaryReader Reader)
+        public GFMesh(BinaryReader Reader) : this()
         {
-            SubMeshes = new List<GFSubMesh>();
-
             GFSection MeshSection = new GFSection(Reader);
 
             long Position = Reader.BaseStream.Position;

@@ -34,7 +34,7 @@ namespace SPICA.Math3D
                     case 0: return X;
                     case 1: return Y;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-1 (X-Y) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-1 (X-Y) range!");
                 }
             }
             set
@@ -44,7 +44,7 @@ namespace SPICA.Math3D
                     case 0: X = value; break;
                     case 1: Y = value; break;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-1 (X-Y) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-1 (X-Y) range!");
                 }
             }
         }

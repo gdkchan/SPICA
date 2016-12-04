@@ -7,12 +7,10 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Motion
 {
-    class GFMotion
+    public class GFMotion
     {
         private struct Section
         {
-            public bool Exists;
-
             public uint Count;
             public uint Length;
             public uint Address;
@@ -25,6 +23,7 @@ namespace SPICA.Formats.GFL2.Motion
 
         public GFSkeletonMot SkeletalAnimation;
         public GFMaterialMot MaterialAnimation;
+        public GFVisibilityMot VisibilityAnimation;
 
         public int Index;
 
@@ -37,26 +36,23 @@ namespace SPICA.Formats.GFL2.Motion
             long Position = Reader.BaseStream.Position;
 
             uint MagicNumber = Reader.ReadUInt32();
-            uint AnimContentFlags = Reader.ReadUInt32();
-            Reader.ReadUInt32();
-            Reader.ReadUInt32();
-            uint SubHeaderAddress = Reader.ReadUInt32();
+            uint SectionCount = Reader.ReadUInt32();
 
-            Section[] AnimSections = new Section[2];
+            Section[] AnimSections = new Section[SectionCount];
 
-            for (int Anim = 0; Anim < 2; Anim++)
+            for (int Anim = 0; Anim < AnimSections.Length; Anim++)
             {
-                AnimSections[Anim].Exists = (AnimContentFlags & (2 >> Anim)) != 0;
-
-                if (AnimSections[Anim].Exists)
+                AnimSections[Anim] = new Section
                 {
-                    AnimSections[Anim].Count = Reader.ReadUInt32(); //TODO: Fix this, not a count it seems
-                    AnimSections[Anim].Length = Reader.ReadUInt32();
-                    AnimSections[Anim].Address = Reader.ReadUInt32();
-                }
+                    Count = Reader.ReadUInt32(), //TODO: Fix this, not a count it seems
+                    Length = Reader.ReadUInt32(),
+                    Address = Reader.ReadUInt32()
+                };
             }
 
             //SubHeader
+            Reader.BaseStream.Seek(Position + AnimSections[0].Address, SeekOrigin.Begin);
+
             FramesCount = Reader.ReadUInt32();
 
             Reader.ReadUInt32();
@@ -67,16 +63,15 @@ namespace SPICA.Formats.GFL2.Motion
             uint AnimHash = Reader.ReadUInt32();
 
             //Content
-            for (int Anim = 0; Anim < 2; Anim++)
+            for (int Anim = 1; Anim < AnimSections.Length; Anim++)
             {
                 Reader.BaseStream.Seek(Position + AnimSections[Anim].Address, SeekOrigin.Begin);
 
-                if (!AnimSections[Anim].Exists) continue;
-
                 switch (Anim)
                 {
-                    case 0: SkeletalAnimation = new GFSkeletonMot(Reader); break;
-                    case 1: MaterialAnimation = new GFMaterialMot(Reader); break;
+                    case 1: SkeletalAnimation = new GFSkeletonMot(Reader); break;
+                    case 2: MaterialAnimation = new GFMaterialMot(Reader); break;
+                    case 3: VisibilityAnimation = new GFVisibilityMot(Reader, FramesCount); break;
                 }
             }
         }
@@ -89,6 +84,11 @@ namespace SPICA.Formats.GFL2.Motion
         public H3DAnimation ToH3DMaterialAnimation()
         {
             return MaterialAnimation?.ToH3DAnimation(FramesCount);
+        }
+
+        public H3DAnimation ToH3DVisibilityAnimation()
+        {
+            return VisibilityAnimation?.ToH3DAnimation(FramesCount);
         }
     }
 }

@@ -18,10 +18,11 @@ namespace SPICA.Formats.CtrH3D.Animation
         {
             switch (PrimitiveType)
             {
-                case H3DAnimPrimitiveType.Vector2D: Content = Deserializer.Deserialize<H3DAnimVector2D>(); break;
-                case H3DAnimPrimitiveType.Transform: Content = Deserializer.Deserialize<H3DAnimTransform>(); break;
+                case H3DAnimPrimitiveType.Vector2D:      Content = Deserializer.Deserialize<H3DAnimVector2D>();      break;
+                case H3DAnimPrimitiveType.Transform:     Content = Deserializer.Deserialize<H3DAnimTransform>();     break;
                 case H3DAnimPrimitiveType.QuatTransform: Content = Deserializer.Deserialize<H3DAnimQuatTransform>(); break;
-                case H3DAnimPrimitiveType.MtxTransform: Content = Deserializer.Deserialize<H3DAnimMtxTransform>(); break;
+                case H3DAnimPrimitiveType.Boolean:       Content = Deserializer.Deserialize<H3DAnimBoolean>();       break;
+                case H3DAnimPrimitiveType.MtxTransform:  Content = Deserializer.Deserialize<H3DAnimMtxTransform>();  break;
             }
         }
 

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Model
 {
-    struct GFBone
+    public struct GFBone
     {
         public string Name;
         public string ParentName;

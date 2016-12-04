@@ -29,6 +29,7 @@ namespace SPICA.WinForms.Formats
             {
                 H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation(MdlPack.Models[0].Skeleton);
                 H3DAnimation MatAnim = Mot.ToH3DMaterialAnimation();
+                H3DAnimation VisAnim = Mot.ToH3DVisibilityAnimation();
 
                 if (SklAnim != null)
                 {
@@ -42,6 +43,13 @@ namespace SPICA.WinForms.Formats
                     MatAnim.Name = $"Motion_{Mot.Index}";
 
                     Output.MaterialAnimations.Add(MatAnim);
+                }
+
+                if (VisAnim != null)
+                {
+                    VisAnim.Name = $"Motion_{Mot.Index}";
+
+                    Output.VisibilityAnimations.Add(VisAnim);
                 }
             }
 

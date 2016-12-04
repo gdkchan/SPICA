@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Model
 {
-    struct GFLUT
+    public struct GFLUT
     {
         public PICALUTType Type;
 

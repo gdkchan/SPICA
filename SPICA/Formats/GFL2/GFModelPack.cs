@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace SPICA.Formats.GFL2
 {
-    class GFModelPack
+    public class GFModelPack
     {
         private enum Section
         {
@@ -31,31 +31,15 @@ namespace SPICA.Formats.GFL2
 
         public GFModelPack()
         {
-            InitLists();
+            Models      = new List<GFModel>();
+            Textures    = new List<GFTexture>();
+            FragShaders = new List<GFFragShader>();
         }
 
-        public GFModelPack(string FileName)
-        {
-            using (FileStream FS = new FileStream(FileName, FileMode.Open))
-            {
-                GFModelPackImpl(new BinaryReader(FS));
-            }
-        }
+        public GFModelPack(Stream Input) : this(new BinaryReader(Input)) { }
 
-        public GFModelPack(Stream Input)
+        public GFModelPack(BinaryReader Reader) : this()
         {
-            GFModelPackImpl(new BinaryReader(Input));
-        }
-
-        public GFModelPack(BinaryReader Reader)
-        {
-            GFModelPackImpl(Reader);
-        }
-
-        private void GFModelPackImpl(BinaryReader Reader)
-        {
-            InitLists();
-
             long Position = Reader.BaseStream.Position;
 
             uint MagicNumber = Reader.ReadUInt32();
@@ -91,13 +75,6 @@ namespace SPICA.Formats.GFL2
 
                 PointersAddr += Counts[Sect] * 4;
             }
-        }
-
-        private void InitLists()
-        {
-            Models      = new List<GFModel>();
-            Textures    = new List<GFTexture>();
-            FragShaders = new List<GFFragShader>();
         }
 
         public H3D ToH3D()

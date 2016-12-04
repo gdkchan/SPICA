@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.GFL2.Model.Material
 {
-    enum GFTextureWrap : uint
+    public enum GFTextureWrap : uint
     {
         ClampToEdge,
         ClampToBorder,

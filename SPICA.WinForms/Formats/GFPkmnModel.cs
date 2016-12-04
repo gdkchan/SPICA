@@ -1,9 +1,12 @@
 ﻿using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Model;
+using SPICA.Formats.GFL2.Motion;
 using SPICA.Formats.GFL2.Shader;
 using SPICA.Formats.GFL2.Texture;
 
+using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.WinForms.Formats
@@ -12,6 +15,14 @@ namespace SPICA.WinForms.Formats
     {
         const uint GFModelConstant = 0x15122117;
         const uint GFTextureConstant = 0x15041213;
+        const uint GFMotionConstant = 0x00060000;
+
+        //This is a workaround, we keep the skeleton of the last loaded Pokémon model
+        //Then we use it to open any subsequent animation opened by the user
+        //This is needed because:
+        //- The renderer only renders BCH, and the skeleton is necessary to convert an animation to BCH
+        //- The model and animation are stored in different files, so we can't find the skeleton easily
+        private static List<GFBone> Skeleton;
 
         public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header)
         {
@@ -50,6 +61,8 @@ namespace SPICA.WinForms.Formats
                         MdlPack.FragShaders.Add(new GFFragShader(Reader));
                     }
 
+                    Skeleton = MdlPack.Models[0].Skeleton;
+
                     Output = MdlPack.ToH3D();
 
                     break;
@@ -62,6 +75,50 @@ namespace SPICA.WinForms.Formats
                         Input.Seek(Entry.Address, SeekOrigin.Begin);
 
                         Output.Textures.Add(new GFTexture(Reader).ToH3DTexture());
+                    }
+
+                    break;
+
+                case GFMotionConstant:
+                    Output = new H3D();
+
+                    if (Skeleton == null) break;
+
+                    for (int Index = 0; Index < Header.Entries.Length; Index++)
+                    {
+                        Input.Seek(Header.Entries[Index].Address, SeekOrigin.Begin);
+
+                        if (Input.Position + 4 > Input.Length) break;
+                        if (Reader.ReadUInt32() != GFMotionConstant) continue;
+
+                        Input.Seek(-4, SeekOrigin.Current);
+
+                        GFMotion Mot = new GFMotion(Reader, Index);
+
+                        H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation(Skeleton);
+                        H3DAnimation MatAnim = Mot.ToH3DMaterialAnimation();
+                        H3DAnimation VisAnim = Mot.ToH3DVisibilityAnimation();
+
+                        if (SklAnim != null)
+                        {
+                            SklAnim.Name = $"Motion_{Mot.Index}";
+
+                            Output.SkeletalAnimations.Add(SklAnim);
+                        }
+
+                        if (MatAnim != null)
+                        {
+                            MatAnim.Name = $"Motion_{Mot.Index}";
+
+                            Output.MaterialAnimations.Add(MatAnim);
+                        }
+
+                        if (VisAnim != null)
+                        {
+                            VisAnim.Name = $"Motion_{Mot.Index}";
+
+                            Output.VisibilityAnimations.Add(VisAnim);
+                        }
                     }
 
                     break;

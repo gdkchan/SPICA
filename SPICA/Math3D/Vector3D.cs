@@ -40,7 +40,7 @@ namespace SPICA.Math3D
                     case 1: return Y;
                     case 2: return Z;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-2 (X-Z) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-2 (X-Z) range!");
                 }
             }
             set
@@ -51,7 +51,7 @@ namespace SPICA.Math3D
                     case 1: Y = value; break;
                     case 2: Z = value; break;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-2 (X-Z) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-2 (X-Z) range!");
                 }
             }
         }

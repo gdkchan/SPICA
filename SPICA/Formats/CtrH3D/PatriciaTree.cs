@@ -83,6 +83,11 @@ namespace SPICA.Formats.CtrH3D
         }
 
         //Implementation
+        public bool Contains(string Name)
+        {
+            return Find(Name) != -1;
+        }
+
         public string Find(int Index)
         {
             return Nodes[Index + 1].Name;

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SPICA.Formats.GFL2.Motion
 {
-    class GFMotBoneTransform
+    public class GFMotBoneTransform
     {
         public string Name;
 
@@ -26,13 +26,21 @@ namespace SPICA.Formats.GFL2.Motion
 
         public GFMotBoneTransform()
         {
-            InitLists();
+            ScaleX       = new List<GFMotKeyFrame>();
+            ScaleY       = new List<GFMotKeyFrame>();
+            ScaleZ       = new List<GFMotKeyFrame>();
+
+            RotationX    = new List<GFMotKeyFrame>();
+            RotationY    = new List<GFMotKeyFrame>();
+            RotationZ    = new List<GFMotKeyFrame>();
+
+            TranslationX = new List<GFMotKeyFrame>();
+            TranslationY = new List<GFMotKeyFrame>();
+            TranslationZ = new List<GFMotKeyFrame>();
         }
 
-        public GFMotBoneTransform(BinaryReader Reader, string Name)
+        public GFMotBoneTransform(BinaryReader Reader, string Name) : this()
         {
-            InitLists();
-
             this.Name = Name;
 
             uint Flags = Reader.ReadUInt32();
@@ -61,21 +69,6 @@ namespace SPICA.Formats.GFL2.Motion
 
                 Flags >>= 3;
             }
-        }
-
-        private void InitLists()
-        {
-            ScaleX       = new List<GFMotKeyFrame>();
-            ScaleY       = new List<GFMotKeyFrame>();
-            ScaleZ       = new List<GFMotKeyFrame>();
-
-            RotationX    = new List<GFMotKeyFrame>();
-            RotationY    = new List<GFMotKeyFrame>();
-            RotationZ    = new List<GFMotKeyFrame>();
-
-            TranslationX = new List<GFMotKeyFrame>();
-            TranslationY = new List<GFMotKeyFrame>();
-            TranslationZ = new List<GFMotKeyFrame>();
         }
 
         public static void SetFrameValue(List<GFMotKeyFrame> KeyFrames, float Frame, ref float Value)

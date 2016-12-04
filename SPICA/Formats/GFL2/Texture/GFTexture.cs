@@ -5,7 +5,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Texture
 {
-    class GFTexture
+    public class GFTexture
     {
         public string Name;
         public byte[] RawBuffer;

@@ -38,7 +38,7 @@ namespace SPICA.Math3D
                     case 2: return B;
                     case 3: return A;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-3 (R-A) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-3 (R-A) range!");
                 }
             }
             set
@@ -50,7 +50,7 @@ namespace SPICA.Math3D
                     case 2: B = value; break;
                     case 3: A = value; break;
 
-                    default: throw new IndexOutOfRangeException("Expected 0-3 (R-A) range!");
+                    default: throw new ArgumentOutOfRangeException("Expected 0-3 (R-A) range!");
                 }
             }
         }

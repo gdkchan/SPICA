@@ -81,7 +81,7 @@ namespace SPICA.Formats.CtrH3D.Model
                 case 2: MeshesLayer2.Add(Mesh); break;
                 case 3: MeshesLayer3.Add(Mesh); break;
 
-                default: throw new IndexOutOfRangeException("Invalid Layer! Expected 0, 1, 2 or 3!");
+                default: throw new ArgumentOutOfRangeException("Invalid Layer! Expected 0, 1, 2 or 3!");
             }
         }
 

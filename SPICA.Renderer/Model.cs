@@ -22,19 +22,22 @@ namespace SPICA.Renderer
 
         public Matrix4 Transform;
 
-        public List<Mesh> Meshes;
-
-        public PatriciaList<H3DBone>[] Skeletons;
+        //Per model
+        public List<Mesh>                  Meshes;
+        public PatriciaList<H3DBone>[]     Skeletons;
         public PatriciaList<H3DMaterial>[] Materials;
 
-        private Matrix4[][] InverseTransform;
-        private Matrix4[] SkeletonTransform;
+        //Per model mesh
+        private Matrix4[][]     InverseTransform;
+        private Matrix4[]       SkeletonTransform;
         private UVTransform[][] MaterialTransform;
 
+        //Shared
         private Dictionary<string, int> TextureIds;
         private Dictionary<string, int> LUTHandles;
         private Dictionary<string, bool> IsLUTAbs;
 
+        //Animation related
         public SkeletalAnim SkeletalAnimation;
         public MaterialAnim MaterialAnimation;
 
@@ -239,8 +242,11 @@ namespace SPICA.Renderer
 
         public void UpdateAnimationTransforms()
         {
-            SkeletonTransform = SkeletalAnimation.GetSkeletonTransforms(Skeletons[CurrModel]);
-            MaterialTransform = MaterialAnimation.GetUVTransforms(Materials[CurrModel]);
+            if (Meshes.Count > 0)
+            {
+                SkeletonTransform = SkeletalAnimation.GetSkeletonTransforms(Skeletons[CurrModel]);
+                MaterialTransform = MaterialAnimation.GetUVTransforms(Materials[CurrModel]);
+            }
         }
 
         public void ResetTransform()
@@ -287,11 +293,14 @@ namespace SPICA.Renderer
 
         public void Render()
         {
-            for (int
-                Index = MeshRanges[CurrModel].Start;
-                Index < MeshRanges[CurrModel].End; 
-                Index++)
-                Meshes[Index].Render();
+            if (MeshRanges.Length > 0)
+            {
+                for (int
+                    Index = MeshRanges[CurrModel].Start;
+                    Index < MeshRanges[CurrModel].End;
+                    Index++)
+                    Meshes[Index].Render();
+            }
         }
 
         internal Matrix4 GetInverseTransform(int MeshIndex)

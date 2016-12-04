@@ -14,9 +14,9 @@ using System.Linq;
 
 namespace SPICA.Formats.GFL2.Model
 {
-    class GFModel
+    public class GFModel
     {
-        public const string DefaultLUTName = "LookupTableSetContentCtrName";
+        internal const string DefaultLUTName = "LookupTableSetContentCtrName";
 
         public string Name;
 
@@ -111,9 +111,9 @@ namespace SPICA.Formats.GFL2.Model
                 {
                     ParentIndex = (short)Skeleton.FindIndex(x => x.Name == Bone.ParentName),
 
-                    Name = Bone.Name,
-                    Scale = Bone.Scale,
-                    Rotation = Bone.Rotation,
+                    Name        = Bone.Name,
+                    Scale       = Bone.Scale,
+                    Rotation    = Bone.Rotation,
                     Translation = Bone.Translation
                 });
             }
@@ -228,6 +228,9 @@ namespace SPICA.Formats.GFL2.Model
 
                 Params.UniqueId = (uint)Params.GetHashCode();
 
+                Params.BumpTexture = (byte)Material.BakeTexture0;
+                Params.BumpMode = Params.BumpTexture > 0 ? H3DBumpMode.AsBump : 0;
+
                 Output.Materials.Add(Mat);
             }
 
@@ -241,14 +244,22 @@ namespace SPICA.Formats.GFL2.Model
                 //For this reason we need to store SubMeshes as Meshes on H3D
                 foreach (GFSubMesh SubMesh in Mesh.SubMeshes)
                 {
+                    int NodeIndex = Output.MeshNodesTree.Find(Mesh.Name);
+
+                    if (NodeIndex == -1)
+                    {
+                        Output.MeshNodesTree.Add(Mesh.Name);
+                        Output.MeshNodesVisibility.Add(true);
+
+                        NodeIndex = Output.MeshNodesCount++;
+                    }
+
                     H3DMesh M = new H3DMesh();
 
                     M.Skinning = H3DMeshSkinning.Smooth;
 
-                    int MeshIndex = Output.MeshNodesCount++;
-
                     M.MaterialIndex = (ushort)Materials.FindIndex(x => x.SubMeshName.Name == SubMesh.Name);
-                    M.NodeIndex = (ushort)MeshIndex;
+                    M.NodeIndex = (ushort)NodeIndex;
 
                     M.RawBuffer       = SubMesh.RawBuffer;
                     M.Attributes      = SubMesh.Attributes;
@@ -271,9 +282,6 @@ namespace SPICA.Formats.GFL2.Model
                     });
 
                     Output.AddMesh(M);
-
-                    Output.MeshNodesTree.Add($"Mesh_{MeshIndex}_{SubMesh.Name}");
-                    Output.MeshNodesVisibility.Add(true);
                 }
             }
 

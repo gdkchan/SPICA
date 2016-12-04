@@ -3,9 +3,10 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Motion
 {
-    class GFMotUVTransform
+    public class GFMotUVTransform
     {
         public string Name;
+        public uint UnitIndex;
 
         public List<GFMotKeyFrame> ScaleX;
         public List<GFMotKeyFrame> ScaleY;
@@ -17,16 +18,20 @@ namespace SPICA.Formats.GFL2.Motion
 
         public GFMotUVTransform()
         {
-            InitLists();
+            ScaleX       = new List<GFMotKeyFrame>();
+            ScaleY       = new List<GFMotKeyFrame>();
+
+            Rotation     = new List<GFMotKeyFrame>();
+
+            TranslationX = new List<GFMotKeyFrame>();
+            TranslationY = new List<GFMotKeyFrame>();
         }
 
-        public GFMotUVTransform(BinaryReader Reader, string Name)
+        public GFMotUVTransform(BinaryReader Reader, string Name) : this()
         {
-            InitLists();
-
             this.Name = Name;
 
-            Reader.ReadUInt32();
+            UnitIndex = Reader.ReadUInt32();
 
             uint Flags = Reader.ReadUInt32();
             uint Length = Reader.ReadUInt32();
@@ -48,17 +53,6 @@ namespace SPICA.Formats.GFL2.Motion
 
                 Flags >>= 3;
             }
-        }
-
-        private void InitLists()
-        {
-            ScaleX       = new List<GFMotKeyFrame>();
-            ScaleY       = new List<GFMotKeyFrame>();
-
-            Rotation     = new List<GFMotKeyFrame>();
-
-            TranslationX = new List<GFMotKeyFrame>();
-            TranslationY = new List<GFMotKeyFrame>();
         }
     }
 }

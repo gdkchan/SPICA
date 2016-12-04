@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2
 {
-    class GFMotionPack : IEnumerable<GFMotion>
+    public class GFMotionPack : IEnumerable<GFMotion>
     {
         private List<GFMotion> Animations;
 
@@ -23,28 +23,10 @@ namespace SPICA.Formats.GFL2
             Animations = new List<GFMotion>();
         }
 
-        public GFMotionPack(string FileName)
-        {
-            using (FileStream FS = new FileStream(FileName, FileMode.Open))
-            {
-                GFMotionPackImpl(new BinaryReader(FS));
-            }
-        }
+        public GFMotionPack(Stream Input) : this(new BinaryReader(Input)) { }
 
-        public GFMotionPack(Stream Input)
+        public GFMotionPack(BinaryReader Reader) : this()
         {
-            GFMotionPackImpl(new BinaryReader(Input));
-        }
-
-        public GFMotionPack(BinaryReader Reader)
-        {
-            GFMotionPackImpl(Reader);
-        }
-
-        private void GFMotionPackImpl(BinaryReader Reader)
-        {
-            Animations = new List<GFMotion>();
-
             uint AnimsCount = Reader.ReadUInt32();
 
             long Position = Reader.BaseStream.Position;

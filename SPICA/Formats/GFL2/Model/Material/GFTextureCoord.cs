@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Model.Material
 {
-    struct GFTextureCoord
+    public struct GFTextureCoord
     {
         public uint Hash;
         public string Name;

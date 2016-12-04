@@ -4,6 +4,7 @@ using OpenTK.Graphics;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Renderer;
+using SPICA.Renderer.Animation;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
 
@@ -41,7 +42,8 @@ namespace SPICA.WinForms
         {
             None,
             Skeletal,
-            Material
+            Material,
+            Visibility
         }
 
         private AnimType CurrAnimType;
@@ -409,21 +411,22 @@ namespace SPICA.WinForms
 
                 Model.SkeletalAnimation.SetAnimation(SklAnim);
 
-                int MatAnimIndex = SceneData.MaterialAnimations.FindIndex(SklAnim.Name);
-
-                if (MatAnimIndex != -1)
-                {
-                    MatAnimsList.SelectedIndex = MatAnimIndex;
-
-                    Model.MaterialAnimation.SetAnimation(SceneData.MaterialAnimations[MatAnimIndex]);
-                }
-                else
-                {
-                    Model.MaterialAnimation.SetAnimation(null);
-                }
+                MatAnimsList.SelectedIndex = FindAndSetAnim(
+                    SceneData.MaterialAnimations, 
+                    Model.MaterialAnimation, 
+                    SklAnim.Name);
 
                 SetAnimationControls(SklAnim, AnimType.Skeletal);
             }
+        }
+
+        private int FindAndSetAnim(PatriciaList<H3DAnimation> Src, AnimControl Tgt, string Name)
+        {
+            int AnimIndex = Src.FindIndex(Name);
+
+            Tgt.SetAnimation(AnimIndex != -1 ? Src[AnimIndex] : null);
+
+            return AnimIndex;
         }
 
         private void MatAnimsList_SelectedIndexChanged(object sender, EventArgs e)
