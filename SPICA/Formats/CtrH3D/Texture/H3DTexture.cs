@@ -23,9 +23,13 @@ namespace SPICA.Formats.CtrH3D.Texture
         public byte MipmapSize;
         private ushort Padding;
 
-        public string Name;
+        private string _Name;
 
-        public string ObjectName { get { return Name; } }
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; }
+        }
 
         public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 

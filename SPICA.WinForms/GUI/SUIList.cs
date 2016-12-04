@@ -252,8 +252,10 @@ namespace SPICA.WinForms.GUI
 
             foreach (INamed Item in Source)
             {
-                Items.Add(Item.ObjectName);
+                Items.Add(Item.Name);
             }
+
+            CalculateScroll();
 
             Invalidate();
 
@@ -272,7 +274,7 @@ namespace SPICA.WinForms.GUI
             if (IsBound)
             {
                 int Index = e.NewStartingIndex;
-                string Item = ((INamed)e.NewItems[0]).ObjectName;
+                string Item = ((INamed)e.NewItems[0]).Name;
 
                 switch (e.Action)
                 {
@@ -285,6 +287,8 @@ namespace SPICA.WinForms.GUI
                 if (e.Action == NotifyCollectionChangedAction.Remove ||
                     e.Action == NotifyCollectionChangedAction.Reset)
                     Select(-1);
+
+                CalculateScroll();
 
                 Invalidate();
             }

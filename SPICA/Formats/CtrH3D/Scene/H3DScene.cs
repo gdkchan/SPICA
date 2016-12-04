@@ -3,6 +3,6 @@
     public class H3DScene : INamed
     {
         //TODO
-        public string ObjectName { get { return null; } }
+        public string Name { get { return null; } set { } }
     }
 }

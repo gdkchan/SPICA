@@ -152,9 +152,9 @@ void main() {
 
 vec2 TransformUV(vec2 UV, int Index) {
 	//Note: The 0.5 offset is to rotate around the center
-	UV = (UV * UVTransforms[Index].Scale) - 0.5f;
+	UV = (UV - 0.5f) * UVTransforms[Index].Scale;
 	UV = UVTransforms[Index].Transform * UV;
-	UV += UVTransforms[Index].Translation + 0.5f;
+	UV += -UVTransforms[Index].Translation + 0.5f;
 
 	return UV;
 }

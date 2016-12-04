@@ -17,13 +17,12 @@ namespace SPICA.Renderer
     {
         private int VBOHandle;
         private int VAOHandle;
-
         private int ShaderHandle;
 
-        private Model Parent;
-
+        public Model Parent;
         public H3DMesh BaseMesh;
-        private H3DMaterial Material;
+        public H3DMaterial Material;
+
         private List<H3DSubMesh> SubMeshes;
 
         public Vector3 MeshCenter;
@@ -276,17 +275,17 @@ namespace SPICA.Renderer
                 Params.LUTReflecBSamplerName ?? Params.LUTReflecRSamplerName);
 
             //Setup texture transforms
-            UVTransform[] UVTransforms = Parent.MaterialAnimation.GetUVTransforms(Material.Name, Params.TextureCoords);
+            UVTransform[] MatTrans = Parent.GetMaterialTransform(BaseMesh.MaterialIndex);
 
-            for (int Index = 0; Index < UVTransforms.Length; Index++)
+            for (int Index = 0; Index < MatTrans.Length; Index++)
             {
                 int ScaleLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Scale");
                 int TransformLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Transform");
                 int TranslationLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Translation");
 
-                GL.Uniform2(ScaleLocation, UVTransforms[Index].Scale);
-                GL.UniformMatrix2(TransformLocation, false, ref UVTransforms[Index].Transform);
-                GL.Uniform2(TranslationLocation, UVTransforms[Index].Translation);
+                GL.Uniform2(ScaleLocation, MatTrans[Index].Scale);
+                GL.UniformMatrix2(TransformLocation, false, ref MatTrans[Index].Transform);
+                GL.Uniform2(TranslationLocation, MatTrans[Index].Translation);
             }
 
             //Setup texture units

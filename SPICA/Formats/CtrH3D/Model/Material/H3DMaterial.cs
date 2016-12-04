@@ -20,16 +20,19 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private uint[] TextureCommands;
 
-        [FixedLength(3)]
-        public H3DTextureMapper[] TextureMappers;
+        [FixedLength(3)] public H3DTextureMapper[] TextureMappers;
 
         public string Texture0Name;
         public string Texture1Name;
         public string Texture2Name;
 
-        public string Name;
+        private string _Name;
 
-        public string ObjectName { get { return Name; } }
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; }
+        }
 
         [Ignore] public bool[] EnabledTextures;
 

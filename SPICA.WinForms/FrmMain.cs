@@ -16,6 +16,7 @@ namespace SPICA.WinForms
 {
     public partial class FrmMain : Form
     {
+        #region Initialization
         private GLControl Viewport;
         private RenderEngine Renderer;
 
@@ -74,10 +75,9 @@ namespace SPICA.WinForms
             TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);
         }
+        #endregion
 
-        //
-        // Viewport controls
-        //
+        #region Viewport events
         private void Viewport_Load(object sender, EventArgs e)
         {
             //Note: Setting up OpenGL stuff only works after the control has loaded on the Form
@@ -165,83 +165,68 @@ namespace SPICA.WinForms
 
             UpdateViewport();
         }
+        #endregion
 
-        //Menu items
+        #region Menu items
         private void MenuOpenFile_Click(object sender, EventArgs e)
         {
             ToolButtonOpen_Click(sender, e);
         }
 
-        //Tool buttons
+        private void MenuMergeFiles_Click(object sender, EventArgs e)
+        {
+            ToolButtonMerge_Click(sender, e);
+        }
+        #endregion
+
+        #region Tool buttons
         private void ToolButtonOpen_Click(object sender, EventArgs e)
+        {
+            Open(false);
+        }
+
+        private void ToolButtonMerge_Click(object sender, EventArgs e)
+        {
+            Open(true);
+        }
+
+        private void Open(bool MergeMode)
         {
             IgnoreClicks = true;
 
             using (OpenFileDialog OpenDlg = new OpenFileDialog())
             {
                 OpenDlg.Filter = "All files|*.*";
+                OpenDlg.Multiselect = MergeMode;
 
                 if (OpenDlg.ShowDialog() == DialogResult.OK)
                 {
-                    SceneData = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileName);
-
-                    if (SceneData == null)
+                    if (MergeMode)
                     {
-                        MessageBox.Show(
-                            "Unsupported file format!",
-                            "Can't open file!",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
+                        if (SceneData == null) SceneData = new H3D();
 
-                        return;
+                        for (int Index = 0; Index < OpenDlg.FileNames.Length; Index++)
+                        {
+                            H3D Data = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileNames[Index]);
+
+                            if (Data != null) SceneData.Merge(Data);
+                        }
+
+                        LoadScene();
                     }
-
-                    Animator.Enabled = false;
-
-                    CacheTextures();
-
-                    SceneData.Textures.CollectionChanged += TexturesList_CollectionChanged;
-
-                    //Bind Lists to H3D contents
-                    ModelsList.Bind(SceneData.Models);
-                    TexturesList.Bind(SceneData.Textures);
-                    SklAnimsList.Bind(SceneData.SkeletalAnimations);
-                    MatAnimsList.Bind(SceneData.MaterialAnimations);
-
-                    //Setup Renderer
-                    Renderer.ClearModels();
-
-                    Model = Renderer.AddModel(SceneData);
-
-                    Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
-
-                    MdlCenter = -CenterMax.Item1;
-                    CamDist = CenterMax.Item2;
-
-                    Renderer.ClearLights();
-
-                    Renderer.AddLight(new Light
+                    else
                     {
-                        Position = new Vector3(
-                            0, 
-                            -MdlCenter.Y, 
-                            -(MdlCenter.Z - CamDist * 2)),
-                        Ambient = new Color4(0f, 0f, 0f, 0f),
-                        Diffuse = new Color4(0.5f, 0.5f, 0.5f, 1f),
-                        Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
-                    });
+                        SceneData = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileName);
 
-                    if (SceneData.Models.Count > 0) ModelsList.Select(0);
-
-                    AnimSeekBar.Value = 0;
-                    AnimSeekBar.Maximum = 0;
-
-                    LblAnimSpeed.Text = string.Empty;
-                    LblAnimLoopMode.Text = string.Empty;
-
-                    CurrAnimType = AnimType.None;
-
-                    ResetView();
+                        if (SceneData == null)
+                            MessageBox.Show(
+                                "Unsupported file format!",
+                                "Can't open file!",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Exclamation);
+                        else
+                            LoadScene();
+                    }
                 }
             }
 
@@ -251,13 +236,57 @@ namespace SPICA.WinForms
             Application.DoEvents();
 
             IgnoreClicks = false;
-
-            UpdateViewport();
         }
 
-        private void TexturesList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void LoadScene()
         {
             CacheTextures();
+
+            SceneData.Textures.CollectionChanged += TexturesList_CollectionChanged;
+
+            //Bind Lists to H3D contents
+            ModelsList.Bind(SceneData.Models);
+            TexturesList.Bind(SceneData.Textures);
+            SklAnimsList.Bind(SceneData.SkeletalAnimations);
+            MatAnimsList.Bind(SceneData.MaterialAnimations);
+
+            //Model
+            Renderer.ClearModels();
+
+            Model = Renderer.AddModel(SceneData);
+
+            //Camera
+            Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
+
+            MdlCenter = -CenterMax.Item1;
+            CamDist = CenterMax.Item2;
+
+            Renderer.ClearLights();
+
+            Renderer.AddLight(new Light
+            {
+                Position = new Vector3(
+                    0,
+                    -MdlCenter.Y,
+                    -(MdlCenter.Z - CamDist * 2)),
+                Ambient = new Color4(0f, 0f, 0f, 0f),
+                Diffuse = new Color4(0.5f, 0.5f, 0.5f, 1f),
+                Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
+            });
+
+            if (SceneData.Models.Count > 0) ModelsList.Select(0);
+
+            ResetView();
+
+            //Animation
+            Animator.Enabled = false;
+            AnimSeekBar.Value = 0;
+            AnimSeekBar.Maximum = 0;
+
+            LblAnimSpeed.Text = string.Empty;
+            LblAnimLoopMode.Text = string.Empty;
+
+            CurrAnimType = AnimType.None;
         }
 
         private void CacheTextures()
@@ -274,17 +303,6 @@ namespace SPICA.WinForms
             for (int Index = 0; Index < CachedTextures.Length; Index++)
             {
                 CachedTextures[Index] = SceneData.Textures[Index].ToBitmap();
-            }
-        }
-
-        //Side menu
-        private void ModelsList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (ModelsList.SelectedIndex != -1 && Model != null)
-            {
-                Model.CurrentModelIndex = ModelsList.SelectedIndex;
-
-                ResetView();
             }
         }
 
@@ -305,6 +323,23 @@ namespace SPICA.WinForms
             UpdateTranslation();
 
             UpdateViewport();
+        }
+        #endregion
+
+        #region Side menu events
+        private void ModelsList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ModelsList.SelectedIndex != -1 && Model != null)
+            {
+                Model.CurrentModelIndex = ModelsList.SelectedIndex;
+
+                ResetView();
+            }
+        }
+
+        private void TexturesList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            CacheTextures();
         }
 
         private void UpdateTranslation()
@@ -331,8 +366,9 @@ namespace SPICA.WinForms
                 TextureInfo.Text = string.Empty;
             }
         }
+        #endregion
 
-        //Viewport update management
+        #region Animation timing
         private void Animator_Tick(object sender, EventArgs e)
         {
             Model.Animate();
@@ -360,12 +396,9 @@ namespace SPICA.WinForms
         {
             if (!Animator.Enabled) Viewport.Invalidate();
         }
+        #endregion
 
-        //
-        // Animation playback controls
-        //
-
-        //Side menu
+        #region Animation related + playback controls
         private void SklAnimsList_SelectedIndexChanged(object sender, EventArgs e)
         {
             //Here we automatically select materials with a matching name for convenience
@@ -420,7 +453,6 @@ namespace SPICA.WinForms
             CurrAnimType = Type;
         }
 
-        //Playback bar
         private void AnimButtonPlayBackward_Click(object sender, EventArgs e)
         {
             if (Model != null)
@@ -464,6 +496,8 @@ namespace SPICA.WinForms
                 DisableAnimator();
 
                 AnimSeekBar.Value = 0;
+
+                Model.UpdateAnimationTransforms();
             }
         }
 
@@ -517,7 +551,7 @@ namespace SPICA.WinForms
                 Model.SkeletalAnimation.Frame = AnimSeekBar.Value;
                 Model.MaterialAnimation.Frame = AnimSeekBar.Value;
 
-                Model.UpdateSkeletonTransform();
+                Model.UpdateAnimationTransforms();
 
                 UpdateViewport();
             }
@@ -533,5 +567,6 @@ namespace SPICA.WinForms
         {
             LblAnimSpeed.Text = string.Format("{0:N2}x", Math.Abs(Model.SkeletalAnimation.Step));
         }
+        #endregion
     }
 }

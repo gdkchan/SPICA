@@ -4,7 +4,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 {
     public class H3DAnimation : INamed
     {
-        public string Name;
+        private string _Name;
 
         public H3DAnimationFlags AnimationFlags;
 
@@ -14,7 +14,11 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         public H3DMetaData MetaData;
 
-        public string ObjectName { get { return Name; } }
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; }
+        }
 
         public H3DAnimation()
         {

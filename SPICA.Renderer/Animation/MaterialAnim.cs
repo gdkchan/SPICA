@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
+using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Renderer.SPICA_GL;
 
@@ -10,7 +12,21 @@ namespace SPICA.Renderer.Animation
 {
     public class MaterialAnim : AnimControl
     {
-        internal UVTransform[] GetUVTransforms(string MaterialName, H3DTextureCoord[] TexCoords)
+        internal UVTransform[][] GetUVTransforms(PatriciaList<H3DMaterial> Materials)
+        {
+            UVTransform[][] Output = new UVTransform[Materials.Count][];
+
+            for (int Index = 0; Index < Output.Length; Index++)
+            {
+                Output[Index] = GetUVTransform(
+                    Materials[Index].Name,
+                    Materials[Index].MaterialParams.TextureCoords);
+            }
+
+            return Output;
+        }
+
+        internal UVTransform[] GetUVTransform(string MaterialName, H3DTextureCoord[] TexCoords)
         {
             Vector2[] Scale = new Vector2[3];
             float[]   Rot   = new float[3];

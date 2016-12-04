@@ -24,9 +24,13 @@ namespace SPICA.Formats.CtrH3D.Model
         public Vector3D Translation;
         public Matrix3x4 InverseTransform;
 
-        public string Name;
+        private string _Name;
 
-        public string ObjectName { get { return Name; } }
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; }
+        }
 
         public H3DMetaData MetaData;
 

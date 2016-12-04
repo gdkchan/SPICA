@@ -32,9 +32,13 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public List<bool> MeshNodesVisibility;
 
-        public string Name;
+        private string _Name;
 
-        public string ObjectName { get { return Name; } }
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; }
+        }
 
         public int MeshNodesCount;
 

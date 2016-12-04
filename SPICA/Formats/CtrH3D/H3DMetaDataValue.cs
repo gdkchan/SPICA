@@ -13,9 +13,13 @@ namespace SPICA.Formats.CtrH3D
 {
     public struct H3DMetaDataValue : ICustomSerialization, INamed
     {
-        public string Name;
+        private string _Name;
 
-        public string ObjectName { get { return Name; } }
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; }
+        }
 
         public H3DMetaDataType Type;
 

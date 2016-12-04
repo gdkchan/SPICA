@@ -27,7 +27,7 @@ namespace SPICA.Renderer.Animation
 
         private const string InvalidPrimitiveTypeEx = "Invalid Primitive type used on Skeleton Bone!";
 
-        internal Matrix4[] GetSkeletonTransform(PatriciaList<H3DBone> Skeleton)
+        internal Matrix4[] GetSkeletonTransforms(PatriciaList<H3DBone> Skeleton)
         {
             Matrix4[] Output = new Matrix4[Skeleton.Count];
             Bone[] FrameSkeleton = new Bone[Skeleton.Count];

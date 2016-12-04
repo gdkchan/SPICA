@@ -117,10 +117,13 @@ namespace SPICA.Formats.GFL2
                 {
                     H3DMaterialParams Params = Mdl.Materials[MatIndex].MaterialParams;
                     GFHashName FragShaderName = Model.Materials[MatIndex].FragShaderName;
-                    GFFragShader FragShader = FragShaders.First(x => x.Name == FragShaderName.Name);
+                    GFFragShader FragShader = FragShaders.FirstOrDefault(x => x.Name == FragShaderName.Name);
 
-                    Params.TexEnvStages      = FragShader.TexEnvStages;
-                    Params.TexEnvBufferColor = FragShader.TexEnvBufferColor;
+                    if (FragShader != null)
+                    {
+                        Params.TexEnvStages      = FragShader.TexEnvStages;
+                        Params.TexEnvBufferColor = FragShader.TexEnvBufferColor;
+                    }
                 }
 
                 foreach (GFLUT LUT in Model.LUTs)
@@ -141,15 +144,7 @@ namespace SPICA.Formats.GFL2
 
             foreach (GFTexture Texture in Textures)
             {
-                Output.Textures.Add(new H3DTexture
-                {
-                    Name = Texture.Name,
-                    RawBufferXPos = Texture.RawBuffer,
-                    Width = Texture.Width,
-                    Height = Texture.Height,
-                    Format = Texture.Format.ToPICATextureFormat(),
-                    MipmapSize = (byte)Texture.MipmapSize
-                });
+                Output.Textures.Add(Texture.ToH3DTexture());
             }
 
             Output.BackwardCompatibility = 0x21;

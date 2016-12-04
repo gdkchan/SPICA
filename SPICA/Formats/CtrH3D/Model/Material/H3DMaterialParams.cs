@@ -134,7 +134,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [Ignore] internal H3DMaterial Parent;
 
-        public string ObjectName { get { return Parent?.Name; } }
+        public string Name
+        {
+            get { return Parent?.Name; }
+            set { if (Parent != null) Parent.Name = value; }
+        }
 
         public H3DMaterialParams()
         {

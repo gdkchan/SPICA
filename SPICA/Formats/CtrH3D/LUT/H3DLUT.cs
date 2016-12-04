@@ -6,9 +6,13 @@ namespace SPICA.Formats.CtrH3D.LUT
     {
         public List<H3DLUTSampler> Samplers;
 
-        public string Name;
+        private string _Name;
 
-        public string ObjectName { get { return Name; } }
+        public string Name
+        {
+            get { return _Name; }
+            set { _Name = value; }
+        }
 
         public H3DLUT()
         {

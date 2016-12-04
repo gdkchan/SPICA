@@ -143,6 +143,45 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
+        public void Merge(H3D Model)
+        {
+            AddUnique(Model.Models,               Models);
+            AddUnique(Model.Materials,            Materials);
+            AddUnique(Model.Shaders,              Shaders);
+            AddUnique(Model.Textures,             Textures);
+            AddUnique(Model.LUTs,                 LUTs);
+            AddUnique(Model.Lights,               Lights);
+            AddUnique(Model.Cameras,              Cameras);
+            AddUnique(Model.Fogs,                 Fogs);
+            AddUnique(Model.SkeletalAnimations,   SkeletalAnimations);
+            AddUnique(Model.MaterialAnimations,   MaterialAnimations);
+            AddUnique(Model.VisibilityAnimations, VisibilityAnimations);
+            AddUnique(Model.LightAnimations,      LightAnimations);
+            AddUnique(Model.CameraAnimations,     CameraAnimations);
+            AddUnique(Model.FogAnimations,        FogAnimations);
+            AddUnique(Model.Scenes,               Scenes);
+        }
+
+        private void AddUnique<T>(PatriciaList<T> Src, PatriciaList<T> Tgt) where T : INamed
+        {
+            //We need to make sure that the name isn't already contained on the Tree
+            //Otherwise it would throw an exception due to duplicate Keys
+            foreach (T Value in Src)
+            {
+                string Name = Value.Name;
+                int Index = 0;
+
+                while (Tgt.ContainsName(Name))
+                {
+                    Name = string.Format("{0}_{1}", Value.Name, ++Index);
+                }
+
+                Value.Name = Name;
+
+                Tgt.Add(Value);
+            }
+        }
+
         public void CopyMaterials()
         {
             Materials.Clear();
@@ -151,7 +190,9 @@ namespace SPICA.Formats.CtrH3D
             {
                 foreach (H3DMaterial Material in Model.Materials)
                 {
-                    Materials.Add(Material.MaterialParams);
+                    //Note: The IF is a workaround for multiple models with same material names
+                    //This kind of problem doesn't happen on BCH, but may happen on converted formats
+                    if (!Materials.ContainsName(Material.Name)) Materials.Add(Material.MaterialParams);
                 }
             }
         }

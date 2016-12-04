@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.GFL2.Utils;
+﻿using SPICA.Formats.CtrH3D.Texture;
+using SPICA.Formats.GFL2.Utils;
 
 using System.IO;
 
@@ -37,6 +38,19 @@ namespace SPICA.Formats.GFL2.Texture
             Reader.BaseStream.Seek(0x10, SeekOrigin.Current); //Padding
 
             RawBuffer = Reader.ReadBytes((int)TextureLength);
+        }
+
+        public H3DTexture ToH3DTexture()
+        {
+            return new H3DTexture
+            {
+                Name = Name,
+                RawBufferXPos = RawBuffer,
+                Width = Width,
+                Height = Height,
+                Format = Format.ToPICATextureFormat(),
+                MipmapSize = (byte)MipmapSize
+            };
         }
     }
 }

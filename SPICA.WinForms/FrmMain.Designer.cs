@@ -50,6 +50,8 @@
             this.Animator = new System.Windows.Forms.Timer(this.components);
             this.TabIcons = new System.Windows.Forms.ImageList(this.components);
             this.MainContainer = new System.Windows.Forms.SplitContainer();
+            this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
+            this.MenuMergeFiles = new System.Windows.Forms.ToolStripMenuItem();
             this.SideTabs = new SPICA.WinForms.GUI.SUITabControl();
             this.TabPageModels = new System.Windows.Forms.TabPage();
             this.ModelsList = new SPICA.WinForms.GUI.SUIList();
@@ -99,7 +101,8 @@
             // MenuFileRoot
             // 
             this.MenuFileRoot.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuOpenFile});
+            this.MenuOpenFile,
+            this.MenuMergeFiles});
             this.MenuFileRoot.Name = "MenuFileRoot";
             this.MenuFileRoot.Size = new System.Drawing.Size(37, 20);
             this.MenuFileRoot.Text = "&File";
@@ -107,8 +110,9 @@
             // MenuOpenFile
             // 
             this.MenuOpenFile.Name = "MenuOpenFile";
-            this.MenuOpenFile.Size = new System.Drawing.Size(103, 22);
-            this.MenuOpenFile.Text = "&Open";
+            this.MenuOpenFile.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.MenuOpenFile.Size = new System.Drawing.Size(162, 22);
+            this.MenuOpenFile.Text = "&Open...";
             this.MenuOpenFile.Click += new System.EventHandler(this.MenuOpenFile_Click);
             // 
             // MenuHelpRoot
@@ -165,7 +169,7 @@
             this.ToolButtonOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolButtonOpen.Name = "ToolButtonOpen";
             this.ToolButtonOpen.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonOpen.ToolTipText = "Open";
+            this.ToolButtonOpen.ToolTipText = "Open...";
             this.ToolButtonOpen.Click += new System.EventHandler(this.ToolButtonOpen_Click);
             // 
             // ToolButtonSave
@@ -176,7 +180,7 @@
             this.ToolButtonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolButtonSave.Name = "ToolButtonSave";
             this.ToolButtonSave.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonSave.ToolTipText = "Save";
+            this.ToolButtonSave.ToolTipText = "Save...";
             // 
             // MenuSeparatorShowHideJustIgnore
             // 
@@ -192,7 +196,7 @@
             this.MenuButtonWireframeMode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MenuButtonWireframeMode.Name = "MenuButtonWireframeMode";
             this.MenuButtonWireframeMode.Size = new System.Drawing.Size(28, 27);
-            this.MenuButtonWireframeMode.ToolTipText = "Enable/Disable wireframe";
+            this.MenuButtonWireframeMode.ToolTipText = "Toggle wireframe";
             // 
             // ToolButtonShowGrid
             // 
@@ -203,7 +207,7 @@
             this.ToolButtonShowGrid.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolButtonShowGrid.Name = "ToolButtonShowGrid";
             this.ToolButtonShowGrid.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowGrid.ToolTipText = "Show/Hide grid";
+            this.ToolButtonShowGrid.ToolTipText = "Toggle grid";
             // 
             // ToolButtonShowAxis
             // 
@@ -214,7 +218,7 @@
             this.ToolButtonShowAxis.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.ToolButtonShowAxis.Name = "ToolButtonShowAxis";
             this.ToolButtonShowAxis.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowAxis.ToolTipText = "Show/Hide axis";
+            this.ToolButtonShowAxis.ToolTipText = "Toggle axis";
             // 
             // MenuButtonShowBones
             // 
@@ -225,7 +229,7 @@
             this.MenuButtonShowBones.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MenuButtonShowBones.Name = "MenuButtonShowBones";
             this.MenuButtonShowBones.Size = new System.Drawing.Size(28, 27);
-            this.MenuButtonShowBones.ToolTipText = "Show/Hide skeleton";
+            this.MenuButtonShowBones.ToolTipText = "Toggle skeleton";
             // 
             // MenuButtonShowInfo
             // 
@@ -236,7 +240,7 @@
             this.MenuButtonShowInfo.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MenuButtonShowInfo.Name = "MenuButtonShowInfo";
             this.MenuButtonShowInfo.Size = new System.Drawing.Size(28, 27);
-            this.MenuButtonShowInfo.ToolTipText = "Show/Hide model info.";
+            this.MenuButtonShowInfo.ToolTipText = "Toggle model info.";
             // 
             // MenuButtonShowSideMenu
             // 
@@ -247,7 +251,7 @@
             this.MenuButtonShowSideMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.MenuButtonShowSideMenu.Name = "MenuButtonShowSideMenu";
             this.MenuButtonShowSideMenu.Size = new System.Drawing.Size(28, 27);
-            this.MenuButtonShowSideMenu.ToolTipText = "Show/Hide side menu";
+            this.MenuButtonShowSideMenu.ToolTipText = "Toggle side menu";
             // 
             // TopIcons
             // 
@@ -256,6 +260,7 @@
             this.TopIcons.ForeColor = System.Drawing.Color.White;
             this.TopIcons.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolButtonOpen,
+            this.ToolButtonMerge,
             this.ToolButtonSave,
             this.MenuSeparatorShowHideJustIgnore,
             this.MenuButtonWireframeMode,
@@ -268,7 +273,6 @@
             this.TopIcons.Name = "TopIcons";
             this.TopIcons.Size = new System.Drawing.Size(784, 30);
             this.TopIcons.TabIndex = 3;
-            this.TopIcons.Text = "toolStrip1";
             // 
             // Animator
             // 
@@ -296,6 +300,25 @@
             this.MainContainer.Size = new System.Drawing.Size(784, 477);
             this.MainContainer.SplitterDistance = 580;
             this.MainContainer.TabIndex = 0;
+            // 
+            // ToolButtonMerge
+            // 
+            this.ToolButtonMerge.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonMerge.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonMerge.Image")));
+            this.ToolButtonMerge.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonMerge.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonMerge.Name = "ToolButtonMerge";
+            this.ToolButtonMerge.Size = new System.Drawing.Size(28, 27);
+            this.ToolButtonMerge.ToolTipText = "Merge...";
+            this.ToolButtonMerge.Click += new System.EventHandler(this.ToolButtonMerge_Click);
+            // 
+            // MenuMergeFiles
+            // 
+            this.MenuMergeFiles.Name = "MenuMergeFiles";
+            this.MenuMergeFiles.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
+            this.MenuMergeFiles.Size = new System.Drawing.Size(162, 22);
+            this.MenuMergeFiles.Text = "&Merge...";
+            this.MenuMergeFiles.Click += new System.EventHandler(this.MenuMergeFiles_Click);
             // 
             // SideTabs
             // 
@@ -626,5 +649,7 @@
         private System.Windows.Forms.ImageList TabIcons;
         private System.Windows.Forms.TabPage TabPageMatAnims;
         private GUI.SUIList MatAnimsList;
+        private System.Windows.Forms.ToolStripButton ToolButtonMerge;
+        private System.Windows.Forms.ToolStripMenuItem MenuMergeFiles;
     }
 }

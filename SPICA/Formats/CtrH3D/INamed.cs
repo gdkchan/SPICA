@@ -2,6 +2,6 @@
 {
     public interface INamed
     {
-        string ObjectName { get; }
+        string Name { get; set; }
     }
 }
