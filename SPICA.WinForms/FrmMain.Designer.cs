@@ -33,6 +33,7 @@
             this.TopMenu = new System.Windows.Forms.MenuStrip();
             this.MenuFileRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuOpenFile = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuMergeFiles = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuHelpRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.AnimControlsPanel = new System.Windows.Forms.Panel();
             this.LblAnimSpeed = new System.Windows.Forms.Label();
@@ -47,11 +48,10 @@
             this.MenuButtonShowInfo = new System.Windows.Forms.ToolStripButton();
             this.MenuButtonShowSideMenu = new System.Windows.Forms.ToolStripButton();
             this.TopIcons = new System.Windows.Forms.ToolStrip();
+            this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
             this.Animator = new System.Windows.Forms.Timer(this.components);
             this.TabIcons = new System.Windows.Forms.ImageList(this.components);
             this.MainContainer = new System.Windows.Forms.SplitContainer();
-            this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
-            this.MenuMergeFiles = new System.Windows.Forms.ToolStripMenuItem();
             this.SideTabs = new SPICA.WinForms.GUI.SUITabControl();
             this.TabPageModels = new System.Windows.Forms.TabPage();
             this.ModelsList = new SPICA.WinForms.GUI.SUIList();
@@ -114,6 +114,14 @@
             this.MenuOpenFile.Size = new System.Drawing.Size(162, 22);
             this.MenuOpenFile.Text = "&Open...";
             this.MenuOpenFile.Click += new System.EventHandler(this.MenuOpenFile_Click);
+            // 
+            // MenuMergeFiles
+            // 
+            this.MenuMergeFiles.Name = "MenuMergeFiles";
+            this.MenuMergeFiles.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
+            this.MenuMergeFiles.Size = new System.Drawing.Size(162, 22);
+            this.MenuMergeFiles.Text = "&Merge...";
+            this.MenuMergeFiles.Click += new System.EventHandler(this.MenuMergeFiles_Click);
             // 
             // MenuHelpRoot
             // 
@@ -274,6 +282,17 @@
             this.TopIcons.Size = new System.Drawing.Size(784, 30);
             this.TopIcons.TabIndex = 3;
             // 
+            // ToolButtonMerge
+            // 
+            this.ToolButtonMerge.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonMerge.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonMerge.Image")));
+            this.ToolButtonMerge.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonMerge.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonMerge.Name = "ToolButtonMerge";
+            this.ToolButtonMerge.Size = new System.Drawing.Size(28, 27);
+            this.ToolButtonMerge.ToolTipText = "Merge...";
+            this.ToolButtonMerge.Click += new System.EventHandler(this.ToolButtonMerge_Click);
+            // 
             // Animator
             // 
             this.Animator.Interval = 16;
@@ -300,25 +319,6 @@
             this.MainContainer.Size = new System.Drawing.Size(784, 477);
             this.MainContainer.SplitterDistance = 580;
             this.MainContainer.TabIndex = 0;
-            // 
-            // ToolButtonMerge
-            // 
-            this.ToolButtonMerge.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonMerge.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonMerge.Image")));
-            this.ToolButtonMerge.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonMerge.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonMerge.Name = "ToolButtonMerge";
-            this.ToolButtonMerge.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonMerge.ToolTipText = "Merge...";
-            this.ToolButtonMerge.Click += new System.EventHandler(this.ToolButtonMerge_Click);
-            // 
-            // MenuMergeFiles
-            // 
-            this.MenuMergeFiles.Name = "MenuMergeFiles";
-            this.MenuMergeFiles.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.MenuMergeFiles.Size = new System.Drawing.Size(162, 22);
-            this.MenuMergeFiles.Text = "&Merge...";
-            this.MenuMergeFiles.Click += new System.EventHandler(this.MenuMergeFiles_Click);
             // 
             // SideTabs
             // 

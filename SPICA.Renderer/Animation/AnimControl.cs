@@ -25,9 +25,16 @@ namespace SPICA.Renderer.Animation
             this.BaseAnimation = BaseAnimation;
 
             if (State == AnimState.Playing)
-                Frame = 0;
+            {
+                if (Step < 0)
+                    Frame = BaseAnimation.FramesCount;
+                else
+                    Frame = 0;
+            }
             else
+            {
                 Stop();
+            }
         }
 
         public void AdvanceFrame()

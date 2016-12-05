@@ -433,6 +433,8 @@ namespace SPICA.WinForms
         {
             if (MatAnimsList.SelectedIndex != -1)
             {
+                SklAnimsList.SelectedIndex = -1;
+
                 H3DAnimation MatAnim = SceneData.MaterialAnimations[MatAnimsList.SelectedIndex];
 
                 Model.SkeletalAnimation.SetAnimation(null);

@@ -9,9 +9,18 @@ namespace SPICA.Formats.GFL2.Motion
 {
     public class GFMotion
     {
+        private enum Sect
+        {
+            SubHeader = 0,
+            SkeletalAnim = 1,
+            MaterialAnim = 3,
+            VisibilityAnim = 6
+        }
+
         private struct Section
         {
-            public uint Count;
+            public Sect SectName;
+
             public uint Length;
             public uint Address;
         }
@@ -44,7 +53,8 @@ namespace SPICA.Formats.GFL2.Motion
             {
                 AnimSections[Anim] = new Section
                 {
-                    Count = Reader.ReadUInt32(), //TODO: Fix this, not a count it seems
+                    SectName = (Sect)Reader.ReadUInt32(),
+
                     Length = Reader.ReadUInt32(),
                     Address = Reader.ReadUInt32()
                 };
@@ -67,11 +77,11 @@ namespace SPICA.Formats.GFL2.Motion
             {
                 Reader.BaseStream.Seek(Position + AnimSections[Anim].Address, SeekOrigin.Begin);
 
-                switch (Anim)
+                switch (AnimSections[Anim].SectName)
                 {
-                    case 1: SkeletalAnimation = new GFSkeletonMot(Reader); break;
-                    case 2: MaterialAnimation = new GFMaterialMot(Reader); break;
-                    case 3: VisibilityAnimation = new GFVisibilityMot(Reader, FramesCount); break;
+                    case Sect.SkeletalAnim:   SkeletalAnimation = new GFSkeletonMot(Reader); break;
+                    case Sect.MaterialAnim:   MaterialAnimation = new GFMaterialMot(Reader); break;
+                    case Sect.VisibilityAnim: VisibilityAnimation = new GFVisibilityMot(Reader, FramesCount); break;
                 }
             }
         }

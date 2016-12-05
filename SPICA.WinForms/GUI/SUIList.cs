@@ -35,7 +35,7 @@ namespace SPICA.WinForms.GUI
             }
             set
             {
-                _SelectedIndex = value;
+                OldIndex = _SelectedIndex = value;
 
                 Invalidate();
             }
