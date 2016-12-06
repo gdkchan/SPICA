@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics.ES30;
 
 using System;
 using System.Drawing;
@@ -8,50 +9,53 @@ namespace SPICA.Renderer.GUI
 {
     class GUIImage : GUIControl
     {
-        private Bitmap Img;
+        private int VBOHandle;
+        private int VAOHandle;
+
+        private int TextureId;
+
+        private Bitmap _Image;
 
         public Bitmap Image
         {
-            get { return Img; }
-            set { Img = value; CreateTexture(Img); }
+            get { return _Image; }
+            set { _Image = value; UploadTexture(); }
         }
 
-        public GUIImage(int X, int Y, GUIDockMode DockMode, Bitmap Img) : base(X, Y, DockMode)
+        public GUIImage(int X, int Y, GUIDockMode DockMode, Bitmap Image) : base(X, Y, DockMode)
         {
-            Image = Img;
+            this.Image = Image;
 
             Resize();
         }
 
-        internal override void Focus()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal override void KeyDown()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal override void Render()
-        {
-            RenderQuad();
-        }
-
         internal override void Resize()
         {
-            CreateQuad(new Vector2(Img.Width, Img.Height));
+            if ((VBOHandle | VAOHandle) != 0)
+            {
+                GL.DeleteBuffer(VBOHandle);
+                GL.DeleteVertexArray(VAOHandle);
+            }
+
+            Vector2 Size = new Vector2(_Image.Width, _Image.Height);
+
+            Tuple<int, int> Handles = RenderUtils.UploadQuad(Position, Size, DockMode);
+
+            VBOHandle = Handles.Item1;
+            VAOHandle = Handles.Item2;
         }
 
-        private void CreateTexture(Bitmap Img)
+        private void UploadTexture()
         {
-            Rectangle Rect = new Rectangle(0, 0, Img.Width, Img.Height);
+            if (TextureId != 0) GL.DeleteTexture(TextureId);
 
-            BitmapData ImgData = Img.LockBits(Rect, ImageLockMode.ReadOnly, Img.PixelFormat);
+            Rectangle Rect = new Rectangle(0, 0, _Image.Width, _Image.Height);
 
-            CreateTexture(ImgData.Scan0, Img.Width, Img.Height);
+            BitmapData ImgData = _Image.LockBits(Rect, ImageLockMode.ReadOnly, _Image.PixelFormat);
 
-            Img.UnlockBits(ImgData);
+            TextureId = RenderUtils.Upload2DTexture(ImgData.Scan0, _Image.Width, _Image.Height);
+
+            _Image.UnlockBits(ImgData);
         }
     }
 }

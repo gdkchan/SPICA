@@ -146,9 +146,9 @@ namespace SPICA.Renderer
 
             GL.PolygonOffset(0, Params.PolygonOffsetUnit);
 
-            Utils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
-            Utils.SetState(EnableCap.DepthTest, Params.DepthColorMask.Enabled);
-            Utils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
+            RenderUtils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
+            RenderUtils.SetState(EnableCap.DepthTest, Params.DepthColorMask.Enabled);
+            RenderUtils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
 
             //Coordinate sources
             int TexUnit0SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit0Source");

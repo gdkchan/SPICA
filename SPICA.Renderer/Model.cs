@@ -16,20 +16,18 @@ using System.Collections.Generic;
 
 namespace SPICA.Renderer
 {
-    public class Model : IDisposable
+    public class Model : TransformableObject, IDisposable
     {
         private int ShaderHandle;
 
-        public Matrix4 Transform;
-
         //Per model
-        public List<Mesh>                  Meshes;
-        public PatriciaList<H3DBone>[]     Skeletons;
+        public List<Mesh> Meshes;
+        public PatriciaList<H3DBone>[] Skeletons;
         public PatriciaList<H3DMaterial>[] Materials;
 
         //Per model mesh
-        private Matrix4[][]     InverseTransform;
-        private Matrix4[]       SkeletonTransform;
+        private Matrix4[][] InverseTransform;
+        private Matrix4[] SkeletonTransform;
         private UVTransform[][] MaterialTransform;
 
         //Shared
@@ -40,6 +38,18 @@ namespace SPICA.Renderer
         //Animation related
         public SkeletalAnim SkeletalAnimation;
         public MaterialAnim MaterialAnimation;
+
+        private struct Range
+        {
+            public int Start;
+            public int End;
+
+            public Range(int Start, int End)
+            {
+                this.Start = Start;
+                this.End = End;
+            }
+        }
 
         private Range[] MeshRanges;
 
@@ -249,50 +259,10 @@ namespace SPICA.Renderer
             }
         }
 
-        public void ResetTransform()
-        {
-            Transform = Matrix4.Identity; UpdateTransform();
-        }
-
-        public void Scale(Vector3 Scale)
-        {
-            Transform *= Matrix4.CreateScale(Scale); UpdateTransform();
-        }
-
-        public void Rotate(Vector3 Rotation)
-        {
-            Transform *= Utils.EulerRotate(Rotation); UpdateTransform();
-        }
-
-        public void Translate(Vector3 Translation)
-        {
-            Transform *= Matrix4.CreateTranslation(Translation); UpdateTransform();
-        }
-
-        public void ScaleAbs(Vector3 Scale)
-        {
-            Transform = Transform.ClearScale() * Matrix4.CreateScale(Scale); UpdateTransform();
-        }
-
-        public void RotateAbs(Vector3 Rotation)
-        {
-            Transform = Transform.ClearRotation() * Utils.EulerRotate(Rotation); UpdateTransform();
-        }
-
-        public void TranslateAbs(Vector3 Translation)
-        {
-            Transform = Transform.ClearTranslation() * Matrix4.CreateTranslation(Translation); UpdateTransform();
-        }
-
-        private void UpdateTransform()
-        {
-            GL.UseProgram(ShaderHandle);
-
-            GL.UniformMatrix4(GL.GetUniformLocation(ShaderHandle, "ModelMatrix"), false, ref Transform);
-        }
-
         public void Render()
         {
+            GL.UniformMatrix4(GL.GetUniformLocation(ShaderHandle, "ModelMatrix"), false, ref Transform);
+
             if (MeshRanges.Length > 0)
             {
                 for (int
@@ -305,12 +275,12 @@ namespace SPICA.Renderer
 
         internal Matrix4 GetInverseTransform(int MeshIndex)
         {
-            return InverseTransform[CurrModel][MeshIndex];
+            return MeshIndex < InverseTransform[CurrModel].Length ? InverseTransform[CurrModel][MeshIndex] : Matrix4.Identity;
         }
 
         internal Matrix4 GetSkeletonTransform(int MeshIndex)
         {
-            return SkeletonTransform[MeshIndex];
+            return MeshIndex < SkeletonTransform.Length ? SkeletonTransform[MeshIndex] : Matrix4.Identity;
         }
 
         internal UVTransform[] GetMaterialTransform(int MatIndex)

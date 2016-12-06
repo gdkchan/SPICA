@@ -7,6 +7,7 @@ using SPICA.Renderer;
 using SPICA.Renderer.Animation;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
+using SPICA.WinForms.RenderExtensions;
 
 using System;
 using System.Collections.Specialized;
@@ -18,18 +19,19 @@ namespace SPICA.WinForms
     public partial class FrmMain : Form
     {
         #region Initialization
-        private GLControl Viewport;
-        private RenderEngine Renderer;
-
         private H3D SceneData;
         private Model Model;
 
+        private GLControl Viewport;
+        private RenderEngine Renderer;
+
+        private GridLines UIGrid;
+
         private Bitmap[] CachedTextures;
 
-        private Vector2 InitialRot;
         private Vector2 InitialMov;
-        private Vector2 FinalMov;
-
+        private Vector2 CurrentRot;
+        private Vector2 CurrentMov;
         private Vector3 MdlCenter;
 
         private float CamDist;
@@ -66,7 +68,6 @@ namespace SPICA.WinForms
             Viewport.Paint      += Viewport_Paint;
             Viewport.MouseDown  += Viewport_MouseDown;
             Viewport.MouseMove  += Viewport_MouseMove;
-            Viewport.MouseUp    += Viewport_MouseUp;
             Viewport.MouseWheel += Viewport_MouseWheel;
             Viewport.Resize     += Viewport_Resize;
 
@@ -88,28 +89,20 @@ namespace SPICA.WinForms
             Renderer = new RenderEngine(Viewport.Width, Viewport.Height);
 
             Renderer.SetBackgroundColor(Color.Gray);
+
+            UIGrid = new GridLines();
+
+            Renderer.BeforeDraw += UIGrid.Render;
+
+            Zoom = -100;
+            Step = 1;
         }
 
         private void Viewport_MouseDown(object sender, MouseEventArgs e)
         {
-            if (!IgnoreClicks)
+            if (!IgnoreClicks && (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right))
             {
-                switch (e.Button)
-                {
-                    case MouseButtons.Left: InitialRot = new Vector2(e.X, e.Y); break;
-                    case MouseButtons.Right: InitialMov = new Vector2(e.X, e.Y); break;
-                }
-            }
-        }
-
-        private void Viewport_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right && !IgnoreClicks)
-            {
-                float X = (InitialMov.X - e.X) + FinalMov.X;
-                float Y = (InitialMov.Y - e.Y) + FinalMov.Y;
-
-                FinalMov = new Vector2(X, Y);
+                InitialMov = new Vector2(e.X, e.Y);
             }
         }
 
@@ -119,23 +112,19 @@ namespace SPICA.WinForms
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    float RY = (float)(((e.X - InitialRot.X) / Width) * Math.PI);
-                    float RX = (float)(((e.Y - InitialRot.Y) / Height) * Math.PI);
-
-                    Model?.Rotate(new Vector3(RX, RY, 0));
+                    CurrentRot.Y = (float)(((e.X - InitialMov.X) / Width) * Math.PI);
+                    CurrentRot.X = (float)(((e.Y - InitialMov.Y) / Height) * Math.PI);
                 }
 
                 if (e.Button == MouseButtons.Right)
                 {
-                    float TX = (InitialMov.X - e.X) + FinalMov.X;
-                    float TY = (InitialMov.Y - e.Y) + FinalMov.Y;
-
-                    Renderer.TranslateAbs(new Vector3(-TX, TY, Zoom));
+                    CurrentMov.X = InitialMov.X - e.X;
+                    CurrentMov.Y = InitialMov.Y - e.Y;
                 }
 
-                InitialRot = new Vector2(e.X, e.Y);
+                InitialMov = new Vector2(e.X, e.Y);
 
-                UpdateViewport();
+                UpdateTransforms();
             }
         }
 
@@ -148,9 +137,7 @@ namespace SPICA.WinForms
                 else
                     Zoom -= Step;
 
-                UpdateTranslation();
-
-                UpdateViewport();
+                UpdateTransforms();
             }
         }
 
@@ -310,19 +297,39 @@ namespace SPICA.WinForms
 
         private void ResetView()
         {
-            Model.ResetTransform();
-            Model.TranslateAbs(MdlCenter);
-
             Zoom = MdlCenter.Z - CamDist * 2;
             Step = CamDist * 0.05f;
-
-            InitialRot = Vector2.Zero;
+            
             InitialMov = Vector2.Zero;
-            FinalMov = Vector2.Zero;
+            CurrentRot = Vector2.Zero;
+            CurrentMov = Vector2.Zero;
+
+            Model.ResetTransform();
+            UIGrid.ResetTransform();
+
+            Model.TranslateAbs(MdlCenter);
+            UIGrid.TranslateAbs(MdlCenter);
 
             Renderer.ResetView();
 
-            UpdateTranslation();
+            UpdateTransforms();
+        }
+
+        private void UpdateTransforms()
+        {
+            Vector3 Translation = new Vector3(-CurrentMov.X, CurrentMov.Y, 0);
+            Vector3 Rotation    = new Vector3(CurrentRot.X, CurrentRot.Y, 0);
+
+            Model?.Translate(Translation);
+            UIGrid.Translate(Translation);
+
+            Model?.Rotate(Rotation);
+            UIGrid.Rotate(Rotation);
+
+            CurrentMov = Vector2.Zero;
+            CurrentRot = Vector2.Zero;
+
+            Renderer.TranslateAbs(new Vector3(0, 0, Zoom));
 
             UpdateViewport();
         }
@@ -342,11 +349,6 @@ namespace SPICA.WinForms
         private void TexturesList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             CacheTextures();
-        }
-
-        private void UpdateTranslation()
-        {
-            Renderer.TranslateAbs(new Vector3(-FinalMov.X, FinalMov.Y, Zoom));
         }
 
         private void TexturesList_SelectedIndexChanged(object sender, EventArgs e)

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics.ES30;
 
 using System;
 using System.Drawing;
@@ -9,6 +10,11 @@ namespace SPICA.Renderer.GUI
 {
     public class GUILabel : GUIControl
     {
+        private int VBOHandle;
+        private int VAOHandle;
+
+        private int TextureId;
+
         private Font TextFont;
         private Brush TextBrush;
 
@@ -28,21 +34,6 @@ namespace SPICA.Renderer.GUI
             this.Text = Text;
         }
 
-        internal override void Focus()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal override void KeyDown()
-        {
-            throw new NotImplementedException();
-        }
-
-        internal override void Render()
-        {
-            if (Text != null) RenderQuad();
-        }
-
         internal override void Resize()
         {
             GetTextSize();
@@ -50,6 +41,8 @@ namespace SPICA.Renderer.GUI
 
         private void UploadNewText()
         {
+            if (TextureId != 0) GL.DeleteTexture(TextureId);
+
             int[] Viewport = new int[4];
 
             SizeF TextSize = GetTextSize();
@@ -67,7 +60,7 @@ namespace SPICA.Renderer.GUI
 
                 BitmapData ImgData = Img.LockBits(Rect, ImageLockMode.ReadOnly, Img.PixelFormat);
 
-                CreateTexture(ImgData.Scan0, Img.Width, Img.Height);
+                TextureId = RenderUtils.Upload2DTexture(ImgData.Scan0, Img.Width, Img.Height);
 
                 Img.UnlockBits(ImgData);
             }
@@ -76,19 +69,28 @@ namespace SPICA.Renderer.GUI
         private SizeF GetTextSize()
         {
             //TODO: Find a less hacky way to measure the text
-            SizeF Size;
+            SizeF TextSize;
 
             using (Bitmap Img = new Bitmap(1, 1))
+            using (Graphics g = Graphics.FromImage(Img))
             {
-                using (Graphics g = Graphics.FromImage(Img))
-                {
-                    Size = g.MeasureString(_Text, TextFont);
-                }
+                TextSize = g.MeasureString(_Text, TextFont);
             }
 
-            CreateQuad(new Vector2(Size.Width, Size.Height));
+            if ((VBOHandle | VAOHandle) != 0)
+            {
+                GL.DeleteBuffer(VBOHandle);
+                GL.DeleteVertexArray(VAOHandle);
+            }
 
-            return Size;
+            Vector2 Size = new Vector2(TextSize.Width, TextSize.Height);
+
+            Tuple<int, int> Handles = RenderUtils.UploadQuad(Position, Size, DockMode);
+
+            VBOHandle = Handles.Item1;
+            VAOHandle = Handles.Item2;
+
+            return TextSize;
         }
     }
 }

@@ -7,7 +7,6 @@ using SPICA.Renderer.Shaders;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -21,8 +20,8 @@ namespace SPICA.Renderer
         private Shader MdlShader;
         private Shader GUIShader;
 
-        private int MdlShaderHandle;
-        private int GUIShaderHandle;
+        public int MdlShaderHandle { get; private set; }
+        public int GUIShaderHandle { get; private set; }
 
         private int ProjMtxLocation;
         private int ViewMtxLocation;
@@ -36,6 +35,8 @@ namespace SPICA.Renderer
         private List<GUIControl> Controls;
 
         public Vector4 SceneAmbient;
+
+        public event EventHandler BeforeDraw;
 
         public RenderEngine(int Width, int Height)
         {
@@ -65,9 +66,11 @@ namespace SPICA.Renderer
             GL.UseProgram(MdlShaderHandle);
 
             ProjMtxLocation = GL.GetUniformLocation(MdlShaderHandle, "ProjMatrix");
-            ViewMtxLocation = GL.GetUniformLocation(MdlShaderHandle, "ViewMatrix");         
+            ViewMtxLocation = GL.GetUniformLocation(MdlShaderHandle, "ViewMatrix");
 
             GL.UniformMatrix4(ViewMtxLocation, false, ref ViewMtx);
+
+            GL.UniformMatrix4(GL.GetUniformLocation(MdlShaderHandle, "ModelMatrix"), false, ref ViewMtx);
 
             GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture0"), 0);
             GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture1"), 1);
@@ -134,7 +137,7 @@ namespace SPICA.Renderer
 
         public void Rotate(Vector3 Rotation)
         {
-            ViewMtx *= Utils.EulerRotate(Rotation); UpdateView();
+            ViewMtx *= RenderUtils.EulerRotate(Rotation); UpdateView();
         }
 
         public void Translate(Vector3 Translation)
@@ -144,7 +147,7 @@ namespace SPICA.Renderer
 
         public void RotateAbs(Vector3 Rotation)
         {
-            ViewMtx = ViewMtx.ClearRotation() * Utils.EulerRotate(Rotation); UpdateView();
+            ViewMtx = ViewMtx.ClearRotation() * RenderUtils.EulerRotate(Rotation); UpdateView();
         }
 
         public void TranslateAbs(Vector3 Translation)
@@ -170,7 +173,7 @@ namespace SPICA.Renderer
 
             float AR = Width / (float)Height;
 
-            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.25f, 2500);
+            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.25f, 25000);
 
             GL.UseProgram(MdlShaderHandle);
 
@@ -238,19 +241,20 @@ namespace SPICA.Renderer
 
         public void RenderScene()
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Clear(ClearBufferMask.StencilBufferBit);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.Clear(
+                ClearBufferMask.ColorBufferBit |
+                ClearBufferMask.StencilBufferBit |
+                ClearBufferMask.DepthBufferBit);
 
             GL.UseProgram(MdlShaderHandle);
+
+            BeforeDraw?.Invoke(this, EventArgs.Empty);
 
             foreach (Model Mdl in Models) Mdl.Render();
 
             GL.UseProgram(GUIShaderHandle);
 
             GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.AlphaTest);
-
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
@@ -267,7 +271,7 @@ namespace SPICA.Renderer
                 MdlShader.Dispose();
                 GUIShader.Dispose();
 
-                foreach (Model Model in Models) Model.Dispose();
+                foreach (Model Mdl in Models) Mdl.Dispose();
 
                 foreach (GUIControl Ctrl in Controls) Ctrl.Dispose();
 

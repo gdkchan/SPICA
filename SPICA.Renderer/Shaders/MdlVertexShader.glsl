@@ -95,13 +95,10 @@ void main() {
 	vec4 w = vec4(1, 0, 0, 0);
 	
 	if (SmoothSkin != 0) {
-		if (FixedWeight.x != 0) {
-			w[0] = FixedWeight[0];
-			w[1] = FixedWeight[1];
-			w[2] = FixedWeight[2];
-		} else {
+		if (FixedWeight.x != 0)
+			w.xyz = FixedWeight.xyz;
+		else
 			w = a8_weight * Scales1[WEIGHT];
-		}
 	}
 	
 	vec4 p;

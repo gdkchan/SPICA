@@ -131,7 +131,7 @@ namespace SPICA.Renderer.Animation
                     if (B.IsQuatRotation)
                         Output[Index] *= Matrix4.CreateFromQuaternion(B.QuatRotation);
                     else
-                        Output[Index] *= Utils.EulerRotate(B.Rotation);
+                        Output[Index] *= RenderUtils.EulerRotate(B.Rotation);
 
                     Vector3 Translation = B.Translation;
 

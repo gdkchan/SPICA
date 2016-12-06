@@ -21,7 +21,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Range.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shaders\Shader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Matrix.cs" />
@@ -32,7 +31,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICATestFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\RGBA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Vector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TransformableObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RenderUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Shaders\GUIVertexShader.glsl">

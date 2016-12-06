@@ -1,5 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D;
-
+using SPICA.Formats.GFL2;
 using System.IO;
 using System.Text;
 
@@ -16,6 +16,10 @@ namespace SPICA.WinForms.Formats
                 if (FS.Length > 4)
                 {
                     BinaryReader Reader = new BinaryReader(FS);
+
+                    uint MagicNum = Reader.ReadUInt32();
+
+                    FS.Seek(-4, SeekOrigin.Current);
 
                     string Magic = Encoding.ASCII.GetString(Reader.ReadBytes(4));
 
@@ -37,6 +41,13 @@ namespace SPICA.WinForms.Formats
                             {
                                 case "CM": Output = GFCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader); break;
+                            }
+                        }
+                        else
+                        {
+                            switch (MagicNum)
+                            {
+                                case 0x00010000: Output = new GFModelPack(Reader).ToH3D(); break;
                             }
                         }
                     }
