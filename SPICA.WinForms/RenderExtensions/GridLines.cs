@@ -72,6 +72,7 @@ namespace SPICA.WinForms.RenderExtensions
 
             GL.UniformMatrix4(GL.GetUniformLocation(ShaderHandle, "ModelMatrix"), false, ref Transform);
 
+            GL.Disable(EnableCap.StencilTest);
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
 

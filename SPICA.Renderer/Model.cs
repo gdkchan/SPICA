@@ -7,6 +7,7 @@ using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
+using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Renderer.Animation;
 using SPICA.Renderer.SPICA_GL;
@@ -128,8 +129,6 @@ namespace SPICA.Renderer
                 if (Texture.IsCubeTexture)
                 {
                     GL.BindTexture(TextureTarget.TextureCubeMap, TextureId);
-                    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
                     for (int Face = 0; Face < 6; Face++)
                     {
@@ -147,8 +146,6 @@ namespace SPICA.Renderer
                 else
                 {
                     GL.BindTexture(TextureTarget.Texture2D, TextureId);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
                     GL.TexImage2D(TextureTarget2d.Texture2D,
                         0,
@@ -265,11 +262,30 @@ namespace SPICA.Renderer
 
             if (MeshRanges.Length > 0)
             {
+                List<Mesh> RenderLater = new List<Mesh>(Meshes.Count);
+
                 for (int
-                    Index = MeshRanges[CurrModel].Start;
-                    Index < MeshRanges[CurrModel].End;
-                    Index++)
+                Index = MeshRanges[CurrModel].Start;
+                Index < MeshRanges[CurrModel].End;
+                Index++)
+                {
                     Meshes[Index].Render();
+
+                    if (Meshes[Index].Material.MaterialParams.StencilTest.Enabled &&
+                        Meshes[Index].Material.MaterialParams.StencilTest.Function != PICATestFunc.Always)
+                    {
+                        RenderLater.Add(Meshes[Index]);
+                    }
+                }
+
+                /*
+                 * Objects that have the Stencil Test enabled may need to be rendered twice
+                 * This ensures that the Stencil buffer have the required values when a object
+                 * that relies on said values to "cut off" an region will render properly,
+                 * independent of the order the meshes are organized.
+                 * This may have some impact on performance through.
+                 */
+                foreach (Mesh Mesh in RenderLater) Mesh.Render();
             }
         }
 

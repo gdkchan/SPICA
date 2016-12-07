@@ -56,9 +56,9 @@ namespace SPICA.Renderer
 
             int Offset = 0;
 
-            for (int Index = 0; Index < Mesh.Attributes.Length; Index++)
+            foreach (PICAAttribute Attrib in Mesh.Attributes)
             {
-                GL.DisableVertexAttribArray(Index);
+                GL.DisableVertexAttribArray((int)Attrib.Name);
             }
 
             for (int Index = 0; Index < Mesh.Attributes.Length; Index++)
@@ -305,7 +305,7 @@ namespace SPICA.Renderer
                     GL.BindTexture(TextureTarget.Texture2D, TextureId);
                 }
 
-                SetWrap(0);
+                SetWrapAndFilter(0);
             }
 
             if (Material.EnabledTextures[1])
@@ -313,7 +313,7 @@ namespace SPICA.Renderer
                 GL.ActiveTexture(TextureUnit.Texture1);
                 GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture1Name));
 
-                SetWrap(1);
+                SetWrapAndFilter(1);
             }
 
             if (Material.EnabledTextures[2])
@@ -321,7 +321,7 @@ namespace SPICA.Renderer
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture2Name));
 
-                SetWrap(2);
+                SetWrapAndFilter(2);
             }
 
             //Setup Fixed attributes
@@ -336,6 +336,16 @@ namespace SPICA.Renderer
             foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
             {
                 Vector4 Value = Attrib.Value.ToVector4();
+
+                /*
+                 * gdkchan Note:
+                 * The W parameter on Fixed Attributes are a bit weird.
+                 * For example, on BCH some models have the weight set to something like 1 0 0 1,
+                 * which is obviouly wrong, so we ignore the last component on the shader.
+                 * This is just a test and I'm not sure why this happens, but may be that
+                 * it initializes all vector4 to 0 0 0 1 by default.
+                 */
+                Value.W = 0;
 
                 switch (Attrib.Name)
                 {
@@ -359,13 +369,22 @@ namespace SPICA.Renderer
 
                 Matrix4[] Transforms = new Matrix4[32];
 
-                for (int Index = 0; Index < SubMesh.BoneIndicesCount; Index++)
+                for (int Index = 0; Index < Transforms.Length; Index++)
                 {
-                    Matrix4 Transform = Parent.GetSkeletonTransform(SubMesh.BoneIndices[Index]);
+                    Matrix4 Transform;
 
-                    if (SmoothSkin)
+                    if (Index < SubMesh.BoneIndicesCount)
                     {
-                        Transform = Parent.GetInverseTransform(SubMesh.BoneIndices[Index]) * Transform;
+                        Transform = Parent.GetSkeletonTransform(SubMesh.BoneIndices[Index]);
+
+                        if (SmoothSkin)
+                        {
+                            Transform = Parent.GetInverseTransform(SubMesh.BoneIndices[Index]) * Transform;
+                        }
+                    }
+                    else
+                    {
+                        Transform = Matrix4.Identity;
                     }
 
                     int Location = GL.GetUniformLocation(ShaderHandle, $"Transforms[{Index}]");
@@ -398,13 +417,19 @@ namespace SPICA.Renderer
             }
         }
 
-        private void SetWrap(int Unit)
+        private void SetWrapAndFilter(int Unit)
         {
             int WrapS = (int)GetWrap(Material.TextureMappers[Unit].WrapU);
             int WrapT = (int)GetWrap(Material.TextureMappers[Unit].WrapV);
 
+            int MinFilter = (int)GetMinFilter(Material.TextureMappers[Unit].MinFilter);
+            int MagFilter = (int)GetMagFilter(Material.TextureMappers[Unit].MagFilter);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, WrapS);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, WrapT);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, MinFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, MagFilter);
         }
 
         private static All GetWrap(H3DTextureWrap Wrap)
@@ -417,6 +442,31 @@ namespace SPICA.Renderer
                 case H3DTextureWrap.Mirror:        return All.MirroredRepeat;
 
                 default: throw new ArgumentException("Invalid wrap mode!");
+            }
+        }
+
+        //TODO: Change this to use the Mipmaps once Mipmaps are implemented on the loaders
+        private static All GetMinFilter(H3DTextureMinFilter Filter)
+        {
+            switch (Filter)
+            {
+                case H3DTextureMinFilter.NearestMipmapNearest: return All.Nearest;
+                case H3DTextureMinFilter.NearestMipmapLinear:  return All.Nearest;
+                case H3DTextureMinFilter.LinearMipmapNearest:  return All.Linear;
+                case H3DTextureMinFilter.LinearMipmapLinear:   return All.Linear;
+
+                default: throw new ArgumentException("Invalid minification filter!");
+            }
+        }
+
+        private static All GetMagFilter(H3DTextureMagFilter Filter)
+        {
+            switch (Filter)
+            {
+                case H3DTextureMagFilter.Linear:  return All.Linear;
+                case H3DTextureMagFilter.Nearest: return All.Nearest;
+
+                default: throw new ArgumentException("Invalid magnification filter!");
             }
         }
 

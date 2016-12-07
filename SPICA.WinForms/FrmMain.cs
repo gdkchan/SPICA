@@ -19,13 +19,11 @@ namespace SPICA.WinForms
     public partial class FrmMain : Form
     {
         #region Initialization
+        private GLControl Viewport;
+        private GridLines UIGrid;
+        private RenderEngine Renderer;
         private H3D SceneData;
         private Model Model;
-
-        private GLControl Viewport;
-        private RenderEngine Renderer;
-
-        private GridLines UIGrid;
 
         private Bitmap[] CachedTextures;
 
@@ -96,6 +94,8 @@ namespace SPICA.WinForms
 
             Zoom = -100;
             Step = 1;
+
+            UpdateViewport();
         }
 
         private void Viewport_MouseDown(object sender, MouseEventArgs e)
@@ -114,17 +114,18 @@ namespace SPICA.WinForms
                 {
                     CurrentRot.Y = (float)(((e.X - InitialMov.X) / Width) * Math.PI);
                     CurrentRot.X = (float)(((e.Y - InitialMov.Y) / Height) * Math.PI);
-                }
 
-                if (e.Button == MouseButtons.Right)
+                    UpdateTransforms();
+                }
+                else if (e.Button == MouseButtons.Right)
                 {
                     CurrentMov.X = InitialMov.X - e.X;
                     CurrentMov.Y = InitialMov.Y - e.Y;
+
+                    UpdateTransforms();
                 }
 
                 InitialMov = new Vector2(e.X, e.Y);
-
-                UpdateTransforms();
             }
         }
 
@@ -377,13 +378,18 @@ namespace SPICA.WinForms
         {
             Model.Animate();
 
+            UpdateSeekBar();
+
+            Viewport.Invalidate();
+        }
+
+        private void UpdateSeekBar()
+        {
             switch (CurrAnimType)
             {
                 case AnimType.Skeletal: AnimSeekBar.Value = Model.SkeletalAnimation.Frame; break;
                 case AnimType.Material: AnimSeekBar.Value = Model.MaterialAnimation.Frame; break;
             }
-
-            Viewport.Invalidate();
         }
 
         private void EnableAnimator()
@@ -448,9 +454,9 @@ namespace SPICA.WinForms
 
         private void SetAnimationControls(H3DAnimation Anim, AnimType Type)
         {
-            AnimSeekBar.Value = 0;
             AnimSeekBar.Maximum = Anim.FramesCount;
 
+            UpdateSeekBar();
             UpdateSpeedLbl();
 
             bool Loop = (Anim.AnimationFlags & H3DAnimationFlags.IsLooping) != 0;

@@ -162,7 +162,9 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                     {
                         PICAAttributeName Name = (PICAAttributeName)((BufferPermutation >> Index * 4) & 0xf);
 
-                        float Scale = Name != PICAAttributeName.BoneIndex ? Scales[1] : 1;
+                        float Scale =
+                            Name == PICAAttributeName.Color ||
+                            Name == PICAAttributeName.BoneWeight ? Scales[1] : 1;
 
                         FixedAttributes[Index - AttributesCount] = new PICAFixedAttribute
                         {

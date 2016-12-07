@@ -303,27 +303,27 @@ void main() {
 		switch (Combiners[Stage].ColorCombine) {
 			case 0: Output.rgb = ColorArgs[0].rgb; break;
 			case 1: Output.rgb = ColorArgs[0].rgb * ColorArgs[1].rgb; break;
-			case 2: Output.rgb = clamp(ColorArgs[0].rgb + ColorArgs[1].rgb, 0, 1); break;
+			case 2: Output.rgb = min(ColorArgs[0].rgb + ColorArgs[1].rgb, 1); break;
 			case 3: Output.rgb = clamp(ColorArgs[0].rgb + ColorArgs[1].rgb - 0.5, 0, 1); break;
 			case 4: Output.rgb = mix(ColorArgs[1].rgb, ColorArgs[0].rgb, ColorArgs[2].rgb); break;
-			case 5: Output.rgb = clamp(ColorArgs[0].rgb - ColorArgs[1].rgb, 0, 1); break;
+			case 5: Output.rgb = max(ColorArgs[0].rgb - ColorArgs[1].rgb, 0); break;
 			case 6: Output.rgb = clamp(Dot3v(ColorArgs[0], ColorArgs[1]), 0, 1); break;
 			case 7: Output.rgb = clamp(Dot4v(ColorArgs[0], ColorArgs[1]), 0, 1); break;
 			case 8: Output.rgb = clamp(ColorArgs[0].rgb * ColorArgs[1].rgb + ColorArgs[2].rgb, 0, 1); break;
-			case 9: Output.rgb = clamp((ColorArgs[0].rgb + ColorArgs[1].rgb) * ColorArgs[2].rgb, 0, 1); break;
+			case 9: Output.rgb = clamp(min(ColorArgs[0].rgb + ColorArgs[1].rgb, 1) * ColorArgs[2].rgb, 0, 1); break;
 		}
 		
 		switch (Combiners[Stage].AlphaCombine) {
 			case 0: Output.a = AlphaArgs[0].a; break;
 			case 1: Output.a = AlphaArgs[0].a * AlphaArgs[1].a; break;
-			case 2: Output.a = clamp(AlphaArgs[0].a + AlphaArgs[1].a, 0, 1); break;
+			case 2: Output.a = min(AlphaArgs[0].a + AlphaArgs[1].a, 1); break;
 			case 3: Output.a = clamp(AlphaArgs[0].a + AlphaArgs[1].a - 0.5, 0, 1); break;
 			case 4: Output.a = mix(AlphaArgs[1].a, AlphaArgs[0].a, AlphaArgs[2].a); break;
-			case 5: Output.a = clamp(AlphaArgs[0].a - AlphaArgs[1].a, 0, 1); break;
+			case 5: Output.a = max(AlphaArgs[0].a - AlphaArgs[1].a, 0); break;
 			case 6: Output.a = clamp(Dot3(AlphaArgs[0], AlphaArgs[1]), 0, 1); break;
 			case 7: Output.a = clamp(Dot4(AlphaArgs[0], AlphaArgs[1]), 0, 1); break;
 			case 8: Output.a = clamp(AlphaArgs[0].a * AlphaArgs[1].a + AlphaArgs[2].a, 0, 1); break;
-			case 9: Output.a = clamp((AlphaArgs[0].a + AlphaArgs[1].a) * AlphaArgs[2].a, 0, 1); break;
+			case 9: Output.a = clamp(min(AlphaArgs[0].a + AlphaArgs[1].a, 1) * AlphaArgs[2].a, 0, 1); break;
 		}
 		
 		Output.rgb *= Combiners[Stage].ColorScale;

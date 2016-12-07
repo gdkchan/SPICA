@@ -254,8 +254,10 @@ namespace SPICA.Renderer
 
             GL.UseProgram(GUIShaderHandle);
 
+            GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);
+
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
 
