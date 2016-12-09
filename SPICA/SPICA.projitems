@@ -24,8 +24,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DInterpolationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DLoopType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DSegmentQuantization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\COLLADA.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\collada_schema_1_4_1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\ConversionParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJModel.cs" />

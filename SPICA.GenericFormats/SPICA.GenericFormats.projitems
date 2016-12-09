@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>b050fd62-2944-4881-aadb-d1672d318c31</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>SPICA.GenericFormats</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEAccessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEEffect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEGeometry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEImage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEInputOffset.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEMatrix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAENode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAESkin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAESource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEVisualScene.cs" />
+  </ItemGroup>
+</Project>

@@ -9,9 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPICA.WinForms", "SPICA.Win
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SPICA.Renderer", "SPICA.Renderer\SPICA.Renderer.shproj", "{35B0EAD9-1A6F-4001-B231-ECF266DB5D99}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SPICA.GenericFormats", "SPICA.GenericFormats\SPICA.GenericFormats.shproj", "{B050FD62-2944-4881-AADB-D1672D318C31}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SPICA.Renderer\SPICA.Renderer.projitems*{35b0ead9-1a6f-4001-b231-ecf266db5d99}*SharedItemsImports = 13
+		SPICA.GenericFormats\SPICA.GenericFormats.projitems*{b050fd62-2944-4881-aadb-d1672d318c31}*SharedItemsImports = 13
+		SPICA.GenericFormats\SPICA.GenericFormats.projitems*{b4759ab2-3bf0-4212-996f-965517d2084b}*SharedItemsImports = 4
 		SPICA.Renderer\SPICA.Renderer.projitems*{b4759ab2-3bf0-4212-996f-965517d2084b}*SharedItemsImports = 4
 		SPICA\SPICA.projitems*{b4759ab2-3bf0-4212-996f-965517d2084b}*SharedItemsImports = 4
 		SPICA\SPICA.projitems*{e9079f5d-f690-4c0e-a7ac-028fc701d8a2}*SharedItemsImports = 13

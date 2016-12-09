@@ -36,6 +36,15 @@
             this.MenuMergeFiles = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuHelpRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.AnimControlsPanel = new System.Windows.Forms.Panel();
+            this.AnimSeekBar = new SPICA.WinForms.GUI.SUIAnimSeekBar();
+            this.AnimButtonPrev = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonSlowDown = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonPlayBackward = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonPlayForward = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonPause = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonStop = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonSpeedUp = new SPICA.WinForms.GUI.SUIIconButton();
+            this.AnimButtonNext = new SPICA.WinForms.GUI.SUIIconButton();
             this.LblAnimSpeed = new System.Windows.Forms.Label();
             this.LblAnimLoopMode = new System.Windows.Forms.Label();
             this.ToolButtonOpen = new System.Windows.Forms.ToolStripButton();
@@ -63,15 +72,6 @@
             this.SklAnimsList = new SPICA.WinForms.GUI.SUIList();
             this.TabPageMatAnims = new System.Windows.Forms.TabPage();
             this.MatAnimsList = new SPICA.WinForms.GUI.SUIList();
-            this.AnimSeekBar = new SPICA.WinForms.GUI.SUIAnimSeekBar();
-            this.AnimButtonPrev = new SPICA.WinForms.GUI.SUIIconButton();
-            this.AnimButtonSlowDown = new SPICA.WinForms.GUI.SUIIconButton();
-            this.AnimButtonPlayBackward = new SPICA.WinForms.GUI.SUIIconButton();
-            this.AnimButtonPlayForward = new SPICA.WinForms.GUI.SUIIconButton();
-            this.AnimButtonPause = new SPICA.WinForms.GUI.SUIIconButton();
-            this.AnimButtonStop = new SPICA.WinForms.GUI.SUIIconButton();
-            this.AnimButtonSpeedUp = new SPICA.WinForms.GUI.SUIIconButton();
-            this.AnimButtonNext = new SPICA.WinForms.GUI.SUIIconButton();
             this.TopMenu.SuspendLayout();
             this.AnimControlsPanel.SuspendLayout();
             this.TopIcons.SuspendLayout();
@@ -149,6 +149,101 @@
             this.AnimControlsPanel.Size = new System.Drawing.Size(784, 30);
             this.AnimControlsPanel.TabIndex = 4;
             // 
+            // AnimSeekBar
+            // 
+            this.AnimSeekBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
+            this.AnimSeekBar.CursorColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(209)))), ((int)(((byte)(134)))));
+            this.AnimSeekBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.AnimSeekBar.ForeColor = System.Drawing.Color.Gainsboro;
+            this.AnimSeekBar.Location = new System.Drawing.Point(1, 1);
+            this.AnimSeekBar.Maximum = 0F;
+            this.AnimSeekBar.Name = "AnimSeekBar";
+            this.AnimSeekBar.Size = new System.Drawing.Size(478, 27);
+            this.AnimSeekBar.TabIndex = 8;
+            this.AnimSeekBar.Value = 0F;
+            this.AnimSeekBar.Seek += new System.EventHandler(this.AnimSeekBar_Seek);
+            this.AnimSeekBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AnimSeekBar_MouseUp);
+            // 
+            // AnimButtonPrev
+            // 
+            this.AnimButtonPrev.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPrev.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPrev.Icon")));
+            this.AnimButtonPrev.Location = new System.Drawing.Point(479, 1);
+            this.AnimButtonPrev.Name = "AnimButtonPrev";
+            this.AnimButtonPrev.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPrev.TabIndex = 9;
+            this.AnimButtonPrev.Click += new System.EventHandler(this.AnimButtonPrev_Click);
+            // 
+            // AnimButtonSlowDown
+            // 
+            this.AnimButtonSlowDown.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonSlowDown.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSlowDown.Icon")));
+            this.AnimButtonSlowDown.Location = new System.Drawing.Point(507, 1);
+            this.AnimButtonSlowDown.Name = "AnimButtonSlowDown";
+            this.AnimButtonSlowDown.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonSlowDown.TabIndex = 10;
+            this.AnimButtonSlowDown.Click += new System.EventHandler(this.AnimButtonSlowDown_Click);
+            // 
+            // AnimButtonPlayBackward
+            // 
+            this.AnimButtonPlayBackward.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPlayBackward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayBackward.Icon")));
+            this.AnimButtonPlayBackward.Location = new System.Drawing.Point(535, 1);
+            this.AnimButtonPlayBackward.Name = "AnimButtonPlayBackward";
+            this.AnimButtonPlayBackward.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPlayBackward.TabIndex = 7;
+            this.AnimButtonPlayBackward.Click += new System.EventHandler(this.AnimButtonPlayBackward_Click);
+            // 
+            // AnimButtonPlayForward
+            // 
+            this.AnimButtonPlayForward.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPlayForward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayForward.Icon")));
+            this.AnimButtonPlayForward.Location = new System.Drawing.Point(563, 1);
+            this.AnimButtonPlayForward.Name = "AnimButtonPlayForward";
+            this.AnimButtonPlayForward.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPlayForward.TabIndex = 6;
+            this.AnimButtonPlayForward.Click += new System.EventHandler(this.AnimButtonPlayForward_Click);
+            // 
+            // AnimButtonPause
+            // 
+            this.AnimButtonPause.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonPause.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPause.Icon")));
+            this.AnimButtonPause.Location = new System.Drawing.Point(591, 1);
+            this.AnimButtonPause.Name = "AnimButtonPause";
+            this.AnimButtonPause.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonPause.TabIndex = 5;
+            this.AnimButtonPause.Click += new System.EventHandler(this.AnimButtonPause_Click);
+            // 
+            // AnimButtonStop
+            // 
+            this.AnimButtonStop.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonStop.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonStop.Icon")));
+            this.AnimButtonStop.Location = new System.Drawing.Point(619, 1);
+            this.AnimButtonStop.Name = "AnimButtonStop";
+            this.AnimButtonStop.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonStop.TabIndex = 4;
+            this.AnimButtonStop.Click += new System.EventHandler(this.AnimButtonStop_Click);
+            // 
+            // AnimButtonSpeedUp
+            // 
+            this.AnimButtonSpeedUp.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonSpeedUp.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSpeedUp.Icon")));
+            this.AnimButtonSpeedUp.Location = new System.Drawing.Point(647, 1);
+            this.AnimButtonSpeedUp.Name = "AnimButtonSpeedUp";
+            this.AnimButtonSpeedUp.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonSpeedUp.TabIndex = 3;
+            this.AnimButtonSpeedUp.Click += new System.EventHandler(this.AnimButtonSpeedUp_Click);
+            // 
+            // AnimButtonNext
+            // 
+            this.AnimButtonNext.Dock = System.Windows.Forms.DockStyle.Right;
+            this.AnimButtonNext.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonNext.Icon")));
+            this.AnimButtonNext.Location = new System.Drawing.Point(675, 1);
+            this.AnimButtonNext.Name = "AnimButtonNext";
+            this.AnimButtonNext.Size = new System.Drawing.Size(28, 27);
+            this.AnimButtonNext.TabIndex = 2;
+            this.AnimButtonNext.Click += new System.EventHandler(this.AnimButtonNext_Click);
+            // 
             // LblAnimSpeed
             // 
             this.LblAnimSpeed.Dock = System.Windows.Forms.DockStyle.Right;
@@ -189,6 +284,7 @@
             this.ToolButtonSave.Name = "ToolButtonSave";
             this.ToolButtonSave.Size = new System.Drawing.Size(28, 27);
             this.ToolButtonSave.ToolTipText = "Save...";
+            this.ToolButtonSave.Click += new System.EventHandler(this.ToolButtonSave_Click);
             // 
             // MenuSeparatorShowHideJustIgnore
             // 
@@ -216,6 +312,7 @@
             this.ToolButtonShowGrid.Name = "ToolButtonShowGrid";
             this.ToolButtonShowGrid.Size = new System.Drawing.Size(28, 27);
             this.ToolButtonShowGrid.ToolTipText = "Toggle grid";
+            this.ToolButtonShowGrid.Click += new System.EventHandler(this.ToolButtonShowGrid_Click);
             // 
             // ToolButtonShowAxis
             // 
@@ -227,6 +324,7 @@
             this.ToolButtonShowAxis.Name = "ToolButtonShowAxis";
             this.ToolButtonShowAxis.Size = new System.Drawing.Size(28, 27);
             this.ToolButtonShowAxis.ToolTipText = "Toggle axis";
+            this.ToolButtonShowAxis.Click += new System.EventHandler(this.ToolButtonShowAxis_Click);
             // 
             // MenuButtonShowBones
             // 
@@ -477,101 +575,6 @@
             this.MatAnimsList.Size = new System.Drawing.Size(186, 439);
             this.MatAnimsList.TabIndex = 4;
             this.MatAnimsList.SelectedIndexChanged += new System.EventHandler(this.MatAnimsList_SelectedIndexChanged);
-            // 
-            // AnimSeekBar
-            // 
-            this.AnimSeekBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
-            this.AnimSeekBar.CursorColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(209)))), ((int)(((byte)(134)))));
-            this.AnimSeekBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AnimSeekBar.ForeColor = System.Drawing.Color.Gainsboro;
-            this.AnimSeekBar.Location = new System.Drawing.Point(1, 1);
-            this.AnimSeekBar.Maximum = 0F;
-            this.AnimSeekBar.Name = "AnimSeekBar";
-            this.AnimSeekBar.Size = new System.Drawing.Size(478, 27);
-            this.AnimSeekBar.TabIndex = 8;
-            this.AnimSeekBar.Value = 0F;
-            this.AnimSeekBar.Seek += new System.EventHandler(this.AnimSeekBar_Seek);
-            this.AnimSeekBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AnimSeekBar_MouseUp);
-            // 
-            // AnimButtonPrev
-            // 
-            this.AnimButtonPrev.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonPrev.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPrev.Icon")));
-            this.AnimButtonPrev.Location = new System.Drawing.Point(479, 1);
-            this.AnimButtonPrev.Name = "AnimButtonPrev";
-            this.AnimButtonPrev.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonPrev.TabIndex = 9;
-            this.AnimButtonPrev.Click += new System.EventHandler(this.AnimButtonPrev_Click);
-            // 
-            // AnimButtonSlowDown
-            // 
-            this.AnimButtonSlowDown.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonSlowDown.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSlowDown.Icon")));
-            this.AnimButtonSlowDown.Location = new System.Drawing.Point(507, 1);
-            this.AnimButtonSlowDown.Name = "AnimButtonSlowDown";
-            this.AnimButtonSlowDown.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonSlowDown.TabIndex = 10;
-            this.AnimButtonSlowDown.Click += new System.EventHandler(this.AnimButtonSlowDown_Click);
-            // 
-            // AnimButtonPlayBackward
-            // 
-            this.AnimButtonPlayBackward.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonPlayBackward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayBackward.Icon")));
-            this.AnimButtonPlayBackward.Location = new System.Drawing.Point(535, 1);
-            this.AnimButtonPlayBackward.Name = "AnimButtonPlayBackward";
-            this.AnimButtonPlayBackward.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonPlayBackward.TabIndex = 7;
-            this.AnimButtonPlayBackward.Click += new System.EventHandler(this.AnimButtonPlayBackward_Click);
-            // 
-            // AnimButtonPlayForward
-            // 
-            this.AnimButtonPlayForward.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonPlayForward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayForward.Icon")));
-            this.AnimButtonPlayForward.Location = new System.Drawing.Point(563, 1);
-            this.AnimButtonPlayForward.Name = "AnimButtonPlayForward";
-            this.AnimButtonPlayForward.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonPlayForward.TabIndex = 6;
-            this.AnimButtonPlayForward.Click += new System.EventHandler(this.AnimButtonPlayForward_Click);
-            // 
-            // AnimButtonPause
-            // 
-            this.AnimButtonPause.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonPause.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPause.Icon")));
-            this.AnimButtonPause.Location = new System.Drawing.Point(591, 1);
-            this.AnimButtonPause.Name = "AnimButtonPause";
-            this.AnimButtonPause.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonPause.TabIndex = 5;
-            this.AnimButtonPause.Click += new System.EventHandler(this.AnimButtonPause_Click);
-            // 
-            // AnimButtonStop
-            // 
-            this.AnimButtonStop.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonStop.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonStop.Icon")));
-            this.AnimButtonStop.Location = new System.Drawing.Point(619, 1);
-            this.AnimButtonStop.Name = "AnimButtonStop";
-            this.AnimButtonStop.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonStop.TabIndex = 4;
-            this.AnimButtonStop.Click += new System.EventHandler(this.AnimButtonStop_Click);
-            // 
-            // AnimButtonSpeedUp
-            // 
-            this.AnimButtonSpeedUp.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonSpeedUp.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSpeedUp.Icon")));
-            this.AnimButtonSpeedUp.Location = new System.Drawing.Point(647, 1);
-            this.AnimButtonSpeedUp.Name = "AnimButtonSpeedUp";
-            this.AnimButtonSpeedUp.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonSpeedUp.TabIndex = 3;
-            this.AnimButtonSpeedUp.Click += new System.EventHandler(this.AnimButtonSpeedUp_Click);
-            // 
-            // AnimButtonNext
-            // 
-            this.AnimButtonNext.Dock = System.Windows.Forms.DockStyle.Right;
-            this.AnimButtonNext.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonNext.Icon")));
-            this.AnimButtonNext.Location = new System.Drawing.Point(675, 1);
-            this.AnimButtonNext.Name = "AnimButtonNext";
-            this.AnimButtonNext.Size = new System.Drawing.Size(28, 27);
-            this.AnimButtonNext.TabIndex = 2;
-            this.AnimButtonNext.Click += new System.EventHandler(this.AnimButtonNext_Click);
             // 
             // FrmMain
             // 

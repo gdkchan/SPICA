@@ -37,6 +37,7 @@ namespace SPICA.Renderer
         public Vector4 SceneAmbient;
 
         public event EventHandler BeforeDraw;
+        public event EventHandler AfterDraw;
 
         public RenderEngine(int Width, int Height)
         {
@@ -246,9 +247,9 @@ namespace SPICA.Renderer
                 ClearBufferMask.StencilBufferBit |
                 ClearBufferMask.DepthBufferBit);
 
-            GL.UseProgram(MdlShaderHandle);
-
             BeforeDraw?.Invoke(this, EventArgs.Empty);
+
+            GL.UseProgram(MdlShaderHandle);
 
             foreach (Model Mdl in Models) Mdl.Render();
 
@@ -261,7 +262,11 @@ namespace SPICA.Renderer
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
 
+            GL.DepthFunc(DepthFunction.Less);
+
             foreach (GUIControl Ctrl in Controls) Ctrl.Render();
+
+            AfterDraw?.Invoke(this, EventArgs.Empty);
         }
 
         private bool Disposed;

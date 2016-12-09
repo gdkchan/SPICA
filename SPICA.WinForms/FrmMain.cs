@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
+using SPICA.GenericFormats.COLLADA;
 using SPICA.Renderer;
 using SPICA.Renderer.Animation;
 using SPICA.WinForms.Formats;
@@ -21,6 +22,7 @@ namespace SPICA.WinForms
         #region Initialization
         private GLControl Viewport;
         private GridLines UIGrid;
+        private AxisLines UIAxis;
         private RenderEngine Renderer;
         private H3D SceneData;
         private Model Model;
@@ -89,8 +91,10 @@ namespace SPICA.WinForms
             Renderer.SetBackgroundColor(Color.Gray);
 
             UIGrid = new GridLines();
+            UIAxis = new AxisLines();
 
             Renderer.BeforeDraw += UIGrid.Render;
+            Renderer.AfterDraw += UIAxis.Render;
 
             Zoom = -100;
             Step = 1;
@@ -180,6 +184,21 @@ namespace SPICA.WinForms
             Open(true);
         }
 
+        private void ToolButtonSave_Click(object sender, EventArgs e)
+        {
+            Save();
+        }
+
+        private void ToolButtonShowGrid_Click(object sender, EventArgs e)
+        {
+            UIGrid.Visible = ToolButtonShowGrid.Checked; UpdateViewport();
+        }
+
+        private void ToolButtonShowAxis_Click(object sender, EventArgs e)
+        {
+            UIAxis.Visible = ToolButtonShowAxis.Checked; UpdateViewport();
+        }
+
         private void Open(bool MergeMode)
         {
             IgnoreClicks = true;
@@ -226,6 +245,34 @@ namespace SPICA.WinForms
             Application.DoEvents();
 
             IgnoreClicks = false;
+        }
+
+        private void Save()
+        {
+            if (SceneData == null)
+            {
+                MessageBox.Show(
+                    "Please load a file first!",
+                    "No data",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
+                return;
+            }
+
+            using (SaveFileDialog SaveDlg = new SaveFileDialog())
+            {
+                SaveDlg.Filter = "COLLADA 1.4.1|*.dae";
+                SaveDlg.FileName = "Model";
+
+                if (SaveDlg.ShowDialog() == DialogResult.OK)
+                {
+                    switch (SaveDlg.FilterIndex)
+                    {
+                        case 1: new DAE(SceneData).Save(SaveDlg.FileName); break;
+                    }
+                }
+            }
         }
 
         private void LoadScene()
@@ -307,6 +354,7 @@ namespace SPICA.WinForms
 
             Model.ResetTransform();
             UIGrid.ResetTransform();
+            UIAxis.ResetTransform();
 
             Model.TranslateAbs(MdlCenter);
             UIGrid.TranslateAbs(MdlCenter);
@@ -319,13 +367,15 @@ namespace SPICA.WinForms
         private void UpdateTransforms()
         {
             Vector3 Translation = new Vector3(-CurrentMov.X, CurrentMov.Y, 0);
-            Vector3 Rotation    = new Vector3(CurrentRot.X, CurrentRot.Y, 0);
+            Vector3 Rotation    = new Vector3( CurrentRot.X, CurrentRot.Y, 0);
 
             Model?.Translate(Translation);
             UIGrid.Translate(Translation);
 
             Model?.Rotate(Rotation);
             UIGrid.Rotate(Rotation);
+
+            UIAxis.Rotate(Rotation);
 
             CurrentMov = Vector2.Zero;
             CurrentRot = Vector2.Zero;
@@ -420,8 +470,8 @@ namespace SPICA.WinForms
                 Model.SkeletalAnimation.SetAnimation(SklAnim);
 
                 MatAnimsList.SelectedIndex = FindAndSetAnim(
-                    SceneData.MaterialAnimations, 
-                    Model.MaterialAnimation, 
+                    SceneData.MaterialAnimations,
+                    Model.MaterialAnimation,
                     SklAnim.Name);
 
                 SetAnimationControls(SklAnim, AnimType.Skeletal);

@@ -7,7 +7,7 @@ using System;
 
 namespace SPICA.WinForms.RenderExtensions
 {
-    class GridLines : TransformableObject, IDisposable
+    class AxisLines : TransformableObject, IDisposable
     {
         const int LinesCount = 102;
 
@@ -16,35 +16,14 @@ namespace SPICA.WinForms.RenderExtensions
 
         public bool Visible;
 
-        public GridLines()
+        public AxisLines()
         {
-            Vector4[] Buffer = new Vector4[LinesCount * 4];
-
-            int Index = 0;
-
-            for (int i = -50; i <= 50; i += 2)
+            Vector4[] Buffer = new Vector4[]
             {
-                Vector4 Color;
-
-                if ((i % 10) == 0)
-                    Color = new Vector4(1f);
-                else
-                    Color = new Vector4(new Vector3(169 / 255f), 1f);
-
-                Buffer[Index + 0] = new Vector4(i, 0, -50, 1);
-                Buffer[Index + 2] = new Vector4(i, 0,  50, 1);
-
-                Buffer[Index + 4] = new Vector4(-50, 0, i, 1);
-                Buffer[Index + 6] = new Vector4( 50, 0, i, 1);
-
-                Buffer[Index + 1] = Color;
-                Buffer[Index + 3] = Color;
-
-                Buffer[Index + 5] = Color;
-                Buffer[Index + 7] = Color;
-
-                Index += 8;
-            }
+                new Vector4(0), new Vector4(1, 0, 0, 1), new Vector4(20,  0,  0, 1), new Vector4(1, 0, 0, 1),
+                new Vector4(0), new Vector4(0, 1, 0, 1), new Vector4( 0, 20,  0, 1), new Vector4(0, 1, 0, 1),
+                new Vector4(0), new Vector4(0, 0, 1, 1), new Vector4( 0,  0, 20, 1), new Vector4(0, 0, 1, 1)
+            };
 
             VBOHandle = GL.GenBuffer();
             VAOHandle = GL.GenVertexArray();
@@ -78,16 +57,16 @@ namespace SPICA.WinForms.RenderExtensions
 
                 GL.UniformMatrix4(GL.GetUniformLocation(ShaderHandle, "ModelMatrix"), false, ref Transform);
 
-                GL.LineWidth(1);
+                GL.LineWidth(2);
 
                 GL.Disable(EnableCap.StencilTest);
-                GL.Enable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.DepthTest);
                 GL.Disable(EnableCap.Blend);
 
-                GL.DepthFunc(DepthFunction.Less);
+                GL.DepthFunc(DepthFunction.Always);
 
                 GL.BindVertexArray(VAOHandle);
-                GL.DrawArrays(PrimitiveType.Lines, 0, LinesCount * 2);
+                GL.DrawArrays(PrimitiveType.Lines, 0, 6);
                 GL.BindVertexArray(0);
             }
         }
