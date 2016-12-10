@@ -7,6 +7,8 @@ namespace SPICA.GenericFormats.COLLADA
 {
     public class DAEMatrix
     {
+        [XmlAttribute] public string sid;
+
         [XmlText] public string data;
 
         public static DAEMatrix Identity

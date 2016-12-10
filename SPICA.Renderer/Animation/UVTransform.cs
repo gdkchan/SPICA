@@ -2,7 +2,7 @@
 
 namespace SPICA.Renderer.Animation
 {
-    struct UVTransform
+    public struct UVTransform
     {
         public Vector2 Scale;
         public Matrix2 Transform;

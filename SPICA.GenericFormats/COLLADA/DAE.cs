@@ -1,4 +1,6 @@
-﻿using SPICA.Formats.CtrH3D;
+﻿using OpenTK;
+using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
@@ -6,7 +8,8 @@ using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
-
+using SPICA.Renderer.Animation;
+using SPICA.Renderer.SPICA_GL;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,12 +25,14 @@ namespace SPICA.GenericFormats.COLLADA
     {
         [XmlAttribute] public string version = "1.4.1";
 
-        [XmlArrayItem("image")]        public List<DAEImage>       library_images        = new List<DAEImage>();
-        [XmlArrayItem("material")]     public List<DAEMaterial>    library_materials     = new List<DAEMaterial>();
-        [XmlArrayItem("effect")]       public List<DAEEffect>      library_effects       = new List<DAEEffect>();
-        [XmlArrayItem("geometry")]     public List<DAEGeometry>    library_geometries    = new List<DAEGeometry>();
-        [XmlArrayItem("controller")]   public List<DAEController>  library_controllers   = new List<DAEController>();
-        [XmlArrayItem("visual_scene")] public List<DAEVisualScene> library_visual_scenes = new List<DAEVisualScene>();
+        [XmlArrayItem("animation")]      public List<DAEAnimation>     library_animations       = new List<DAEAnimation>();
+        [XmlArrayItem("animation_clip")] public List<DAEAnimationClip> library_animations_clips = new List<DAEAnimationClip>();
+        [XmlArrayItem("image")]          public List<DAEImage>         library_images           = new List<DAEImage>();
+        [XmlArrayItem("material")]       public List<DAEMaterial>      library_materials        = new List<DAEMaterial>();
+        [XmlArrayItem("effect")]         public List<DAEEffect>        library_effects          = new List<DAEEffect>();
+        [XmlArrayItem("geometry")]       public List<DAEGeometry>      library_geometries       = new List<DAEGeometry>();
+        [XmlArrayItem("controller")]     public List<DAEController>    library_controllers      = new List<DAEController>();
+        [XmlArrayItem("visual_scene")]   public List<DAEVisualScene>   library_visual_scenes    = new List<DAEVisualScene>();
 
         public DAEScene scene = new DAEScene();
 
@@ -112,6 +117,7 @@ namespace SPICA.GenericFormats.COLLADA
 
                         DAEMatrix BoneTransform = new DAEMatrix();
 
+                        BoneTransform.sid = "transform";
                         BoneTransform.Set(Bone.Transform);
 
                         Bone_Node.Item2.id = Bone.Name + "_bone_id";
@@ -343,9 +349,9 @@ namespace SPICA.GenericFormats.COLLADA
                             Weights.Add("1", 0);
                         }
 
-                        Controller.skin.src.Add(GetSource(Controller.name + "_names",   "JOINT",     "Name",     BoneNames,    1,  true));
-                        Controller.skin.src.Add(GetSource(Controller.name + "_poses",   "TRANSFORM", "float4x4", BindPoses,    16, false));
-                        Controller.skin.src.Add(GetSource(Controller.name + "_weights", "WEIGHT",    "float",    Weights.Keys, 1,  false));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_names",   "JOINT",     "Name",     BoneNames,    1));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_poses",   "TRANSFORM", "float4x4", BindPoses,    16));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_weights", "WEIGHT",    "float",    Weights.Keys, 1));
 
                         Controller.skin.joints.AddInput("JOINT",           "#" + Controller.skin.src[0].id);
                         Controller.skin.joints.AddInput("INV_BIND_MATRIX", "#" + Controller.skin.src[1].id);
@@ -396,9 +402,92 @@ namespace SPICA.GenericFormats.COLLADA
             {
                 library_images.Add(new DAEImage
                 {
-                    id = Tex.Name,
+                    id        = Tex.Name,
                     init_from = $"./{Tex.Name}.png"
                 });
+            }
+
+            for (int AnimIndex = 0; AnimIndex < SceneData.SkeletalAnimations.Count; AnimIndex++)
+            {
+                H3DAnimation SklAnim = SceneData.SkeletalAnimations[AnimIndex];
+
+                PatriciaList<H3DBone> Skeleton = SceneData.Models[0].Skeleton;
+
+                SkeletalAnim SklAnimator = new SkeletalAnim();
+
+                SklAnimator.SetAnimation(SklAnim);
+                SklAnimator.Play(1);
+
+                int Count = (int)SklAnim.FramesCount + 1;
+
+                Matrix4[][] Transforms = new Matrix4[Count][];
+
+                for (int Index = 0; Index < Count; Index++)
+                {
+                    Transforms[Index] = SklAnimator.GetSkeletonTransforms(Skeleton, false);
+
+                    SklAnimator.AdvanceFrame();
+                }
+
+                string[] AnimNames = new string[Skeleton.Count];
+
+                for (int Bone = 0; Bone < Skeleton.Count; Bone++)
+                {
+                    string[] AnimTimes = new string[Count];
+                    string[] AnimPoses = new string[Count];
+                    string[] AnimLerps = new string[Count];
+
+                    for (int Index = 0; Index < Count; Index++)
+                    {
+                        Matrix4 Mtx = Transforms[Index][Bone];
+
+                        string StrTrans = string.Format(CultureInfo.InvariantCulture,
+                            "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15}",
+                            Mtx.M11, Mtx.M21, Mtx.M31, Mtx.M41,
+                            Mtx.M12, Mtx.M22, Mtx.M32, Mtx.M42,
+                            Mtx.M13, Mtx.M23, Mtx.M33, Mtx.M43,
+                            Mtx.M14, Mtx.M24, Mtx.M34, Mtx.M44);
+
+                        //This is the Time in seconds, so we divide by the target FPS
+                        AnimTimes[Index] = (Index / 30f).ToString(CultureInfo.InvariantCulture);
+                        AnimPoses[Index]  = StrTrans;
+                        AnimLerps[Index]  = "LINEAR";
+                    }
+
+                    DAEAnimation Anim = new DAEAnimation();
+
+                    Anim.name = SklAnim.Name + "_" + Skeleton[Bone].Name;
+                    Anim.id = Anim.name + "_id";
+
+                    AnimNames[Bone] = Anim.name;
+
+                    Anim.src.Add(GetSource(Anim.name + "_frame",  "TIME",          "float",    AnimTimes, 1));
+                    Anim.src.Add(GetSource(Anim.name + "_pose",   "TRANSFORM",     "float4x4", AnimPoses, 16));
+                    Anim.src.Add(GetSource(Anim.name + "_interp", "INTERPOLATION", "Name",     AnimLerps, 1));
+
+                    Anim.sampler.AddInput("INPUT",         "#" + Anim.src[0].id);
+                    Anim.sampler.AddInput("OUTPUT",        "#" + Anim.src[1].id);
+                    Anim.sampler.AddInput("INTERPOLATION", "#" + Anim.src[2].id);
+
+                    Anim.sampler.id = Anim.name + "_samp_id";
+                    Anim.channel.source = "#" + Anim.sampler.id;
+                    Anim.channel.target = Skeleton[Bone].Name + "_bone_id/transform";
+
+                    library_animations.Add(Anim);
+                }
+
+                DAEAnimationClip Clip = new DAEAnimationClip();
+
+                Clip.name = SklAnim.Name;
+                Clip.id = Clip.name + "_id";
+                Clip.end = SklAnim.FramesCount;
+
+                foreach (string Name in AnimNames)
+                {
+                    Clip.instance_animation.Add(new DAEInstanceAnimation("#" + Name));
+                }
+
+                library_animations_clips.Add(Clip);
             }
         }
 
@@ -407,8 +496,7 @@ namespace SPICA.GenericFormats.COLLADA
             string AccName,
             string AccType,
             IEnumerable<string> Elems,
-            int Stride,
-            bool IsNameArray)
+            int Stride)
         {
             DAESource Source = new DAESource();
 
@@ -435,7 +523,7 @@ namespace SPICA.GenericFormats.COLLADA
 
             Source.technique_common.accessor = Accessor;
 
-            if (IsNameArray)
+            if (AccType == "Name")
                 Source.Name_array = Array;
             else
                 Source.float_array = Array;

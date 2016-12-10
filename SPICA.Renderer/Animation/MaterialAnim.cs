@@ -12,7 +12,7 @@ namespace SPICA.Renderer.Animation
 {
     public class MaterialAnim : AnimControl
     {
-        internal UVTransform[][] GetUVTransforms(PatriciaList<H3DMaterial> Materials)
+        public UVTransform[][] GetUVTransforms(PatriciaList<H3DMaterial> Materials)
         {
             UVTransform[][] Output = new UVTransform[Materials.Count][];
 
@@ -26,7 +26,7 @@ namespace SPICA.Renderer.Animation
             return Output;
         }
 
-        internal UVTransform[] GetUVTransform(string MaterialName, H3DTextureCoord[] TexCoords)
+        public UVTransform[] GetUVTransform(string MaterialName, H3DTextureCoord[] TexCoords)
         {
             Vector2[] Scale = new Vector2[3];
             float[]   Rot   = new float[3];

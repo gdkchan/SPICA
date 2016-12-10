@@ -11,6 +11,8 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAE.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEAccessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEAnimationClip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEEffect.cs" />

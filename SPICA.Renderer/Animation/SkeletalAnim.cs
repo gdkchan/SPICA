@@ -27,7 +27,7 @@ namespace SPICA.Renderer.Animation
 
         private const string InvalidPrimitiveTypeEx = "Invalid Primitive type used on Skeleton Bone!";
 
-        internal Matrix4[] GetSkeletonTransforms(PatriciaList<H3DBone> Skeleton)
+        public Matrix4[] GetSkeletonTransforms(PatriciaList<H3DBone> Skeleton, bool AbsPos = true)
         {
             Matrix4[] Output = new Matrix4[Skeleton.Count];
             Bone[] FrameSkeleton = new Bone[Skeleton.Count];
@@ -120,29 +120,26 @@ namespace SPICA.Renderer.Animation
 
             for (Index = 0; Index < Skeleton.Count; Index++)
             {
-                Bone B = FrameSkeleton[Index];
+                int PIndex, BIndex = Index;
 
-                if (B.HasMtxTransform) continue;
+                if (FrameSkeleton[BIndex].HasMtxTransform) continue;
 
-                Output[Index] = Matrix4.CreateScale(B.Scale);
+                Output[Index] = Matrix4.CreateScale(FrameSkeleton[BIndex].Scale);
 
-                while (true)
+                do
                 {
-                    if (B.IsQuatRotation)
-                        Output[Index] *= Matrix4.CreateFromQuaternion(B.QuatRotation);
+                    if (FrameSkeleton[BIndex].IsQuatRotation)
+                        Output[Index] *= Matrix4.CreateFromQuaternion(FrameSkeleton[BIndex].QuatRotation);
                     else
-                        Output[Index] *= RenderUtils.EulerRotate(B.Rotation);
+                        Output[Index] *= RenderUtils.EulerRotate(FrameSkeleton[BIndex].Rotation);
 
-                    Vector3 Translation = B.Translation;
+                    PIndex = FrameSkeleton[BIndex].ParentIndex;
 
-                    if (B.ParentIndex != -1) Translation *= FrameSkeleton[B.ParentIndex].Scale;
+                    Vector3 Scale = PIndex != -1 && AbsPos ? FrameSkeleton[PIndex].Scale : Vector3.One;
 
-                    Output[Index] *= Matrix4.CreateTranslation(Translation);
-
-                    if (B.ParentIndex == -1) break;
-
-                    B = FrameSkeleton[B.ParentIndex];
+                    Output[Index] *= Matrix4.CreateTranslation(Scale * FrameSkeleton[BIndex].Translation);
                 }
+                while ((BIndex = PIndex) != -1 && AbsPos);
             }
 
             return Output;
