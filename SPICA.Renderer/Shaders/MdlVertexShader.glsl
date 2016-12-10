@@ -71,7 +71,14 @@ void main() {
 	Normal = a1_norm * Scales0[NORM];
 	Tangent = a2_tan * Scales0[TAN];
 	
-	Color = FixedColor.w != -1 ? FixedColor : a3_col * Scales0[COL];
+	if (FixedColor.w != -1)
+		Color = FixedColor;
+	else
+		Color = a3_col * Scales0[COL];
+
+	//Note: Pokémon have some weird Alpha values on the Vertex Color that I guess are used for something else
+	//on the Fragment Shader, so we set the Alpha to zero here. Hope that this doesn't break any model.
+	Color = vec4(Color.rgb, 0);
 	
 	TexCoord0 = a4_tex0 * Scales1[TEX0];
 	TexCoord1 = a5_tex1 * Scales1[TEX1];

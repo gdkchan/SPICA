@@ -59,15 +59,5 @@ namespace SPICA.WinForms.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sui_menu {
-            get {
-                object obj = ResourceManager.GetObject("sui_menu", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
     }
 }

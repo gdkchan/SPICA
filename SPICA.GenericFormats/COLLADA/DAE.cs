@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
@@ -9,7 +10,7 @@ using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Renderer.Animation;
-using SPICA.Renderer.SPICA_GL;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -349,9 +350,9 @@ namespace SPICA.GenericFormats.COLLADA
                             Weights.Add("1", 0);
                         }
 
-                        Controller.skin.src.Add(GetSource(Controller.name + "_names",   "JOINT",     "Name",     BoneNames,    1));
-                        Controller.skin.src.Add(GetSource(Controller.name + "_poses",   "TRANSFORM", "float4x4", BindPoses,    16));
-                        Controller.skin.src.Add(GetSource(Controller.name + "_weights", "WEIGHT",    "float",    Weights.Keys, 1));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_names",   "JOINT",     "Name",     1,  BoneNames));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_poses",   "TRANSFORM", "float4x4", 16, BindPoses));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_weights", "WEIGHT",    "float",    1,  Weights.Keys));
 
                         Controller.skin.joints.AddInput("JOINT",           "#" + Controller.skin.src[0].id);
                         Controller.skin.joints.AddInput("INV_BIND_MATRIX", "#" + Controller.skin.src[1].id);
@@ -461,9 +462,9 @@ namespace SPICA.GenericFormats.COLLADA
 
                     AnimNames[Bone] = Anim.name;
 
-                    Anim.src.Add(GetSource(Anim.name + "_frame",  "TIME",          "float",    AnimTimes, 1));
-                    Anim.src.Add(GetSource(Anim.name + "_pose",   "TRANSFORM",     "float4x4", AnimPoses, 16));
-                    Anim.src.Add(GetSource(Anim.name + "_interp", "INTERPOLATION", "Name",     AnimLerps, 1));
+                    Anim.src.Add(GetSource(Anim.name + "_frame",  "TIME",          "float",    1,  AnimTimes));
+                    Anim.src.Add(GetSource(Anim.name + "_pose",   "TRANSFORM",     "float4x4", 16, AnimPoses));
+                    Anim.src.Add(GetSource(Anim.name + "_interp", "INTERPOLATION", "Name",     1,  AnimLerps));
 
                     Anim.sampler.AddInput("INPUT",         "#" + Anim.src[0].id);
                     Anim.sampler.AddInput("OUTPUT",        "#" + Anim.src[1].id);
@@ -495,8 +496,8 @@ namespace SPICA.GenericFormats.COLLADA
             string Name,
             string AccName,
             string AccType,
-            IEnumerable<string> Elems,
-            int Stride)
+            int Stride,
+            IEnumerable<string> Elems)
         {
             DAESource Source = new DAESource();
 

@@ -108,9 +108,9 @@ namespace SPICA.Renderer
             }
         }
         
-        public Model AddModel(H3D BaseModel)
+        public Model AddModel(H3D SceneData)
         {
-            Model Model = new Model(BaseModel, MdlShaderHandle);
+            Model Model = new Model(SceneData, MdlShaderHandle);
 
             Models.Add(Model);
 

@@ -21,6 +21,8 @@ namespace SPICA.Formats.GFL2.Model.Material
         public uint LUT1HashId;
         public uint LUT2HashId;
 
+        public sbyte BumpTexture;
+
         public RGBA Constant0Color;
         public RGBA Constant1Color;
         public RGBA Constant2Color;
@@ -129,9 +131,11 @@ namespace SPICA.Formats.GFL2.Model.Material
             LUT1HashId = Reader.ReadUInt32();
             LUT2HashId = Reader.ReadUInt32();
 
-            Reader.ReadUInt32(); //TODO: Figure out
-            Reader.ReadUInt32(); //TODO: Figure out
-            Reader.ReadUInt32(); //TODO: Figure out
+            uint unk0 = Reader.ReadUInt32(); //TODO: Figure out
+
+            BumpTexture = (sbyte)Reader.ReadUInt32();
+
+            uint unk2 = Reader.ReadUInt32(); //TODO: Figure out
 
             Constant0Color = new RGBA(Reader);
             Constant1Color = new RGBA(Reader);
@@ -140,9 +144,11 @@ namespace SPICA.Formats.GFL2.Model.Material
             Constant4Color = new RGBA(Reader);
             Constant5Color = new RGBA(Reader);
 
-            Reader.ReadUInt32(); //TODO: Figure out
-            Reader.ReadUInt32(); //TODO: Figure out
-            Reader.ReadUInt32(); //TODO: Figure out
+            uint unk3 = Reader.ReadUInt32(); //TODO: Figure out
+            uint unk4 = Reader.ReadUInt32(); //TODO: Figure out
+            uint unk5 = Reader.ReadUInt32(); //TODO: Figure out
+
+            //System.Diagnostics.Debug.WriteLine(Name + " - " + unk0 + " " + unk1 + " " + unk2 + " " + unk3 + " " + unk4 + " " + unk5);
 
             EmissionColor = new RGBA(Reader);
             AmbientColor = new RGBA(Reader);

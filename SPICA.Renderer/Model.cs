@@ -77,7 +77,7 @@ namespace SPICA.Renderer
 
         private const string InvalidModelIndexEx = "Expected a value >= 0 and < {0}!";
 
-        public Model(H3D BaseModel, int ShaderHandle)
+        public Model(H3D SceneData, int ShaderHandle)
         {
             this.ShaderHandle = ShaderHandle;
 
@@ -85,18 +85,18 @@ namespace SPICA.Renderer
 
             Meshes = new List<Mesh>();
 
-            Skeletons = new PatriciaList<H3DBone>[BaseModel.Models.Count];
-            Materials = new PatriciaList<H3DMaterial>[BaseModel.Models.Count];
+            Skeletons = new PatriciaList<H3DBone>[SceneData.Models.Count];
+            Materials = new PatriciaList<H3DMaterial>[SceneData.Models.Count];
 
-            InverseTransform = new Matrix4[BaseModel.Models.Count][];
+            InverseTransform = new Matrix4[SceneData.Models.Count][];
 
-            MeshRanges = new Range[BaseModel.Models.Count];
+            MeshRanges = new Range[SceneData.Models.Count];
 
             int MeshStart = 0;
 
-            for (int Mdl = 0; Mdl < BaseModel.Models.Count; Mdl++)
+            for (int Mdl = 0; Mdl < SceneData.Models.Count; Mdl++)
             {
-                H3DModel Model = BaseModel.Models[Mdl];
+                H3DModel Model = SceneData.Models[Mdl];
 
                 Skeletons[Mdl] = Model.Skeleton;
                 Materials[Mdl] = Model.Materials;
@@ -122,7 +122,7 @@ namespace SPICA.Renderer
 
             TextureIds = new Dictionary<string, int>();
 
-            foreach (H3DTexture Texture in BaseModel.Textures)
+            foreach (H3DTexture Texture in SceneData.Textures)
             {
                 int TextureId = GL.GenTexture();
 
@@ -164,20 +164,22 @@ namespace SPICA.Renderer
             LUTHandles = new Dictionary<string, int>();
             IsLUTAbs = new Dictionary<string, bool>();
 
-            foreach (H3DLUT LUT in BaseModel.LUTs)
-            foreach (H3DLUTSampler Sampler in LUT.Samplers)
+            foreach (H3DLUT LUT in SceneData.LUTs)
             {
-                string Name = LUT.Name + "/" + Sampler.Name;
-                bool IsAbs = (Sampler.Flags & H3DLUTFlags.IsAbsolute) != 0;
+                foreach (H3DLUTSampler Sampler in LUT.Samplers)
+                {
+                    string Name = LUT.Name + "/" + Sampler.Name;
+                    bool IsAbs = (Sampler.Flags & H3DLUTFlags.IsAbsolute) != 0;
 
-                int UBOHandle = GL.GenBuffer();
+                    int UBOHandle = GL.GenBuffer();
 
-                GL.BindBuffer(BufferTarget.UniformBuffer, UBOHandle);
-                GL.BufferData(BufferTarget.UniformBuffer, 1024, Sampler.Table, BufferUsageHint.StaticRead);
-                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+                    GL.BindBuffer(BufferTarget.UniformBuffer, UBOHandle);
+                    GL.BufferData(BufferTarget.UniformBuffer, 1024, Sampler.Table, BufferUsageHint.StaticRead);
+                    GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-                LUTHandles.Add(Name, UBOHandle);
-                IsLUTAbs.Add(Name, IsAbs);
+                    LUTHandles.Add(Name, UBOHandle);
+                    IsLUTAbs.Add(Name, IsAbs);
+                }
             }
 
             SkeletalAnimation = new SkeletalAnim();

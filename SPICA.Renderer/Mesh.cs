@@ -133,7 +133,7 @@ namespace SPICA.Renderer
             StencilOp ZFail = Params.StencilOperation.ZFailOp.ToStencilOp();
             StencilOp ZPass = Params.StencilOperation.ZPassOp.ToStencilOp();
 
-            sbyte StencilRef = Params.StencilTest.Reference;
+            byte StencilRef = Params.StencilTest.Reference;
             byte StencilMask = Params.StencilTest.Mask;
 
             GL.StencilFunc(StencilFunc, StencilRef, StencilMask);
@@ -336,16 +336,6 @@ namespace SPICA.Renderer
             foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
             {
                 Vector4 Value = Attrib.Value.ToVector4();
-
-                /*
-                 * gdkchan Note:
-                 * The W parameter on Fixed Attributes are a bit weird.
-                 * For example, on BCH some models have the weight set to something like 1 0 0 1,
-                 * which is obviouly wrong, so we ignore the last component on the shader.
-                 * This is just a test and I'm not sure why this happens, but may be that
-                 * it initializes all vector4 to 0 0 0 1 by default.
-                 */
-                Value.W = 0;
 
                 switch (Attrib.Name)
                 {

@@ -82,19 +82,19 @@ namespace SPICA.Formats.CtrH3D
 
             new H3DRelocator(MS, Header).ToAbsolute();
 
-            H3D Model = Deserializer.Deserialize<H3D>();
+            H3D SceneData = Deserializer.Deserialize<H3D>();
 
-            Model.ConverterVersion = Header.ConverterVersion;
+            SceneData.ConverterVersion = Header.ConverterVersion;
 
-            Model.BackwardCompatibility = Header.BackwardCompatibility;
-            Model.ForwardCompatibility = Header.ForwardCompatibility;
+            SceneData.BackwardCompatibility = Header.BackwardCompatibility;
+            SceneData.ForwardCompatibility = Header.ForwardCompatibility;
 
-            Model.Flags = Header.Flags;
+            SceneData.Flags = Header.Flags;
 
-            return Model;
+            return SceneData;
         }
 
-        public static void Save(string FileName, H3D Model)
+        public static void Save(string FileName, H3D SceneData)
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
@@ -106,34 +106,34 @@ namespace SPICA.Formats.CtrH3D
 
                 BinarySerializer Serializer = new BinarySerializer(FS, Relocator);
 
-                Serializer.Serialize(Model);
+                Serializer.Serialize(SceneData);
 
                 Header.Magic = "BCH";
 
-                Header.ConverterVersion = Model.ConverterVersion;
+                Header.ConverterVersion = SceneData.ConverterVersion;
 
-                Header.BackwardCompatibility = Model.BackwardCompatibility;
-                Header.ForwardCompatibility = Model.ForwardCompatibility;
+                Header.BackwardCompatibility = SceneData.BackwardCompatibility;
+                Header.ForwardCompatibility  = SceneData.ForwardCompatibility;
 
                 Header.ContentsAddress = Serializer.Contents.Info.Position;
-                Header.StringsAddress = Serializer.Strings.Info.Position;
+                Header.StringsAddress  = Serializer.Strings.Info.Position;
                 Header.CommandsAddress = Serializer.Commands.Info.Position;
-                Header.RawDataAddress = Serializer.RawDataTex.Info.Position;
-                Header.RawExtAddress = Serializer.RawExtTex.Info.Position;
+                Header.RawDataAddress  = Serializer.RawDataTex.Info.Position;
+                Header.RawExtAddress   = Serializer.RawExtTex.Info.Position;
 
                 Header.ContentsLength = Serializer.Contents.Info.Length;
-                Header.StringsLength = Serializer.Strings.Info.Length;
+                Header.StringsLength  = Serializer.Strings.Info.Length;
                 Header.CommandsLength = Serializer.Commands.Info.Length;
-                Header.RawDataLength = Serializer.RawDataTex.Info.Length;
-                Header.RawExtLength = Serializer.RawExtTex.Info.Length;
+                Header.RawDataLength  = Serializer.RawDataTex.Info.Length;
+                Header.RawExtLength   = Serializer.RawExtTex.Info.Length;
 
                 Header.RawDataLength += Serializer.RawDataVtx.Info.Length;
-                Header.RawExtLength += Serializer.RawExtVtx.Info.Length;
+                Header.RawExtLength  += Serializer.RawExtVtx.Info.Length;
 
                 Header.UnInitDataLength = Serializer.PhysicalAddressCount * 4;
-                Header.AddressCount = (ushort)Serializer.PhysicalAddressCount;
+                Header.AddressCount     = (ushort)Serializer.PhysicalAddressCount;
 
-                Header.Flags = Model.Flags;
+                Header.Flags = SceneData.Flags;
 
                 Relocator.ToRelative(Serializer);
 
@@ -143,23 +143,23 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
-        public void Merge(H3D Model)
+        public void Merge(H3D SceneData)
         {
-            AddUnique(Model.Models,               Models);
-            AddUnique(Model.Materials,            Materials);
-            AddUnique(Model.Shaders,              Shaders);
-            AddUnique(Model.Textures,             Textures);
-            AddUnique(Model.LUTs,                 LUTs);
-            AddUnique(Model.Lights,               Lights);
-            AddUnique(Model.Cameras,              Cameras);
-            AddUnique(Model.Fogs,                 Fogs);
-            AddUnique(Model.SkeletalAnimations,   SkeletalAnimations);
-            AddUnique(Model.MaterialAnimations,   MaterialAnimations);
-            AddUnique(Model.VisibilityAnimations, VisibilityAnimations);
-            AddUnique(Model.LightAnimations,      LightAnimations);
-            AddUnique(Model.CameraAnimations,     CameraAnimations);
-            AddUnique(Model.FogAnimations,        FogAnimations);
-            AddUnique(Model.Scenes,               Scenes);
+            AddUnique(SceneData.Models,               Models);
+            AddUnique(SceneData.Materials,            Materials);
+            AddUnique(SceneData.Shaders,              Shaders);
+            AddUnique(SceneData.Textures,             Textures);
+            AddUnique(SceneData.LUTs,                 LUTs);
+            AddUnique(SceneData.Lights,               Lights);
+            AddUnique(SceneData.Cameras,              Cameras);
+            AddUnique(SceneData.Fogs,                 Fogs);
+            AddUnique(SceneData.SkeletalAnimations,   SkeletalAnimations);
+            AddUnique(SceneData.MaterialAnimations,   MaterialAnimations);
+            AddUnique(SceneData.VisibilityAnimations, VisibilityAnimations);
+            AddUnique(SceneData.LightAnimations,      LightAnimations);
+            AddUnique(SceneData.CameraAnimations,     CameraAnimations);
+            AddUnique(SceneData.FogAnimations,        FogAnimations);
+            AddUnique(SceneData.Scenes,               Scenes);
         }
 
         private void AddUnique<T>(PatriciaList<T> Src, PatriciaList<T> Tgt) where T : INamed

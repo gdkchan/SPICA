@@ -306,8 +306,8 @@ namespace SPICA.WinForms
                     0,
                     -MdlCenter.Y,
                     -(MdlCenter.Z - CamDist * 2)),
-                Ambient = new Color4(0f, 0f, 0f, 0f),
-                Diffuse = new Color4(0.5f, 0.5f, 0.5f, 1f),
+                Ambient  = new Color4(0.0f, 0.0f, 0.0f, 0f),
+                Diffuse  = new Color4(0.5f, 0.5f, 0.5f, 1f),
                 Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
             });
 
@@ -444,7 +444,7 @@ namespace SPICA.WinForms
 
         private void EnableAnimator()
         {
-            Animator.Enabled = true; UpdateSpeedLbl();
+            Animator.Enabled = true; UpdateAnimLbls();
         }
 
         private void DisableAnimator()
@@ -506,14 +506,10 @@ namespace SPICA.WinForms
         {
             AnimSeekBar.Maximum = Anim.FramesCount;
 
-            UpdateSeekBar();
-            UpdateSpeedLbl();
-
-            bool Loop = (Anim.AnimationFlags & H3DAnimationFlags.IsLooping) != 0;
-
-            LblAnimLoopMode.Text = Loop ? "LOOP" : "1 GO";
-
             CurrAnimType = Type;
+
+            UpdateSeekBar();
+            UpdateAnimLbls();
         }
 
         private void AnimButtonPlayBackward_Click(object sender, EventArgs e)
@@ -571,7 +567,7 @@ namespace SPICA.WinForms
                 Model.SkeletalAnimation.SlowDown();
                 Model.MaterialAnimation.SlowDown();
 
-                UpdateSpeedLbl();
+                UpdateAnimLbls();
             }
         }
 
@@ -582,7 +578,7 @@ namespace SPICA.WinForms
                 Model.SkeletalAnimation.SpeedUp();
                 Model.MaterialAnimation.SpeedUp();
 
-                UpdateSpeedLbl();
+                UpdateAnimLbls();
             }
         }
 
@@ -626,9 +622,19 @@ namespace SPICA.WinForms
             Model?.MaterialAnimation.Play();
         }
 
-        private void UpdateSpeedLbl()
+        private void UpdateAnimLbls()
         {
             LblAnimSpeed.Text = string.Format("{0:N2}x", Math.Abs(Model.SkeletalAnimation.Step));
+
+            bool Loop = false;
+
+            switch (CurrAnimType)
+            {
+                case AnimType.Skeletal: Loop = Model.SkeletalAnimation.IsLooping; break;
+                case AnimType.Material: Loop = Model.MaterialAnimation.IsLooping; break;
+            }
+
+            LblAnimLoopMode.Text = Loop ? "LOOP" : "1 GO";
         }
         #endregion
     }

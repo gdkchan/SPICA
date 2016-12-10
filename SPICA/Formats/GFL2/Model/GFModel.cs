@@ -228,8 +228,11 @@ namespace SPICA.Formats.GFL2.Model
 
                 Params.UniqueId = (uint)Params.GetHashCode();
 
-                Params.BumpTexture = (byte)Material.BakeTexture0;
-                Params.BumpMode = Params.BumpTexture > 0 ? H3DBumpMode.AsBump : 0;
+                if (Material.BumpTexture != -1)
+                {
+                    Params.BumpTexture = (byte)Material.BumpTexture;
+                    Params.BumpMode = H3DBumpMode.AsBump;
+                }
 
                 Output.Materials.Add(Mat);
             }

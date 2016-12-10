@@ -14,6 +14,7 @@ namespace SPICA.Renderer.Animation
         protected AnimState State;
 
         public bool HasData { get { return BaseAnimation != null; } }
+        public bool IsLooping { get; set; }
 
         public AnimControl()
         {
