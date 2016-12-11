@@ -5,18 +5,18 @@ namespace SPICA.Formats.GFL2.Motion
 {
     public struct GFMotKeyFrame
     {
-        public byte Frame;
+        public int Frame;
         public float Value;
         public float Slope;
 
-        public GFMotKeyFrame(byte Frame, float Value, float Slope)
+        public GFMotKeyFrame(int Frame, float Value, float Slope)
         {
             this.Frame = Frame;
             this.Value = Value;
             this.Slope = Slope;
         }
 
-        public static List<GFMotKeyFrame> ReadList(BinaryReader Reader, uint Flags)
+        public static List<GFMotKeyFrame> ReadList(BinaryReader Reader, uint Flags, uint FramesCount)
         {
             List<GFMotKeyFrame> KeyFrames = new List<GFMotKeyFrame>();
 
@@ -24,32 +24,54 @@ namespace SPICA.Formats.GFL2.Motion
             {
                 case 3: KeyFrames.Add(new GFMotKeyFrame(0, Reader.ReadSingle(), 0)); break; //Constant
 
-                case 4: //Quantized Key Frame list
+                case 4: //Key Frame list
+                case 5:
                     uint KeyFramesCount = Reader.ReadUInt32();
 
-                    byte[] Frames = new byte[KeyFramesCount];
+                    int[] Frames = new int[KeyFramesCount];
 
                     for (int Index = 0; Index < KeyFramesCount; Index++)
                     {
-                        Frames[Index] = Reader.ReadByte();
+                        if (FramesCount > byte.MaxValue)
+                            Frames[Index] = Reader.ReadUInt16();
+                        else
+                            Frames[Index] = Reader.ReadByte();
                     }
 
                     while ((Reader.BaseStream.Position & 3) != 0) Reader.ReadByte();
 
-                    float ValueScale = Reader.ReadSingle();
-                    float ValueOffset = Reader.ReadSingle();
-                    float SlopeScale = Reader.ReadSingle();
-                    float SlopeOffset = Reader.ReadSingle();
-
-                    for (int Index = 0; Index < KeyFramesCount; Index++)
+                    if ((Flags & 1) != 0)
                     {
-                        KeyFrames.Add(new GFMotKeyFrame
+                        //Stored as Float, 64 bits per entry
+                        for (int Index = 0; Index < KeyFramesCount; Index++)
                         {
-                            Frame = Frames[Index],
-                            Value = (Reader.ReadUInt16() / (float)ushort.MaxValue) * ValueScale + ValueOffset,
-                            Slope = (Reader.ReadUInt16() / (float)ushort.MaxValue) * SlopeScale + SlopeOffset
-                        });
+                            KeyFrames.Add(new GFMotKeyFrame
+                            {
+                                Frame = Frames[Index],
+                                Value = Reader.ReadSingle(),
+                                Slope = Reader.ReadSingle()
+                            });
+                        }
                     }
+                    else
+                    {
+                        //Stored as Quantized UInt16, 32 bits per entry + 128 bits of Offsets/Scale
+                        float ValueScale  = Reader.ReadSingle();
+                        float ValueOffset = Reader.ReadSingle();
+                        float SlopeScale  = Reader.ReadSingle();
+                        float SlopeOffset = Reader.ReadSingle();
+
+                        for (int Index = 0; Index < KeyFramesCount; Index++)
+                        {
+                            KeyFrames.Add(new GFMotKeyFrame
+                            {
+                                Frame = Frames[Index],
+                                Value = (Reader.ReadUInt16() / (float)ushort.MaxValue) * ValueScale + ValueOffset,
+                                Slope = (Reader.ReadUInt16() / (float)ushort.MaxValue) * SlopeScale + SlopeOffset
+                            });
+                        }
+                    }
+
                     break;
             }
 

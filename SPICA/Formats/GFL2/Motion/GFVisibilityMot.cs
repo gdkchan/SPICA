@@ -32,12 +32,14 @@ namespace SPICA.Formats.GFL2.Motion
             }
         }
 
-        public H3DAnimation ToH3DAnimation(uint FramesCount)
+        public H3DAnimation ToH3DAnimation(GFMotion Motion)
         {
             H3DAnimation Output = new H3DAnimation();
 
-            Output.Name = "GFMotion";
-            Output.FramesCount = FramesCount;
+            Output.Name        = "GFMotion";
+            Output.FramesCount = Motion.FramesCount;
+
+            if (Motion.IsLooping) Output.AnimationFlags = H3DAnimationFlags.IsLooping;
 
             ushort Index = 0;
 
@@ -53,7 +55,7 @@ namespace SPICA.Formats.GFL2.Motion
                     Content = new H3DAnimBoolean
                     {
                         StartFrame = 0,
-                        EndFrame   = FramesCount,
+                        EndFrame   = Motion.FramesCount,
                         CurveIndex = Index++,
                         Values     = Vis.Values
                     }

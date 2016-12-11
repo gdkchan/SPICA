@@ -1,4 +1,6 @@
-﻿using SPICA.Formats.CtrH3D.Animation;
+﻿using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Animation;
+using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.GFL2.Model;
 using SPICA.Math3D;
 
@@ -25,10 +27,13 @@ namespace SPICA.Formats.GFL2.Motion
             public uint Address;
         }
 
+        public uint FramesCount;
+
+        public bool IsLooping;
+        public bool IsBlended;
+
         public Vector3D AnimRegionMin;
         public Vector3D AnimRegionMax;
-
-        public uint FramesCount;
 
         public GFSkeletonMot SkeletalAnimation;
         public GFMaterialMot MaterialAnimation;
@@ -65,7 +70,8 @@ namespace SPICA.Formats.GFL2.Motion
 
             FramesCount = Reader.ReadUInt32();
 
-            Reader.ReadUInt32();
+            IsLooping = (Reader.ReadUInt16() & 1) != 0;
+            IsBlended = (Reader.ReadUInt16() & 1) != 0; //Not sure
 
             AnimRegionMin = new Vector3D(Reader);
             AnimRegionMax = new Vector3D(Reader);
@@ -79,26 +85,46 @@ namespace SPICA.Formats.GFL2.Motion
 
                 switch (AnimSections[Anim].SectName)
                 {
-                    case Sect.SkeletalAnim:   SkeletalAnimation = new GFSkeletonMot(Reader); break;
-                    case Sect.MaterialAnim:   MaterialAnimation = new GFMaterialMot(Reader); break;
+                    case Sect.SkeletalAnim:   SkeletalAnimation = new GFSkeletonMot(Reader, FramesCount); break;
+                    case Sect.MaterialAnim:   MaterialAnimation = new GFMaterialMot(Reader, FramesCount); break;
                     case Sect.VisibilityAnim: VisibilityAnimation = new GFVisibilityMot(Reader, FramesCount); break;
                 }
             }
         }
 
+        public H3DAnimation ToH3DSkeletalAnimation(PatriciaList<H3DBone> Skeleton)
+        {
+            List<GFBone> GFSkeleton = new List<GFBone>();
+
+            foreach (H3DBone Bone in Skeleton)
+            {
+                GFSkeleton.Add(new GFBone
+                {
+                    Name        = Bone.Name,
+                    ParentName  = Bone.ParentIndex != -1 ? Skeleton[Bone.ParentIndex].Name : string.Empty,
+                    Flags       = (byte)(Bone.ParentIndex == -1 ? 2 : 1),
+                    Translation = Bone.Translation,
+                    Rotation    = Bone.Rotation,
+                    Scale       = Bone.Scale,
+                });
+            }
+
+            return ToH3DSkeletalAnimation(GFSkeleton);
+        }
+
         public H3DAnimation ToH3DSkeletalAnimation(List<GFBone> Skeleton)
         {
-            return SkeletalAnimation?.ToH3DAnimation(Skeleton, FramesCount);
+            return SkeletalAnimation?.ToH3DAnimation(Skeleton, this);
         }
 
         public H3DAnimation ToH3DMaterialAnimation()
         {
-            return MaterialAnimation?.ToH3DAnimation(FramesCount);
+            return MaterialAnimation?.ToH3DAnimation(this);
         }
 
         public H3DAnimation ToH3DVisibilityAnimation()
         {
-            return VisibilityAnimation?.ToH3DAnimation(FramesCount);
+            return VisibilityAnimation?.ToH3DAnimation(this);
         }
     }
 }

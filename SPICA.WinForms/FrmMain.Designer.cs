@@ -51,6 +51,9 @@
             this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
             this.Animator = new System.Windows.Forms.Timer(this.components);
             this.TabIcons = new System.Windows.Forms.ImageList(this.components);
+            this.TexturesMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.MenuTexExport = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuTexExportAll = new System.Windows.Forms.ToolStripMenuItem();
             this.MainContainer = new System.Windows.Forms.SplitContainer();
             this.SideTabs = new SPICA.WinForms.GUI.SUITabControl();
             this.TabPageModels = new System.Windows.Forms.TabPage();
@@ -75,6 +78,7 @@
             this.TopMenu.SuspendLayout();
             this.AnimControlsPanel.SuspendLayout();
             this.TopIcons.SuspendLayout();
+            this.TexturesMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).BeginInit();
             this.MainContainer.Panel2.SuspendLayout();
             this.MainContainer.SuspendLayout();
@@ -153,9 +157,9 @@
             // 
             this.LblAnimSpeed.Dock = System.Windows.Forms.DockStyle.Right;
             this.LblAnimSpeed.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblAnimSpeed.Location = new System.Drawing.Point(703, 1);
+            this.LblAnimSpeed.Location = new System.Drawing.Point(695, 1);
             this.LblAnimSpeed.Name = "LblAnimSpeed";
-            this.LblAnimSpeed.Size = new System.Drawing.Size(40, 27);
+            this.LblAnimSpeed.Size = new System.Drawing.Size(44, 27);
             this.LblAnimSpeed.TabIndex = 1;
             this.LblAnimSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -163,9 +167,9 @@
             // 
             this.LblAnimLoopMode.Dock = System.Windows.Forms.DockStyle.Right;
             this.LblAnimLoopMode.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblAnimLoopMode.Location = new System.Drawing.Point(743, 1);
+            this.LblAnimLoopMode.Location = new System.Drawing.Point(739, 1);
             this.LblAnimLoopMode.Name = "LblAnimLoopMode";
-            this.LblAnimLoopMode.Size = new System.Drawing.Size(40, 27);
+            this.LblAnimLoopMode.Size = new System.Drawing.Size(44, 27);
             this.LblAnimLoopMode.TabIndex = 0;
             this.LblAnimLoopMode.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -310,6 +314,29 @@
             this.TabIcons.Images.SetKeyName(2, "sui_bone_film.png");
             this.TabIcons.Images.SetKeyName(3, "sui_rainbow_film.png");
             // 
+            // TexturesMenu
+            // 
+            this.TexturesMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
+            this.TexturesMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuTexExport,
+            this.MenuTexExportAll});
+            this.TexturesMenu.Name = "TexturesMenu";
+            this.TexturesMenu.Size = new System.Drawing.Size(153, 70);
+            // 
+            // MenuTexExport
+            // 
+            this.MenuTexExport.Name = "MenuTexExport";
+            this.MenuTexExport.Size = new System.Drawing.Size(152, 22);
+            this.MenuTexExport.Text = "&Export";
+            this.MenuTexExport.Click += new System.EventHandler(this.MenuTexExport_Click);
+            // 
+            // MenuTexExportAll
+            // 
+            this.MenuTexExportAll.Name = "MenuTexExportAll";
+            this.MenuTexExportAll.Size = new System.Drawing.Size(152, 22);
+            this.MenuTexExportAll.Text = "&Export all";
+            this.MenuTexExportAll.Click += new System.EventHandler(this.MenuTexExportAll_Click);
+            // 
             // MainContainer
             // 
             this.MainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -404,6 +431,7 @@
             this.TexturesList.Size = new System.Drawing.Size(186, 230);
             this.TexturesList.TabIndex = 2;
             this.TexturesList.SelectedIndexChanged += new System.EventHandler(this.TexturesList_SelectedIndexChanged);
+            this.TexturesList.MouseClick += new System.Windows.Forms.MouseEventHandler(this.TexturesList_MouseClick);
             // 
             // TexturePreview
             // 
@@ -490,7 +518,7 @@
             this.AnimSeekBar.Location = new System.Drawing.Point(1, 1);
             this.AnimSeekBar.Maximum = 0F;
             this.AnimSeekBar.Name = "AnimSeekBar";
-            this.AnimSeekBar.Size = new System.Drawing.Size(478, 27);
+            this.AnimSeekBar.Size = new System.Drawing.Size(470, 27);
             this.AnimSeekBar.TabIndex = 8;
             this.AnimSeekBar.Value = 0F;
             this.AnimSeekBar.Seek += new System.EventHandler(this.AnimSeekBar_Seek);
@@ -500,7 +528,7 @@
             // 
             this.AnimButtonPrev.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonPrev.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPrev.Icon")));
-            this.AnimButtonPrev.Location = new System.Drawing.Point(479, 1);
+            this.AnimButtonPrev.Location = new System.Drawing.Point(471, 1);
             this.AnimButtonPrev.Name = "AnimButtonPrev";
             this.AnimButtonPrev.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonPrev.TabIndex = 9;
@@ -510,7 +538,7 @@
             // 
             this.AnimButtonSlowDown.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonSlowDown.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSlowDown.Icon")));
-            this.AnimButtonSlowDown.Location = new System.Drawing.Point(507, 1);
+            this.AnimButtonSlowDown.Location = new System.Drawing.Point(499, 1);
             this.AnimButtonSlowDown.Name = "AnimButtonSlowDown";
             this.AnimButtonSlowDown.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonSlowDown.TabIndex = 10;
@@ -520,7 +548,7 @@
             // 
             this.AnimButtonPlayBackward.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonPlayBackward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayBackward.Icon")));
-            this.AnimButtonPlayBackward.Location = new System.Drawing.Point(535, 1);
+            this.AnimButtonPlayBackward.Location = new System.Drawing.Point(527, 1);
             this.AnimButtonPlayBackward.Name = "AnimButtonPlayBackward";
             this.AnimButtonPlayBackward.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonPlayBackward.TabIndex = 7;
@@ -530,7 +558,7 @@
             // 
             this.AnimButtonPlayForward.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonPlayForward.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPlayForward.Icon")));
-            this.AnimButtonPlayForward.Location = new System.Drawing.Point(563, 1);
+            this.AnimButtonPlayForward.Location = new System.Drawing.Point(555, 1);
             this.AnimButtonPlayForward.Name = "AnimButtonPlayForward";
             this.AnimButtonPlayForward.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonPlayForward.TabIndex = 6;
@@ -540,7 +568,7 @@
             // 
             this.AnimButtonPause.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonPause.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonPause.Icon")));
-            this.AnimButtonPause.Location = new System.Drawing.Point(591, 1);
+            this.AnimButtonPause.Location = new System.Drawing.Point(583, 1);
             this.AnimButtonPause.Name = "AnimButtonPause";
             this.AnimButtonPause.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonPause.TabIndex = 5;
@@ -550,7 +578,7 @@
             // 
             this.AnimButtonStop.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonStop.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonStop.Icon")));
-            this.AnimButtonStop.Location = new System.Drawing.Point(619, 1);
+            this.AnimButtonStop.Location = new System.Drawing.Point(611, 1);
             this.AnimButtonStop.Name = "AnimButtonStop";
             this.AnimButtonStop.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonStop.TabIndex = 4;
@@ -560,7 +588,7 @@
             // 
             this.AnimButtonSpeedUp.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonSpeedUp.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonSpeedUp.Icon")));
-            this.AnimButtonSpeedUp.Location = new System.Drawing.Point(647, 1);
+            this.AnimButtonSpeedUp.Location = new System.Drawing.Point(639, 1);
             this.AnimButtonSpeedUp.Name = "AnimButtonSpeedUp";
             this.AnimButtonSpeedUp.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonSpeedUp.TabIndex = 3;
@@ -570,7 +598,7 @@
             // 
             this.AnimButtonNext.Dock = System.Windows.Forms.DockStyle.Right;
             this.AnimButtonNext.Icon = ((System.Drawing.Bitmap)(resources.GetObject("AnimButtonNext.Icon")));
-            this.AnimButtonNext.Location = new System.Drawing.Point(675, 1);
+            this.AnimButtonNext.Location = new System.Drawing.Point(667, 1);
             this.AnimButtonNext.Name = "AnimButtonNext";
             this.AnimButtonNext.Size = new System.Drawing.Size(28, 27);
             this.AnimButtonNext.TabIndex = 2;
@@ -596,6 +624,7 @@
             this.AnimControlsPanel.ResumeLayout(false);
             this.TopIcons.ResumeLayout(false);
             this.TopIcons.PerformLayout();
+            this.TexturesMenu.ResumeLayout(false);
             this.MainContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).EndInit();
             this.MainContainer.ResumeLayout(false);
@@ -654,5 +683,8 @@
         private GUI.SUIList MatAnimsList;
         private System.Windows.Forms.ToolStripButton ToolButtonMerge;
         private System.Windows.Forms.ToolStripMenuItem MenuMergeFiles;
+        private System.Windows.Forms.ContextMenuStrip TexturesMenu;
+        private System.Windows.Forms.ToolStripMenuItem MenuTexExport;
+        private System.Windows.Forms.ToolStripMenuItem MenuTexExportAll;
     }
 }

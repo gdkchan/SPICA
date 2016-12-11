@@ -1402,12 +1402,6 @@ namespace SPICA.Formats.CtrH3D {
                                 shape.VertexAttributes.Vec3Attributes.Add(vertStream);
                                 break;
                             }
-                        case PICAAttributeName.Color:
-                            {
-                                vertStream.VecArray = genVec4Array(sh.ToVertices(), att.Format, att.Name);
-                                shape.VertexAttributes.Vec4Attributes.Add(vertStream);
-                                break;
-                            }
                         case PICAAttributeName.TexCoord0: 
                             {
                                 vertStream.VecArray = genVec2Array(sh.ToVertices(), att.Format, att.Name);
@@ -1863,54 +1857,6 @@ namespace SPICA.Formats.CtrH3D {
                         ((sbyte)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
                         ((sbyte)vector.Y).ToString(CultureInfo.InvariantCulture) + " " +
                         ((sbyte)vector.Z).ToString(CultureInfo.InvariantCulture) + "\n"
-                        );
-                        break;
-                    case PICAAttributeFormat.Ubyte:
-                        sb.Append(
-                        ((byte)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
-                        ((byte)vector.Y).ToString(CultureInfo.InvariantCulture) + " " +
-                        ((byte)vector.Z).ToString(CultureInfo.InvariantCulture) + "\n"
-                        );
-                        break;
-                    case PICAAttributeFormat.Short:
-                        sb.Append(
-                        ((short)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
-                        ((short)vector.Y).ToString(CultureInfo.InvariantCulture) + " " +
-                        ((short)vector.Z).ToString(CultureInfo.InvariantCulture) + "\n"
-                        );
-                        break;
-                    case PICAAttributeFormat.Float:
-                        sb.Append(
-                        vector.X.ToString(CultureInfo.InvariantCulture) + " " +
-                        vector.Y.ToString(CultureInfo.InvariantCulture) + " " +
-                        vector.Z.ToString(CultureInfo.InvariantCulture) + "\n"
-                        );
-                        break;
-                }
-            }
-            return sb.ToString();
-        }
-
-        private static string genVec4Array(PICAVertex[] verts, PICAAttributeFormat format, PICAAttributeName name)
-        {
-            StringBuilder sb = new StringBuilder("\n");
-            Vector4D vector = new Vector4D();
-            foreach (var vec in verts)
-            {
-                switch (name)
-                {
-                    case PICAAttributeName.Color:
-                        vector = new Vector4D(vec.Color.R, vec.Color.G, vec.Color.B, vec.Color.A);
-                        break;
-                }
-                switch (format)
-                {
-                    case PICAAttributeFormat.Byte:
-                        sb.Append(
-                        ((sbyte)vector.X).ToString(CultureInfo.InvariantCulture) + " " +
-                        ((sbyte)vector.Y).ToString(CultureInfo.InvariantCulture) + " " +
-                        ((sbyte)vector.Z).ToString(CultureInfo.InvariantCulture) + " " +
-                        ((sbyte)vector.W).ToString(CultureInfo.InvariantCulture) + "\n"
                         );
                         break;
                     case PICAAttributeFormat.Ubyte:

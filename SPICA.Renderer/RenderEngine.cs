@@ -255,6 +255,7 @@ namespace SPICA.Renderer
 
             GL.UseProgram(GUIShaderHandle);
 
+            GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.Blend);

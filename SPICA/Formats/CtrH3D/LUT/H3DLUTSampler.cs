@@ -51,7 +51,30 @@ namespace SPICA.Formats.CtrH3D.LUT
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //TODO
+            uint[] QuantizedValues = new uint[256];
+
+            for (int Index = 0; Index < Table.Length; Index++)
+            {
+                float Diff = 0;
+
+                if (Index < Table.Length - 1)
+                {
+                    Diff = Table[Index + 1] - Table[Index];
+                }
+
+                int QVal = (int)(Table[Index] * 0xfff);
+                int QDiff = (int)(Diff * 0x7ff);
+
+                QuantizedValues[Index] = (uint)(QVal | (QDiff << 12)) & 0xffffff;
+            }
+
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            Writer.SetCommands(PICARegister.GPUREG_LIGHTING_LUT_DATA0, false, 0xf, QuantizedValues);
+
+            Writer.WriteEnd();
+
+            Commands = Writer.GetBuffer();
 
             return false;
         }

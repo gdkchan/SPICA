@@ -14,6 +14,8 @@ namespace SPICA.Renderer
         {
             //Set the fragment shader to a state capable of rendering our Vertex Buffer
             //In this case we set all stages to the default values (output = Vertex Color)
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestEnb"), 0);
+
             for (int Index = 0; Index < 6; Index++)
             {
                 int ColorCombLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].ColorCombine");

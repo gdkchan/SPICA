@@ -1,5 +1,6 @@
 ﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
+using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Model;
 using SPICA.Formats.GFL2.Motion;
@@ -17,14 +18,7 @@ namespace SPICA.WinForms.Formats
         const uint GFTextureConstant = 0x15041213;
         const uint GFMotionConstant = 0x00060000;
 
-        //This is a workaround, we keep the skeleton of the last loaded Pokémon model
-        //Then we use it to open any subsequent animation opened by the user
-        //This is needed because:
-        //- The renderer only renders BCH, and the skeleton is necessary to convert an animation to BCH
-        //- The model and animation are stored in different files, so we can't find the skeleton easily
-        private static List<GFBone> Skeleton;
-
-        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header)
+        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, PatriciaList<H3DBone> Skeleton = null)
         {
             H3D Output = default(H3D);
 
@@ -60,8 +54,6 @@ namespace SPICA.WinForms.Formats
 
                         MdlPack.FragShaders.Add(new GFFragShader(Reader));
                     }
-
-                    Skeleton = MdlPack.Models[0].Skeleton;
 
                     Output = MdlPack.ToH3D();
 

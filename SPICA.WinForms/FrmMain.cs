@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
+using SPICA.Formats.CtrH3D.Model;
 using SPICA.GenericFormats.COLLADA;
 using SPICA.Renderer;
 using SPICA.Renderer.Animation;
@@ -13,6 +14,7 @@ using SPICA.WinForms.RenderExtensions;
 using System;
 using System.Collections.Specialized;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms
@@ -77,6 +79,7 @@ namespace SPICA.WinForms
 
             TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);
+            TexturesMenu.Renderer = new ToolsRenderer(TexturesMenu.BackColor);
         }
         #endregion
 
@@ -171,6 +174,42 @@ namespace SPICA.WinForms
         {
             ToolButtonMerge_Click(sender, e);
         }
+
+        private void MenuTexExport_Click(object sender, EventArgs e)
+        {
+            if (TexturesList.SelectedIndex != -1)
+            {
+                using (SaveFileDialog SaveDlg = new SaveFileDialog())
+                {
+                    SaveDlg.Filter = "Portable Network Graphics|*.png";
+                    SaveDlg.FileName = TexturesList[TexturesList.SelectedIndex] + ".png";
+
+                    if (SaveDlg.ShowDialog() == DialogResult.OK)
+                    {
+                        CachedTextures[TexturesList.SelectedIndex].Save(SaveDlg.FileName);
+                    }
+                }
+            }
+        }
+
+        private void MenuTexExportAll_Click(object sender, EventArgs e)
+        {
+            if (TexturesList.Count > 0)
+            {
+                using (FolderBrowserDialog FolderDlg = new FolderBrowserDialog())
+                {
+                    if (FolderDlg.ShowDialog() == DialogResult.OK)
+                    {
+                        int Index = 0;
+
+                        foreach (Bitmap Img in CachedTextures)
+                        {
+                            Img.Save(Path.Combine(FolderDlg.SelectedPath, TexturesList[Index++] + ".png"));
+                        }
+                    }
+                }
+            }
+        }
         #endregion
 
         #region Tool buttons
@@ -206,36 +245,38 @@ namespace SPICA.WinForms
             using (OpenFileDialog OpenDlg = new OpenFileDialog())
             {
                 OpenDlg.Filter = "All files|*.*";
-                OpenDlg.Multiselect = MergeMode;
+                OpenDlg.Multiselect = true;
 
-                if (OpenDlg.ShowDialog() == DialogResult.OK)
+                if (OpenDlg.ShowDialog() == DialogResult.OK && OpenDlg.FileNames.Length > 0)
                 {
-                    if (MergeMode)
-                    {
-                        if (SceneData == null) SceneData = new H3D();
+                    PatriciaList<H3DBone> Skeleton = null;
 
-                        for (int Index = 0; Index < OpenDlg.FileNames.Length; Index++)
+                    if (SceneData != null && SceneData.Models.Count > 0)
+                    {
+                        Skeleton = SceneData.Models[0].Skeleton;
+                    }
+
+                    for (int Index = 0; Index < OpenDlg.FileNames.Length; Index++)
+                    {
+                        H3D Data = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileNames[Index], Skeleton);
+
+                        if (Data != null)
                         {
-                            H3D Data = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileNames[Index]);
-
-                            if (Data != null) SceneData.Merge(Data);
+                            if ((MergeMode && SceneData != null) || Index > 0)
+                                SceneData.Merge(Data);
+                            else
+                                SceneData = Data;
                         }
-
-                        LoadScene();
                     }
+
+                    if (SceneData == null)
+                        MessageBox.Show(
+                            "Unsupported file format!",
+                            "Can't open file!",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
                     else
-                    {
-                        SceneData = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileName);
-
-                        if (SceneData == null)
-                            MessageBox.Show(
-                                "Unsupported file format!",
-                                "Can't open file!",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Exclamation);
-                        else
-                            LoadScene();
-                    }
+                        LoadScene();
                 }
             }
 
@@ -395,6 +436,11 @@ namespace SPICA.WinForms
 
                 ResetView();
             }
+        }
+
+        private void TexturesList_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right) TexturesMenu.Show(Cursor.Position);
         }
 
         private void TexturesList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

@@ -25,6 +25,15 @@ namespace SPICA.Renderer.Animation
         {
             this.BaseAnimation = BaseAnimation;
 
+            if (BaseAnimation == null)
+            {
+                Stop();
+
+                return;
+            }
+
+            IsLooping = (BaseAnimation.AnimationFlags & H3DAnimationFlags.IsLooping) != 0;
+
             if (State == AnimState.Playing)
             {
                 if (Step < 0)
@@ -46,13 +55,13 @@ namespace SPICA.Renderer.Animation
             {
                 Frame += Step;
 
-                if (Frame >= BaseAnimation.FramesCount)
-                {
-                    Frame -= BaseAnimation.FramesCount;
-                }
-                else if (Frame < 0)
+                if (Frame < 0)
                 {
                     Frame += BaseAnimation.FramesCount;
+                }
+                else if (Frame >= BaseAnimation.FramesCount)
+                {
+                    Frame -= BaseAnimation.FramesCount;
                 }
             }
         }

@@ -23,6 +23,13 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public sbyte BumpTexture;
 
+        public byte Stage0ConstantIndex;
+        public byte Stage1ConstantIndex;
+        public byte Stage2ConstantIndex;
+        public byte Stage3ConstantIndex;
+        public byte Stage4ConstantIndex;
+        public byte Stage5ConstantIndex;
+
         public RGBA Constant0Color;
         public RGBA Constant1Color;
         public RGBA Constant2Color;
@@ -131,11 +138,16 @@ namespace SPICA.Formats.GFL2.Model.Material
             LUT1HashId = Reader.ReadUInt32();
             LUT2HashId = Reader.ReadUInt32();
 
-            uint unk0 = Reader.ReadUInt32(); //TODO: Figure out
+            Reader.ReadUInt32(); //This seems to be always 0
 
-            BumpTexture = (sbyte)Reader.ReadUInt32();
+            BumpTexture = (sbyte)Reader.ReadUInt16();
 
-            uint unk2 = Reader.ReadUInt32(); //TODO: Figure out
+            Stage0ConstantIndex = Reader.ReadByte();
+            Stage1ConstantIndex = Reader.ReadByte();
+            Stage2ConstantIndex = Reader.ReadByte();
+            Stage3ConstantIndex = Reader.ReadByte();
+            Stage4ConstantIndex = Reader.ReadByte();
+            Stage5ConstantIndex = Reader.ReadByte();
 
             Constant0Color = new RGBA(Reader);
             Constant1Color = new RGBA(Reader);
@@ -144,17 +156,15 @@ namespace SPICA.Formats.GFL2.Model.Material
             Constant4Color = new RGBA(Reader);
             Constant5Color = new RGBA(Reader);
 
-            uint unk3 = Reader.ReadUInt32(); //TODO: Figure out
-            uint unk4 = Reader.ReadUInt32(); //TODO: Figure out
-            uint unk5 = Reader.ReadUInt32(); //TODO: Figure out
+            //This is most likely wrong
+            Specular0Color = new RGBA(Reader);
+            Specular1Color = new RGBA(Reader);
+            BlendColor     = new RGBA(Reader);
+            EmissionColor  = new RGBA(Reader);
+            AmbientColor   = new RGBA(Reader);
+            DiffuseColor   = new RGBA(Reader);
 
-            //System.Diagnostics.Debug.WriteLine(Name + " - " + unk0 + " " + unk1 + " " + unk2 + " " + unk3 + " " + unk4 + " " + unk5);
-
-            EmissionColor = new RGBA(Reader);
-            AmbientColor = new RGBA(Reader);
-            DiffuseColor = new RGBA(Reader);
-
-            Reader.BaseStream.Seek(0x10, SeekOrigin.Current);
+            Reader.BaseStream.Seek(0x10, SeekOrigin.Current); //Unknown stuff
 
             RimPower = Reader.ReadSingle();
             RimScale = Reader.ReadSingle();

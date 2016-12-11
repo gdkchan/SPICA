@@ -15,7 +15,7 @@ namespace SPICA.Formats.GFL2.Motion
             Materials = new List<GFMotUVTransform>();
         }
 
-        public GFMaterialMot(BinaryReader Reader) : this()
+        public GFMaterialMot(BinaryReader Reader, uint FramesCount) : this()
         {
             int MaterialNamesCount = Reader.ReadInt32();
             uint MaterialNamesLength = Reader.ReadUInt32();
@@ -37,17 +37,19 @@ namespace SPICA.Formats.GFL2.Motion
             {
                 for (int Unit = 0; Unit < Units[Index]; Unit++)
                 {
-                    Materials.Add(new GFMotUVTransform(Reader, MaterialNames[Index]));
+                    Materials.Add(new GFMotUVTransform(Reader, MaterialNames[Index], FramesCount));
                 }
             }
         }
 
-        public H3DAnimation ToH3DAnimation(uint FramesCount)
+        public H3DAnimation ToH3DAnimation(GFMotion Motion)
         {
             H3DAnimation Output = new H3DAnimation();
 
-            Output.Name = "GFMotion";
-            Output.FramesCount = FramesCount;
+            Output.Name        = "GFMotion";
+            Output.FramesCount = Motion.FramesCount;
+
+            if (Motion.IsLooping) Output.AnimationFlags = H3DAnimationFlags.IsLooping;
 
             foreach (GFMotUVTransform Mat in Materials)
             {
@@ -58,7 +60,7 @@ namespace SPICA.Formats.GFL2.Motion
                     Output.Elements.Add(new H3DAnimationElement
                     {
                         Name          = Mat.Name,
-                        Content       = GetAnimVector2D(Mat.ScaleX, Mat.ScaleY, FramesCount),
+                        Content       = GetAnimVector2D(Mat.ScaleX, Mat.ScaleY, Motion.FramesCount),
                         TargetType    = H3DAnimTargetType.MaterialTexCoord0Scale + Unit,
                         PrimitiveType = H3DAnimPrimitiveType.Vector2D
                     });
@@ -69,7 +71,7 @@ namespace SPICA.Formats.GFL2.Motion
                     Output.Elements.Add(new H3DAnimationElement
                     {
                         Name          = Mat.Name,
-                        Content       = new H3DAnimFloat { Value = GetKeyFrames(Mat.Rotation, FramesCount) },
+                        Content       = new H3DAnimFloat { Value = GetKeyFrames(Mat.Rotation, Motion.FramesCount) },
                         TargetType    = H3DAnimTargetType.MaterialTexCoord0Rot + Unit,
                         PrimitiveType = H3DAnimPrimitiveType.Float
                     });
@@ -80,7 +82,7 @@ namespace SPICA.Formats.GFL2.Motion
                     Output.Elements.Add(new H3DAnimationElement
                     {
                         Name          = Mat.Name,
-                        Content       = GetAnimVector2D(Mat.TranslationX, Mat.TranslationY, FramesCount),
+                        Content       = GetAnimVector2D(Mat.TranslationX, Mat.TranslationY, Motion.FramesCount),
                         TargetType    = H3DAnimTargetType.MaterialTexCoord0Trans + Unit,
                         PrimitiveType = H3DAnimPrimitiveType.Vector2D
                     });

@@ -39,7 +39,7 @@ namespace SPICA.Formats.GFL2.Motion
             TranslationZ = new List<GFMotKeyFrame>();
         }
 
-        public GFMotBoneTransform(BinaryReader Reader, string Name) : this()
+        public GFMotBoneTransform(BinaryReader Reader, string Name, uint FramesCount) : this()
         {
             this.Name = Name;
 
@@ -50,7 +50,7 @@ namespace SPICA.Formats.GFL2.Motion
 
             for (int Elem = 0; Elem < 9; Elem++)
             {
-                List<GFMotKeyFrame> KeyFrames = GFMotKeyFrame.ReadList(Reader, Flags);
+                List<GFMotKeyFrame> KeyFrames = GFMotKeyFrame.ReadList(Reader, Flags, FramesCount);
 
                 switch (Elem)
                 {

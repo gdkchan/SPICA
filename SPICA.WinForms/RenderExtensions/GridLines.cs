@@ -80,6 +80,7 @@ namespace SPICA.WinForms.RenderExtensions
 
                 GL.LineWidth(1);
 
+                GL.Disable(EnableCap.CullFace);
                 GL.Disable(EnableCap.StencilTest);
                 GL.Enable(EnableCap.DepthTest);
                 GL.Disable(EnableCap.Blend);

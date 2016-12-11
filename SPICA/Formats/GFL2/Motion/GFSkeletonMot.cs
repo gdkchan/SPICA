@@ -17,7 +17,7 @@ namespace SPICA.Formats.GFL2.Motion
             Bones = new List<GFMotBoneTransform>();
         }
 
-        public GFSkeletonMot(BinaryReader Reader) : this()
+        public GFSkeletonMot(BinaryReader Reader, uint FramesCount) : this()
         {
             int BoneNamesCount = Reader.ReadInt32();
             uint BoneNamesLength = Reader.ReadUInt32();
@@ -30,16 +30,18 @@ namespace SPICA.Formats.GFL2.Motion
 
             foreach (string Name in BoneNames)
             {
-                Bones.Add(new GFMotBoneTransform(Reader, Name));
+                Bones.Add(new GFMotBoneTransform(Reader, Name, FramesCount));
             }
         }
 
-        public H3DAnimation ToH3DAnimation(List<GFBone> Skeleton, uint FramesCount)
+        public H3DAnimation ToH3DAnimation(List<GFBone> Skeleton, GFMotion Motion)
         {
             H3DAnimation Output = new H3DAnimation();
 
-            Output.Name = "GFMotion";
-            Output.FramesCount = FramesCount;
+            Output.Name        = "GFMotion";
+            Output.FramesCount = Motion.FramesCount;
+
+            if (Motion.IsLooping) Output.AnimationFlags = H3DAnimationFlags.IsLooping;
 
             foreach (GFMotBoneTransform Bone in Bones)
             {
@@ -49,7 +51,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                 if (BoneIndex == -1) continue;
 
-                for (float Frame = 0; Frame < FramesCount; Frame++)
+                for (float Frame = 0; Frame < Motion.FramesCount; Frame++)
                 {
                     Vector3D Scale       = Skeleton[BoneIndex].Scale;
                     Vector3D Rotation    = Skeleton[BoneIndex].Rotation;

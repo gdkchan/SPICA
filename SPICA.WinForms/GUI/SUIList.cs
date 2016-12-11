@@ -24,6 +24,12 @@ namespace SPICA.WinForms.GUI
         private Action UnsubscribeBinding;
 
         [Browsable(false)]
+        public string this[int Index] { get { return Items[Index]; } }
+
+        [Browsable(false)]
+        public int Count { get { return Items.Count; } }
+
+        [Browsable(false)]
         public bool IsBound { get; private set; }
 
         [Browsable(false)]

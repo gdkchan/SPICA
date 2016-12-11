@@ -146,6 +146,7 @@ namespace SPICA.Renderer
 
             GL.PolygonOffset(0, Params.PolygonOffsetUnit);
 
+            RenderUtils.SetState(EnableCap.CullFace, Params.FaceCulling != PICAFaceCulling.Never);
             RenderUtils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
             RenderUtils.SetState(EnableCap.DepthTest, Params.DepthColorMask.Enabled);
             RenderUtils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
