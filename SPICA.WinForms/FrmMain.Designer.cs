@@ -161,7 +161,7 @@
             this.LblAnimSpeed.Name = "LblAnimSpeed";
             this.LblAnimSpeed.Size = new System.Drawing.Size(44, 27);
             this.LblAnimSpeed.TabIndex = 1;
-            this.LblAnimSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.LblAnimSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LblAnimLoopMode
             // 
@@ -171,7 +171,7 @@
             this.LblAnimLoopMode.Name = "LblAnimLoopMode";
             this.LblAnimLoopMode.Size = new System.Drawing.Size(44, 27);
             this.LblAnimLoopMode.TabIndex = 0;
-            this.LblAnimLoopMode.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.LblAnimLoopMode.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ToolButtonOpen
             // 
@@ -321,19 +321,19 @@
             this.MenuTexExport,
             this.MenuTexExportAll});
             this.TexturesMenu.Name = "TexturesMenu";
-            this.TexturesMenu.Size = new System.Drawing.Size(153, 70);
+            this.TexturesMenu.Size = new System.Drawing.Size(123, 48);
             // 
             // MenuTexExport
             // 
             this.MenuTexExport.Name = "MenuTexExport";
-            this.MenuTexExport.Size = new System.Drawing.Size(152, 22);
+            this.MenuTexExport.Size = new System.Drawing.Size(122, 22);
             this.MenuTexExport.Text = "&Export";
             this.MenuTexExport.Click += new System.EventHandler(this.MenuTexExport_Click);
             // 
             // MenuTexExportAll
             // 
             this.MenuTexExportAll.Name = "MenuTexExportAll";
-            this.MenuTexExportAll.Size = new System.Drawing.Size(152, 22);
+            this.MenuTexExportAll.Size = new System.Drawing.Size(122, 22);
             this.MenuTexExportAll.Text = "&Export all";
             this.MenuTexExportAll.Click += new System.EventHandler(this.MenuTexExportAll_Click);
             // 

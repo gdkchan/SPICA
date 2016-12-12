@@ -22,23 +22,23 @@ namespace SPICA.WinForms
     public partial class FrmMain : Form
     {
         #region Initialization
-        private GLControl Viewport;
-        private GridLines UIGrid;
-        private AxisLines UIAxis;
-        private RenderEngine Renderer;
-        private H3D SceneData;
-        private Model Model;
-
-        private Bitmap[] CachedTextures;
-
         private Vector2 InitialMov;
         private Vector2 CurrentRot;
         private Vector2 CurrentMov;
         private Vector3 MdlCenter;
 
+        private GLControl    Viewport;
+        private GridLines    UIGrid;
+        private AxisLines    UIAxis;
+        private RenderEngine Renderer;
+
+        private Model Model;
+        private H3D SceneData;
+
+        private Bitmap[] CachedTextures;
+
         private float CamDist;
         private float Zoom;
-        private float Step;
 
         private bool IgnoreClicks;
 
@@ -100,7 +100,6 @@ namespace SPICA.WinForms
             Renderer.AfterDraw += UIAxis.Render;
 
             Zoom = -100;
-            Step = 1;
 
             UpdateViewport();
         }
@@ -140,6 +139,8 @@ namespace SPICA.WinForms
         {
             if (e.Button != MouseButtons.Right)
             {
+                float Step = Math.Max(Math.Abs(Zoom) * 0.1f, 0.1f);
+
                 if (e.Delta > 0)
                     Zoom += Step;
                 else
@@ -249,15 +250,21 @@ namespace SPICA.WinForms
 
                 if (OpenDlg.ShowDialog() == DialogResult.OK && OpenDlg.FileNames.Length > 0)
                 {
-                    PatriciaList<H3DBone> Skeleton = null;
-
-                    if (SceneData != null && SceneData.Models.Count > 0)
-                    {
-                        Skeleton = SceneData.Models[0].Skeleton;
-                    }
+                    if (!MergeMode) SceneData = null;
 
                     for (int Index = 0; Index < OpenDlg.FileNames.Length; Index++)
                     {
+                        //We need to ensure that the Skeleton we will use is the one from the lastest loaded Model
+                        //Otherwise the wrong Skeleton (from the last loaded model) may be incorrectly used
+                        PatriciaList<H3DBone> Skeleton = null;
+
+                        if (SceneData != null && SceneData.Models.Count > 0)
+                        {
+                            Skeleton = SceneData.Models[0].Skeleton;
+                        }
+
+                        //The Skeleton is used to convert animations to the H3D format that the Renderer understands
+                        //On H3D data the Skeleton is not necessary and is not used, because it doesn't need conversions
                         H3D Data = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileNames[Index], Skeleton);
 
                         if (Data != null)
@@ -286,6 +293,8 @@ namespace SPICA.WinForms
             Application.DoEvents();
 
             IgnoreClicks = false;
+
+            UpdateViewport();
         }
 
         private void Save()
@@ -387,7 +396,6 @@ namespace SPICA.WinForms
         private void ResetView()
         {
             Zoom = MdlCenter.Z - CamDist * 2;
-            Step = CamDist * 0.05f;
             
             InitialMov = Vector2.Zero;
             CurrentRot = Vector2.Zero;
