@@ -22,7 +22,7 @@ namespace SPICA.Formats.GFL.Motion
 
             byte BonesCount = Reader.ReadByte();
 
-            Output.Add(new GFMotBone { Name = "root" });
+            Output.Add(new GFMotBone { Name = "Origin" });
 
             for (int Index = 1; Index < BonesCount; Index++)
             {

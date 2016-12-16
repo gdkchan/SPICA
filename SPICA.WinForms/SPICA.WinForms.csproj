@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Formats\FormatIdentifier.cs" />
+    <Compile Include="Formats\GFBtlSklAnim.cs" />
     <Compile Include="Formats\GFCharaModel.cs" />
     <Compile Include="Formats\GFOWCharaModel.cs" />
     <Compile Include="Formats\GFPackage.cs" />

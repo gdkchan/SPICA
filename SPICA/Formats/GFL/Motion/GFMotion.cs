@@ -43,15 +43,21 @@ namespace SPICA.Formats.GFL.Motion
                 if (Octals[i] > 5) KeyFramesCount++;
             }
 
+            if (FramesCount > byte.MaxValue && (Reader.BaseStream.Position & 1) != 0) Reader.ReadByte();
+
             int[][] KeyFrames = new int[KeyFramesCount][];
 
             for (int i = 0; i < KeyFrames.Length; i++)
             {
-                byte Count = Reader.ReadByte();
+                int Count;
+
+                if (FramesCount > byte.MaxValue)
+                    Count = Reader.ReadUInt16();
+                else
+                    Count = Reader.ReadByte();
 
                 KeyFrames[i] = new int[Count + 2];
 
-                KeyFrames[i][0] = 0;
                 KeyFrames[i][Count + 1] = FramesCount;
 
                 for (int j = 0; j < Count; j++)
@@ -68,7 +74,7 @@ namespace SPICA.Formats.GFL.Motion
             GFMotBoneTransform CurrentBone = null;
 
             int CurrentKFL = 0;
-            int OctalIndex = 4;
+            int OctalIndex = 0;
             int NameIndex = 0;
             int Elem = 0;
             bool RotOnly = false;
@@ -90,7 +96,7 @@ namespace SPICA.Formats.GFL.Motion
                     case 1:
                         if (CurrentBone != null)
                         {
-                            CurrentBone.Name = Skeleton[++NameIndex].Name;
+                            CurrentBone.Name = Skeleton[NameIndex++].Name;
 
                             Bones.Add(CurrentBone);
                         }
