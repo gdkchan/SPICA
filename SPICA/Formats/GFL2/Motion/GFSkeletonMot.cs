@@ -90,9 +90,9 @@ namespace SPICA.Formats.GFL2.Motion
 
                 Output.Elements.Add(new H3DAnimationElement
                 {
-                    Name = Bone.Name,
-                    Content = QuatTransform,
-                    TargetType = H3DAnimTargetType.Bone,
+                    Name          = Bone.Name,
+                    Content       = QuatTransform,
+                    TargetType    = H3DAnimTargetType.Bone,
                     PrimitiveType = H3DAnimPrimitiveType.QuatTransform
                 });
             }

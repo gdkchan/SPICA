@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace SPICA.Utils
 {
@@ -20,6 +21,14 @@ namespace SPICA.Utils
             if (!BitConverter.IsLittleEndian) Array.Reverse(Bytes);
 
             return BitConverter.ToUInt32(Bytes, 0);
+        }
+
+        public static uint ReadUInt24(BinaryReader Reader)
+        {
+            return (uint)(
+                Reader.ReadByte() << 0 |
+                Reader.ReadByte() << 8 |
+                Reader.ReadByte() << 16);
         }
     }
 }

@@ -114,6 +114,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTextureFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFString.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\GFMotionPack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\GFUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBoneTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotKeyFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CLTS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CMDL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />

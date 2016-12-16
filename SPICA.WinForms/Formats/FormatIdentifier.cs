@@ -44,6 +44,7 @@ namespace SPICA.WinForms.Formats
                             switch (PackHeader.Magic)
                             {
                                 case "CM": Output = GFCharaModel.OpenAsH3D(FS, PackHeader); break;
+                                case "MM": Output = GFOWCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, Skeleton); break;
                             }
                         }

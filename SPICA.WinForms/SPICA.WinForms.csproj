@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="Formats\FormatIdentifier.cs" />
     <Compile Include="Formats\GFCharaModel.cs" />
+    <Compile Include="Formats\GFOWCharaModel.cs" />
     <Compile Include="Formats\GFPackage.cs" />
     <Compile Include="Formats\GFPkmnModel.cs" />
     <Compile Include="FrmMain.cs">
