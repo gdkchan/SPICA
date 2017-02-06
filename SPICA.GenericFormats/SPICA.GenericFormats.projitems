@@ -12,7 +12,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAE.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEAccessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEAnimation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEAnimationClip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEArray.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEController.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEEffect.cs" />
@@ -26,6 +25,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAENode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAESkin.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAESource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEVector3.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEVector4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)COLLADA\DAEVisualScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudioMdl\SMDBone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudioMdl\SMDMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudioMdl\SMDModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StudioMdl\SMDNode.cs" />
   </ItemGroup>
 </Project>

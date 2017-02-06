@@ -1,4 +1,4 @@
-﻿namespace SPICA.Formats.Generic.StudioMdl
+﻿namespace SPICA.GenericFormats.StudioMdl
 {
     struct SMDNode
     {

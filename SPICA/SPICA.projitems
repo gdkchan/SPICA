@@ -27,10 +27,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\ConversionParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDBone.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDMesh.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Camera\H3DCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Fog\H3DFog.cs" />

@@ -5,6 +5,7 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.GenericFormats.COLLADA;
+using SPICA.GenericFormats.StudioMdl;
 using SPICA.Renderer;
 using SPICA.Renderer.Animation;
 using SPICA.WinForms.Formats;
@@ -176,6 +177,11 @@ namespace SPICA.WinForms
             ToolButtonMerge_Click(sender, e);
         }
 
+        private void MenuBatchExport_Click(object sender, EventArgs e)
+        {
+            new FrmExport().Show();
+        }
+
         private void MenuTexExport_Click(object sender, EventArgs e)
         {
             if (TexturesList.SelectedIndex != -1)
@@ -312,14 +318,21 @@ namespace SPICA.WinForms
 
             using (SaveFileDialog SaveDlg = new SaveFileDialog())
             {
-                SaveDlg.Filter = "COLLADA 1.4.1|*.dae";
+                SaveDlg.Filter = "COLLADA 1.4.1|*.dae|Valve StudioMdl|*.smd";
                 SaveDlg.FileName = "Model";
 
                 if (SaveDlg.ShowDialog() == DialogResult.OK)
                 {
                     switch (SaveDlg.FilterIndex)
                     {
-                        case 1: new DAE(SceneData).Save(SaveDlg.FileName); break;
+                        case 1: new DAE(
+                            SceneData, 
+                            ModelsList.SelectedIndex, 
+                            SklAnimsList.SelectedIndex).Save(SaveDlg.FileName); break;
+                        case 2: new SMDModel(
+                            SceneData,
+                            ModelsList.SelectedIndex,
+                            SklAnimsList.SelectedIndex).Save(SaveDlg.FileName); break;
                     }
                 }
             }
@@ -356,8 +369,8 @@ namespace SPICA.WinForms
                     0,
                     -MdlCenter.Y,
                     -(MdlCenter.Z - CamDist * 2)),
-                Ambient  = new Color4(0.0f, 0.0f, 0.0f, 0f),
-                Diffuse  = new Color4(0.5f, 0.5f, 0.5f, 1f),
+                Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1f),
+                Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1f),
                 Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
             });
 

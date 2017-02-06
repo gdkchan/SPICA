@@ -67,15 +67,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public byte BumpTexture;
 
-        [Inline, FixedLength(6)]
-        private uint[] LUTConfigCommands;
+        [Inline, FixedLength(6)] private uint[] LUTConfigCommands;
 
         public uint ConstantColors;
 
         public float PolygonOffsetUnit;
 
-        [RepeatPointer]
-        private uint[] FragmentShaderCommands;
+        [RepeatPointer] private uint[] FragmentShaderCommands;
 
         public string LUTDist0TableName;
         public string LUTDist1TableName;
@@ -106,19 +104,12 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         [Ignore] public PICATexEnvColor TexEnvBufferColor;
 
         [Ignore] public PICAColorOperation ColorOperation;
-
         [Ignore] public PICABlendFunction BlendFunction;
-
         [Ignore] public PICALogicalOperation LogicalOperation;
-
         [Ignore] public PICAAlphaTest AlphaTest;
-
         [Ignore] public PICAStencilTest StencilTest;
-
         [Ignore] public PICAStencilOperation StencilOperation;
-
         [Ignore] public PICADepthColorMask DepthColorMask;
-
         [Ignore] public PICAFaceCulling FaceCulling;
 
         [Ignore] public bool ColorBufferRead;

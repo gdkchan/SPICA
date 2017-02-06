@@ -1739,7 +1739,7 @@ namespace SPICA.Formats.CtrH3D {
             ctrBone bone;
             ctrFloatArrayMeta fmeta;
             ctrFloatSet fset;
-            skeleton.RootBoneName = mdl.Skeleton[0].Name; //Not sure if this always holds true
+            skeleton.RootBoneName = mdl.Skeleton.Count > 0 ? mdl.Skeleton[0].Name : "none"; //Not sure if this always holds true
             skeleton.ScalingRule = mdl.BoneScaling.ToString();
             skeleton.IsTranslateAnimationEnabled = true;
             skeleton.Bones = bones;

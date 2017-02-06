@@ -4,13 +4,13 @@ precision highp float;
 
 #define LUT_STEP  0.00392156862 //1 / 255
 
-#define FLAG_BUMP_RENORM   1 << 0
-#define FLAG_CLAMP_HLIGHT  1 << 1
-#define FLAG_D0_ENB        1 << 2
-#define FLAG_D1_ENB        1 << 3
-#define FLAG_R_ENB         1 << 4
-#define FLAG_G0_ENB        1 << 5
-#define FLAG_G1_ENB        1 << 6
+#define FLAG_BUMP_RENORM   (1 << 0)
+#define FLAG_CLAMP_HLIGHT  (1 << 1)
+#define FLAG_D0_ENB        (1 << 2)
+#define FLAG_D1_ENB        (1 << 3)
+#define FLAG_R_ENB         (1 << 4)
+#define FLAG_G0_ENB        (1 << 5)
+#define FLAG_G1_ENB        (1 << 6)
 
 #define LUT_IN_NH  0
 #define LUT_IN_VH  1
@@ -204,7 +204,7 @@ void main() {
 		
 		nh = dot(n, hi);
 		vh = dot(-EyeDir, hi);
-		nv = dot(n, -EyeDir);
+		nv = dot(n, EyeDir);
 		ln = dot(li, n);
 		//TODO: lp
 		//TODO: cp

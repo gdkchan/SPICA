@@ -299,14 +299,16 @@ namespace SPICA.Renderer
                 {
                     GL.ActiveTexture(TextureUnit.Texture3);
                     GL.BindTexture(TextureTarget.TextureCubeMap, TextureId);
+
+                    SetWrapAndFilter(TextureTarget.TextureCubeMap, 0);
                 }
                 else
                 {
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, TextureId);
-                }
 
-                SetWrapAndFilter(0);
+                    SetWrapAndFilter(TextureTarget.Texture2D, 0);
+                }
             }
 
             if (Material.EnabledTextures[1])
@@ -314,7 +316,7 @@ namespace SPICA.Renderer
                 GL.ActiveTexture(TextureUnit.Texture1);
                 GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture1Name));
 
-                SetWrapAndFilter(1);
+                SetWrapAndFilter(TextureTarget.Texture2D, 1);
             }
 
             if (Material.EnabledTextures[2])
@@ -322,14 +324,18 @@ namespace SPICA.Renderer
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture2Name));
 
-                SetWrapAndFilter(2);
+                SetWrapAndFilter(TextureTarget.Texture2D, 2);
             }
 
             //Setup Fixed attributes
+            int FixedNormalLocation = GL.GetUniformLocation(ShaderHandle, "FixedNormal");
+            int FixedTangentLocation = GL.GetUniformLocation(ShaderHandle, "FixedTangent");
             int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedColor");
             int FixedBoneLocation = GL.GetUniformLocation(ShaderHandle, "FixedBone");
             int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
 
+            GL.Uniform4(FixedNormalLocation, new Vector4(-1));
+            GL.Uniform4(FixedTangentLocation, new Vector4(-1));
             GL.Uniform4(FixedColorLocation, new Vector4(-1));
             GL.Uniform4(FixedBoneLocation, new Vector4(-1));
             GL.Uniform4(FixedWeightLocation, new Vector4(0));
@@ -340,6 +346,8 @@ namespace SPICA.Renderer
 
                 switch (Attrib.Name)
                 {
+                    case PICAAttributeName.Normal: GL.Uniform4(FixedNormalLocation, Value); break;
+                    case PICAAttributeName.Tangent: GL.Uniform4(FixedTangentLocation, Value); break;
                     case PICAAttributeName.Color: GL.Uniform4(FixedColorLocation, Value); break;
                     case PICAAttributeName.BoneIndex: GL.Uniform4(FixedBoneLocation, Value); break;
                     case PICAAttributeName.BoneWeight: GL.Uniform4(FixedWeightLocation, Value); break;
@@ -408,7 +416,7 @@ namespace SPICA.Renderer
             }
         }
 
-        private void SetWrapAndFilter(int Unit)
+        private void SetWrapAndFilter(TextureTarget Target, int Unit)
         {
             int WrapS = (int)GetWrap(Material.TextureMappers[Unit].WrapU);
             int WrapT = (int)GetWrap(Material.TextureMappers[Unit].WrapV);
@@ -416,11 +424,11 @@ namespace SPICA.Renderer
             int MinFilter = (int)GetMinFilter(Material.TextureMappers[Unit].MinFilter);
             int MagFilter = (int)GetMagFilter(Material.TextureMappers[Unit].MagFilter);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, WrapS);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, WrapT);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapS, WrapS);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapT, WrapT);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, MinFilter);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, MagFilter);
+            GL.TexParameter(Target, TextureParameterName.TextureMinFilter, MinFilter);
+            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, MagFilter);
         }
 
         private static All GetWrap(H3DTextureWrap Wrap)
@@ -441,8 +449,10 @@ namespace SPICA.Renderer
         {
             switch (Filter)
             {
+                case H3DTextureMinFilter.Nearest:              return All.Nearest;
                 case H3DTextureMinFilter.NearestMipmapNearest: return All.Nearest;
                 case H3DTextureMinFilter.NearestMipmapLinear:  return All.Nearest;
+                case H3DTextureMinFilter.Linear:               return All.Linear;
                 case H3DTextureMinFilter.LinearMipmapNearest:  return All.Linear;
                 case H3DTextureMinFilter.LinearMipmapLinear:   return All.Linear;
 

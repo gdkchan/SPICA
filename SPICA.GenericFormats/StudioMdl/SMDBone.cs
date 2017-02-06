@@ -1,6 +1,6 @@
 ﻿using SPICA.Math3D;
 
-namespace SPICA.Formats.Generic.StudioMdl
+namespace SPICA.GenericFormats.StudioMdl
 {
     struct SMDBone
     {

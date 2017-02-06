@@ -158,8 +158,14 @@ namespace SPICA.Formats.CtrH3D.Animation
             if (KeyFrames.Count == 0) return 0;
             if (KeyFrames.Count == 1) return KeyFrames[0].Value;
 
-            H3DFloatKeyFrame Left = KeyFrames.Last(x => x.Frame <= Frame);
-            H3DFloatKeyFrame Right = KeyFrames.First(x => x.Frame >= Frame);
+            H3DFloatKeyFrame Left = KeyFrames.First();
+            H3DFloatKeyFrame Right = KeyFrames.Last();
+
+            foreach (H3DFloatKeyFrame KF in KeyFrames)
+            {
+                if (KF.Frame <= Frame) Left = KF;
+                if (KF.Frame >= Frame && KF.Frame < Right.Frame) Right = KF;
+            }
 
             if (Left.Frame != Right.Frame)
             {

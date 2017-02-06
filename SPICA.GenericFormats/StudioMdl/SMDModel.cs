@@ -10,16 +10,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
+using SPICA.Formats.Generic;
+using System.Text;
 
-namespace SPICA.Formats.Generic.StudioMdl
+namespace SPICA.GenericFormats.StudioMdl
 {
     class SMDModel
     {
         private ConversionParams ConvParams;
 
-        private List<SMDNode> Nodes;
-        private List<SMDBone> Skeleton;
-        private List<SMDMesh> Meshes;
+        private List<SMDNode> Nodes    = new List<SMDNode>();
+        private List<SMDBone> Skeleton = new List<SMDBone>();
+        private List<SMDMesh> Meshes   = new List<SMDMesh>();
 
         private enum SMDSection
         {
@@ -27,6 +29,57 @@ namespace SPICA.Formats.Generic.StudioMdl
             Nodes,
             Skeleton,
             Triangles
+        }
+
+        public SMDModel(H3D SceneData, int MdlIndex, int AnimIndex = -1)
+        {
+            int Index = 0;
+
+            if (SceneData == null || SceneData.Models.Count == 0) return;
+
+            if (MdlIndex != -1 && AnimIndex == -1)
+            {
+                H3DModel Mdl = SceneData.Models[MdlIndex];
+
+                foreach (H3DBone Bone in Mdl.Skeleton)
+                {
+                    SMDNode Node = new SMDNode
+                    {
+                        Index = Index,
+                        Name = Bone.Name,
+                        ParentIndex = Bone.ParentIndex
+                    };
+
+                    SMDBone B = new SMDBone
+                    {
+                        NodeIndex = Index++,
+                        Translation = Bone.Translation,
+                        Rotation = Bone.Rotation
+                    };
+
+                    Nodes.Add(Node);
+                    Skeleton.Add(B);
+                }
+
+                foreach (H3DMesh Mesh in Mdl.Meshes)
+                {
+                    PICAVertex[] Vertices = Mesh.ToVertices(true);
+
+                    SMDMesh M = new SMDMesh();
+
+                    M.MaterialName = Mdl.Materials[Mesh.MaterialIndex].Texture0Name;
+
+                    foreach (H3DSubMesh SM in Mesh.SubMeshes)
+                    {
+                        foreach (ushort I in SM.Indices)
+                        {
+                            M.Vertices.Add(Vertices[I]);
+                        }
+                    }
+
+                    Meshes.Add(M);
+                }
+            }
         }
 
         public SMDModel(string FileName, ConversionParams ConvParams)
@@ -44,10 +97,6 @@ namespace SPICA.Formats.Generic.StudioMdl
             this.ConvParams = ConvParams;
 
             TextReader Reader = new StreamReader(Stream);
-
-            Nodes = new List<SMDNode>();
-            Skeleton = new List<SMDBone>();
-            Meshes = new List<SMDMesh>();
 
             SMDMesh CurrMesh = new SMDMesh();
 
@@ -153,6 +202,86 @@ namespace SPICA.Formats.Generic.StudioMdl
         private float ParseFloat(string Value)
         {
             return float.Parse(Value, CultureInfo.InvariantCulture);
+        }
+
+        public void Save(string FileName)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            SB.AppendLine("version 1");
+
+            SB.AppendLine("nodes");
+
+            foreach (SMDNode Node in Nodes)
+            {
+                SB.AppendLine(string.Format("{0} \"{1}\" {2}", Node.Index, Node.Name, Node.ParentIndex));
+            }
+
+            SB.AppendLine("end");
+
+            SB.AppendLine("skeleton");
+            SB.AppendLine("time 0");
+
+            foreach (SMDBone Bone in Skeleton)
+            {
+                SB.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6}",
+                    Bone.NodeIndex,
+                    Bone.Translation.X,
+                    Bone.Translation.Y,
+                    Bone.Translation.Z,
+                    Bone.Rotation.X, 
+                    Bone.Rotation.Y,
+                    Bone.Rotation.Z));
+            }
+
+            SB.AppendLine("end");
+
+            SB.AppendLine("triangles");
+
+            foreach (SMDMesh Mesh in Meshes)
+            {
+                for (int i = 0; i < Mesh.Vertices.Count; i += 3)
+                {
+                    SB.AppendLine(Mesh.MaterialName);
+
+                    SB.AppendLine(GetSMDVertex(Mesh.Vertices[i + 0]));
+                    SB.AppendLine(GetSMDVertex(Mesh.Vertices[i + 1]));
+                    SB.AppendLine(GetSMDVertex(Mesh.Vertices[i + 2]));
+                }
+            }
+
+            SB.AppendLine("end");
+
+            File.WriteAllText(FileName, SB.ToString());
+        }
+
+        private string GetSMDVertex(PICAVertex Vtx)
+        {
+            string Indices = string.Empty;
+
+            int i = 0;
+
+            for (i = 0; i < 4; i++)
+            {
+                if (Vtx.Weights[i] == 0) break;
+
+                Indices +=
+                    " " + Vtx.Indices[i] +
+                    " " + Vtx.Weights[i].ToString(CultureInfo.InvariantCulture);
+            }
+
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9}{10}",
+                0,
+                Vtx.Position.X,
+                Vtx.Position.Y,
+                Vtx.Position.Z,
+                Vtx.Normal.X,
+                Vtx.Normal.Y,
+                Vtx.Normal.Z,
+                Vtx.TexCoord0.X,
+                Vtx.TexCoord0.Y,
+                i,
+                Indices);
         }
 
         public H3D ToH3D()

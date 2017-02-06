@@ -127,6 +127,16 @@ namespace SPICA.Math3D
             return string.Format("X: {0} Y: {1} Z: {2} W: {3}", X, Y, Z, W);
         }
 
+        public Vector3D ToEuler()
+        {
+            return new Vector3D
+            {
+                X = (float)Math.Atan2(2 * (X * W + Y * Z), 1 - 2 * (X * X + Y * Y)),
+                Y = -(float)Math.Asin(2 * (X * Z - W * Y)),
+                Z = (float)Math.Atan2(2 * (X * Y + Z * W), 1 - 2 * (Y * Y + Z * Z))
+            };
+        }
+
         public static float Dot(Quaternion LHS, Quaternion RHS)
         {
             float X = LHS.X * RHS.X;

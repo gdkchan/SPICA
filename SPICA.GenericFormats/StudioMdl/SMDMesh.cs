@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace SPICA.Formats.Generic.StudioMdl
+namespace SPICA.GenericFormats.StudioMdl
 {
     class SMDMesh
     {

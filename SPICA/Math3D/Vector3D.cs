@@ -118,7 +118,7 @@ namespace SPICA.Math3D
 
         public Vector3D Normalized()
         {
-            return this / Length;
+            return Length == 0 ? this : this / Length;
         }
 
         public static Vector3D Cross(Vector3D LHS, Vector3D RHS)

@@ -7,6 +7,7 @@ using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
+using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Renderer.Animation;
@@ -26,22 +27,21 @@ namespace SPICA.GenericFormats.COLLADA
     {
         [XmlAttribute] public string version = "1.4.1";
 
-        [XmlArrayItem("animation")]      public List<DAEAnimation>     library_animations       = new List<DAEAnimation>();
-        [XmlArrayItem("animation_clip")] public List<DAEAnimationClip> library_animations_clips = new List<DAEAnimationClip>();
-        [XmlArrayItem("image")]          public List<DAEImage>         library_images           = new List<DAEImage>();
-        [XmlArrayItem("material")]       public List<DAEMaterial>      library_materials        = new List<DAEMaterial>();
-        [XmlArrayItem("effect")]         public List<DAEEffect>        library_effects          = new List<DAEEffect>();
-        [XmlArrayItem("geometry")]       public List<DAEGeometry>      library_geometries       = new List<DAEGeometry>();
-        [XmlArrayItem("controller")]     public List<DAEController>    library_controllers      = new List<DAEController>();
-        [XmlArrayItem("visual_scene")]   public List<DAEVisualScene>   library_visual_scenes    = new List<DAEVisualScene>();
+        [XmlArrayItem("animation")]    public List<DAEAnimation>   library_animations    = new List<DAEAnimation>();
+        [XmlArrayItem("image")]        public List<DAEImage>       library_images        = new List<DAEImage>();
+        [XmlArrayItem("material")]     public List<DAEMaterial>    library_materials     = new List<DAEMaterial>();
+        [XmlArrayItem("effect")]       public List<DAEEffect>      library_effects       = new List<DAEEffect>();
+        [XmlArrayItem("geometry")]     public List<DAEGeometry>    library_geometries    = new List<DAEGeometry>();
+        [XmlArrayItem("controller")]   public List<DAEController>  library_controllers   = new List<DAEController>();
+        [XmlArrayItem("visual_scene")] public List<DAEVisualScene> library_visual_scenes = new List<DAEVisualScene>();
 
         public DAEScene scene = new DAEScene();
 
         public DAE() { }
 
-        public DAE(H3D SceneData)
+        public DAE(H3D SceneData, int MdlIndex, int AnimIndex = -1)
         {
-            for (int MdlIndex = 0; MdlIndex < SceneData.Models.Count; MdlIndex++)
+            if (MdlIndex != -1)
             {
                 H3DModel Mdl = SceneData.Models[MdlIndex];
 
@@ -116,16 +116,11 @@ namespace SPICA.GenericFormats.COLLADA
 
                         H3DBone Bone = Bone_Node.Item1;
 
-                        DAEMatrix BoneTransform = new DAEMatrix();
-
-                        BoneTransform.sid = "transform";
-                        BoneTransform.Set(Bone.Transform);
-
                         Bone_Node.Item2.id = Bone.Name + "_bone_id";
                         Bone_Node.Item2.name = Bone.Name;
                         Bone_Node.Item2.sid = Bone.Name;
                         Bone_Node.Item2.type = DAENodeType.JOINT;
-                        Bone_Node.Item2.matrix = BoneTransform;
+                        Bone_Node.Item2.SetBoneEuler(Bone.Translation, Bone.Rotation, Bone.Scale);
 
                         foreach (H3DBone B in Mdl.Skeleton)
                         {
@@ -161,7 +156,7 @@ namespace SPICA.GenericFormats.COLLADA
                     {
                         H3DSubMesh SM = Mesh.SubMeshes[SMIndex];
 
-                        string ShortName = Mdl.MeshNodesTree.Find(Mesh.NodeIndex);
+                        string ShortName = Mdl.MeshNodesTree?.Find(Mesh.NodeIndex);
                         string MeshName = string.Format("{0}_{1:D2}_{2:D2}_{3:D2}",
                             ShortName,
                             MdlIndex,
@@ -243,11 +238,11 @@ namespace SPICA.GenericFormats.COLLADA
 
                                 switch (Attr.Name)
                                 {
-                                    case PICAAttributeName.Color:    Semantic = "COLOR";    break;
+                                    case PICAAttributeName.Color: Semantic = "COLOR"; break;
 
                                     case PICAAttributeName.Position: Semantic = "POSITION"; break;
-                                    case PICAAttributeName.Normal:   Semantic = "NORMAL";   break;
-                                    case PICAAttributeName.Tangent:  Semantic = "TANGENT";  break;
+                                    case PICAAttributeName.Normal: Semantic = "NORMAL"; break;
+                                    case PICAAttributeName.Tangent: Semantic = "TANGENT"; break;
                                 }
 
                                 Geometry.mesh.vertices.AddInput(Semantic, "#" + Source.id);
@@ -283,24 +278,6 @@ namespace SPICA.GenericFormats.COLLADA
 
                         Dictionary<string, int> Weights = new Dictionary<string, int>();
 
-                        bool HasFixedIndices = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneIndex);
-                        bool HasFixedWeights = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneWeight);
-
-                        PICAVectorFloat24 FixedIndices = default(PICAVectorFloat24);
-                        PICAVectorFloat24 FixedWeights = default(PICAVectorFloat24);
-
-                        if (HasFixedIndices || HasFixedWeights)
-                        {
-                            foreach (PICAFixedAttribute Attr in Mesh.FixedAttributes)
-                            {
-                                switch (Attr.Name)
-                                {
-                                    case PICAAttributeName.BoneIndex: FixedIndices = Attr.Value; break;
-                                    case PICAAttributeName.BoneWeight: FixedWeights = Attr.Value; break;
-                                }
-                            }
-                        }
-
                         if (SM.Skinning == H3DSubMeshSkinning.Smooth)
                         {
                             foreach (PICAVertex Vertex in Vertices)
@@ -309,8 +286,8 @@ namespace SPICA.GenericFormats.COLLADA
 
                                 for (int Index = 0; Index < 4; Index++)
                                 {
-                                    float BIndex = HasFixedIndices ? FixedIndices[Index] : Vertex.Indices[Index];
-                                    float Weight = HasFixedWeights ? FixedWeights[Index] : Vertex.Weights[Index];
+                                    float BIndex = Vertex.Indices[Index];
+                                    float Weight = Vertex.Weights[Index];
 
                                     if (Weight == 0) break;
 
@@ -339,10 +316,7 @@ namespace SPICA.GenericFormats.COLLADA
                         {
                             foreach (PICAVertex Vertex in Vertices)
                             {
-                                if (HasFixedIndices)
-                                    v.Append((int)FixedIndices[0] + " 1 ");
-                                else
-                                    v.Append(Vertex.Indices[0] + " 1 ");
+                                v.Append(Vertex.Indices[0] + " 1 ");
 
                                 vcount.Append("1 ");
                             }
@@ -350,14 +324,14 @@ namespace SPICA.GenericFormats.COLLADA
                             Weights.Add("1", 0);
                         }
 
-                        Controller.skin.src.Add(GetSource(Controller.name + "_names",   "JOINT",     "Name",     1,  BoneNames));
-                        Controller.skin.src.Add(GetSource(Controller.name + "_poses",   "TRANSFORM", "float4x4", 16, BindPoses));
-                        Controller.skin.src.Add(GetSource(Controller.name + "_weights", "WEIGHT",    "float",    1,  Weights.Keys));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_names", 1, BoneNames, "JOINT", "Name"));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_poses", 16, BindPoses, "TRANSFORM", "float4x4"));
+                        Controller.skin.src.Add(GetSource(Controller.name + "_weights", 1, Weights.Keys.ToArray(), "WEIGHT", "float"));
 
-                        Controller.skin.joints.AddInput("JOINT",           "#" + Controller.skin.src[0].id);
+                        Controller.skin.joints.AddInput("JOINT", "#" + Controller.skin.src[0].id);
                         Controller.skin.joints.AddInput("INV_BIND_MATRIX", "#" + Controller.skin.src[1].id);
 
-                        Controller.skin.vertex_weights.AddInput("JOINT",  "#" + Controller.skin.src[0].id, 0);
+                        Controller.skin.vertex_weights.AddInput("JOINT", "#" + Controller.skin.src[0].id, 0);
                         Controller.skin.vertex_weights.AddInput("WEIGHT", "#" + Controller.skin.src[2].id, 1);
 
                         Controller.skin.vertex_weights.vcount = vcount
@@ -392,139 +366,230 @@ namespace SPICA.GenericFormats.COLLADA
                 } //Mesh Loop
 
                 library_visual_scenes.Add(VN);
-            } //Model Loop
 
-            if (library_visual_scenes.Count > 0)
-            {
-                scene.instance_visual_scene.url = "#" + library_visual_scenes[0].id;
-            }
-
-            foreach (H3DTexture Tex in SceneData.Textures)
-            {
-                library_images.Add(new DAEImage
+                if (library_visual_scenes.Count > 0)
                 {
-                    id        = Tex.Name,
-                    init_from = $"./{Tex.Name}.png"
-                });
+                    scene.instance_visual_scene.url = "#" + library_visual_scenes[0].id;
+                }
+
+                foreach (H3DTexture Tex in SceneData.Textures)
+                {
+                    library_images.Add(new DAEImage
+                    {
+                        id = Tex.Name,
+                        init_from = $"./{Tex.Name}.png"
+                    });
+                }
             }
 
-            for (int AnimIndex = 0; AnimIndex < SceneData.SkeletalAnimations.Count; AnimIndex++)
+            if (AnimIndex != -1)
             {
+                string[] AnimElemNames = { "translate", "rotateX", "rotateY", "rotateZ", "scale" };
+
                 H3DAnimation SklAnim = SceneData.SkeletalAnimations[AnimIndex];
 
                 PatriciaList<H3DBone> Skeleton = SceneData.Models[0].Skeleton;
 
-                SkeletalAnim SklAnimator = new SkeletalAnim();
+                int FramesCount = (int)SklAnim.FramesCount + 1;
 
-                SklAnimator.SetAnimation(SklAnim);
-                SklAnimator.Play(1);
-
-                int Count = (int)SklAnim.FramesCount + 1;
-
-                Matrix4[][] Transforms = new Matrix4[Count][];
-
-                for (int Index = 0; Index < Count; Index++)
+                foreach (H3DAnimationElement Elem in SklAnim.Elements)
                 {
-                    Transforms[Index] = SklAnimator.GetSkeletonTransforms(Skeleton, false);
+                    H3DBone SklBone = Skeleton.FirstOrDefault(x => x.Name == Elem.Name);
+                    H3DBone Parent = null;
 
-                    SklAnimator.AdvanceFrame();
-                }
-
-                string[] AnimNames = new string[Skeleton.Count];
-
-                for (int Bone = 0; Bone < Skeleton.Count; Bone++)
-                {
-                    string[] AnimTimes = new string[Count];
-                    string[] AnimPoses = new string[Count];
-                    string[] AnimLerps = new string[Count];
-
-                    for (int Index = 0; Index < Count; Index++)
+                    if (SklBone != null && SklBone.ParentIndex != -1)
                     {
-                        Matrix4 Mtx = Transforms[Index][Bone];
-
-                        string StrTrans = string.Format(CultureInfo.InvariantCulture,
-                            "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15}",
-                            Mtx.M11, Mtx.M21, Mtx.M31, Mtx.M41,
-                            Mtx.M12, Mtx.M22, Mtx.M32, Mtx.M42,
-                            Mtx.M13, Mtx.M23, Mtx.M33, Mtx.M43,
-                            Mtx.M14, Mtx.M24, Mtx.M34, Mtx.M44);
-
-                        //This is the Time in seconds, so we divide by the target FPS
-                        AnimTimes[Index] = (Index / 30f).ToString(CultureInfo.InvariantCulture);
-                        AnimPoses[Index]  = StrTrans;
-                        AnimLerps[Index]  = "LINEAR";
+                        Parent = Skeleton[SklBone.ParentIndex];
                     }
 
-                    DAEAnimation Anim = new DAEAnimation();
+                    for (int i = 0; i < 5; i++)
+                    {
+                        string[] AnimTimes = new string[FramesCount];
+                        string[] AnimPoses = new string[FramesCount];
+                        string[] AnimLerps = new string[FramesCount];
 
-                    Anim.name = SklAnim.Name + "_" + Skeleton[Bone].Name;
-                    Anim.id = Anim.name + "_id";
+                        bool IsRotation = i > 0 && i < 4; //1, 2, 3
 
-                    AnimNames[Bone] = Anim.name;
+                        if (Elem.PrimitiveType == H3DAnimPrimitiveType.Transform)
+                        {
+                            if (SklBone == null) break;
 
-                    Anim.src.Add(GetSource(Anim.name + "_frame",  "TIME",          "float",    1,  AnimTimes));
-                    Anim.src.Add(GetSource(Anim.name + "_pose",   "TRANSFORM",     "float4x4", 16, AnimPoses));
-                    Anim.src.Add(GetSource(Anim.name + "_interp", "INTERPOLATION", "Name",     1,  AnimLerps));
+                            if (IsRotation)
+                            {
+                                if (i == 1 && !((H3DAnimTransform)Elem.Content).RotationX.HasData) i++;
+                                if (i == 2 && !((H3DAnimTransform)Elem.Content).RotationY.HasData) i++;
+                                if (i == 3 && !((H3DAnimTransform)Elem.Content).RotationZ.HasData) i++;
 
-                    Anim.sampler.AddInput("INPUT",         "#" + Anim.src[0].id);
-                    Anim.sampler.AddInput("OUTPUT",        "#" + Anim.src[1].id);
-                    Anim.sampler.AddInput("INTERPOLATION", "#" + Anim.src[2].id);
+                                IsRotation = i < 4;
+                            }
+                        }
 
-                    Anim.sampler.id = Anim.name + "_samp_id";
-                    Anim.channel.source = "#" + Anim.sampler.id;
-                    Anim.channel.target = Skeleton[Bone].Name + "_bone_id/transform";
+                        for (int Frame = 0; Frame < FramesCount; Frame++)
+                        {
+                            string StrTrans = string.Empty;
 
-                    library_animations.Add(Anim);
+                            H3DAnimationElement PElem = SklAnim.Elements.FirstOrDefault(x => x.Name == Parent?.Name);
+
+                            Vector3D InvScale = new Vector3D(1);
+
+                            switch (Elem.PrimitiveType)
+                            {
+                                case H3DAnimPrimitiveType.Transform:
+                                    H3DAnimTransform Transform = (H3DAnimTransform)Elem.Content;
+
+                                    //Compensate parent bone scale (basically, don't inherit scales)
+                                    if (PElem != null)
+                                    {
+                                        H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
+
+                                        InvScale /= new Vector3D(
+                                            PTrans.ScaleX.GetFrameValue(Frame),
+                                            PTrans.ScaleY.GetFrameValue(Frame),
+                                            PTrans.ScaleZ.GetFrameValue(Frame));
+                                    }
+                                    else if (Parent != null)
+                                    {
+                                        InvScale /= Parent.Scale;
+                                    }
+
+                                    switch (i)
+                                    {
+                                        //Translation
+                                        case 0:
+                                            StrTrans = new Vector3D(
+                                                Transform.TranslationX.HasData //X
+                                                ? Transform.TranslationX.GetFrameValue(Frame) : SklBone.Translation.X,
+                                                Transform.TranslationY.HasData //Y
+                                                ? Transform.TranslationY.GetFrameValue(Frame) : SklBone.Translation.Y,
+                                                Transform.TranslationZ.HasData //Z
+                                                ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z)
+                                                .ToSerializableString();
+                                            break;
+
+                                        //Scale
+                                        case 4:
+                                            StrTrans = (InvScale * new Vector3D(
+                                                Transform.ScaleX.HasData //X
+                                                ? Transform.ScaleX.GetFrameValue(Frame) : SklBone.Scale.X,
+                                                Transform.ScaleY.HasData //Y
+                                                ? Transform.ScaleY.GetFrameValue(Frame) : SklBone.Scale.Y,
+                                                Transform.ScaleZ.HasData //Z
+                                                ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z))
+                                                .ToSerializableString();
+                                            break;
+
+                                        //Rotation
+                                        case 1:
+                                            StrTrans = ToAngle(Transform.RotationX.GetFrameValue(Frame))
+                                                .ToString(CultureInfo.InvariantCulture);
+                                            break;
+
+                                        case 2:
+                                            StrTrans = ToAngle(Transform.RotationY.GetFrameValue(Frame))
+                                                .ToString(CultureInfo.InvariantCulture);
+                                            break;
+
+                                        case 3:
+                                            StrTrans = ToAngle(Transform.RotationZ.GetFrameValue(Frame))
+                                                .ToString(CultureInfo.InvariantCulture);
+                                            break;
+                                    }
+                                    break;
+
+                                case H3DAnimPrimitiveType.QuatTransform:
+                                    H3DAnimQuatTransform QuatTransform = (H3DAnimQuatTransform)Elem.Content;
+
+                                    Vector3D Rotation = Vector3D.Empty;
+
+                                    //TODO: ToEuler is expensive, ideally call it only once per bone
+                                    if (IsRotation) Rotation = QuatTransform.GetRotationValue(Frame).ToEuler();
+
+                                    //Compensate parent bone scale (basically, don't inherit scales)
+                                    if (PElem != null)
+                                        InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
+                                    else if (Parent != null)
+                                        InvScale /= Parent.Scale;
+
+                                    switch (i)
+                                    {
+                                        case 0: StrTrans = QuatTransform.GetTranslationValue(Frame).ToSerializableString(); break;
+                                        case 1: StrTrans = ToAngle(Rotation.X).ToString(CultureInfo.InvariantCulture); break;
+                                        case 2: StrTrans = ToAngle(Rotation.Y).ToString(CultureInfo.InvariantCulture); break;
+                                        case 3: StrTrans = ToAngle(Rotation.Z).ToString(CultureInfo.InvariantCulture); break;
+                                        case 4: StrTrans = (InvScale * QuatTransform.GetScaleValue(Frame)).ToSerializableString(); break;
+                                    }
+                                    break;
+                            }
+
+                            //This is the Time in seconds, so we divide by the target FPS
+                            AnimTimes[Frame] = (Frame / 30f).ToString(CultureInfo.InvariantCulture);
+                            AnimPoses[Frame] = StrTrans;
+                            AnimLerps[Frame] = "LINEAR";
+                        }
+
+                        DAEAnimation Anim = new DAEAnimation();
+
+                        Anim.name =
+                            SklAnim.Name + "_" +
+                            Elem.Name + "_" +
+                            AnimElemNames[i];
+
+                        Anim.id = Anim.name + "_id";
+
+                        Anim.src.Add(GetSource(Anim.name + "_frame", 1, AnimTimes, "TIME", "float"));
+                        Anim.src.Add(GetSource(Anim.name + "_interp", 1, AnimLerps, "INTERPOLATION", "Name"));
+
+                        Anim.src.Add(IsRotation
+                            ? GetSource(Anim.name + "_pose", 1, AnimPoses, "ANGLE", "float")
+                            : GetSource(Anim.name + "_pose", 3, AnimPoses,
+                            "X", "float",
+                            "Y", "float",
+                            "Z", "float"));
+
+                        Anim.sampler.AddInput("INPUT", "#" + Anim.src[0].id);
+                        Anim.sampler.AddInput("INTERPOLATION", "#" + Anim.src[1].id);
+                        Anim.sampler.AddInput("OUTPUT", "#" + Anim.src[2].id);
+
+                        Anim.sampler.id = Anim.name + "_samp_id";
+                        Anim.channel.source = "#" + Anim.sampler.id;
+                        Anim.channel.target = Elem.Name + "_bone_id/" + AnimElemNames[i];
+
+                        if (IsRotation) Anim.channel.target += ".ANGLE";
+
+                        library_animations.Add(Anim);
+                    }
                 }
-
-                DAEAnimationClip Clip = new DAEAnimationClip();
-
-                Clip.name = SklAnim.Name;
-                Clip.id = Clip.name + "_id";
-                Clip.end = SklAnim.FramesCount;
-
-                foreach (string Name in AnimNames)
-                {
-                    Clip.instance_animation.Add(new DAEInstanceAnimation("#" + Name));
-                }
-
-                library_animations_clips.Add(Clip);
             }
         }
 
-        private DAESource GetSource(
-            string Name,
-            string AccName,
-            string AccType,
-            int Stride,
-            IEnumerable<string> Elems)
+        private DAESource GetSource(string Name, int Stride, string[] Elems, params string[] Accs)
         {
-            DAESource Source = new DAESource();
-
-            Source.name = Name;
-            Source.id = Name + "_id";
-
-            int Count = Elems.Count();
-
             DAEArray Array = new DAEArray
             {
-                id    = Name + "_array_id",
-                count = (uint)(Count * Stride),
-                data  = string.Join(" ", Elems)
+                id = Name + "_array_id",
+                count = (uint)(Elems.Length * Stride),
+                data = string.Join(" ", Elems)
             };
 
             DAEAccessor Accessor = new DAEAccessor
             {
                 source = "#" + Array.id,
-                count  = (uint)Count,
+                count = (uint)Elems.Length,
                 stride = (uint)Stride
-            };
+            };           
 
-            Accessor.AddParam(AccName, AccType);
+            DAESource Source = new DAESource();
 
+            for (int i = 0; i < Accs.Length; i += 2)
+            {
+                Accessor.AddParam(Accs[i + 0], Accs[i + 1]);
+            }
+
+            Source.name = Name;
+            Source.id = Name + "_id";
             Source.technique_common.accessor = Accessor;
 
-            if (AccType == "Name")
+            if (Accs[1] == "Name")
                 Source.Name_array = Array;
             else
                 Source.float_array = Array;
@@ -543,6 +608,11 @@ namespace SPICA.GenericFormats.COLLADA
 
                 default: throw new ArgumentException("Invalid Texture wrap!");
             }
+        }
+
+        private float ToAngle(float Radians)
+        {
+            return (float)((Radians / Math.PI) * 180);
         }
 
         public void Save(string FileName)

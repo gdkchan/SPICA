@@ -49,10 +49,12 @@ namespace SPICA.Formats.GFL.Motion
 
             GFUtils.Align(Reader);
 
-            for (int Index = 1; Index < BonesCount; Index++)
+            for (int Index = 0; Index < BonesCount; Index++)
             {
                 Output[Index].Translation  = new Vector3D(Reader);
                 Output[Index].QuatRotation = new Quaternion(Reader);
+
+                System.Diagnostics.Debug.WriteLine(Output[Index].Name + " - " + Output[Index].Translation + " / " + Output[Index].QuatRotation.ToEuler());
             }
 
             return Output;
