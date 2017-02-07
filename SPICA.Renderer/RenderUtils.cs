@@ -65,7 +65,7 @@ namespace SPICA.Renderer
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), Vector4.Zero);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Vector4.One);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Vector4.One);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "ColorScale"), 0f);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "ColorScale"), 1f);
 
             Matrix4 RootTransform = Matrix4.Identity;
 
