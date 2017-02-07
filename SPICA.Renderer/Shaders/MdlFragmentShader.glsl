@@ -137,7 +137,7 @@ float GetLUTVal(int SrcLUT);
 
 void main() {
 	vec3 Reflec = reflect(EyeDir, Normal);
-    vec3 SReflect = vec3(Reflec.x, Reflec.y, Reflec.z + 1);
+	vec3 SReflect = vec3(Reflec.x, Reflec.y, Reflec.z + 1);
 	float m = 2 * sqrt(dot(SReflect, SReflect));
 	vec2 SphereUV = Reflec.xy / m + 0.5;
 

@@ -105,7 +105,7 @@ void main() {
 	Normal    = (FixedAttr & FA_NORM) != 0 ? FixedNorm.xyz : a1_norm * Scales0[S0_NORM];
 	Tangent   = (FixedAttr & FA_TAN)  != 0 ? FixedTan.xyz  : a2_tan  * Scales0[S0_TAN];
 	Color     = (FixedAttr & FA_COL)  != 0 ? FixedCol      : a3_col  * Scales0[S0_COL];
-    TexCoord0 = (FixedAttr & FA_TEX0) != 0 ? FixedTex0.xy  : a4_tex0 * Scales1[S1_TEX0];
+	TexCoord0 = (FixedAttr & FA_TEX0) != 0 ? FixedTex0.xy  : a4_tex0 * Scales1[S1_TEX0];
 	TexCoord1 = (FixedAttr & FA_TEX1) != 0 ? FixedTex1.xy  : a5_tex1 * Scales1[S1_TEX1];
 	TexCoord2 = (FixedAttr & FA_TEX2) != 0 ? FixedTex2.xy  : a6_tex2 * Scales1[S1_TEX2];
 
@@ -133,7 +133,7 @@ void main() {
 			w = a8_weight * Scales1[S1_WEIGHT];
 	}
 
-    if ((BoolUniforms & BOOL_BONE_W) == 0) w[3] = 0;
+	if ((BoolUniforms & BOOL_BONE_W) == 0) w[3] = 0;
 
 	vec4 Pos;
 
@@ -165,26 +165,26 @@ void main() {
 	Normal = normalize(mat3(ModelMatrix) * Normal);
 	Tangent = normalize(mat3(ModelMatrix) * Tangent);
 
-    if ((BoolUniforms & BOOL_COLOR_A) != 0)
-        Color.a *= MDiffuse.a;
-    else
-        Color.a = MDiffuse.a;
+	if ((BoolUniforms & BOOL_COLOR_A) != 0)
+		Color.a *= MDiffuse.a;
+	else
+		Color.a = MDiffuse.a;
 
-    Color.rgb *= ColorScale;
+	Color.rgb *= ColorScale;
 
 	EyeDir = normalize(vec3(ViewMatrix * ModelMatrix * Position));
 
-    if ((BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
-        /*
-         * On Pokémon models, when this bit is set output Color seems to contain Rim Color.
-         * Alpha value from color is multiplied by a material Constant color and then added to shaded texture color.
-         * Original Alpha value seems to be unused on the Shader, even through it does contain meaningful values.
-         * Note: This only applies to Pokémon, and only some shaders.
-         */
-         float Rim = 1 - clamp(dot(Normal, -EyeDir), 0, 1);
+	if ((BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
+		/*
+		 * On Pokémon models, when this bit is set output Color seems to contain Rim Color.
+		 * Alpha value from color is multiplied by a material Constant color and then added to shaded texture color.
+		 * Original Alpha value seems to be unused on the Shader, even through it does contain meaningful values.
+		 * Note: This only applies to Pokémon, and only some shaders.
+		 */
+		 float Rim = 1 - clamp(dot(Normal, -EyeDir), 0, 1);
 
-         Color.a = pow(Rim, LightPowerScale.x) * LightPowerScale.y;
-    }
+		 Color.a = pow(Rim, LightPowerScale.x) * LightPowerScale.y;
+	}
 
 	WorldPos = vec3(ModelMatrix * Position);
 

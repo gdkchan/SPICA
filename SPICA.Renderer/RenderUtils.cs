@@ -65,6 +65,7 @@ namespace SPICA.Renderer
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), Vector4.Zero);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Vector4.One);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Vector4.One);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "ColorScale"), 0f);
 
             Matrix4 RootTransform = Matrix4.Identity;
 
@@ -72,7 +73,8 @@ namespace SPICA.Renderer
 
             GL.UniformMatrix4(RootTransformLocation, false, ref RootTransform);
 
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "SmoothSkin"), 0);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "BoolUniforms"), 0);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "FixedAttr"), 0);
         }
 
         public static Tuple<int, int> UploadQuad(Vector2 Position, Vector2 Size, GUIDockMode DockMode)
