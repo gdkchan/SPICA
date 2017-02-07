@@ -7,16 +7,17 @@ using SPICA.Formats.GFL2.Motion;
 using SPICA.Formats.GFL2.Shader;
 using SPICA.Formats.GFL2.Texture;
 
-using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.WinForms.Formats
 {
     class GFPkmnModel
     {
-        const uint GFModelConstant = 0x15122117;
+        const uint GFModelConstant   = 0x15122117;
         const uint GFTextureConstant = 0x15041213;
-        const uint GFMotionConstant = 0x00060000;
+        const uint GFMotionConstant  = 0x00060000;
+
+        const uint BCHConstant = 0x00484342;
 
         public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, PatriciaList<H3DBone> Skeleton = null)
         {
@@ -112,6 +113,15 @@ namespace SPICA.WinForms.Formats
                             Output.VisibilityAnimations.Add(VisAnim);
                         }
                     }
+
+                    break;
+
+                case BCHConstant:
+                    Input.Seek(-4, SeekOrigin.Current);
+
+                    byte[] Buffer = Reader.ReadBytes(Header.Entries[0].Length);
+
+                    Output = H3D.Open(Buffer);
 
                     break;
             }

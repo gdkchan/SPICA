@@ -101,16 +101,16 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         //Fragment Lighting
         [Ignore] public PICATexEnvStage[] TexEnvStages;
-        [Ignore] public PICATexEnvColor TexEnvBufferColor;
+        [Ignore] public PICATexEnvColor   TexEnvBufferColor;
 
-        [Ignore] public PICAColorOperation ColorOperation;
-        [Ignore] public PICABlendFunction BlendFunction;
+        [Ignore] public PICAColorOperation   ColorOperation;
+        [Ignore] public PICABlendFunction    BlendFunction;
         [Ignore] public PICALogicalOperation LogicalOperation;
-        [Ignore] public PICAAlphaTest AlphaTest;
-        [Ignore] public PICAStencilTest StencilTest;
+        [Ignore] public PICAAlphaTest        AlphaTest;
+        [Ignore] public PICAStencilTest      StencilTest;
         [Ignore] public PICAStencilOperation StencilOperation;
-        [Ignore] public PICADepthColorMask DepthColorMask;
-        [Ignore] public PICAFaceCulling FaceCulling;
+        [Ignore] public PICADepthColorMask   DepthColorMask;
+        [Ignore] public PICAFaceCulling      FaceCulling;
 
         [Ignore] public bool ColorBufferRead;
         [Ignore] public bool ColorBufferWrite;
@@ -124,6 +124,12 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         [Ignore] public float[] TextureSources;
 
         [Ignore] internal H3DMaterial Parent;
+
+        //Rim Lighting, Pokémon only
+        [Ignore] public float RimPower;
+        [Ignore] public float RimScale;
+        [Ignore] public float PhongPower;
+        [Ignore] public float PhongScale;
 
         public string Name
         {
@@ -233,23 +239,16 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
 
-                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
+                    case PICARegister.GPUREG_COLOR_OPERATION:    ColorOperation   = new PICAColorOperation(Param);       break;
+                    case PICARegister.GPUREG_BLEND_FUNC:         BlendFunction    = new PICABlendFunction(Param);        break;
+                    case PICARegister.GPUREG_LOGIC_OP:           LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
+                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST:  AlphaTest        = new PICAAlphaTest(Param);            break;
+                    case PICARegister.GPUREG_STENCIL_TEST:       StencilTest      = new PICAStencilTest(Param);          break;
+                    case PICARegister.GPUREG_STENCIL_OP:         StencilOperation = new PICAStencilOperation(Param);     break;
+                    case PICARegister.GPUREG_DEPTH_COLOR_MASK:   DepthColorMask   = new PICADepthColorMask(Param);       break;
+                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling      = (PICAFaceCulling)(Param & 3);        break;
 
-                    case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = new PICABlendFunction(Param); break;
-
-                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
-
-                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: AlphaTest = new PICAAlphaTest(Param); break;
-
-                    case PICARegister.GPUREG_STENCIL_TEST: StencilTest = new PICAStencilTest(Param); break;
-
-                    case PICARegister.GPUREG_STENCIL_OP: StencilOperation = new PICAStencilOperation(Param); break;
-
-                    case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = new PICADepthColorMask(Param); break;
-
-                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
-
-                    case PICARegister.GPUREG_COLORBUFFER_READ: ColorBufferRead = (Param & 0xf) == 0xf; break;
+                    case PICARegister.GPUREG_COLORBUFFER_READ:  ColorBufferRead  = (Param & 0xf) == 0xf; break;
                     case PICARegister.GPUREG_COLORBUFFER_WRITE: ColorBufferWrite = (Param & 0xf) == 0xf; break;
 
                     case PICARegister.GPUREG_DEPTHBUFFER_READ:
@@ -292,6 +291,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureSources[0] = Uniform[10].X;
             TextureSources[1] = Uniform[10].Y;
             TextureSources[2] = Uniform[10].Z;
+
+            RimPower = Uniform[22].X;
+            RimScale = Uniform[22].Y;
+            PhongPower = Uniform[22].Z;
+            PhongScale = Uniform[22].W;
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)

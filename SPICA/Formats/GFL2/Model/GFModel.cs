@@ -7,7 +7,7 @@ using SPICA.Formats.GFL2.Model.Material;
 using SPICA.Formats.GFL2.Model.Mesh;
 using SPICA.Formats.GFL2.Utils;
 using SPICA.Math3D;
-
+using SPICA.PICA.Commands;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -134,6 +134,11 @@ namespace SPICA.Formats.GFL2.Model
                 Mat.Name = Material.Name;
 
                 Params.FragmentFlags = H3DFragmentFlags.IsLUTReflectionEnabled;
+
+                Params.RimPower = Material.RimPower;
+                Params.RimScale = Material.RimScale;
+                Params.PhongPower = Material.PhongPower;
+                Params.PhongScale = Material.PhongScale;
 
                 for (int Unit = 0; Unit < Material.TextureCoords.Length; Unit++)
                 {
@@ -262,7 +267,7 @@ namespace SPICA.Formats.GFL2.Model
                     M.Skinning = H3DMeshSkinning.Smooth;
 
                     M.MaterialIndex = (ushort)Materials.FindIndex(x => x.SubMeshName.Name == SubMesh.Name);
-                    M.NodeIndex = (ushort)NodeIndex;
+                    M.NodeIndex     = (ushort)NodeIndex;
 
                     M.RawBuffer       = SubMesh.RawBuffer;
                     M.Attributes      = SubMesh.Attributes;
@@ -276,12 +281,22 @@ namespace SPICA.Formats.GFL2.Model
                         BoneIndices[Index] = SubMesh.BoneIndices[Index];
                     }
 
+                    ushort BoolUniforms = 0x6e02; //Smooth Skin + UV012 + Tex12 
+
+                    if (!M.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneWeight))
+                    {
+                        //This enables the W component of the bone weight
+                        //For some reason fixed attributes have it set to 1 (which is unused)
+                        BoolUniforms |= 0x100;
+                    }
+
                     M.SubMeshes.Add(new H3DSubMesh
                     {
-                        Skinning = H3DSubMeshSkinning.Smooth,
+                        Skinning         = H3DSubMeshSkinning.Smooth,
                         BoneIndicesCount = SubMesh.BoneIndicesCount,
-                        BoneIndices = BoneIndices,
-                        Indices = SubMesh.Indices
+                        BoneIndices      = BoneIndices,
+                        Indices          = SubMesh.Indices,
+                        BoolUniforms     = BoolUniforms
                     });
 
                     Output.AddMesh(M);

@@ -1,6 +1,4 @@
-﻿using OpenTK;
-
-using SPICA.Formats.CtrH3D;
+﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
@@ -10,7 +8,6 @@ using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
-using SPICA.Renderer.Animation;
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +23,8 @@ namespace SPICA.GenericFormats.COLLADA
     public class DAE
     {
         [XmlAttribute] public string version = "1.4.1";
+
+        public DAEAsset asset = new DAEAsset();
 
         [XmlArrayItem("animation")]    public List<DAEAnimation>   library_animations    = new List<DAEAnimation>();
         [XmlArrayItem("image")]        public List<DAEImage>       library_images        = new List<DAEImage>();
@@ -149,7 +148,7 @@ namespace SPICA.GenericFormats.COLLADA
                 {
                     H3DMesh Mesh = Mdl.Meshes[MeshIndex];
 
-                    string MtlName = MdlIndex.ToString("D2") + "_" + Mdl.Materials[Mesh.MaterialIndex].Name;
+                    string MtlName = string.Format("Mdl_{0:D2}_Mtl_{1}", MdlIndex, Mdl.Materials[Mesh.MaterialIndex].Name);
                     string MtlTgt = library_materials[Mesh.MaterialIndex].id;
 
                     for (int SMIndex = 0; SMIndex < Mesh.SubMeshes.Count; SMIndex++)
@@ -223,9 +222,9 @@ namespace SPICA.GenericFormats.COLLADA
 
                             switch (Attr.Elements)
                             {
+                                case 2: Accessor.AddParams("float", "S", "T");           break;
+                                case 3: Accessor.AddParams("float", "X", "Y", "Z");      break;
                                 case 4: Accessor.AddParams("float", "R", "G", "B", "A"); break;
-                                case 3: Accessor.AddParams("float", "X", "Y", "Z"); break;
-                                case 2: Accessor.AddParams("float", "S", "T"); break;
                             }
 
                             Source.technique_common.accessor = Accessor;
@@ -238,11 +237,10 @@ namespace SPICA.GenericFormats.COLLADA
 
                                 switch (Attr.Name)
                                 {
-                                    case PICAAttributeName.Color: Semantic = "COLOR"; break;
-
                                     case PICAAttributeName.Position: Semantic = "POSITION"; break;
-                                    case PICAAttributeName.Normal: Semantic = "NORMAL"; break;
-                                    case PICAAttributeName.Tangent: Semantic = "TANGENT"; break;
+                                    case PICAAttributeName.Normal:   Semantic = "NORMAL";   break;
+                                    case PICAAttributeName.Tangent:  Semantic = "TANGENT";  break;
+                                    case PICAAttributeName.Color:    Semantic = "COLOR";    break;
                                 }
 
                                 Geometry.mesh.vertices.AddInput(Semantic, "#" + Source.id);
@@ -394,6 +392,9 @@ namespace SPICA.GenericFormats.COLLADA
 
                 foreach (H3DAnimationElement Elem in SklAnim.Elements)
                 {
+                    if (Elem.PrimitiveType != H3DAnimPrimitiveType.Transform &&
+                        Elem.PrimitiveType != H3DAnimPrimitiveType.QuatTransform) continue;
+
                     H3DBone SklBone = Skeleton.FirstOrDefault(x => x.Name == Elem.Name);
                     H3DBone Parent = null;
 
@@ -438,18 +439,21 @@ namespace SPICA.GenericFormats.COLLADA
                                     H3DAnimTransform Transform = (H3DAnimTransform)Elem.Content;
 
                                     //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (PElem != null)
+                                    if (Parent != null)
                                     {
-                                        H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
+                                        if (PElem != null)
+                                        {
+                                            H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
 
-                                        InvScale /= new Vector3D(
-                                            PTrans.ScaleX.GetFrameValue(Frame),
-                                            PTrans.ScaleY.GetFrameValue(Frame),
-                                            PTrans.ScaleZ.GetFrameValue(Frame));
-                                    }
-                                    else if (Parent != null)
-                                    {
-                                        InvScale /= Parent.Scale;
+                                            InvScale /= new Vector3D(
+                                                PTrans.ScaleX.GetFrameValue(Frame),
+                                                PTrans.ScaleY.GetFrameValue(Frame),
+                                                PTrans.ScaleZ.GetFrameValue(Frame));
+                                        }
+                                        else
+                                        {
+                                            InvScale /= Parent.Scale;
+                                        }
                                     }
 
                                     switch (i)
@@ -505,10 +509,13 @@ namespace SPICA.GenericFormats.COLLADA
                                     if (IsRotation) Rotation = QuatTransform.GetRotationValue(Frame).ToEuler();
 
                                     //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (PElem != null)
-                                        InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
-                                    else if (Parent != null)
-                                        InvScale /= Parent.Scale;
+                                    if (Parent != null)
+                                    {
+                                        if (PElem != null)
+                                            InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
+                                        else
+                                            InvScale /= Parent.Scale;
+                                    }
 
                                     switch (i)
                                     {
@@ -531,7 +538,7 @@ namespace SPICA.GenericFormats.COLLADA
 
                         Anim.name =
                             SklAnim.Name + "_" +
-                            Elem.Name + "_" +
+                            Elem.Name    + "_" +
                             AnimElemNames[i];
 
                         Anim.id = Anim.name + "_id";
@@ -566,27 +573,28 @@ namespace SPICA.GenericFormats.COLLADA
         {
             DAEArray Array = new DAEArray
             {
-                id = Name + "_array_id",
+                id    = Name + "_array_id",
                 count = (uint)(Elems.Length * Stride),
-                data = string.Join(" ", Elems)
+                data  = string.Join(" ", Elems)
             };
 
             DAEAccessor Accessor = new DAEAccessor
             {
                 source = "#" + Array.id,
-                count = (uint)Elems.Length,
+                count  = (uint)Elems.Length,
                 stride = (uint)Stride
-            };           
+            };
 
             DAESource Source = new DAESource();
 
-            for (int i = 0; i < Accs.Length; i += 2)
+            Source.name = Name;
+            Source.id   = Name + "_id";
+
+            for (int Index = 0; Index < Accs.Length; Index += 2)
             {
-                Accessor.AddParam(Accs[i + 0], Accs[i + 1]);
+                Accessor.AddParam(Accs[Index + 0], Accs[Index + 1]);
             }
 
-            Source.name = Name;
-            Source.id = Name + "_id";
             Source.technique_common.accessor = Accessor;
 
             if (Accs[1] == "Name")

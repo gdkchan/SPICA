@@ -63,15 +63,16 @@ namespace SPICA.Formats.CtrH3D
         public static H3D Open(string FileName)
         {
             if (File.Exists(FileName))
-            {
-                using (MemoryStream MS = new MemoryStream(File.ReadAllBytes(FileName)))
-                {
-                    return Open(MS);
-                }
-            }
+                return Open(File.ReadAllBytes(FileName));
             else
+                throw new FileNotFoundException($"The file \"{FileName}\" was not found!");
+        }
+
+        public static H3D Open(byte[] Data)
+        {
+            using (MemoryStream MS = new MemoryStream(Data))
             {
-                throw new FileNotFoundException(string.Format("The file \"{0}\" was not found!", FileName));
+                return Open(MS);
             }
         }
 

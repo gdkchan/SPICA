@@ -5,14 +5,14 @@ using System.Text;
 
 namespace SPICA.WinForms.Formats
 {
-    class GFOWMapTexture
+    class GFPackedTexture
     {
-        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header)
+        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, int StartIndex)
         {
             H3D Output = new H3D();
 
             //Textures and animations
-            for (int i = 1; i < Header.Entries.Length; i++)
+            for (int i = StartIndex; i < Header.Entries.Length; i++)
             {
                 byte[] Buffer = new byte[Header.Entries[i].Length];
 

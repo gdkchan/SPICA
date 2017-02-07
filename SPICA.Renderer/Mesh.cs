@@ -227,6 +227,10 @@ namespace SPICA.Renderer
 
             GL.Uniform4(BuffColorLocation, Params.TexEnvBufferColor.ToColor4());
 
+            int VtxColorScaleLocation = GL.GetUniformLocation(ShaderHandle, "ColorScale");
+
+            GL.Uniform1(VtxColorScaleLocation, Params.ColorScale);
+
             //Setup LUTs
             for (int Index = 0; Index < 6; Index++)
             {
@@ -328,20 +332,18 @@ namespace SPICA.Renderer
             }
 
             //Setup Fixed attributes
-            int FixedNormalLocation = GL.GetUniformLocation(ShaderHandle, "FixedNormal");
-            int FixedTangentLocation = GL.GetUniformLocation(ShaderHandle, "FixedTangent");
-            int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedColor");
+            int FixedAttributes = 0;
+
+            int FixedNormalLocation = GL.GetUniformLocation(ShaderHandle, "FixedNorm");
+            int FixedTangentLocation = GL.GetUniformLocation(ShaderHandle, "FixedTan");
+            int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedCol");
             int FixedBoneLocation = GL.GetUniformLocation(ShaderHandle, "FixedBone");
             int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
 
-            GL.Uniform4(FixedNormalLocation, new Vector4(-1));
-            GL.Uniform4(FixedTangentLocation, new Vector4(-1));
-            GL.Uniform4(FixedColorLocation, new Vector4(-1));
-            GL.Uniform4(FixedBoneLocation, new Vector4(-1));
-            GL.Uniform4(FixedWeightLocation, new Vector4(0));
-
             foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
             {
+                FixedAttributes |= 1 << (int)Attrib.Name;
+
                 Vector4 Value = Attrib.Value.ToVector4();
 
                 switch (Attrib.Name)
@@ -354,10 +356,17 @@ namespace SPICA.Renderer
                 }
             }
 
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "FixedAttr"), FixedAttributes);
+
             //Vertex related Uniforms
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), PosOffset);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Scales0);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Scales1);
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "LightPowerScale"), new Vector4(
+                Params.RimPower,
+                Params.RimScale,
+                Params.PhongPower,
+                Params.PhongScale));
 
             //Render all SubMeshes
             GL.BindVertexArray(VAOHandle);
@@ -391,7 +400,7 @@ namespace SPICA.Renderer
                     GL.UniformMatrix4(Location, false, ref Transform);
                 }
 
-                GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "SmoothSkin"), SmoothSkin ? 1 : 0);
+                GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "BoolUniforms"), SubMesh.BoolUniforms);
 
                 GL.DrawElements(PrimitiveType.Triangles, SubMesh.Indices.Length, DrawElementsType.UnsignedShort, SubMesh.Indices);
             }

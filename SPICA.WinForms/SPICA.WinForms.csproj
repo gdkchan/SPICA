@@ -74,8 +74,8 @@
     <Compile Include="Formats\GFCharaModel.cs" />
     <Compile Include="Formats\GFOWCharaModel.cs" />
     <Compile Include="Formats\GFOWMapModel.cs" />
-    <Compile Include="Formats\GFOWMapTexture.cs" />
     <Compile Include="Formats\GFPackage.cs" />
+    <Compile Include="Formats\GFPackedTexture.cs" />
     <Compile Include="Formats\GFPkmnModel.cs" />
     <Compile Include="FrmExport.cs">
       <SubType>Form</SubType>

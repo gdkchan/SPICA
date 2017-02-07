@@ -43,12 +43,13 @@ namespace SPICA.WinForms.Formats
 
                             switch (PackHeader.Magic)
                             {
-                                case "AD": Output = GFOWMapTexture.OpenAsH3D(FS, PackHeader); break;
+                                case "AD": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 1); break;
                                 case "BS": Output = GFBtlSklAnim.OpenAsH3D(FS, PackHeader); break;
                                 case "CM": Output = GFCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "GR": Output = GFOWMapModel.OpenAsH3D(FS, PackHeader); break;
                                 case "MM": Output = GFOWCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, Skeleton); break;
+                                case "PT": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 0); break;
                             }
                         }
                         else

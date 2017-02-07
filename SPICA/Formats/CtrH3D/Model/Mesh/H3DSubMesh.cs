@@ -16,8 +16,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         public ushort BoneIndicesCount;
 
-        [FixedLength(20), Inline]
-        public ushort[] BoneIndices;
+        [FixedLength(20), Inline] public ushort[] BoneIndices;
 
         private uint[] Commands;
 

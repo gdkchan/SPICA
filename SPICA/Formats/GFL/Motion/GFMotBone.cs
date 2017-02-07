@@ -53,8 +53,6 @@ namespace SPICA.Formats.GFL.Motion
             {
                 Output[Index].Translation  = new Vector3D(Reader);
                 Output[Index].QuatRotation = new Quaternion(Reader);
-
-                System.Diagnostics.Debug.WriteLine(Output[Index].Name + " - " + Output[Index].Translation + " / " + Output[Index].QuatRotation.ToEuler());
             }
 
             return Output;
