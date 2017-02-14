@@ -87,7 +87,7 @@ uniform int BumpMode;
 	in vec4 a8_weight;
 #endif
 
-out vec3 EyeDir;
+out vec3 ViewDir;
 out vec3 WorldPos;
 out vec3 Reflec;
 out vec3 Normal;
@@ -184,9 +184,11 @@ void main() {
 
 	Color.rgb *= ColorScale;
 
-	EyeDir = normalize(vec3(ViewMatrix * ModelMatrix * Position));
+	ViewDir = normalize(vec3(ViewMatrix * ModelMatrix * Position));
 
-	Reflec = reflect(EyeDir, ONormal);
+	Reflec = reflect(ViewDir, ONormal);
+
+	ViewDir = -ViewDir;
 
 	if ((BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
 		/*
@@ -195,7 +197,7 @@ void main() {
 		 * Original Alpha value seems to be unused on the Shader, even through it does contain meaningful values.
 		 * Note: This only applies to Pokémon, and only some shaders.
 		 */
-		 float Rim = 1 - clamp(dot(Normal, -EyeDir), 0, 1);
+		 float Rim = 1 - clamp(dot(ONormal, ViewDir), 0, 1);
 
 		 Color.a = pow(Rim, LightPowerScale.x) * LightPowerScale.y;
 	}

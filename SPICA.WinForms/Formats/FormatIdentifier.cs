@@ -2,9 +2,8 @@
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.GFL2;
-using SPICA.Formats.GFL2.Model;
 using SPICA.Formats.GFL2.Motion;
-using SPICA.Formats.GFL2.Texture;
+
 using System.IO;
 using System.Text;
 

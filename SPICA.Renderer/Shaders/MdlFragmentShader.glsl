@@ -116,7 +116,7 @@ float CosLightNormal;
 float CosLightSpot;
 float CosPhi;
 
-in vec3 EyeDir;
+in vec3 ViewDir;
 in vec3 WorldPos;
 in vec3 Reflec;
 in vec3 Normal;
@@ -155,11 +155,11 @@ void main() {
 
 	for (int i = 0; i < LightsCount; i++) {
 		vec3 LightDir = normalize(Lights[i].Position - WorldPos);
-		vec3 HalfVec = normalize(LightDir - EyeDir);
+		vec3 HalfVec = normalize(LightDir + ViewDir);
 
 		CosNormalHalf  = dot(Nrm, HalfVec);
-		CosViewHalf    = dot(-EyeDir, HalfVec);
-		CosNormalView  = dot(Nrm, -EyeDir);
+		CosViewHalf    = dot(ViewDir, HalfVec);
+		CosNormalView  = dot(Nrm, ViewDir);
 		CosLightNormal = dot(LightDir, Nrm);
 		//TODO: CosLightSpot
 		//TODO: CosPhi
