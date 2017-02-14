@@ -4,8 +4,9 @@ using OpenTK.Graphics;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
-using SPICA.GenericFormats.COLLADA;
-using SPICA.GenericFormats.StudioMdl;
+using SPICA.Formats.Generic.XML;
+using SPICA.Formats.Generic.COLLADA;
+using SPICA.Formats.Generic.StudioMdl;
 using SPICA.Renderer;
 using SPICA.Renderer.Animation;
 using SPICA.WinForms.Formats;
@@ -23,22 +24,22 @@ namespace SPICA.WinForms
     public partial class FrmMain : Form
     {
         #region Initialization
+        private RenderEngine Renderer;
+        private GLControl Viewport;
+        private GridLines UIGrid;
+        private AxisLines UIAxis;
+
         private Vector2 InitialMov;
         private Vector2 CurrentRot;
         private Vector2 CurrentMov;
-        private Vector3 MdlCenter;
-
-        private GLControl    Viewport;
-        private GridLines    UIGrid;
-        private AxisLines    UIAxis;
-        private RenderEngine Renderer;
 
         private Model Model;
         private H3D SceneData;
 
         private Bitmap[] CachedTextures;
 
-        private float CamDist;
+        private float Dimension;
+
         private float Zoom;
 
         private bool IgnoreClicks;
@@ -100,7 +101,8 @@ namespace SPICA.WinForms
             Renderer.BeforeDraw += UIGrid.Render;
             Renderer.AfterDraw += UIAxis.Render;
 
-            Zoom = -100;
+            Dimension =  100f;
+            Zoom      = -100f;
 
             UpdateViewport();
         }
@@ -126,8 +128,8 @@ namespace SPICA.WinForms
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
-                    CurrentMov.X = InitialMov.X - e.X;
-                    CurrentMov.Y = InitialMov.Y - e.Y;
+                    CurrentMov.X = (InitialMov.X - e.X) * Dimension * 0.005f;
+                    CurrentMov.Y = (InitialMov.Y - e.Y) * Dimension * 0.005f;
 
                     UpdateTransforms();
                 }
@@ -140,7 +142,7 @@ namespace SPICA.WinForms
         {
             if (e.Button != MouseButtons.Right)
             {
-                float Step = Math.Max(Math.Abs(Zoom) * 0.1f, 0.1f);
+                float Step = Dimension * 0.025f;
 
                 if (e.Delta > 0)
                     Zoom += Step;
@@ -282,14 +284,39 @@ namespace SPICA.WinForms
                         }
                     }
 
-                    if (SceneData == null)
+                    if (SceneData != null)
+                    {
+                        SceneData.Textures.CollectionChanged += TexturesList_CollectionChanged;
+
+                        ModelsList.Bind(SceneData.Models);
+                        TexturesList.Bind(SceneData.Textures);
+                        SklAnimsList.Bind(SceneData.SkeletalAnimations);
+                        MatAnimsList.Bind(SceneData.MaterialAnimations);
+
+                        Renderer.ClearModels();
+
+                        Model = Renderer.AddModel(SceneData);
+
+                        if (SceneData.Models.Count > 0) ModelsList.Select(0);
+
+                        Animator.Enabled     = false;
+                        AnimSeekBar.Value    = 0;
+                        AnimSeekBar.Maximum  = 0;
+                        LblAnimSpeed.Text    = string.Empty;
+                        LblAnimLoopMode.Text = string.Empty;
+                        CurrAnimType         = AnimType.None;
+
+                        CacheTextures();
+                        ResetView();
+                    }
+                    else
+                    {
                         MessageBox.Show(
                             "Unsupported file format!",
                             "Can't open file!",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Exclamation);
-                    else
-                        LoadScene();
+                    }
                 }
             }
 
@@ -318,7 +345,7 @@ namespace SPICA.WinForms
 
             using (SaveFileDialog SaveDlg = new SaveFileDialog())
             {
-                SaveDlg.Filter = "COLLADA 1.4.1|*.dae|Valve StudioMdl|*.smd";
+                SaveDlg.Filter = "COLLADA 1.4.1|*.dae|Valve StudioMdl|*.smd|H3D as XML|*.xml";
                 SaveDlg.FileName = "Model";
 
                 if (SaveDlg.ShowDialog() == DialogResult.OK)
@@ -333,60 +360,10 @@ namespace SPICA.WinForms
                             SceneData,
                             ModelsList.SelectedIndex,
                             SklAnimsList.SelectedIndex).Save(SaveDlg.FileName); break;
+                        case 3: H3DXml.Save(SaveDlg.FileName, SceneData); break;
                     }
                 }
             }
-        }
-
-        private void LoadScene()
-        {
-            CacheTextures();
-
-            SceneData.Textures.CollectionChanged += TexturesList_CollectionChanged;
-
-            //Bind Lists to H3D contents
-            ModelsList.Bind(SceneData.Models);
-            TexturesList.Bind(SceneData.Textures);
-            SklAnimsList.Bind(SceneData.SkeletalAnimations);
-            MatAnimsList.Bind(SceneData.MaterialAnimations);
-
-            //Model
-            Renderer.ClearModels();
-
-            Model = Renderer.AddModel(SceneData);
-
-            //Camera
-            Tuple<Vector3, float> CenterMax = Model.GetCenterMaxXY();
-
-            MdlCenter = -CenterMax.Item1;
-            CamDist = CenterMax.Item2;
-
-            Renderer.ClearLights();
-
-            Renderer.AddLight(new Light
-            {
-                Position = new Vector3(
-                    0,
-                    -MdlCenter.Y,
-                    -(MdlCenter.Z - CamDist * 2)),
-                Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1f),
-                Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1f),
-                Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
-            });
-
-            if (SceneData.Models.Count > 0) ModelsList.Select(0);
-
-            ResetView();
-
-            //Animation
-            Animator.Enabled = false;
-            AnimSeekBar.Value = 0;
-            AnimSeekBar.Maximum = 0;
-
-            LblAnimSpeed.Text = string.Empty;
-            LblAnimLoopMode.Text = string.Empty;
-
-            CurrAnimType = AnimType.None;
         }
 
         private void CacheTextures()
@@ -408,8 +385,6 @@ namespace SPICA.WinForms
 
         private void ResetView()
         {
-            Zoom = MdlCenter.Z - CamDist * 2;
-            
             InitialMov = Vector2.Zero;
             CurrentRot = Vector2.Zero;
             CurrentMov = Vector2.Zero;
@@ -418,8 +393,27 @@ namespace SPICA.WinForms
             UIGrid.ResetTransform();
             UIAxis.ResetTransform();
 
-            Model.TranslateAbs(MdlCenter);
-            UIGrid.TranslateAbs(MdlCenter);
+            Tuple<Vector3, Vector3> CenterDim = Model.GetCenterDim(ModelsList.SelectedIndex);
+
+            Vector3 Center = CenterDim.Item1;
+            Vector3 Dim    = CenterDim.Item2;
+
+            Dimension = Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2;
+
+            Renderer.ClearLights();
+
+            Renderer.AddLight(new Light
+            {
+                Position = new Vector3(0, Center.Y, Center.Z),
+                Ambient = new Color4(0.0f, 0.0f, 0.0f, 1f),
+                Diffuse = new Color4(0.8f, 0.8f, 0.8f, 1f),
+                Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
+            });
+
+            Model.TranslateAbs(-Center);
+            UIGrid.TranslateAbs(-Center);
+
+            Zoom = (Dimension < RenderEngine.ClipDistance ? -Dimension : 0);
 
             Renderer.ResetView();
 
@@ -704,5 +698,17 @@ namespace SPICA.WinForms
             LblAnimLoopMode.Text = Loop ? "LOOP" : "1 GO";
         }
         #endregion
+
+        private void MenuNormalMapTangent_Click(object sender, EventArgs e)
+        {
+            Renderer.ObjectSpaceNormalMap = false;
+            UpdateViewport();
+        }
+
+        private void MenuNormalMapObject_Click(object sender, EventArgs e)
+        {
+            Renderer.ObjectSpaceNormalMap = true;
+            UpdateViewport();
+        }
     }
 }

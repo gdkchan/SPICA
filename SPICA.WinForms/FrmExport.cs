@@ -1,7 +1,7 @@
 ﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Texture;
-using SPICA.GenericFormats.COLLADA;
-using SPICA.GenericFormats.StudioMdl;
+using SPICA.Formats.Generic.COLLADA;
+using SPICA.Formats.Generic.StudioMdl;
 using SPICA.WinForms.Formats;
 
 using System;

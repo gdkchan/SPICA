@@ -18,7 +18,9 @@ namespace SPICA.Formats.GFL2.Model.Mesh
         public ushort[] Indices;
 
         public byte[] RawBuffer;
+
         public int VertexStride;
+
         public PICAAttribute[] Attributes;
         public PICAFixedAttribute[] FixedAttributes;
     }

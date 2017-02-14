@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace SPICA.Math3D
 {
@@ -50,25 +51,25 @@ namespace SPICA.Math3D
             }
         }
 
-        public float M11 { get { return this[0, 0]; } set { this[0, 0] = value; } }
-        public float M12 { get { return this[0, 1]; } set { this[0, 1] = value; } }
-        public float M13 { get { return this[0, 2]; } set { this[0, 2] = value; } }
-        public float M14 { get { return this[0, 3]; } set { this[0, 3] = value; } }
+        [XmlAttribute] public float M11 { get { return this[0, 0]; } set { this[0, 0] = value; } }
+        [XmlAttribute] public float M12 { get { return this[0, 1]; } set { this[0, 1] = value; } }
+        [XmlAttribute] public float M13 { get { return this[0, 2]; } set { this[0, 2] = value; } }
+        [XmlAttribute] public float M14 { get { return this[0, 3]; } set { this[0, 3] = value; } }
 
-        public float M21 { get { return this[1, 0]; } set { this[1, 0] = value; } }
-        public float M22 { get { return this[1, 1]; } set { this[1, 1] = value; } }
-        public float M23 { get { return this[1, 2]; } set { this[1, 2] = value; } }
-        public float M24 { get { return this[1, 3]; } set { this[1, 3] = value; } }
+        [XmlAttribute] public float M21 { get { return this[1, 0]; } set { this[1, 0] = value; } }
+        [XmlAttribute] public float M22 { get { return this[1, 1]; } set { this[1, 1] = value; } }
+        [XmlAttribute] public float M23 { get { return this[1, 2]; } set { this[1, 2] = value; } }
+        [XmlAttribute] public float M24 { get { return this[1, 3]; } set { this[1, 3] = value; } }
 
-        public float M31 { get { return this[2, 0]; } set { this[2, 0] = value; } }
-        public float M32 { get { return this[2, 1]; } set { this[2, 1] = value; } }
-        public float M33 { get { return this[2, 2]; } set { this[2, 2] = value; } }
-        public float M34 { get { return this[2, 3]; } set { this[2, 3] = value; } }
+        [XmlAttribute] public float M31 { get { return this[2, 0]; } set { this[2, 0] = value; } }
+        [XmlAttribute] public float M32 { get { return this[2, 1]; } set { this[2, 1] = value; } }
+        [XmlAttribute] public float M33 { get { return this[2, 2]; } set { this[2, 2] = value; } }
+        [XmlAttribute] public float M34 { get { return this[2, 3]; } set { this[2, 3] = value; } }
 
-        public float M41 { get { return this[3, 0]; } set { this[3, 0] = value; } }
-        public float M42 { get { return this[3, 1]; } set { this[3, 1] = value; } }
-        public float M43 { get { return this[3, 2]; } set { this[3, 2] = value; } }
-        public float M44 { get { return this[3, 3]; } set { this[3, 3] = value; } }
+        [XmlAttribute] public float M41 { get { return this[3, 0]; } set { this[3, 0] = value; } }
+        [XmlAttribute] public float M42 { get { return this[3, 1]; } set { this[3, 1] = value; } }
+        [XmlAttribute] public float M43 { get { return this[3, 2]; } set { this[3, 2] = value; } }
+        [XmlAttribute] public float M44 { get { return this[3, 3]; } set { this[3, 3] = value; } }
 
         public float this[int Row, int Col]
         {

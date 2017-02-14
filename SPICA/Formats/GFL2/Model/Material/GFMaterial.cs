@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.GFL2.Utils;
+using SPICA.Formats.Utils;
 using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
@@ -71,11 +72,6 @@ namespace SPICA.Formats.GFL2.Model.Material
         public float ShaderParam2;
         public float ShaderParam3;
 
-        //LookUp Table
-        public PICALUTInputAbs      LUTInputAbs;
-        public PICALUTInputSel      LUTInputSel;
-        public PICALUTInputScaleSel LUTInputScaleSel;
-
         //Fragment Lighting
         public PICAColorOperation   ColorOperation;
         public PICABlendFunction    BlendFunction;
@@ -85,6 +81,11 @@ namespace SPICA.Formats.GFL2.Model.Material
         public PICAStencilOperation StencilOperation;
         public PICADepthColorMask   DepthColorMask;
         public PICAFaceCulling      FaceCulling;
+
+        //LookUp Table
+        public PICALUTInputAbs      LUTInputAbs;
+        public PICALUTInputSel      LUTInputSel;
+        public PICALUTInputScaleSel LUTInputScaleSel;
 
         public bool ColorBufferRead;
         public bool ColorBufferWrite;
@@ -97,9 +98,13 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public GFTextureCoord[] TextureCoords;
 
+        public float[] TextureSources;
+
         public GFMaterial()
         {
-            TextureCoords = new GFTextureCoord[3];
+            TextureCoords  = new GFTextureCoord[3];
+
+            TextureSources = new float[3];
         }
 
         public GFMaterial(BinaryReader Reader, string MaterialName) : this()
@@ -205,6 +210,10 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             PICACommandReader CmdReader = new PICACommandReader(Commands);
 
+            int UniformIndex = 0;
+
+            Vector4D[] Uniform = new Vector4D[96];
+
             while (CmdReader.HasCommand)
             {
                 PICACommand Cmd = CmdReader.GetCommand();
@@ -213,14 +222,25 @@ namespace SPICA.Formats.GFL2.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_COLOR_OPERATION:    ColorOperation   = new PICAColorOperation(Param);       break;
-                    case PICARegister.GPUREG_BLEND_FUNC:         BlendFunction    = new PICABlendFunction(Param);        break;
-                    case PICARegister.GPUREG_LOGIC_OP:           LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
-                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST:  AlphaTest        = new PICAAlphaTest(Param);            break;
-                    case PICARegister.GPUREG_STENCIL_TEST:       StencilTest      = new PICAStencilTest(Param);          break;
-                    case PICARegister.GPUREG_STENCIL_OP:         StencilOperation = new PICAStencilOperation(Param);     break;
-                    case PICARegister.GPUREG_DEPTH_COLOR_MASK:   DepthColorMask   = new PICADepthColorMask(Param);       break;
-                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling      = (PICAFaceCulling)(Param & 3);        break;
+                    case PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR: TextureCoords[0].BorderColor = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR: TextureCoords[1].BorderColor = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR: TextureCoords[2].BorderColor = new PICATexEnvColor(Param); break;
+
+                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
+
+                    case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = new PICABlendFunction(Param); break;
+
+                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
+
+                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: AlphaTest = new PICAAlphaTest(Param); break;
+
+                    case PICARegister.GPUREG_STENCIL_TEST: StencilTest = new PICAStencilTest(Param); break;
+
+                    case PICARegister.GPUREG_STENCIL_OP: StencilOperation = new PICAStencilOperation(Param); break;
+
+                    case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = new PICADepthColorMask(Param); break;
+
+                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
 
                     case PICARegister.GPUREG_COLORBUFFER_READ:  ColorBufferRead  = (Param & 0xf) == 0xf; break;
                     case PICARegister.GPUREG_COLORBUFFER_WRITE: ColorBufferWrite = (Param & 0xf) == 0xf; break;
@@ -238,13 +258,32 @@ namespace SPICA.Formats.GFL2.Model.Material
                     case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel      = new PICALUTInputSel(Param);      break;
                     case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInputScaleSel = new PICALUTInputScaleSel(Param); break;
 
-                    case PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR: TextureCoords[0].BorderColor = new PICATexEnvColor(Param); break;
-                    case PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR: TextureCoords[1].BorderColor = new PICATexEnvColor(Param); break;
-                    case PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR: TextureCoords[2].BorderColor = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
+
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA1:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA2:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA3:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA4:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA5:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA6:
+                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
+                        for (int i = 0; i < Cmd.Parameters.Length; i++)
+                        {
+                            int j = UniformIndex >> 2;
+                            int k = (UniformIndex++ & 3) ^ 3;
+
+                            Uniform[j][k] = IOUtils.ToSingle(Cmd.Parameters[i]);
+                        }
+                        break;
                 }
             }
 
             Reader.BaseStream.Seek(Position + MaterialSection.Length, SeekOrigin.Begin);
+
+            TextureSources[0] = Uniform[0].X;
+            TextureSources[1] = Uniform[0].Y;
+            TextureSources[2] = Uniform[0].Z;
         }
 
         public static List<GFMaterial> ReadList(BinaryReader Reader, GFHashName[] Names)

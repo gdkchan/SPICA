@@ -2,11 +2,11 @@
 {
     public enum H3DTextureMinFilter : byte
     {
-        Nearest = 0,
-        NearestMipmapNearest = 1,
-        NearestMipmapLinear = 2,
-        Linear = 3,
-        LinearMipmapNearest = 4,
-        LinearMipmapLinear = 5
+        Nearest,
+        NearestMipmapNearest,
+        NearestMipmapLinear,
+        Linear,
+        LinearMipmapNearest,
+        LinearMipmapLinear
     }
 }

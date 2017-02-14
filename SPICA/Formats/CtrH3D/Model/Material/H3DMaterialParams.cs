@@ -1,10 +1,12 @@
 ﻿using SPICA.Formats.CtrH3D.Model.Material.Texture;
+using SPICA.Formats.Utils;
 using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
-using SPICA.Utils;
+
+using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
 {
@@ -95,14 +97,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMetaData MetaData;
 
         //LookUp Table
-        [Ignore] public PICALUTInputAbs LUTInputAbs;
-        [Ignore] public PICALUTInputSel LUTInputSel;
+        [Ignore] public PICALUTInputAbs      LUTInputAbs;
+        [Ignore] public PICALUTInputSel      LUTInputSel;
         [Ignore] public PICALUTInputScaleSel LUTInputScaleSel;
 
         //Fragment Lighting
-        [Ignore] public PICATexEnvStage[] TexEnvStages;
-        [Ignore] public PICATexEnvColor   TexEnvBufferColor;
-
+        [Ignore] public PICATexEnvStage[]    TexEnvStages;
+        [Ignore] public PICATexEnvColor      TexEnvBufferColor;
         [Ignore] public PICAColorOperation   ColorOperation;
         [Ignore] public PICABlendFunction    BlendFunction;
         [Ignore] public PICALogicalOperation LogicalOperation;
@@ -123,13 +124,38 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [Ignore] public float[] TextureSources;
 
-        [Ignore] internal H3DMaterial Parent;
+        [Ignore, XmlIgnore] internal H3DMaterial Parent;
 
         //Rim Lighting, Pokémon only
         [Ignore] public float RimPower;
         [Ignore] public float RimScale;
         [Ignore] public float PhongPower;
         [Ignore] public float PhongScale;
+
+        public int TexEnvStagesCount
+        {
+            get
+            {
+                int Count = 6;
+
+                for (int i = 5; i >= 0; i--)
+                {
+                    if (TexEnvStages[i].Combiner.RGBCombiner   == PICATextureCombinerMode.Replace    &&
+                        TexEnvStages[i].Combiner.AlphaCombiner == PICATextureCombinerMode.Replace    &&
+                        TexEnvStages[i].Source.RGBSource[0]    == PICATextureCombinerSource.Previous &&
+                        TexEnvStages[i].Source.AlphaSource[0]  == PICATextureCombinerSource.Previous &&
+                        TexEnvStages[i].Operand.RGBOp[0]       == PICATextureCombinerRGBOp.Color     &&
+                        TexEnvStages[i].Operand.AlphaOp[0]     == PICATextureCombinerAlphaOp.Alpha   &&
+                        TexEnvStages[i].Scale.RGBScale         == PICATextureCombinerScale.One       &&
+                        TexEnvStages[i].Scale.AlphaScale       == PICATextureCombinerScale.One)
+                        Count--;
+                    else
+                        break;
+                }
+
+                return Count;
+            }
+        }
 
         public string Name
         {
@@ -164,9 +190,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS: LUTInputAbs = new PICALUTInputAbs(Param); break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel = new PICALUTInputSel(Param); break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE: LUTInputScaleSel = new PICALUTInputScaleSel(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInputAbs      = new PICALUTInputAbs(Param);      break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel      = new PICALUTInputSel(Param);      break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInputScaleSel = new PICALUTInputScaleSel(Param); break;
                 }
             }
 
@@ -230,23 +256,34 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         break;
 
                     case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER:
-                        for (int Index = 1; Index < 5; Index++)
-                        {
-                            TexEnvStages[Index].UpdateRGBBuffer = ((Param >> (7 + Index)) & 1) != 0;
-                            TexEnvStages[Index].UpdateAlphaBuffer = ((Param >> (11 + Index)) & 1) != 0;
-                        }
+                        TexEnvStages[1].UpdateRGBBuffer   = (Param & 0x100)  != 0;
+                        TexEnvStages[2].UpdateRGBBuffer   = (Param & 0x200)  != 0;
+                        TexEnvStages[3].UpdateRGBBuffer   = (Param & 0x400)  != 0;
+                        TexEnvStages[4].UpdateRGBBuffer   = (Param & 0x800)  != 0;
+
+                        TexEnvStages[1].UpdateAlphaBuffer = (Param & 0x1000) != 0;
+                        TexEnvStages[2].UpdateAlphaBuffer = (Param & 0x2000) != 0;
+                        TexEnvStages[3].UpdateAlphaBuffer = (Param & 0x4000) != 0;
+                        TexEnvStages[4].UpdateAlphaBuffer = (Param & 0x8000) != 0;
                         break;
 
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
 
-                    case PICARegister.GPUREG_COLOR_OPERATION:    ColorOperation   = new PICAColorOperation(Param);       break;
-                    case PICARegister.GPUREG_BLEND_FUNC:         BlendFunction    = new PICABlendFunction(Param);        break;
-                    case PICARegister.GPUREG_LOGIC_OP:           LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
-                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST:  AlphaTest        = new PICAAlphaTest(Param);            break;
-                    case PICARegister.GPUREG_STENCIL_TEST:       StencilTest      = new PICAStencilTest(Param);          break;
-                    case PICARegister.GPUREG_STENCIL_OP:         StencilOperation = new PICAStencilOperation(Param);     break;
-                    case PICARegister.GPUREG_DEPTH_COLOR_MASK:   DepthColorMask   = new PICADepthColorMask(Param);       break;
-                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling      = (PICAFaceCulling)(Param & 3);        break;
+                    case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
+
+                    case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = new PICABlendFunction(Param); break;
+
+                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
+
+                    case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: AlphaTest = new PICAAlphaTest(Param); break;
+
+                    case PICARegister.GPUREG_STENCIL_TEST: StencilTest = new PICAStencilTest(Param); break;
+
+                    case PICARegister.GPUREG_STENCIL_OP: StencilOperation = new PICAStencilOperation(Param); break;
+
+                    case PICARegister.GPUREG_DEPTH_COLOR_MASK: DepthColorMask = new PICADepthColorMask(Param); break;
+
+                    case PICARegister.GPUREG_FACECULLING_CONFIG: FaceCulling = (PICAFaceCulling)(Param & 3); break;
 
                     case PICARegister.GPUREG_COLORBUFFER_READ:  ColorBufferRead  = (Param & 0xf) == 0xf; break;
                     case PICARegister.GPUREG_COLORBUFFER_WRITE: ColorBufferWrite = (Param & 0xf) == 0xf; break;
@@ -261,6 +298,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         break;
 
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
+
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0:
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA1:
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA2:

@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace SPICA.Formats.CtrH3D
 {
-    public class PatriciaTree : ICustomSerialization, IEnumerable<PatriciaTreeNode>
+    public class PatriciaTree : ICustomSerialization, IEnumerable<string>
     {
         [Ignore] private List<PatriciaTreeNode> Nodes;
         [Ignore] private List<string> Names;
@@ -72,9 +72,9 @@ namespace SPICA.Formats.CtrH3D
             return true;
         }
 
-        public IEnumerator<PatriciaTreeNode> GetEnumerator()
+        public IEnumerator<string> GetEnumerator()
         {
-            return Nodes.GetEnumerator();
+            return Names.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

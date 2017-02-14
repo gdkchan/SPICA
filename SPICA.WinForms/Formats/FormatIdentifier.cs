@@ -2,8 +2,9 @@
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.GFL2;
+using SPICA.Formats.GFL2.Model;
 using SPICA.Formats.GFL2.Motion;
-
+using SPICA.Formats.GFL2.Texture;
 using System.IO;
 using System.Text;
 
@@ -44,6 +45,7 @@ namespace SPICA.WinForms.Formats
                             switch (PackHeader.Magic)
                             {
                                 case "AD": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 1); break;
+                                case "BG": Output = GFL2OverWorld.OpenAsH3D(FS, PackHeader, Skeleton); break;
                                 case "BS": Output = GFBtlSklAnim.OpenAsH3D(FS, PackHeader); break;
                                 case "CM": Output = GFCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "GR": Output = GFOWMapModel.OpenAsH3D(FS, PackHeader); break;

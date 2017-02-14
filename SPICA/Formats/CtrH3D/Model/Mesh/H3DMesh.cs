@@ -1,15 +1,16 @@
-﻿using SPICA.Math3D;
+﻿using SPICA.Formats.Utils;
+using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
-using SPICA.Utils;
 
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Mesh
 {
@@ -54,7 +55,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         public Vector3D MeshCenter;
 
-        public H3DModel Parent;
+        [XmlIgnore] public H3DModel Parent;
 
         private uint UserDefinedAddress;
 
@@ -142,7 +143,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_LOW: BufferFormats |= Param; break;
+                    case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_LOW:  BufferFormats |= Param; break;
                     case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_HIGH: BufferFormats |= Param << 32; break;
                     case PICARegister.GPUREG_ATTRIBBUFFER0_OFFSET: BufferAddress = (uint)Param; break;
                     case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG1: BufferAttributes |= Param; break;
@@ -156,7 +157,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                     case PICARegister.GPUREG_FIXEDATTRIB_DATA1: Fixed[FixedIndex].Word1 = (uint)Param; break;
                     case PICARegister.GPUREG_FIXEDATTRIB_DATA2: Fixed[FixedIndex].Word2 = (uint)Param; break;
                     case PICARegister.GPUREG_VSH_NUM_ATTR: AttributesTotal = (int)(Param + 1); break;
-                    case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW: BufferPermutation |= Param; break;
+                    case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW:  BufferPermutation |= Param; break;
                     case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH: BufferPermutation |= Param << 32; break;
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0:

@@ -15,6 +15,8 @@ namespace SPICA.Renderer
 {
     public class RenderEngine : IDisposable
     {
+        public const float ClipDistance = 100000f;
+
         private int Width, Height;
 
         private Shader MdlShader;
@@ -35,6 +37,8 @@ namespace SPICA.Renderer
         private List<GUIControl> Controls;
 
         public Vector4 SceneAmbient;
+
+        public bool ObjectSpaceNormalMap;
 
         public event EventHandler BeforeDraw;
         public event EventHandler AfterDraw;
@@ -73,9 +77,9 @@ namespace SPICA.Renderer
 
             GL.UniformMatrix4(GL.GetUniformLocation(MdlShaderHandle, "ModelMatrix"), false, ref ViewMtx);
 
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture0"), 0);
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture1"), 1);
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture2"), 2);
+            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture[0]"), 0);
+            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture[1]"), 1);
+            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture[2]"), 2);
 
             GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "TextureCube"), 3);
 
@@ -174,7 +178,7 @@ namespace SPICA.Renderer
 
             float AR = Width / (float)Height;
 
-            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.25f, 25000);
+            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.25f, ClipDistance);
 
             GL.UseProgram(MdlShaderHandle);
 
@@ -242,6 +246,10 @@ namespace SPICA.Renderer
 
         public void RenderScene()
         {
+            //Make sure writes are enabled otherwise the Clear function may not work
+            GL.DepthMask(true);
+            GL.ColorMask(true, true, true, true);
+
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
                 ClearBufferMask.StencilBufferBit |
@@ -250,6 +258,10 @@ namespace SPICA.Renderer
             BeforeDraw?.Invoke(this, EventArgs.Empty);
 
             GL.UseProgram(MdlShaderHandle);
+
+            int ObjectSpaceNormalMapLocation = GL.GetUniformLocation(MdlShaderHandle, "ObjNormalMap");
+
+            GL.Uniform1(ObjectSpaceNormalMapLocation, ObjectSpaceNormalMap ? 1 : 0);
 
             foreach (Model Mdl in Models) Mdl.Render();
 

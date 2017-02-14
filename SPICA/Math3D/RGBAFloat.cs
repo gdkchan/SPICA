@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace SPICA.Math3D
 {
     public struct RGBAFloat
     {
-        public float R;
-        public float G;
-        public float B;
-        public float A;
+        [XmlAttribute] public float R;
+        [XmlAttribute] public float G;
+        [XmlAttribute] public float B;
+        [XmlAttribute] public float A;
 
         public RGBAFloat(float R, float G, float B, float A)
         {

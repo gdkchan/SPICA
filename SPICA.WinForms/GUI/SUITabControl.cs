@@ -44,17 +44,17 @@ namespace SPICA.WinForms.GUI
             {
                 bool IsSelected = Index == SelectedIndex;
                 bool VertAlign = (Alignment & TabAlignment.Left) != 0;
-                bool HasImgKey = ImageList.Images.ContainsKey(TabPages[Index].ImageKey);
-                bool HasImgIdx = ImageList.Images.Count > TabPages[Index].ImageIndex && TabPages[Index].ImageIndex > -1;
 
                 Rectangle Rect = RemoveMargin(GetTabRect(Index), 2, 2, 2, 2);
                 SizeF TextSize = e.Graphics.MeasureString(TabPages[Index].Text, Font);
 
                 if (IsSelected) e.Graphics.FillRectangle(new SolidBrush(BackgroundColor), Rect);
 
-                if (ImageList != null && (HasImgKey || HasImgIdx))
+                if (ImageList != null && (
+                    ImageList.Images.ContainsKey(TabPages[Index].ImageKey) || 
+                    ImageList.Images.Count > (uint)TabPages[Index].ImageIndex))
                 {
-                    Image Icon = HasImgKey
+                    Image Icon = ImageList.Images.ContainsKey(TabPages[Index].ImageKey)
                         ? ImageList.Images[TabPages[Index].ImageKey]
                         : ImageList.Images[TabPages[Index].ImageIndex];
 

@@ -1,4 +1,4 @@
-﻿using SPICA.Utils;
+﻿using SPICA.Formats.Utils;
 
 using System;
 using System.Drawing;

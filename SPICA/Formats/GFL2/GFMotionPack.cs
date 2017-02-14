@@ -45,6 +45,26 @@ namespace SPICA.Formats.GFL2
             }
         }
 
+        public void Add(GFMotion Mot)
+        {
+            Animations.Add(Mot);
+        }
+
+        public void Insert(int Index, GFMotion Mot)
+        {
+            Animations.Insert(Index, Mot);
+        }
+
+        public void Remove(GFMotion Mot)
+        {
+            Animations.Remove(Mot);
+        }
+
+        public void Clear()
+        {
+            Animations.Clear();
+        }
+
         public IEnumerator<GFMotion> GetEnumerator()
         {
             return Animations.GetEnumerator();

@@ -108,11 +108,15 @@ namespace SPICA.Formats.GFL2.Shader
                         break;
 
                     case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER:
-                        for (int Index = 1; Index < 5; Index++)
-                        {
-                            TexEnvStages[Index].UpdateRGBBuffer = ((Param >> (7 + Index)) & 1) != 0;
-                            TexEnvStages[Index].UpdateAlphaBuffer = ((Param >> (11 + Index)) & 1) != 0;
-                        }
+                        TexEnvStages[1].UpdateRGBBuffer   = (Param & 0x100)  != 0;
+                        TexEnvStages[2].UpdateRGBBuffer   = (Param & 0x200)  != 0;
+                        TexEnvStages[3].UpdateRGBBuffer   = (Param & 0x400)  != 0;
+                        TexEnvStages[4].UpdateRGBBuffer   = (Param & 0x800)  != 0;
+
+                        TexEnvStages[1].UpdateAlphaBuffer = (Param & 0x1000) != 0;
+                        TexEnvStages[2].UpdateAlphaBuffer = (Param & 0x2000) != 0;
+                        TexEnvStages[3].UpdateAlphaBuffer = (Param & 0x4000) != 0;
+                        TexEnvStages[4].UpdateAlphaBuffer = (Param & 0x8000) != 0;
                         break;
 
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;

@@ -56,6 +56,7 @@
         CameraHeight,
 
         MeshNodeVisibility,
+
         ModelVisibility,
 
         FogColor

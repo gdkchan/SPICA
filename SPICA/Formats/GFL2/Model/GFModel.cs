@@ -79,7 +79,7 @@ namespace SPICA.Formats.GFL2.Model
 
             GFSection.SkipPadding(Reader);
 
-            LUTs      = GFLUT.ReadList(Reader, LUTLength, LUTsCount);
+            LUTs      = GFLUT.ReadList(Reader, ModelName, LUTLength, LUTsCount);
             Materials = GFMaterial.ReadList(Reader, MaterialNames);
             Meshes    = GFMesh.ReadList(Reader, MeshNames.Length);
         }
@@ -141,6 +141,8 @@ namespace SPICA.Formats.GFL2.Model
                 Params.PhongPower = Material.PhongPower;
                 Params.PhongScale = Material.PhongScale;
 
+                Params.TextureSources = Material.TextureSources;
+
                 for (int Unit = 0; Unit < Material.TextureCoords.Length; Unit++)
                 {
                     string TextureName = Material.TextureCoords[Unit].Name;
@@ -157,12 +159,6 @@ namespace SPICA.Formats.GFL2.Model
                     //Texture Coords
                     GFTextureMappingType MappingType = Material.TextureCoords[Unit].MappingType;
 
-                    switch (MappingType)
-                    {
-                        case GFTextureMappingType.CameraCubeEnvMap: Params.TextureSources[Unit] = 3; break;
-                        case GFTextureMappingType.CameraSphereEnvMap: Params.TextureSources[Unit] = 4; break;
-                    }
-
                     Params.TextureCoords[Unit].MappingType = (H3DTextureMappingType)MappingType;
 
                     Params.TextureCoords[Unit].Scale       = Material.TextureCoords[Unit].Scale;
@@ -178,6 +174,8 @@ namespace SPICA.Formats.GFL2.Model
 
                     Mat.TextureMappers[Unit].MinLOD = (byte)Material.TextureCoords[Unit].MinLOD;
                 }
+
+                Params.ColorScale = 1f;
 
                 Params.EmissionColor  = Material.EmissionColor;
                 Params.AmbientColor   = Material.AmbientColor;
@@ -282,7 +280,7 @@ namespace SPICA.Formats.GFL2.Model
                         BoneIndices[Index] = SubMesh.BoneIndices[Index];
                     }
 
-                    ushort BoolUniforms = 0x6e02; //Smooth Skin + UV012 + Tex12 
+                    ushort BoolUniforms = 0x6e62; //Smooth Skin + HemiL/AO + UV012 + Tex12 
 
                     if (!M.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneWeight))
                     {

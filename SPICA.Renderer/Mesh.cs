@@ -23,6 +23,8 @@ namespace SPICA.Renderer
         public H3DMesh BaseMesh;
         public H3DMaterial Material;
 
+        private int TexEnvStagesCount;
+
         private List<H3DSubMesh> SubMeshes;
 
         public Vector3 MeshCenter;
@@ -39,6 +41,8 @@ namespace SPICA.Renderer
             BaseMesh = Mesh;
             Material = Mat;
             SubMeshes = BaseMesh.SubMeshes;
+
+            TexEnvStagesCount = Mat.MaterialParams.TexEnvStagesCount;
 
             MeshCenter = Mesh.MeshCenter.ToVector3();
             PosOffset = Mesh.PositionOffset.ToVector4();
@@ -141,7 +145,14 @@ namespace SPICA.Renderer
             GL.StencilOp(Fail, ZFail, ZPass);
 
             GL.DepthFunc(DepthFunc);
-            
+            GL.DepthMask(Params.DepthColorMask.DepthWrite);
+
+            GL.ColorMask(
+                Params.DepthColorMask.RedWrite,
+                Params.DepthColorMask.GreenWrite,
+                Params.DepthColorMask.BlueWrite,
+                Params.DepthColorMask.AlphaWrite);
+
             GL.CullFace(Params.FaceCulling.ToCullFaceMode());
 
             GL.PolygonOffset(0, Params.PolygonOffsetUnit);
@@ -152,9 +163,9 @@ namespace SPICA.Renderer
             RenderUtils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
 
             //Coordinate sources
-            int TexUnit0SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit0Source");
-            int TexUnit1SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit1Source");
-            int TexUnit2SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnit2Source");
+            int TexUnit0SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnitSource[0]");
+            int TexUnit1SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnitSource[1]");
+            int TexUnit2SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnitSource[2]");
 
             GL.Uniform1(TexUnit0SourceLocation, (int)Params.TextureSources[0]);
             GL.Uniform1(TexUnit1SourceLocation, (int)Params.TextureSources[1]);
@@ -224,11 +235,11 @@ namespace SPICA.Renderer
             }
 
             int BuffColorLocation = GL.GetUniformLocation(ShaderHandle, "BuffColor");
-
-            GL.Uniform4(BuffColorLocation, Params.TexEnvBufferColor.ToColor4());
-
+            int CombCountLocation = GL.GetUniformLocation(ShaderHandle, "CombinersCount");
             int VtxColorScaleLocation = GL.GetUniformLocation(ShaderHandle, "ColorScale");
 
+            GL.Uniform4(BuffColorLocation, Params.TexEnvBufferColor.ToColor4());
+            GL.Uniform1(CombCountLocation, TexEnvStagesCount);
             GL.Uniform1(VtxColorScaleLocation, Params.ColorScale);
 
             //Setup LUTs

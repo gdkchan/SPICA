@@ -1,15 +1,16 @@
-﻿using SPICA.Utils;
+﻿using SPICA.Formats.Utils;
 
 using System;
+using System.Xml.Serialization;
 
 namespace SPICA.PICA.Commands
 {
     public struct PICAVectorFloat24
     {
-        public float X;
-        public float Y;
-        public float Z;
-        public float W;
+        [XmlAttribute] public float X;
+        [XmlAttribute] public float Y;
+        [XmlAttribute] public float Z;
+        [XmlAttribute] public float W;
 
         private uint _Word0;
         private uint _Word1;

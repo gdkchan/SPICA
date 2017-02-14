@@ -1,13 +1,14 @@
 ﻿using System.IO;
+using System.Xml.Serialization;
 
 namespace SPICA.Math3D
 {
     public struct RGBA
     {
-        public byte R;
-        public byte G;
-        public byte B;
-        public byte A;
+        [XmlAttribute] public byte R;
+        [XmlAttribute] public byte G;
+        [XmlAttribute] public byte B;
+        [XmlAttribute] public byte A;
 
         public RGBA(byte R, byte G, byte B, byte A)
         {

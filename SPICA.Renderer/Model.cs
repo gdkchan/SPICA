@@ -202,16 +202,21 @@ namespace SPICA.Renderer
             return Center;
         }
 
-        public Tuple<Vector3, float> GetCenterMaxXY()
+        public Tuple<Vector3, Vector3> GetCenterDim(int MdlIndex)
         {
+            if (MdlIndex == -1) return Tuple.Create(Vector3.Zero, Vector3.Zero);
+
             bool IsFirst = true;
 
             Vector3 Min = Vector3.Zero;
             Vector3 Max = Vector3.Zero;
 
-            foreach (Mesh Mesh in Meshes)
+            for (int
+            Index = MeshRanges[CurrModel].Start;
+            Index < MeshRanges[CurrModel].End;
+            Index++)
             {
-                PICAVertex[] Vertices = Mesh.BaseMesh.ToVertices();
+                PICAVertex[] Vertices = Meshes[Index].BaseMesh.ToVertices();
 
                 if (Vertices.Length == 0) continue;
 
@@ -235,10 +240,7 @@ namespace SPICA.Renderer
                 }
             }
 
-            float MaxX = Math.Max(Math.Abs(Min.X), Math.Abs(Max.X));
-            float MaxY = Math.Max(Math.Abs(Min.Y), Math.Abs(Max.Y));
-
-            return Tuple.Create((Min + Max) * 0.5f, Math.Max(MaxX, MaxY));
+            return Tuple.Create((Min + Max) * 0.5f, Max - Min);
         }
 
         public void Animate()

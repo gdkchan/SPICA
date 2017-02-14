@@ -24,6 +24,26 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DInterpolationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DLoopType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DSegmentQuantization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEAccessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEArray.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEAsset.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEEffect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEGeometry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEImage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEInput.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEInputOffset.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEMatrix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAENode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAESkin.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAESource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVector3.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVector4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVisualScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\ConversionParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJModel.cs" />
@@ -83,6 +103,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Scene\H3DScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Shader\H3DShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Texture\H3DTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDBone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\XML\H3DXml.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFModelPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFMotionPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFBone.cs" />
@@ -119,6 +144,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CLTS.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CMDL.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\BitUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\IOUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Interpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x4.cs" />
@@ -185,7 +212,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerialization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\RefValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\StringUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\BitUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Utils\IOUtils.cs" />
   </ItemGroup>
 </Project>

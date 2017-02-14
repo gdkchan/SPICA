@@ -54,18 +54,12 @@ namespace SPICA.Renderer
                 GL.Uniform4(ColorLocation, new Color4(0, 0, 0, 0));
             }
 
-            int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedColor");
-            int FixedBoneLocation = GL.GetUniformLocation(ShaderHandle, "FixedBone");
-            int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
-
-            GL.Uniform4(FixedColorLocation, new Vector4(-1));
-            GL.Uniform4(FixedBoneLocation, new Vector4(0));
-            GL.Uniform4(FixedWeightLocation, new Vector4(0));
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "CombinersCount"), 1);
+            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "ColorScale"), 1f);
 
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), Vector4.Zero);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Vector4.One);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Vector4.One);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "ColorScale"), 1f);
 
             Matrix4 RootTransform = Matrix4.Identity;
 

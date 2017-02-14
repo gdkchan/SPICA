@@ -1,6 +1,6 @@
-﻿using SPICA.Math3D;
+﻿using SPICA.Formats.Utils;
+using SPICA.Math3D;
 using SPICA.Serialization.Attributes;
-using SPICA.Utils;
 
 namespace SPICA.Formats.CtrH3D.Model
 {

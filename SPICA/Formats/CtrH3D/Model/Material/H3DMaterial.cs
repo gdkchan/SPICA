@@ -54,24 +54,21 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 Output.MaterialParams.TexEnvBufferColor = new PICATexEnvColor(0xff000000);
 
-                Output.MaterialParams.LUTInputAbs.ReflecRAbs = true;
-                Output.MaterialParams.LUTInputAbs.ReflecGAbs = true;
-                Output.MaterialParams.LUTInputAbs.ReflecBAbs = true;
-
-                Output.MaterialParams.LUTInputAbs.Dist0Abs = true;
-                Output.MaterialParams.LUTInputAbs.Dist1Abs = true;
-
-                Output.MaterialParams.LUTInputAbs.FresnelAbs = true;
-
+                Output.MaterialParams.LUTInputAbs.ReflecRAbs  = true;
+                Output.MaterialParams.LUTInputAbs.ReflecGAbs  = true;
+                Output.MaterialParams.LUTInputAbs.ReflecBAbs  = true;
+                Output.MaterialParams.LUTInputAbs.Dist0Abs    = true;
+                Output.MaterialParams.LUTInputAbs.Dist1Abs    = true;
+                Output.MaterialParams.LUTInputAbs.FresnelAbs  = true;
                 Output.MaterialParams.LUTInputAbs.SpecularAbs = true;
 
                 Output.MaterialParams.DepthColorMask.Enabled = true;
 
                 Output.MaterialParams.DepthColorMask.DepthFunc = PICATestFunc.Less;
 
-                Output.MaterialParams.DepthColorMask.RedWrite = true;
+                Output.MaterialParams.DepthColorMask.RedWrite   = true;
                 Output.MaterialParams.DepthColorMask.GreenWrite = true;
-                Output.MaterialParams.DepthColorMask.BlueWrite = true;
+                Output.MaterialParams.DepthColorMask.BlueWrite  = true;
                 Output.MaterialParams.DepthColorMask.AlphaWrite = true;
                 Output.MaterialParams.DepthColorMask.DepthWrite = true;
 
@@ -83,11 +80,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 Output.MaterialParams.FaceCulling = PICAFaceCulling.BackFace;
 
-                Output.MaterialParams.ColorBufferWrite = true;
-                Output.MaterialParams.StencilBufferRead = true;
+                Output.MaterialParams.ColorBufferWrite   = true;
+                Output.MaterialParams.StencilBufferRead  = true;
                 Output.MaterialParams.StencilBufferWrite = true;
-                Output.MaterialParams.DepthBufferRead = true;
-                Output.MaterialParams.DepthBufferWrite = true;
+                Output.MaterialParams.DepthBufferRead    = true;
+                Output.MaterialParams.DepthBufferWrite   = true;
 
                 Output.TextureMappers[0].WrapU = H3DTextureWrap.Repeat;
                 Output.TextureMappers[0].WrapV = H3DTextureWrap.Repeat;

@@ -1,22 +1,46 @@
-﻿using SPICA.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace SPICA.PICA
 {
     class PICACommandWriter
     {
-        private List<uint> Commands;
+        [StructLayout(LayoutKind.Explicit)]
+        private struct Cmd
+        {
+            [FieldOffset(0)] public uint ValUInt;
+            [FieldOffset(0)] public float ValFloat;
+
+            public static implicit operator Cmd(uint Value)
+            {
+                return new Cmd { ValUInt = Value };
+            }
+
+            public static implicit operator Cmd(float Value)
+            {
+                return new Cmd { ValFloat = Value };
+            }
+        }
+
+        private List<Cmd> Commands;
 
         public int Index { get { return Commands.Count; } }
 
         public PICACommandWriter()
         {
-            Commands = new List<uint>();
+            Commands = new List<Cmd>();
         }
 
         public uint[] GetBuffer()
         {
-            return Commands.ToArray();
+            uint[] Output = new uint[Commands.Count];
+
+            for (int i = 0; i < Output.Length; i++)
+            {
+                Output[i] = Commands[i].ValUInt;
+            }
+
+            return Output;
         }
 
         public void SetCommand(PICARegister Register, uint Param, uint Mask = 0xf)
@@ -27,7 +51,7 @@ namespace SPICA.PICA
 
         public void SetCommand(PICARegister Register, float Param, uint Mask = 0xf)
         {
-            Commands.Add(IOUtils.ToUInt32(Param));
+            Commands.Add(Param);
             Commands.Add((uint)Register | (Mask << 16));
         }
 
@@ -68,7 +92,7 @@ namespace SPICA.PICA
 
         public void SetCommands(PICARegister Register, bool Consecutive, uint Mask, params float[] Params)
         {
-            Commands.Add(IOUtils.ToUInt32(Params[0]));
+            Commands.Add(Params[0]);
 
             uint ExtraParams = (((uint)Params.Length - 1) & 0x7ff) << 20;
             uint ConsecutiveBit = Consecutive ? (1u << 31) : 0;
@@ -77,7 +101,7 @@ namespace SPICA.PICA
 
             for (int Index = 1; Index < Params.Length; Index++)
             {
-                Commands.Add(IOUtils.ToUInt32(Params[Index]));
+                Commands.Add(Params[Index]);
             }
 
             Align();

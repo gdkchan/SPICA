@@ -65,6 +65,8 @@ struct Combiner_t {
 
 uniform Combiner_t Combiners[6];
 
+uniform int CombinersCount;
+
 uniform vec4 BuffColor;
 uniform vec4 SAmbient;
 uniform vec4 MEmission;
@@ -87,9 +89,7 @@ struct Light_t {
 uniform Light_t Lights[8];
 
 uniform int LightsCount;
-uniform int TexUnit0Source;
-uniform int TexUnit1Source;
-uniform int TexUnit2Source;
+uniform int TexUnitSource[3];
 
 struct LUT_t {
 	int IsAbs;
@@ -99,10 +99,7 @@ struct LUT_t {
 
 uniform LUT_t LUTs[6];
 
-uniform sampler2D Texture0;
-uniform sampler2D Texture1;
-uniform sampler2D Texture2;
-
+uniform sampler2D Texture[3];
 uniform samplerCube TextureCube;
 
 uniform UBDist0 { vec4 Dist0[64]; };
@@ -121,7 +118,7 @@ float CosPhi;
 
 in vec3 EyeDir;
 in vec3 WorldPos;
-
+in vec3 Reflec;
 in vec3 Normal;
 in vec3 Tangent;
 in vec4 Color;
@@ -129,59 +126,29 @@ in vec2 TexCoord0;
 in vec2 TexCoord1;
 in vec2 TexCoord2;
 
+uniform mat4 ModelMatrix;
+
 out vec4 Output;
 
-vec2 TransformUV(vec2 UV, int Index);
+vec4 GetTexColor(int Unit);
 
 float GetLUTVal(int SrcLUT);
 
 void main() {
-	vec3 Reflec = reflect(EyeDir, Normal);
-	vec3 SReflect = vec3(Reflec.x, Reflec.y, Reflec.z + 1);
-	float m = 2 * sqrt(dot(SReflect, SReflect));
-	vec2 SphereUV = Reflec.xy / m + 0.5;
-
-	vec4 Color0, Color1, Color2, Color3;
-
-	switch (TexUnit0Source) {
-		case 0: Color0 = texture(Texture0, TransformUV(TexCoord0, 0)); break;
-		case 1: Color0 = texture(Texture0, TransformUV(TexCoord1, 0)); break;
-		case 2: Color0 = texture(Texture0, TransformUV(TexCoord2, 0)); break;
-		case 3: Color0 = texture(TextureCube, Reflec); break;
-		case 4: Color0 = texture(Texture0, SphereUV); break;
-	}
-
-	switch (TexUnit1Source) {
-		case 0: Color1 = texture(Texture1, TransformUV(TexCoord0, 1)); break;
-		case 1: Color1 = texture(Texture1, TransformUV(TexCoord1, 1)); break;
-		case 2: Color1 = texture(Texture1, TransformUV(TexCoord2, 1)); break;
-		case 3: Color1 = texture(TextureCube, Reflec); break;
-		case 4: Color1 = texture(Texture1, SphereUV); break;
-	}
-
-	switch (TexUnit2Source) {
-		case 0: Color2 = texture(Texture2, TransformUV(TexCoord0, 2)); break;
-		case 1: Color2 = texture(Texture2, TransformUV(TexCoord1, 2)); break;
-		case 2: Color2 = texture(Texture2, TransformUV(TexCoord2, 2)); break;
-		case 3: Color2 = texture(TextureCube, Reflec); break;
-		case 4: Color2 = texture(Texture2, SphereUV); break;
-	}
-
 	vec3 Nrm = Normal;
 
-	if (BumpMode != 0) {
-		switch (BumpIndex) {
-			case 0: Nrm = Color0.xyz * 2 - 1; break;
-			case 1: Nrm = Color1.xyz * 2 - 1; break;
-			case 2: Nrm = Color2.xyz * 2 - 1; break;
-		}
-
+	//When bump == 2, Tangent is modified instead (but for what Tangent is used?)
+	if (BumpMode == 1) {
+		Nrm = GetTexColor(BumpIndex).xyz * 2 - 1;
 		Nrm = mat3(Tangent, cross(Normal, Tangent), Normal) * Nrm;
 
-		if (BumpMode == 1) Nrm = normalize(Normal + Nrm);
-
+		//Renormalize
 		if ((FragFlags & FLAG_BUMP_RENORM) != 0) Nrm.z = sqrt(max(1 - dot(Nrm.xy, Nrm.xy), 0));
 	}
+
+	vec4 Color0 = GetTexColor(0);
+	vec4 Color1 = GetTexColor(1);
+	vec4 Color2 = GetTexColor(2);
 
 	vec4 FragPrimaryColor = MEmission + MAmbient * SAmbient;
 	vec4 FragSecondaryColor = vec4(0, 0, 0, 1);
@@ -202,12 +169,12 @@ void main() {
 		float d0 = (FragFlags & FLAG_D0_ENB) != 0 ? GetLUTVal(LUT_DIST0) : 1;
 		float d1 = (FragFlags & FLAG_D1_ENB) != 0 ? GetLUTVal(LUT_DIST1) : 1;
 
-		vec4 Reflec = vec4(0, 0, 0, 1);
+		vec4 r = vec4(0, 0, 0, 1);
 
 		if ((FragFlags & FLAG_R_ENB) != 0) {
-			Reflec.r = GetLUTVal(LUT_REFLECR);
-			Reflec.g = GetLUTVal(LUT_REFLECG);
-			Reflec.b = GetLUTVal(LUT_REFLECB);
+			r.r = GetLUTVal(LUT_REFLECR);
+			r.g = GetLUTVal(LUT_REFLECG);
+			r.b = GetLUTVal(LUT_REFLECB);
 		}
 
 		float g0 = 1, g1 = 1;
@@ -217,7 +184,7 @@ void main() {
 
 		vec4 Ambient = MAmbient * Lights[i].Ambient;
 		vec4 Diffuse = MDiffuse * Lights[i].Diffuse;
-		vec4 Specular = (MSpecular * d0 * g0 + Reflec * d1 * g1) * Lights[i].Specular;
+		vec4 Specular = (MSpecular * d0 * g0 + r * d1 * g1) * Lights[i].Specular;
 
 		Diffuse  = fi * (Ambient + Diffuse * CosLightNormal);
 		Specular = fi * Specular;
@@ -231,7 +198,7 @@ void main() {
 
 	vec4 CombBuffer = BuffColor;
 
-	for (int Stage = 0; Stage < 6; Stage++) {
+	for (int Stage = 0; Stage < CombinersCount; Stage++) {
 		vec4 ColorArgs[3];
 		vec4 AlphaArgs[3];
 
@@ -249,7 +216,6 @@ void main() {
 				case 3: ColorArg = Color0; break;
 				case 4: ColorArg = Color1; break;
 				case 5: ColorArg = Color2; break;
-				case 6: ColorArg = Color3; break;
 				case 13: ColorArg = CombBuffer; break;
 				case 14: ColorArg = Combiners[Stage].Color; break;
 				case 15: ColorArg = Output; break;
@@ -262,30 +228,36 @@ void main() {
 				case 3: AlphaArg = Color0; break;
 				case 4: AlphaArg = Color1; break;
 				case 5: AlphaArg = Color2; break;
-				case 6: AlphaArg = Color3; break;
 				case 13: AlphaArg = CombBuffer; break;
 				case 14: AlphaArg = Combiners[Stage].Color; break;
 				case 15: AlphaArg = Output; break;
 			}
 
-			switch (Combiners[Stage].Args[Param].ColorOp >> 1) {
-				case 0: ColorArgs[Param] = ColorArg.rgba; break;
-				case 1: ColorArgs[Param] = ColorArg.aaaa; break;
-				case 2: ColorArgs[Param] = ColorArg.rrrr; break;
-				case 4: ColorArgs[Param] = ColorArg.gggg; break;
-				case 6: ColorArgs[Param] = ColorArg.bbbb; break;
+			switch (Combiners[Stage].Args[Param].ColorOp) {
+				case 0:  ColorArgs[Param] =     ColorArg.rgba; break;
+				case 1:  ColorArgs[Param] = 1 - ColorArg.rgba; break;
+				case 2:  ColorArgs[Param] =     ColorArg.aaaa; break;
+				case 3:  ColorArgs[Param] = 1 - ColorArg.aaaa; break;
+				case 4:  ColorArgs[Param] =     ColorArg.rrrr; break;
+				case 5:  ColorArgs[Param] = 1 - ColorArg.rrrr; break;
+				case 8:  ColorArgs[Param] =     ColorArg.gggg; break;
+				case 9:  ColorArgs[Param] = 1 - ColorArg.gggg; break;
+				case 12: ColorArgs[Param] =     ColorArg.bbbb; break;
+				case 13: ColorArgs[Param] = 1 - ColorArg.bbbb; break;
 			}
 
-			switch (Combiners[Stage].Args[Param].AlphaOp >> 1) {
-				//RGBA is not used on the Alpha channel
-				case 0: AlphaArgs[Param] = AlphaArg.aaaa; break;
-				case 1: AlphaArgs[Param] = AlphaArg.rrrr; break;
-				case 2: AlphaArgs[Param] = AlphaArg.gggg; break;
-				case 3: AlphaArgs[Param] = AlphaArg.bbbb; break;
+			switch (Combiners[Stage].Args[Param].AlphaOp) {
+				//    RGBA (not used because Alpha only uses 1 channel)
+				//1 - RGBA (not used because Alpha only uses 1 channel)
+				case 0: AlphaArgs[Param] =     AlphaArg.aaaa; break;
+				case 1: AlphaArgs[Param] = 1 - AlphaArg.aaaa; break;
+				case 2: AlphaArgs[Param] =     AlphaArg.rrrr; break;
+				case 3: AlphaArgs[Param] = 1 - AlphaArg.rrrr; break;
+				case 4: AlphaArgs[Param] =     AlphaArg.gggg; break;
+				case 5: AlphaArgs[Param] = 1 - AlphaArg.gggg; break;
+				case 6: AlphaArgs[Param] =     AlphaArg.bbbb; break;
+				case 7: AlphaArgs[Param] = 1 - AlphaArg.bbbb; break;
 			}
-
-			if ((Combiners[Stage].Args[Param].ColorOp & 1) != 0) ColorArgs[Param] = 1 - ColorArgs[Param];
-			if ((Combiners[Stage].Args[Param].AlphaOp & 1) != 0) AlphaArgs[Param] = 1 - AlphaArgs[Param];
 		}
 
 		switch (Combiners[Stage].ColorCombine) {
@@ -345,6 +317,24 @@ vec2 TransformUV(vec2 UV, int Index) {
 	return UV;
 }
 
+vec4 GetTexColor(int Unit) {
+	vec4 Color;
+
+	switch (TexUnitSource[Unit]) {
+		case 0: Color = texture(Texture[Unit], TransformUV(TexCoord0, Unit)); break;
+		case 1: Color = texture(Texture[Unit], TransformUV(TexCoord1, Unit)); break;
+		case 2: Color = texture(Texture[Unit], TransformUV(TexCoord2, Unit)); break;
+		case 3: Color = texture(TextureCube, Reflec); break;
+		case 4:
+			vec3 R = vec3(Reflec.x, Reflec.y, Reflec.z + 1);
+			float m = 2 * sqrt(dot(R, R));
+			Color = texture(Texture[Unit], R.xy / m + 0.5);
+			break;
+	}
+
+	return Color;
+}
+
 float GetLUTVal(int SrcLUT, int Index) {
 	int i = Index >> 2;
 	int j = Index &  3;
@@ -352,8 +342,8 @@ float GetLUTVal(int SrcLUT, int Index) {
 	float Value;
 
 	switch (SrcLUT) {
-		case LUT_DIST0:   Value = Dist0[i][j]; break;
-		case LUT_DIST1:   Value = Dist1[i][j]; break;
+		case LUT_DIST0:   Value = Dist0[i][j];   break;
+		case LUT_DIST1:   Value = Dist1[i][j];   break;
 		case LUT_FRESNEL: Value = Fresnel[i][j]; break;
 		case LUT_REFLECR: Value = ReflecR[i][j]; break;
 		case LUT_REFLECG: Value = ReflecG[i][j]; break;
@@ -382,16 +372,14 @@ float GetLUTVal(int SrcLUT) {
 		IndexVal = clamp(IndexVal, 0, 1);
 	}
 
-	//Nearest, smaller (round down) quantized index for this float
 	int Left = int(IndexVal * 0xff);
+	int Right = min(Left + 1, 0xff);
 
-	//End of table, in this case we have nothing to interpolate
-	bool End = (LUTs[SrcLUT].IsAbs == 0 && Left == 0x7f) || Left == 0xff;
+	if ((LUTs[SrcLUT].IsAbs == 0 && Left == 0x7f) || Left == 0xff) {
+		//Table end, prevent wrapping
+		Right = Left;
+	}
 
-	//Nearest, bigger (round up) quantized value for this float
-	int Right = End ? Left : min(Left + 1, 0xff);
-
-	//Get actual LUT float values for both indices, and interpolates the two
 	float LVal = GetLUTVal(SrcLUT, Left);
 	float RVal = GetLUTVal(SrcLUT, Right);
 

@@ -72,6 +72,7 @@
     <Compile Include="Formats\FormatIdentifier.cs" />
     <Compile Include="Formats\GFBtlSklAnim.cs" />
     <Compile Include="Formats\GFCharaModel.cs" />
+    <Compile Include="Formats\GFL2OverWorld.cs" />
     <Compile Include="Formats\GFOWCharaModel.cs" />
     <Compile Include="Formats\GFOWMapModel.cs" />
     <Compile Include="Formats\GFPackage.cs" />
@@ -163,7 +164,6 @@
   </ItemGroup>
   <Import Project="..\SPICA\SPICA.projitems" Label="Shared" />
   <Import Project="..\SPICA.Renderer\SPICA.Renderer.projitems" Label="Shared" />
-  <Import Project="..\SPICA.GenericFormats\SPICA.GenericFormats.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

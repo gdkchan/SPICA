@@ -62,6 +62,9 @@ uniform vec4 LightPowerScale;
 
 uniform vec4 MDiffuse;
 
+uniform int ObjNormalMap;
+uniform int BumpMode;
+
 #ifdef GL_ARB_explicit_uniform_location
 	layout(location = 0) in vec3 a0_pos;
 	layout(location = 1) in vec3 a1_norm;
@@ -86,7 +89,7 @@ uniform vec4 MDiffuse;
 
 out vec3 EyeDir;
 out vec3 WorldPos;
-
+out vec3 Reflec;
 out vec3 Normal;
 out vec3 Tangent;
 out vec4 Color;
@@ -142,37 +145,48 @@ void main() {
 	Pos += (Transforms[b2] * Position) * w[2];
 	Pos += (Transforms[b3] * Position) * w[3];
 
-	vec3 Nrm, Tan;
+	vec3 ONormal  = Normal;
 
-	Nrm  = (mat3(Transforms[b0]) * Normal) * w[0];
-	Nrm += (mat3(Transforms[b1]) * Normal) * w[1];
-	Nrm += (mat3(Transforms[b2]) * Normal) * w[2];
-	Nrm += (mat3(Transforms[b3]) * Normal) * w[3];
+	if (ObjNormalMap != 0 && BumpMode == 1) {
+		Normal  = vec3(0, 0, 1);
+		Tangent = vec3(1, 0, 0);
+	}
 
-	Tan  = (mat3(Transforms[b0]) * Tangent) * w[0];
-	Tan += (mat3(Transforms[b1]) * Tangent) * w[1];
-	Tan += (mat3(Transforms[b2]) * Tangent) * w[2];
-	Tan += (mat3(Transforms[b3]) * Tangent) * w[3];
+	vec3 ONrm, Nrm, Tan;
+
+	ONrm  = (mat3(Transforms[b0]) * ONormal) * w[0];
+	ONrm += (mat3(Transforms[b1]) * ONormal) * w[1];
+	ONrm += (mat3(Transforms[b2]) * ONormal) * w[2];
+	ONrm += (mat3(Transforms[b3]) * ONormal) * w[3];
+
+	Nrm   = (mat3(Transforms[b0]) * Normal)  * w[0];
+	Nrm  += (mat3(Transforms[b1]) * Normal)  * w[1];
+	Nrm  += (mat3(Transforms[b2]) * Normal)  * w[2];
+	Nrm  += (mat3(Transforms[b3]) * Normal)  * w[3];
+
+	Tan   = (mat3(Transforms[b0]) * Tangent) * w[0];
+	Tan  += (mat3(Transforms[b1]) * Tangent) * w[1];
+	Tan  += (mat3(Transforms[b2]) * Tangent) * w[2];
+	Tan  += (mat3(Transforms[b3]) * Tangent) * w[3];
 
 	float Sum = w[0] + w[1] + w[2] + w[3];
 
 	Position = (Position * (1 - Sum)) + Pos;
+	ONormal  = (ONormal  * (1 - Sum)) + ONrm;
 	Normal   = (Normal   * (1 - Sum)) + Nrm;
 	Tangent  = (Tangent  * (1 - Sum)) + Tan;
 
 	Position.w = 1;
 
-	Normal = normalize(mat3(ModelMatrix) * Normal);
+	ONormal = normalize(mat3(ModelMatrix) * ONormal);
+	Normal  = normalize(mat3(ModelMatrix) * Normal);
 	Tangent = normalize(mat3(ModelMatrix) * Tangent);
-
-	if ((BoolUniforms & BOOL_COLOR_A) != 0)
-		Color.a *= MDiffuse.a;
-	else
-		Color.a = MDiffuse.a;
 
 	Color.rgb *= ColorScale;
 
 	EyeDir = normalize(vec3(ViewMatrix * ModelMatrix * Position));
+
+	Reflec = reflect(EyeDir, ONormal);
 
 	if ((BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
 		/*

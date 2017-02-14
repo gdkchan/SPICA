@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace SPICA.Math3D
 {
     public struct Vector2D
     {
-        public float X;
-        public float Y;
+        [XmlAttribute] public float X;
+        [XmlAttribute] public float Y;
 
         public static Vector2D Empty { get { return new Vector2D(0, 0); } }
 
