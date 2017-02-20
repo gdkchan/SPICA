@@ -1,6 +1,6 @@
 ﻿using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.GFL2.Model;
-using SPICA.Formats.GFL2.Utils;
+using SPICA.Formats.Utils;
 using SPICA.Math3D;
 
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace SPICA.Formats.GFL2.Motion
 
             long Position = Reader.BaseStream.Position;
 
-            string[] BoneNames = GFString.ReadArray(Reader, BoneNamesCount);
+            string[] BoneNames = Reader.ReadStringArray(BoneNamesCount);
 
             Reader.BaseStream.Seek(Position + BoneNamesLength, SeekOrigin.Begin);
 

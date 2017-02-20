@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.GFL2.Utils;
+﻿using SPICA.Formats.Utils;
 using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
@@ -38,7 +38,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             long Position = Reader.BaseStream.Position;
 
             Hash = Reader.ReadUInt32();
-            Name = GFString.ReadLength(Reader, 0x40);
+            Name = Reader.ReadPaddedString(0x40);
 
             Reader.ReadUInt32();
 
@@ -79,8 +79,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             //The rest is added latter (because the data is split inside the file)
             for (int MeshIndex = 0; MeshIndex < SubMeshesCount; MeshIndex++)
             {
-                uint Hash = Reader.ReadUInt32();
-                string Name = GFString.ReadLength(Reader, Reader.ReadInt32());
+                uint   Hash = Reader.ReadUInt32();
+                string Name = Reader.ReadIntLengthString();
 
                 byte BoneIndicesCount = Reader.ReadByte();
                 byte[] BoneIndices = new byte[0x1f];
@@ -95,10 +95,10 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                     BoneIndices = BoneIndices,
                     BoneIndicesCount = BoneIndicesCount,
 
-                    VerticesCount = Reader.ReadUInt32(),
-                    IndicesCount = Reader.ReadUInt32(),
+                    VerticesCount  = Reader.ReadUInt32(),
+                    IndicesCount   = Reader.ReadUInt32(),
                     VerticesLength = Reader.ReadUInt32(),
-                    IndicesLength = Reader.ReadUInt32(),
+                    IndicesLength  = Reader.ReadUInt32(),
 
                     Hash = Hash,
                     Name = Name

@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.GFL2.Utils;
+﻿using SPICA.Formats.Utils;
+
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 
@@ -31,7 +32,7 @@ namespace SPICA.Formats.GFL2.Shader
             GFSection.SkipPadding(Reader);
             GFSection ShaderSection = new GFSection(Reader);
 
-            Name = GFString.ReadLength(Reader, 0x40);
+            Name = Reader.ReadPaddedString(0x40);
 
             uint Hash = Reader.ReadUInt32();
             uint Count = Reader.ReadUInt32();
@@ -43,7 +44,7 @@ namespace SPICA.Formats.GFL2.Shader
             uint CommandsHash = Reader.ReadUInt32();
             uint Padding = Reader.ReadUInt32();
 
-            string FileName = GFString.ReadLength(Reader, 0x40);
+            string FileName = Reader.ReadPaddedString(0x40);
 
             uint[] Commands = new uint[CommandsLength >> 2];
 

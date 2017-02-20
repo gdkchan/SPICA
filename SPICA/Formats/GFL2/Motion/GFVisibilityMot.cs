@@ -1,5 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D.Animation;
-using SPICA.Formats.GFL2.Utils;
+using SPICA.Formats.Utils;
 
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +22,7 @@ namespace SPICA.Formats.GFL2.Motion
 
             long Position = Reader.BaseStream.Position;
 
-            string[] MeshNames = GFString.ReadArray(Reader, MeshNamesCount);
+            string[] MeshNames = Reader.ReadStringArray(MeshNamesCount);
 
             Reader.BaseStream.Seek(Position + MeshNamesLength, SeekOrigin.Begin);
 

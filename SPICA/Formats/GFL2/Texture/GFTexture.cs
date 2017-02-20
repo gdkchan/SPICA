@@ -1,5 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D.Texture;
-using SPICA.Formats.GFL2.Utils;
+using SPICA.Formats.Utils;
 
 using System.IO;
 
@@ -28,7 +28,7 @@ namespace SPICA.Formats.GFL2.Texture
 
             Reader.BaseStream.Seek(0xc, SeekOrigin.Current); //Padding? Always zero it seems
 
-            Name = GFString.ReadLength(Reader, 0x40);
+            Name = Reader.ReadPaddedString(0x40);
 
             Width = Reader.ReadUInt16();
             Height = Reader.ReadUInt16();

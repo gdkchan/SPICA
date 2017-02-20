@@ -109,6 +109,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\XML\H3DXML.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFModelPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFMotionPack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFModel.cs" />
@@ -132,8 +133,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Shader\GFFragShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTextureFormat.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFSection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Utils\GFString.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\GFMotionPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\GFUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBone.cs" />
@@ -145,6 +144,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\BitUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\IOUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\StringUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Interpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x4.cs" />

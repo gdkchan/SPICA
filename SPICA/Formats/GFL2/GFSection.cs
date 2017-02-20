@@ -1,6 +1,8 @@
-﻿using System.IO;
+﻿using SPICA.Formats.Utils;
 
-namespace SPICA.Formats.GFL2.Utils
+using System.IO;
+
+namespace SPICA.Formats.GFL2
 {
     class GFSection
     {
@@ -17,14 +19,14 @@ namespace SPICA.Formats.GFL2.Utils
 
         public GFSection(BinaryReader Reader)
         {
-            Magic = GFString.ReadLength(Reader, 8);
+            Magic = Reader.ReadPaddedString(8);
             Length = Reader.ReadUInt32();
             Padding = Reader.ReadUInt32();
         }
 
         public void Write(BinaryWriter Writer)
         {
-            GFString.WriteLength(Writer, Magic, 8);
+            Writer.WritePaddedString(Magic, 8);
             Writer.Write(Length);
             Writer.Write(0xffffffffu);
         }

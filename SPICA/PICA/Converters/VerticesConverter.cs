@@ -12,6 +12,8 @@ namespace SPICA.PICA.Converters
     {
         public static PICAVertex[] GetVertices(H3DMesh Mesh, bool Transform)
         {
+            if (Mesh.RawBuffer.Length == 0) return new PICAVertex[0];
+
             PICAVertex[] Output = new PICAVertex[Mesh.RawBuffer.Length / Mesh.VertexStride];
 
             using (MemoryStream MS = new MemoryStream(Mesh.RawBuffer))

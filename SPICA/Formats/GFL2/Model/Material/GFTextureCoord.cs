@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.GFL2.Utils;
+﻿using SPICA.Formats.Utils;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 
@@ -30,7 +30,7 @@ namespace SPICA.Formats.GFL2.Model.Material
         public GFTextureCoord(BinaryReader Reader)
         {
             Hash = Reader.ReadUInt32();
-            Name = GFString.ReadLength(Reader, Reader.ReadByte());
+            Name = Reader.ReadByteLengthString();
 
             byte UnitIndex = Reader.ReadByte();
 

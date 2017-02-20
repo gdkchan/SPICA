@@ -1,5 +1,4 @@
-﻿using SPICA.Formats.GFL2.Utils;
-using SPICA.Formats.Utils;
+﻿using SPICA.Formats.Utils;
 using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;

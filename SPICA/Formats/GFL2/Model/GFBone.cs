@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.GFL2.Utils;
+﻿using SPICA.Formats.Utils;
 using SPICA.Math3D;
 
 using System.Collections.Generic;
@@ -19,8 +19,8 @@ namespace SPICA.Formats.GFL2.Model
 
         public GFBone(BinaryReader Reader)
         {
-            Name       = GFString.ReadLength(Reader, Reader.ReadByte());
-            ParentName = GFString.ReadLength(Reader, Reader.ReadByte());
+            Name       = Reader.ReadByteLengthString();
+            ParentName = Reader.ReadByteLengthString();
 
             Flags = Reader.ReadByte();
 

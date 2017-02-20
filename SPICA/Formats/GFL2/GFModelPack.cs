@@ -2,11 +2,10 @@
 using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
-using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Formats.GFL2.Model;
 using SPICA.Formats.GFL2.Shader;
 using SPICA.Formats.GFL2.Texture;
-using SPICA.Formats.GFL2.Utils;
+using SPICA.Formats.Utils;
 
 using System.Collections.Generic;
 using System.IO;
@@ -60,7 +59,7 @@ namespace SPICA.Formats.GFL2
                     Reader.BaseStream.Seek(PointersAddr + Entry * 4, SeekOrigin.Begin);
                     Reader.BaseStream.Seek(Position + Reader.ReadUInt32(), SeekOrigin.Begin);
 
-                    string Name = GFString.ReadLength(Reader, Reader.ReadByte());
+                    string Name = Reader.ReadByteLengthString();
                     uint Address = Reader.ReadUInt32();
 
                     Reader.BaseStream.Seek(Position + Address, SeekOrigin.Begin);

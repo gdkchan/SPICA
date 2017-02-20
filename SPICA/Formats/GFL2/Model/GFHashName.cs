@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.GFL2.Utils;
+﻿using SPICA.Formats.Utils;
 
 using System.IO;
 
@@ -18,7 +18,7 @@ namespace SPICA.Formats.GFL2.Model
         public GFHashName(BinaryReader Reader)
         {
             Hash = Reader.ReadUInt32();
-            Name = GFString.ReadLength(Reader, Reader.ReadByte());
+            Name = Reader.ReadByteLengthString();
         }
     }
 }

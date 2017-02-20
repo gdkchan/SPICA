@@ -5,7 +5,7 @@ using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.GFL2.Model.Material;
 using SPICA.Formats.GFL2.Model.Mesh;
-using SPICA.Formats.GFL2.Utils;
+using SPICA.Formats.Utils;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 
@@ -93,7 +93,7 @@ namespace SPICA.Formats.GFL2.Model
             for (int Index = 0; Index < Count; Index++)
             {
                 Values[Index].Hash = Reader.ReadUInt32();
-                Values[Index].Name = GFString.ReadLength(Reader, 0x40);
+                Values[Index].Name = Reader.ReadPaddedString(0x40);
             }
 
             return Values;
