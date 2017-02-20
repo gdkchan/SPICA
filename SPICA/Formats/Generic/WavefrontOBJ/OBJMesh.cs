@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace SPICA.Formats.Generic.OBJ
+namespace SPICA.Formats.Generic.WavefrontOBJ
 {
     class OBJMesh
     {

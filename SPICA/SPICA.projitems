@@ -44,8 +44,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVector3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVector4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVisualScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJMesh.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJ.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\WavefrontOBJ\OBJMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\WavefrontOBJ\OBJ.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Camera\H3DCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Fog\H3DFog.cs" />
