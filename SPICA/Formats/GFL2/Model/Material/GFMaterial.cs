@@ -37,36 +37,33 @@ namespace SPICA.Formats.GFL2.Model.Material
         public RGBA Constant3Color;
         public RGBA Constant4Color;
         public RGBA Constant5Color;
-
+        public RGBA Specular0Color;
+        public RGBA Specular1Color;
+        public RGBA BlendColor;
         public RGBA EmissionColor;
         public RGBA AmbientColor;
         public RGBA DiffuseColor;
-        public RGBA Specular0Color;
-        public RGBA Specular1Color;
-        
-        public RGBA BlendColor;
 
+        public int   EdgeType;
+        public int   IDEdgeEnable;
+        public int   EdgeID;
+        public int   ProjectionType;
         public float RimPower;
         public float RimScale;
         public float PhongPower;
         public float PhongScale;
-
-        public bool IDEdgeOffsetEnable;
-        public int EdgeMapAlphaMask;
-
-        public int BakeTexture0;
-        public int BakeTexture1;
-        public int BakeTexture2;
-
-        public int BakeConstant0;
-        public int BakeConstant1;
-        public int BakeConstant2;
-        public int BakeConstant3;
-        public int BakeConstant4;
-        public int BakeConstant5;
-
-        public uint VertexShaderType;
-
+        public int   IDEdgeOffsetEnable;
+        public int   EdgeMapAlphaMask;
+        public int   BakeTexture0;
+        public int   BakeTexture1;
+        public int   BakeTexture2;
+        public int   BakeConstant0;
+        public int   BakeConstant1;
+        public int   BakeConstant2;
+        public int   BakeConstant3;
+        public int   BakeConstant4;
+        public int   BakeConstant5;
+        public int   VertexShaderType;
         public float ShaderParam0;
         public float ShaderParam1;
         public float ShaderParam2;
@@ -83,9 +80,9 @@ namespace SPICA.Formats.GFL2.Model.Material
         public PICAFaceCulling      FaceCulling;
 
         //LookUp Table
-        public PICALUTInputAbs      LUTInputAbs;
-        public PICALUTInputSel      LUTInputSel;
-        public PICALUTInputScaleSel LUTInputScaleSel;
+        public PICALUTInAbs   LUTInAbs;
+        public PICALUTInSel   LUTInSel;
+        public PICALUTInScale LUTInScale;
 
         public bool ColorBufferRead;
         public bool ColorBufferWrite;
@@ -119,15 +116,12 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             for (int i = 0; i < Names.Length; i++)
             {
-                uint Hash = Reader.ReadUInt32();
-                string Name = GFString.ReadLength(Reader, Reader.ReadByte());
-
-                Names[i] = new GFHashName(Hash, Name);
+                Names[i] = new GFHashName(Reader);
             }
 
-            SubMeshName = Names[0];
-            GeoShaderName = Names[1];
-            VtxShaderName = Names[2];
+            SubMeshName    = Names[0];
+            GeoShaderName  = Names[1];
+            VtxShaderName  = Names[2];
             FragShaderName = Names[3];
 
             LUT0HashId = Reader.ReadUInt32();
@@ -151,8 +145,6 @@ namespace SPICA.Formats.GFL2.Model.Material
             Constant3Color = new RGBA(Reader);
             Constant4Color = new RGBA(Reader);
             Constant5Color = new RGBA(Reader);
-
-            //This is most likely wrong
             Specular0Color = new RGBA(Reader);
             Specular1Color = new RGBA(Reader);
             BlendColor     = new RGBA(Reader);
@@ -160,33 +152,30 @@ namespace SPICA.Formats.GFL2.Model.Material
             AmbientColor   = new RGBA(Reader);
             DiffuseColor   = new RGBA(Reader);
 
-            Reader.BaseStream.Seek(0x10, SeekOrigin.Current); //Unknown stuff
-
-            RimPower = Reader.ReadSingle();
-            RimScale = Reader.ReadSingle();
-            PhongPower = Reader.ReadSingle();
-            PhongScale = Reader.ReadSingle();
-
-            IDEdgeOffsetEnable = (Reader.ReadUInt32() & 1) != 0;
-            EdgeMapAlphaMask = Reader.ReadInt32();
-
-            BakeTexture0 = Reader.ReadInt32();
-            BakeTexture1 = Reader.ReadInt32();
-            BakeTexture2 = Reader.ReadInt32();
-
-            BakeConstant0 = Reader.ReadInt32();
-            BakeConstant1 = Reader.ReadInt32();
-            BakeConstant2 = Reader.ReadInt32();
-            BakeConstant3 = Reader.ReadInt32();
-            BakeConstant4 = Reader.ReadInt32();
-            BakeConstant5 = Reader.ReadInt32();
-
-            VertexShaderType = Reader.ReadUInt32();
-
-            ShaderParam0 = Reader.ReadSingle();
-            ShaderParam1 = Reader.ReadSingle();
-            ShaderParam2 = Reader.ReadSingle();
-            ShaderParam3 = Reader.ReadSingle();
+            EdgeType           = Reader.ReadInt32();
+            IDEdgeEnable       = Reader.ReadInt32();
+            EdgeID             = Reader.ReadInt32();
+            ProjectionType     = Reader.ReadInt32();
+            RimPower           = Reader.ReadSingle();
+            RimScale           = Reader.ReadSingle();
+            PhongPower         = Reader.ReadSingle();
+            PhongScale         = Reader.ReadSingle();
+            IDEdgeOffsetEnable = Reader.ReadInt32();
+            EdgeMapAlphaMask   = Reader.ReadInt32();
+            BakeTexture0       = Reader.ReadInt32();
+            BakeTexture1       = Reader.ReadInt32();
+            BakeTexture2       = Reader.ReadInt32();
+            BakeConstant0      = Reader.ReadInt32();
+            BakeConstant1      = Reader.ReadInt32();
+            BakeConstant2      = Reader.ReadInt32();
+            BakeConstant3      = Reader.ReadInt32();
+            BakeConstant4      = Reader.ReadInt32();
+            BakeConstant5      = Reader.ReadInt32();
+            VertexShaderType   = Reader.ReadInt32();
+            ShaderParam0       = Reader.ReadSingle();
+            ShaderParam1       = Reader.ReadSingle();
+            ShaderParam2       = Reader.ReadSingle();
+            ShaderParam3       = Reader.ReadSingle();
 
             uint UnitsCount = Reader.ReadUInt32();
 
@@ -254,9 +243,9 @@ namespace SPICA.Formats.GFL2.Model.Material
                         DepthBufferWrite   = (Param & 2) != 0;
                         break;
 
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInputAbs      = new PICALUTInputAbs(Param);      break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel      = new PICALUTInputSel(Param);      break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInputScaleSel = new PICALUTInputScaleSel(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInAbs   = new PICALUTInAbs(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInSel   = new PICALUTInSel(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInScale = new PICALUTInScale(Param); break;
 
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
 

@@ -19,6 +19,11 @@ namespace SPICA.WinForms.GUI
             e.Graphics.FillRectangle(BackBrush, e.AffectedBounds);
         }
 
+        protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
+        {
+            e.Graphics.DrawImage(Properties.Resources.sui_ticked, new Rectangle(8, 2, 20, 20));
+        }
+
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
             Color BC = IsDarkBg ? Color.White : Color.Black;

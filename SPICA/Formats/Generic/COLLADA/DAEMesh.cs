@@ -57,7 +57,7 @@ namespace SPICA.Formats.Generic.COLLADA
             for (int i = 0; i < Indices.Length; i++)
             {
                 if (i < Indices.Length - 1)
-                    SB.Append(Indices[i].ToString(CultureInfo.InvariantCulture) + " ");
+                    SB.Append($"{Indices[i].ToString(CultureInfo.InvariantCulture)} ");
                 else
                     SB.Append(Indices[i].ToString(CultureInfo.InvariantCulture));
             }

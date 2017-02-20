@@ -89,7 +89,7 @@ uniform int BumpMode;
 
 out vec3 ViewDir;
 out vec3 WorldPos;
-out vec3 Reflec;
+out vec3 ONormal;
 out vec3 Normal;
 out vec3 Tangent;
 out vec4 Color;
@@ -145,7 +145,7 @@ void main() {
 	Pos += (Transforms[b2] * Position) * w[2];
 	Pos += (Transforms[b3] * Position) * w[3];
 
-	vec3 ONormal  = Normal;
+	ONormal = Normal;
 
 	if (ObjNormalMap != 0 && BumpMode == 1) {
 		Normal  = vec3(0, 0, 1);
@@ -184,22 +184,35 @@ void main() {
 
 	Color.rgb *= ColorScale;
 
-	ViewDir = normalize(vec3(ViewMatrix * ModelMatrix * Position));
+	ViewDir = -normalize(vec3(ViewMatrix * ModelMatrix * Position));
 
-	Reflec = reflect(ViewDir, ONormal);
-
-	ViewDir = -ViewDir;
-
-	if ((BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
+	if ((BoolUniforms & BOOL_HEMI_ENB) != 0) {
 		/*
 		 * On Pokémon models, when this bit is set output Color seems to contain Rim Color.
 		 * Alpha value from color is multiplied by a material Constant color and then added to shaded texture color.
-		 * Original Alpha value seems to be unused on the Shader, even through it does contain meaningful values.
-		 * Note: This only applies to Pokémon, and only some shaders.
+		 * Other games that uses the H3D shaders will output Hemisphere lighting color on the Vertex Color.
+		 * To make both games happy, we output Hemisphere color on RGB and Rim intensity on Alpha.
+		 * TODO: Hemisphere lighting values are hardcoded, make then configurable on Light instead.
 		 */
-		 float Rim = 1 - clamp(dot(ONormal, ViewDir), 0, 1);
+		float Sky = dot(ONormal, vec3(0, 1, 0)) * 0.8f + 0.2f;
+		float Rim = 1 - dot(ONormal, ViewDir);
 
-		 Color.a = pow(Rim, LightPowerScale.x) * LightPowerScale.y;
+		vec3 HemiCol = mix(vec3(0), vec3(1), Sky);
+
+		if (Scales0[S0_COL] == 0) {
+			//Color doesn't exist, use Material Diffuse instead
+			Color = MDiffuse;
+		}
+
+		if ((BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
+			//Ambient occlusion is stored on Alpha of Vertex Color
+			HemiCol *= Color.aaa;
+
+			//This is needed by Pokémon only (their custom shader calculates Rim light)
+			Color.a = pow(Rim, LightPowerScale.x) * LightPowerScale.y;
+		}
+
+		Color.rgb += HemiCol * MDiffuse.rgb;
 	}
 
 	WorldPos = vec3(ModelMatrix * Position);

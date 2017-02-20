@@ -114,7 +114,7 @@ namespace SPICA.Math3D
 
         public override string ToString()
         {
-            return string.Format("X: {0} Y: {1} Z: {2}", X, Y, Z);
+            return $"X: {X} Y: {Y} Z: {Z}";
         }
 
         public Vector3D Normalized()

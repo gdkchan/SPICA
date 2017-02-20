@@ -7,6 +7,7 @@ using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
+using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Renderer.Animation;
@@ -168,7 +169,7 @@ namespace SPICA.Renderer
             {
                 foreach (H3DLUTSampler Sampler in LUT.Samplers)
                 {
-                    string Name = LUT.Name + "/" + Sampler.Name;
+                    string Name = $"{LUT.Name}/{Sampler.Name}";
                     bool IsAbs = (Sampler.Flags & H3DLUTFlags.IsAbsolute) != 0;
 
                     int UBOHandle = GL.GenBuffer();
@@ -188,20 +189,6 @@ namespace SPICA.Renderer
             UpdateAnimationTransforms();
         }
 
-        public Vector3 GetMassCenter()
-        {
-            Vector3 Center = Vector3.Zero;
-
-            foreach (Mesh Mesh in Meshes)
-            {
-                Center += Mesh.MeshCenter;
-            }
-
-            Center /= Meshes.Count;
-
-            return Center;
-        }
-
         public Tuple<Vector3, Vector3> GetCenterDim(int MdlIndex)
         {
             if (MdlIndex == -1) return Tuple.Create(Vector3.Zero, Vector3.Zero);
@@ -216,14 +203,13 @@ namespace SPICA.Renderer
             Index < MeshRanges[CurrModel].End;
             Index++)
             {
-                PICAVertex[] Vertices = Meshes[Index].BaseMesh.ToVertices();
+                PICAVertex[] Vertices = Meshes[Index].BaseMesh.ToVertices(true);
 
                 if (Vertices.Length == 0) continue;
 
                 if (IsFirst)
                 {
-                    Min = Vertices[0].Position.ToVector3();
-                    Max = Vertices[0].Position.ToVector3();
+                    Min = Max = Vertices[0].Position.ToVector3();
 
                     IsFirst = false;
                 }

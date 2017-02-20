@@ -118,7 +118,7 @@ float CosPhi;
 
 in vec3 ViewDir;
 in vec3 WorldPos;
-in vec3 Reflec;
+in vec3 ONormal;
 in vec3 Normal;
 in vec3 Tangent;
 in vec4 Color;
@@ -286,8 +286,8 @@ void main() {
 			case 9: Output.a = clamp(min(AlphaArgs[0].a + AlphaArgs[1].a, 1) * AlphaArgs[2].a, 0, 1); break;
 		}
 
-		Output.rgb *= Combiners[Stage].ColorScale;
-		Output.a *= Combiners[Stage].AlphaScale;
+		Output.rgb = min(Output.rgb * Combiners[Stage].ColorScale, 1);
+		Output.a   = min(Output.a   * Combiners[Stage].AlphaScale, 1);
 	}
 
 	if (AlphaTestEnb != 0) {
@@ -324,11 +324,12 @@ vec4 GetTexColor(int Unit) {
 		case 0: Color = texture(Texture[Unit], TransformUV(TexCoord0, Unit)); break;
 		case 1: Color = texture(Texture[Unit], TransformUV(TexCoord1, Unit)); break;
 		case 2: Color = texture(Texture[Unit], TransformUV(TexCoord2, Unit)); break;
-		case 3: Color = texture(TextureCube, Reflec); break;
+		case 3: Color = texture(TextureCube, reflect(-ViewDir, ONormal)); break;
 		case 4:
-			vec3 R = vec3(Reflec.x, Reflec.y, Reflec.z + 1);
-			float m = 2 * sqrt(dot(R, R));
-			Color = texture(Texture[Unit], R.xy / m + 0.5);
+			vec3 Reflec = reflect(-ViewDir, ONormal);
+			Reflec.z += 1;
+			float m = 2 * sqrt(dot(Reflec, Reflec));
+			Color = texture(Texture[Unit], Reflec.xy / m + 0.5);
 			break;
 	}
 

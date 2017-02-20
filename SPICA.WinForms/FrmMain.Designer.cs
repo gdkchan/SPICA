@@ -40,6 +40,14 @@
             this.MenuNormalMap = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuNormalMapTangent = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuNormalMapObject = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuSeparatorRendererJustIgnore = new System.Windows.Forms.ToolStripSeparator();
+            this.MenuShowGrid = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuShowAxis = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuShowSkeleton = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuShowInfo = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuWireframeMode = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuUserInterface = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuShowSidebar = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuHelpRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.AnimControlsPanel = new System.Windows.Forms.Panel();
             this.LblAnimSpeed = new System.Windows.Forms.Label();
@@ -50,6 +58,16 @@
             this.MenuTexExport = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuTexExportAll = new System.Windows.Forms.ToolStripMenuItem();
             this.MainContainer = new System.Windows.Forms.SplitContainer();
+            this.ToolButtonOpen = new System.Windows.Forms.ToolStripButton();
+            this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
+            this.ToolButtonSave = new System.Windows.Forms.ToolStripButton();
+            this.MenuSeparatorShowHideJustIgnore = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolButtonShowGrid = new System.Windows.Forms.ToolStripButton();
+            this.ToolButtonShowAxis = new System.Windows.Forms.ToolStripButton();
+            this.MenuButtonShowBones = new System.Windows.Forms.ToolStripButton();
+            this.MenuButtonShowInfo = new System.Windows.Forms.ToolStripButton();
+            this.MenuButtonShowSideMenu = new System.Windows.Forms.ToolStripButton();
+            this.TopIcons = new System.Windows.Forms.ToolStrip();
             this.SideTabs = new SPICA.WinForms.GUI.SUITabControl();
             this.TabPageModels = new System.Windows.Forms.TabPage();
             this.ModelsList = new SPICA.WinForms.GUI.SUIList();
@@ -70,29 +88,19 @@
             this.AnimButtonStop = new SPICA.WinForms.GUI.SUIIconButton();
             this.AnimButtonSpeedUp = new SPICA.WinForms.GUI.SUIIconButton();
             this.AnimButtonNext = new SPICA.WinForms.GUI.SUIIconButton();
-            this.ToolButtonOpen = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonSave = new System.Windows.Forms.ToolStripButton();
-            this.MenuSeparatorShowHideJustIgnore = new System.Windows.Forms.ToolStripSeparator();
-            this.ToolButtonShowGrid = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonShowAxis = new System.Windows.Forms.ToolStripButton();
-            this.MenuButtonShowBones = new System.Windows.Forms.ToolStripButton();
-            this.MenuButtonShowInfo = new System.Windows.Forms.ToolStripButton();
-            this.MenuButtonShowSideMenu = new System.Windows.Forms.ToolStripButton();
-            this.TopIcons = new System.Windows.Forms.ToolStrip();
             this.TopMenu.SuspendLayout();
             this.AnimControlsPanel.SuspendLayout();
             this.TexturesMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).BeginInit();
             this.MainContainer.Panel2.SuspendLayout();
             this.MainContainer.SuspendLayout();
+            this.TopIcons.SuspendLayout();
             this.SideTabs.SuspendLayout();
             this.TabPageModels.SuspendLayout();
             this.TabPageTextures.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             this.TabPageSklAnims.SuspendLayout();
             this.TabPageMatAnims.SuspendLayout();
-            this.TopIcons.SuspendLayout();
             this.SuspendLayout();
             // 
             // TopMenu
@@ -144,7 +152,8 @@
             // MenuOptionsRoot
             // 
             this.MenuOptionsRoot.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuRenderer});
+            this.MenuRenderer,
+            this.MenuUserInterface});
             this.MenuOptionsRoot.Name = "MenuOptionsRoot";
             this.MenuOptionsRoot.Size = new System.Drawing.Size(61, 20);
             this.MenuOptionsRoot.Text = "&Options";
@@ -152,9 +161,15 @@
             // MenuRenderer
             // 
             this.MenuRenderer.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuNormalMap});
+            this.MenuNormalMap,
+            this.MenuSeparatorRendererJustIgnore,
+            this.MenuShowGrid,
+            this.MenuShowAxis,
+            this.MenuShowSkeleton,
+            this.MenuShowInfo,
+            this.MenuWireframeMode});
             this.MenuRenderer.Name = "MenuRenderer";
-            this.MenuRenderer.Size = new System.Drawing.Size(121, 22);
+            this.MenuRenderer.Size = new System.Drawing.Size(152, 22);
             this.MenuRenderer.Text = "&Renderer";
             // 
             // MenuNormalMap
@@ -163,7 +178,7 @@
             this.MenuNormalMapTangent,
             this.MenuNormalMapObject});
             this.MenuNormalMap.Name = "MenuNormalMap";
-            this.MenuNormalMap.Size = new System.Drawing.Size(141, 22);
+            this.MenuNormalMap.Size = new System.Drawing.Size(167, 22);
             this.MenuNormalMap.Text = "&Normal map";
             // 
             // MenuNormalMapTangent
@@ -179,6 +194,55 @@
             this.MenuNormalMapObject.Size = new System.Drawing.Size(150, 22);
             this.MenuNormalMapObject.Text = "Object space";
             this.MenuNormalMapObject.Click += new System.EventHandler(this.MenuNormalMapObject_Click);
+            // 
+            // MenuSeparatorRendererJustIgnore
+            // 
+            this.MenuSeparatorRendererJustIgnore.Name = "MenuSeparatorRendererJustIgnore";
+            this.MenuSeparatorRendererJustIgnore.Size = new System.Drawing.Size(164, 6);
+            // 
+            // MenuShowGrid
+            // 
+            this.MenuShowGrid.Name = "MenuShowGrid";
+            this.MenuShowGrid.Size = new System.Drawing.Size(167, 22);
+            this.MenuShowGrid.Text = "Show &grid";
+            // 
+            // MenuShowAxis
+            // 
+            this.MenuShowAxis.Name = "MenuShowAxis";
+            this.MenuShowAxis.Size = new System.Drawing.Size(167, 22);
+            this.MenuShowAxis.Text = "Show &axis";
+            // 
+            // MenuShowSkeleton
+            // 
+            this.MenuShowSkeleton.Name = "MenuShowSkeleton";
+            this.MenuShowSkeleton.Size = new System.Drawing.Size(167, 22);
+            this.MenuShowSkeleton.Text = "Show &skeleton";
+            // 
+            // MenuShowInfo
+            // 
+            this.MenuShowInfo.Name = "MenuShowInfo";
+            this.MenuShowInfo.Size = new System.Drawing.Size(167, 22);
+            this.MenuShowInfo.Text = "Show &model info.";
+            // 
+            // MenuWireframeMode
+            // 
+            this.MenuWireframeMode.Name = "MenuWireframeMode";
+            this.MenuWireframeMode.Size = new System.Drawing.Size(167, 22);
+            this.MenuWireframeMode.Text = "&Wireframe mode";
+            // 
+            // MenuUserInterface
+            // 
+            this.MenuUserInterface.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuShowSidebar});
+            this.MenuUserInterface.Name = "MenuUserInterface";
+            this.MenuUserInterface.Size = new System.Drawing.Size(152, 22);
+            this.MenuUserInterface.Text = "&User interface";
+            // 
+            // MenuShowSidebar
+            // 
+            this.MenuShowSidebar.Name = "MenuShowSidebar";
+            this.MenuShowSidebar.Size = new System.Drawing.Size(161, 22);
+            this.MenuShowSidebar.Text = "Show &side menu";
             // 
             // MenuHelpRoot
             // 
@@ -275,6 +339,120 @@
             this.MainContainer.Size = new System.Drawing.Size(944, 477);
             this.MainContainer.SplitterDistance = 698;
             this.MainContainer.TabIndex = 0;
+            // 
+            // ToolButtonOpen
+            // 
+            this.ToolButtonOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonOpen.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonOpen.Image")));
+            this.ToolButtonOpen.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonOpen.Name = "ToolButtonOpen";
+            this.ToolButtonOpen.Size = new System.Drawing.Size(28, 27);
+            this.ToolButtonOpen.ToolTipText = "Open...";
+            this.ToolButtonOpen.Click += new System.EventHandler(this.ToolButtonOpen_Click);
+            // 
+            // ToolButtonMerge
+            // 
+            this.ToolButtonMerge.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonMerge.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonMerge.Image")));
+            this.ToolButtonMerge.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonMerge.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonMerge.Name = "ToolButtonMerge";
+            this.ToolButtonMerge.Size = new System.Drawing.Size(28, 27);
+            this.ToolButtonMerge.ToolTipText = "Merge...";
+            this.ToolButtonMerge.Click += new System.EventHandler(this.ToolButtonMerge_Click);
+            // 
+            // ToolButtonSave
+            // 
+            this.ToolButtonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonSave.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonSave.Image")));
+            this.ToolButtonSave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonSave.Name = "ToolButtonSave";
+            this.ToolButtonSave.Size = new System.Drawing.Size(28, 27);
+            this.ToolButtonSave.ToolTipText = "Save...";
+            this.ToolButtonSave.Click += new System.EventHandler(this.ToolButtonSave_Click);
+            // 
+            // MenuSeparatorShowHideJustIgnore
+            // 
+            this.MenuSeparatorShowHideJustIgnore.Name = "MenuSeparatorShowHideJustIgnore";
+            this.MenuSeparatorShowHideJustIgnore.Size = new System.Drawing.Size(6, 30);
+            // 
+            // ToolButtonShowGrid
+            // 
+            this.ToolButtonShowGrid.CheckOnClick = true;
+            this.ToolButtonShowGrid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonShowGrid.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowGrid.Image")));
+            this.ToolButtonShowGrid.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonShowGrid.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonShowGrid.Name = "ToolButtonShowGrid";
+            this.ToolButtonShowGrid.Size = new System.Drawing.Size(28, 27);
+            this.ToolButtonShowGrid.ToolTipText = "Toggle grid";
+            // 
+            // ToolButtonShowAxis
+            // 
+            this.ToolButtonShowAxis.CheckOnClick = true;
+            this.ToolButtonShowAxis.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonShowAxis.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowAxis.Image")));
+            this.ToolButtonShowAxis.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonShowAxis.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonShowAxis.Name = "ToolButtonShowAxis";
+            this.ToolButtonShowAxis.Size = new System.Drawing.Size(28, 27);
+            this.ToolButtonShowAxis.ToolTipText = "Toggle axis";
+            // 
+            // MenuButtonShowBones
+            // 
+            this.MenuButtonShowBones.CheckOnClick = true;
+            this.MenuButtonShowBones.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.MenuButtonShowBones.Image = ((System.Drawing.Image)(resources.GetObject("MenuButtonShowBones.Image")));
+            this.MenuButtonShowBones.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.MenuButtonShowBones.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.MenuButtonShowBones.Name = "MenuButtonShowBones";
+            this.MenuButtonShowBones.Size = new System.Drawing.Size(28, 27);
+            this.MenuButtonShowBones.ToolTipText = "Toggle skeleton";
+            // 
+            // MenuButtonShowInfo
+            // 
+            this.MenuButtonShowInfo.CheckOnClick = true;
+            this.MenuButtonShowInfo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.MenuButtonShowInfo.Image = ((System.Drawing.Image)(resources.GetObject("MenuButtonShowInfo.Image")));
+            this.MenuButtonShowInfo.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.MenuButtonShowInfo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.MenuButtonShowInfo.Name = "MenuButtonShowInfo";
+            this.MenuButtonShowInfo.Size = new System.Drawing.Size(28, 27);
+            this.MenuButtonShowInfo.ToolTipText = "Toggle model info.";
+            // 
+            // MenuButtonShowSideMenu
+            // 
+            this.MenuButtonShowSideMenu.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.MenuButtonShowSideMenu.CheckOnClick = true;
+            this.MenuButtonShowSideMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.MenuButtonShowSideMenu.Image = ((System.Drawing.Image)(resources.GetObject("MenuButtonShowSideMenu.Image")));
+            this.MenuButtonShowSideMenu.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.MenuButtonShowSideMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.MenuButtonShowSideMenu.Name = "MenuButtonShowSideMenu";
+            this.MenuButtonShowSideMenu.Size = new System.Drawing.Size(28, 27);
+            this.MenuButtonShowSideMenu.ToolTipText = "Toggle side menu";
+            // 
+            // TopIcons
+            // 
+            this.TopIcons.AutoSize = false;
+            this.TopIcons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
+            this.TopIcons.ForeColor = System.Drawing.Color.White;
+            this.TopIcons.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolButtonOpen,
+            this.ToolButtonMerge,
+            this.ToolButtonSave,
+            this.MenuSeparatorShowHideJustIgnore,
+            this.ToolButtonShowGrid,
+            this.ToolButtonShowAxis,
+            this.MenuButtonShowBones,
+            this.MenuButtonShowInfo,
+            this.MenuButtonShowSideMenu});
+            this.TopIcons.Location = new System.Drawing.Point(0, 24);
+            this.TopIcons.Name = "TopIcons";
+            this.TopIcons.Size = new System.Drawing.Size(944, 30);
+            this.TopIcons.TabIndex = 3;
             // 
             // SideTabs
             // 
@@ -530,122 +708,6 @@
             this.AnimButtonNext.TabIndex = 2;
             this.AnimButtonNext.Click += new System.EventHandler(this.AnimButtonNext_Click);
             // 
-            // ToolButtonOpen
-            // 
-            this.ToolButtonOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonOpen.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonOpen.Image")));
-            this.ToolButtonOpen.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonOpen.Name = "ToolButtonOpen";
-            this.ToolButtonOpen.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonOpen.ToolTipText = "Open...";
-            this.ToolButtonOpen.Click += new System.EventHandler(this.ToolButtonOpen_Click);
-            // 
-            // ToolButtonMerge
-            // 
-            this.ToolButtonMerge.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonMerge.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonMerge.Image")));
-            this.ToolButtonMerge.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonMerge.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonMerge.Name = "ToolButtonMerge";
-            this.ToolButtonMerge.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonMerge.ToolTipText = "Merge...";
-            this.ToolButtonMerge.Click += new System.EventHandler(this.ToolButtonMerge_Click);
-            // 
-            // ToolButtonSave
-            // 
-            this.ToolButtonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonSave.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonSave.Image")));
-            this.ToolButtonSave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonSave.Name = "ToolButtonSave";
-            this.ToolButtonSave.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonSave.ToolTipText = "Save...";
-            this.ToolButtonSave.Click += new System.EventHandler(this.ToolButtonSave_Click);
-            // 
-            // MenuSeparatorShowHideJustIgnore
-            // 
-            this.MenuSeparatorShowHideJustIgnore.Name = "MenuSeparatorShowHideJustIgnore";
-            this.MenuSeparatorShowHideJustIgnore.Size = new System.Drawing.Size(6, 30);
-            // 
-            // ToolButtonShowGrid
-            // 
-            this.ToolButtonShowGrid.CheckOnClick = true;
-            this.ToolButtonShowGrid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonShowGrid.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowGrid.Image")));
-            this.ToolButtonShowGrid.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonShowGrid.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonShowGrid.Name = "ToolButtonShowGrid";
-            this.ToolButtonShowGrid.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowGrid.ToolTipText = "Toggle grid";
-            this.ToolButtonShowGrid.Click += new System.EventHandler(this.ToolButtonShowGrid_Click);
-            // 
-            // ToolButtonShowAxis
-            // 
-            this.ToolButtonShowAxis.CheckOnClick = true;
-            this.ToolButtonShowAxis.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonShowAxis.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowAxis.Image")));
-            this.ToolButtonShowAxis.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonShowAxis.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonShowAxis.Name = "ToolButtonShowAxis";
-            this.ToolButtonShowAxis.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowAxis.ToolTipText = "Toggle axis";
-            this.ToolButtonShowAxis.Click += new System.EventHandler(this.ToolButtonShowAxis_Click);
-            // 
-            // MenuButtonShowBones
-            // 
-            this.MenuButtonShowBones.CheckOnClick = true;
-            this.MenuButtonShowBones.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.MenuButtonShowBones.Image = ((System.Drawing.Image)(resources.GetObject("MenuButtonShowBones.Image")));
-            this.MenuButtonShowBones.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuButtonShowBones.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.MenuButtonShowBones.Name = "MenuButtonShowBones";
-            this.MenuButtonShowBones.Size = new System.Drawing.Size(28, 27);
-            this.MenuButtonShowBones.ToolTipText = "Toggle skeleton";
-            // 
-            // MenuButtonShowInfo
-            // 
-            this.MenuButtonShowInfo.CheckOnClick = true;
-            this.MenuButtonShowInfo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.MenuButtonShowInfo.Image = ((System.Drawing.Image)(resources.GetObject("MenuButtonShowInfo.Image")));
-            this.MenuButtonShowInfo.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuButtonShowInfo.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.MenuButtonShowInfo.Name = "MenuButtonShowInfo";
-            this.MenuButtonShowInfo.Size = new System.Drawing.Size(28, 27);
-            this.MenuButtonShowInfo.ToolTipText = "Toggle model info.";
-            // 
-            // MenuButtonShowSideMenu
-            // 
-            this.MenuButtonShowSideMenu.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.MenuButtonShowSideMenu.CheckOnClick = true;
-            this.MenuButtonShowSideMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.MenuButtonShowSideMenu.Image = ((System.Drawing.Image)(resources.GetObject("MenuButtonShowSideMenu.Image")));
-            this.MenuButtonShowSideMenu.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.MenuButtonShowSideMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.MenuButtonShowSideMenu.Name = "MenuButtonShowSideMenu";
-            this.MenuButtonShowSideMenu.Size = new System.Drawing.Size(28, 27);
-            this.MenuButtonShowSideMenu.ToolTipText = "Toggle side menu";
-            // 
-            // TopIcons
-            // 
-            this.TopIcons.AutoSize = false;
-            this.TopIcons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
-            this.TopIcons.ForeColor = System.Drawing.Color.White;
-            this.TopIcons.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolButtonOpen,
-            this.ToolButtonMerge,
-            this.ToolButtonSave,
-            this.MenuSeparatorShowHideJustIgnore,
-            this.ToolButtonShowGrid,
-            this.ToolButtonShowAxis,
-            this.MenuButtonShowBones,
-            this.MenuButtonShowInfo,
-            this.MenuButtonShowSideMenu});
-            this.TopIcons.Location = new System.Drawing.Point(0, 24);
-            this.TopIcons.Name = "TopIcons";
-            this.TopIcons.Size = new System.Drawing.Size(944, 30);
-            this.TopIcons.TabIndex = 3;
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -661,6 +723,7 @@
             this.Name = "FrmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SPICA";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
             this.TopMenu.ResumeLayout(false);
             this.TopMenu.PerformLayout();
             this.AnimControlsPanel.ResumeLayout(false);
@@ -668,14 +731,14 @@
             this.MainContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).EndInit();
             this.MainContainer.ResumeLayout(false);
+            this.TopIcons.ResumeLayout(false);
+            this.TopIcons.PerformLayout();
             this.SideTabs.ResumeLayout(false);
             this.TabPageModels.ResumeLayout(false);
             this.TabPageTextures.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).EndInit();
             this.TabPageSklAnims.ResumeLayout(false);
             this.TabPageMatAnims.ResumeLayout(false);
-            this.TopIcons.ResumeLayout(false);
-            this.TopIcons.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -733,5 +796,13 @@
         private System.Windows.Forms.ToolStripButton MenuButtonShowInfo;
         private System.Windows.Forms.ToolStripButton MenuButtonShowSideMenu;
         private System.Windows.Forms.ToolStrip TopIcons;
+        private System.Windows.Forms.ToolStripSeparator MenuSeparatorRendererJustIgnore;
+        private System.Windows.Forms.ToolStripMenuItem MenuShowGrid;
+        private System.Windows.Forms.ToolStripMenuItem MenuShowAxis;
+        private System.Windows.Forms.ToolStripMenuItem MenuShowSkeleton;
+        private System.Windows.Forms.ToolStripMenuItem MenuShowInfo;
+        private System.Windows.Forms.ToolStripMenuItem MenuWireframeMode;
+        private System.Windows.Forms.ToolStripMenuItem MenuUserInterface;
+        private System.Windows.Forms.ToolStripMenuItem MenuShowSidebar;
     }
 }

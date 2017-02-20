@@ -5,9 +5,16 @@ using System.Xml.Serialization;
 
 namespace SPICA.Formats.Generic.XML
 {
-    class H3DXml
+    class H3DXML
     {
-        public static void Save(string FileName, H3D SceneData)
+        private H3D SceneData;
+
+        public H3DXML(H3D SceneData)
+        {
+            this.SceneData = SceneData;
+        }
+
+        public void Save(string FileName)
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {

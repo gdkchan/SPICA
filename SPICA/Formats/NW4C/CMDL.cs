@@ -1565,7 +1565,7 @@ namespace SPICA.Formats.CtrH3D {
                 //FragmentShader
                 fragShade = new ctrFragShader();
 
-                fragShade.LayerConfig = "ConfigurationType" + ((int)mt.MaterialParams.TranslucencyLayer).ToString(); //???
+                fragShade.LayerConfig = "ConfigurationType" + ((int)mt.MaterialParams.LayerConfig).ToString(); //???
                 fragShade.BufferColor.R = (float)mt.MaterialParams.TexEnvBufferColor.R / 255;
                 fragShade.BufferColor.G = (float)mt.MaterialParams.TexEnvBufferColor.G / 255;
                 fragShade.BufferColor.B = (float)mt.MaterialParams.TexEnvBufferColor.B / 255;
@@ -1584,9 +1584,9 @@ namespace SPICA.Formats.CtrH3D {
                 fragShade.FragmentLighting.IsReflectionEnabled = (lightFlags & H3DFragmentFlags.IsLUTReflectionEnabled) > 0;
 
                 ctrFragLightTable flt = fragShade.FragmentLightingTable;
-                flt.ReflectanceRSampler.IsAbs = mt.MaterialParams.LUTInputAbs.ReflecRAbs;
-                flt.ReflectanceRSampler.Input = mt.MaterialParams.LUTInputSel.ReflecRInput.ToString();
-                flt.ReflectanceRSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecRScale.ToString();
+                flt.ReflectanceRSampler.IsAbs = mt.MaterialParams.LUTInAbs.ReflecRAbs;
+                flt.ReflectanceRSampler.Input = mt.MaterialParams.LUTInSel.ReflecRInput.ToString();
+                flt.ReflectanceRSampler.Scale = mt.MaterialParams.LUTInScale.ReflecRScale.ToString();
                 if (mt.MaterialParams.LUTReflecRTableName != null) {
                     flt.ReflectanceRSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.ReflectanceRSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecRSamplerName;
@@ -1594,9 +1594,9 @@ namespace SPICA.Formats.CtrH3D {
                 } else {
                     flt.ReflectanceRSampler.NullLookupTableCtr = "";
                 }
-                flt.ReflectanceGSampler.IsAbs = mt.MaterialParams.LUTInputAbs.ReflecGAbs;
-                flt.ReflectanceGSampler.Input = mt.MaterialParams.LUTInputSel.ReflecGInput.ToString();
-                flt.ReflectanceGSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecGScale.ToString();
+                flt.ReflectanceGSampler.IsAbs = mt.MaterialParams.LUTInAbs.ReflecGAbs;
+                flt.ReflectanceGSampler.Input = mt.MaterialParams.LUTInSel.ReflecGInput.ToString();
+                flt.ReflectanceGSampler.Scale = mt.MaterialParams.LUTInScale.ReflecGScale.ToString();
                 if (mt.MaterialParams.LUTReflecGTableName != null) {
                     flt.ReflectanceGSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.ReflectanceGSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecGSamplerName;
@@ -1604,9 +1604,9 @@ namespace SPICA.Formats.CtrH3D {
                 } else {
                     flt.ReflectanceGSampler.NullLookupTableCtr = "";
                 }
-                flt.ReflectanceBSampler.IsAbs = mt.MaterialParams.LUTInputAbs.ReflecBAbs;
-                flt.ReflectanceBSampler.Input = mt.MaterialParams.LUTInputSel.ReflecBInput.ToString();
-                flt.ReflectanceBSampler.Scale = mt.MaterialParams.LUTInputScaleSel.ReflecBScale.ToString();
+                flt.ReflectanceBSampler.IsAbs = mt.MaterialParams.LUTInAbs.ReflecBAbs;
+                flt.ReflectanceBSampler.Input = mt.MaterialParams.LUTInSel.ReflecBInput.ToString();
+                flt.ReflectanceBSampler.Scale = mt.MaterialParams.LUTInScale.ReflecBScale.ToString();
                 if (mt.MaterialParams.LUTReflecBTableName != null) {
                     flt.ReflectanceBSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.ReflectanceBSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTReflecBSamplerName;
@@ -1614,9 +1614,9 @@ namespace SPICA.Formats.CtrH3D {
                 } else {
                     flt.ReflectanceBSampler.NullLookupTableCtr = "";
                 }
-                flt.Distribution0Sampler.IsAbs = mt.MaterialParams.LUTInputAbs.Dist0Abs;
-                flt.Distribution0Sampler.Input = mt.MaterialParams.LUTInputSel.Dist0Input.ToString();
-                flt.Distribution0Sampler.Scale = mt.MaterialParams.LUTInputScaleSel.Dist0Scale.ToString();
+                flt.Distribution0Sampler.IsAbs = mt.MaterialParams.LUTInAbs.Dist0Abs;
+                flt.Distribution0Sampler.Input = mt.MaterialParams.LUTInSel.Dist0Input.ToString();
+                flt.Distribution0Sampler.Scale = mt.MaterialParams.LUTInScale.Dist0Scale.ToString();
                 if (mt.MaterialParams.LUTDist0TableName != null) {
                     flt.Distribution0Sampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.Distribution0Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist0SamplerName;
@@ -1624,9 +1624,9 @@ namespace SPICA.Formats.CtrH3D {
                 } else {
                     flt.Distribution0Sampler.NullLookupTableCtr = "";
                 }
-                flt.Distribution1Sampler.IsAbs = mt.MaterialParams.LUTInputAbs.Dist1Abs;
-                flt.Distribution1Sampler.Input = mt.MaterialParams.LUTInputSel.Dist1Input.ToString();
-                flt.Distribution1Sampler.Scale = mt.MaterialParams.LUTInputScaleSel.Dist1Scale.ToString();
+                flt.Distribution1Sampler.IsAbs = mt.MaterialParams.LUTInAbs.Dist1Abs;
+                flt.Distribution1Sampler.Input = mt.MaterialParams.LUTInSel.Dist1Input.ToString();
+                flt.Distribution1Sampler.Scale = mt.MaterialParams.LUTInScale.Dist1Scale.ToString();
                 if (mt.MaterialParams.LUTDist1TableName != null) {
                     flt.Distribution1Sampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.Distribution1Sampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTDist1SamplerName;
@@ -1634,9 +1634,9 @@ namespace SPICA.Formats.CtrH3D {
                 } else {
                     flt.Distribution1Sampler.NullLookupTableCtr = "";
                 }
-                flt.FresnelSampler.IsAbs = mt.MaterialParams.LUTInputAbs.FresnelAbs;
-                flt.FresnelSampler.Input = mt.MaterialParams.LUTInputSel.FresnelInput.ToString();
-                flt.FresnelSampler.Scale = mt.MaterialParams.LUTInputScaleSel.FresnelScale.ToString();
+                flt.FresnelSampler.IsAbs = mt.MaterialParams.LUTInAbs.FresnelAbs;
+                flt.FresnelSampler.Input = mt.MaterialParams.LUTInSel.FresnelInput.ToString();
+                flt.FresnelSampler.Scale = mt.MaterialParams.LUTInScale.FresnelScale.ToString();
                 if (mt.MaterialParams.LUTFresnelTableName != null) {
                     flt.FresnelSampler.ReferenceLookupTableCtr = new ctrLutRef();
                     flt.FresnelSampler.ReferenceLookupTableCtr.TableName = mt.MaterialParams.LUTFresnelSamplerName;
@@ -1647,22 +1647,22 @@ namespace SPICA.Formats.CtrH3D {
 
                 foreach (var comb in mt.MaterialParams.TexEnvStages) {
                     texComb = new ctrTexCombine();
-                    texComb.CombineRgb = comb.Combiner.RGBCombiner.ToString();
+                    texComb.CombineRgb = comb.Combiner.ColorCombiner.ToString();
                     texComb.CombineAlpha = comb.Combiner.AlphaCombiner.ToString();
-                    texComb.ScaleRgb = comb.Scale.RGBScale.ToString();
+                    texComb.ScaleRgb = comb.Scale.ColorScale.ToString();
                     texComb.ScaleAlpha = comb.Scale.AlphaScale.ToString();
                     texComb.Constant = "Constant0";
                     texComb.BufferInputRgb = "PreviousBuffer";
                     texComb.BufferInputAlpha = "PreviousBuffer";
-                    texComb.SourceRgb.Source0 = comb.Source.RGBSource[0].ToString();
-                    texComb.SourceRgb.Source1 = comb.Source.RGBSource[1].ToString();
-                    texComb.SourceRgb.Source2 = comb.Source.RGBSource[2].ToString();
+                    texComb.SourceRgb.Source0 = comb.Source.ColorSource[0].ToString();
+                    texComb.SourceRgb.Source1 = comb.Source.ColorSource[1].ToString();
+                    texComb.SourceRgb.Source2 = comb.Source.ColorSource[2].ToString();
                     texComb.SourceAlpha.Source0 = comb.Source.AlphaSource[0].ToString();
                     texComb.SourceAlpha.Source1 = comb.Source.AlphaSource[1].ToString();
                     texComb.SourceAlpha.Source2 = comb.Source.AlphaSource[2].ToString();
-                    texComb.OperandRgb.Operand0 = comb.Operand.RGBOp[0].ToString();
-                    texComb.OperandRgb.Operand1 = comb.Operand.RGBOp[1].ToString();
-                    texComb.OperandRgb.Operand2 = comb.Operand.RGBOp[2].ToString();
+                    texComb.OperandRgb.Operand0 = comb.Operand.ColorOp[0].ToString();
+                    texComb.OperandRgb.Operand1 = comb.Operand.ColorOp[1].ToString();
+                    texComb.OperandRgb.Operand2 = comb.Operand.ColorOp[2].ToString();
                     texComb.OperandAlpha.Operand0 = comb.Operand.AlphaOp[0].ToString();
                     texComb.OperandAlpha.Operand1 = comb.Operand.AlphaOp[1].ToString();
                     texComb.OperandAlpha.Operand2 = comb.Operand.AlphaOp[2].ToString();
@@ -1683,9 +1683,9 @@ namespace SPICA.Formats.CtrH3D {
                 fragOp.BlendOperation.Mode = "NotUsed";
                 fragOp.BlendOperation.LogicOperation = mt.MaterialParams.LogicalOperation.ToString();
 
-                fragOp.BlendOperation.RgbParameter.BlendFunctionSource = mt.MaterialParams.BlendFunction.RGBSourceFunc.ToString();
-                fragOp.BlendOperation.RgbParameter.BlendFunctionDestination = mt.MaterialParams.BlendFunction.RGBDestFunc.ToString();
-                fragOp.BlendOperation.RgbParameter.BlendEquation = mt.MaterialParams.BlendFunction.RGBEquation.ToString();
+                fragOp.BlendOperation.RgbParameter.BlendFunctionSource = mt.MaterialParams.BlendFunction.ColorSourceFunc.ToString();
+                fragOp.BlendOperation.RgbParameter.BlendFunctionDestination = mt.MaterialParams.BlendFunction.ColorDestFunc.ToString();
+                fragOp.BlendOperation.RgbParameter.BlendEquation = mt.MaterialParams.BlendFunction.ColorEquation.ToString();
 
                 fragOp.BlendOperation.AlphaParameter.BlendFunctionSource = mt.MaterialParams.BlendFunction.AlphaSourceFunc.ToString();
                 fragOp.BlendOperation.AlphaParameter.BlendFunctionDestination = mt.MaterialParams.BlendFunction.AlphaDestFunc.ToString();

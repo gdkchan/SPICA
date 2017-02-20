@@ -26,9 +26,9 @@ namespace SPICA.Formats.Generic.COLLADA
             for (int i = 0; i < Matrices.Length; i++)
             {
                 if (i < Matrices.Length - 1)
-                    SB.Append(Matrices[i].ToSerializableString() + " 0 0 0 1 ");
+                    SB.Append($"{Matrices[i].ToSerializableString()} 0 0 0 1 ");
                 else
-                    SB.Append(Matrices[i].ToSerializableString() + " 0 0 0 1");
+                    SB.Append($"{Matrices[i].ToSerializableString()} 0 0 0 1");
             }
 
             data = SB.ToString();

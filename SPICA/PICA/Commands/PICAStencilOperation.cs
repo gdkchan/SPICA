@@ -1,10 +1,12 @@
-﻿namespace SPICA.PICA.Commands
+﻿using System.Xml.Serialization;
+
+namespace SPICA.PICA.Commands
 {
     public struct PICAStencilOperation
     {
-        public PICAStencilOp FailOp;
-        public PICAStencilOp ZFailOp;
-        public PICAStencilOp ZPassOp;
+        [XmlAttribute] public PICAStencilOp FailOp;
+        [XmlAttribute] public PICAStencilOp ZFailOp;
+        [XmlAttribute] public PICAStencilOp ZPassOp;
 
         public PICAStencilOperation(uint Param)
         {

@@ -1,13 +1,15 @@
-﻿namespace SPICA.PICA.Commands
+﻿using System.Xml.Serialization;
+
+namespace SPICA.PICA.Commands
 {
     public struct PICATexEnvCombiner
     {
-        public PICATextureCombinerMode RGBCombiner;
-        public PICATextureCombinerMode AlphaCombiner;
+        [XmlAttribute] public PICATextureCombinerMode ColorCombiner;
+        [XmlAttribute] public PICATextureCombinerMode AlphaCombiner;
 
         public PICATexEnvCombiner(uint Param)
         {
-            RGBCombiner = (PICATextureCombinerMode)((Param >> 0) & 0xf);
+            ColorCombiner = (PICATextureCombinerMode)((Param >> 0) & 0xf);
             AlphaCombiner = (PICATextureCombinerMode)((Param >> 16) & 0xf);
         }
 
@@ -15,7 +17,7 @@
         {
             uint Param = 0;
 
-            Param |= ((uint)RGBCombiner & 0xf) << 0;
+            Param |= ((uint)ColorCombiner & 0xf) << 0;
             Param |= ((uint)AlphaCombiner & 0xf) << 16;
 
             return Param;

@@ -54,13 +54,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 Output.MaterialParams.TexEnvBufferColor = new PICATexEnvColor(0xff000000);
 
-                Output.MaterialParams.LUTInputAbs.ReflecRAbs  = true;
-                Output.MaterialParams.LUTInputAbs.ReflecGAbs  = true;
-                Output.MaterialParams.LUTInputAbs.ReflecBAbs  = true;
-                Output.MaterialParams.LUTInputAbs.Dist0Abs    = true;
-                Output.MaterialParams.LUTInputAbs.Dist1Abs    = true;
-                Output.MaterialParams.LUTInputAbs.FresnelAbs  = true;
-                Output.MaterialParams.LUTInputAbs.SpecularAbs = true;
+                Output.MaterialParams.LUTInAbs.ReflecRAbs  = true;
+                Output.MaterialParams.LUTInAbs.ReflecGAbs  = true;
+                Output.MaterialParams.LUTInAbs.ReflecBAbs  = true;
+                Output.MaterialParams.LUTInAbs.Dist0Abs    = true;
+                Output.MaterialParams.LUTInAbs.Dist1Abs    = true;
+                Output.MaterialParams.LUTInAbs.FresnelAbs  = true;
+                Output.MaterialParams.LUTInAbs.SpecularAbs = true;
 
                 Output.MaterialParams.DepthColorMask.Enabled = true;
 
@@ -74,7 +74,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 for (int Stage = 0; Stage < 6; Stage++)
                 {
-                    Output.MaterialParams.TexEnvStages[Stage].Source.RGBSource[0] = PICATextureCombinerSource.Texture0;
+                    Output.MaterialParams.TexEnvStages[Stage].Source.ColorSource[0] = PICATextureCombinerSource.Texture0;
                     Output.MaterialParams.TexEnvStages[Stage].Source.AlphaSource[0] = PICATextureCombinerSource.Texture0;
                 }
 
@@ -136,7 +136,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Serializer.Strings.Values.Add(new RefValue
             {
                 Position = -1,
-                Value = Name + "-silhouette"
+                Value = $"{Name}-silhouette"
             });
 
             PICACommandWriter Writer = new PICACommandWriter();

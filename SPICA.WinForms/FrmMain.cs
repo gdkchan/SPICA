@@ -11,6 +11,7 @@ using SPICA.Renderer;
 using SPICA.Renderer.Animation;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
+using SPICA.WinForms.Properties;
 using SPICA.WinForms.RenderExtensions;
 
 using System;
@@ -23,19 +24,16 @@ namespace SPICA.WinForms
 {
     public partial class FrmMain : Form
     {
-        #region Initialization
+        #region Declarations
         private RenderEngine Renderer;
         private GLControl Viewport;
         private GridLines UIGrid;
         private AxisLines UIAxis;
-
         private Vector2 InitialMov;
         private Vector2 CurrentRot;
         private Vector2 CurrentMov;
-
         private Model Model;
         private H3D SceneData;
-
         private Bitmap[] CachedTextures;
 
         private float Dimension;
@@ -53,7 +51,9 @@ namespace SPICA.WinForms
         }
 
         private AnimType CurrAnimType;
+        #endregion
 
+        #region Initialization/Termination
         public FrmMain()
         {
             //We need to add the control here cause we need to call the constructor with Graphics Mode
@@ -79,9 +79,14 @@ namespace SPICA.WinForms
 
             MainContainer.Panel1.Controls.Add(Viewport);
 
-            TopMenu.Renderer = new ToolsRenderer(TopMenu.BackColor);
-            TopIcons.Renderer = new ToolsRenderer(TopIcons.BackColor);
+            TopMenu.Renderer      = new ToolsRenderer(TopMenu.BackColor);
+            TopIcons.Renderer     = new ToolsRenderer(TopIcons.BackColor);
             TexturesMenu.Renderer = new ToolsRenderer(TexturesMenu.BackColor);
+        }
+
+        private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.Save();
         }
         #endregion
 
@@ -105,6 +110,13 @@ namespace SPICA.WinForms
             Zoom      = -100f;
 
             UpdateViewport();
+
+            /*
+             * Load settings (needs to be done here cause some of then changes values related to the renderer,
+             * and those needs that OpenTK have been properly initialized.
+             */
+            SettingsManager.BindBool("RenderShowGrid", ToggleGrid, MenuShowGrid, ToolButtonShowGrid);
+            SettingsManager.BindBool("RenderShowAxis", ToggleAxis, MenuShowAxis, ToolButtonShowAxis);
         }
 
         private void Viewport_MouseDown(object sender, MouseEventArgs e)
@@ -191,7 +203,7 @@ namespace SPICA.WinForms
                 using (SaveFileDialog SaveDlg = new SaveFileDialog())
                 {
                     SaveDlg.Filter = "Portable Network Graphics|*.png";
-                    SaveDlg.FileName = TexturesList[TexturesList.SelectedIndex] + ".png";
+                    SaveDlg.FileName = $"{TexturesList[TexturesList.SelectedIndex]}.png";
 
                     if (SaveDlg.ShowDialog() == DialogResult.OK)
                     {
@@ -213,7 +225,7 @@ namespace SPICA.WinForms
 
                         foreach (Bitmap Img in CachedTextures)
                         {
-                            Img.Save(Path.Combine(FolderDlg.SelectedPath, TexturesList[Index++] + ".png"));
+                            Img.Save(Path.Combine(FolderDlg.SelectedPath, $"{TexturesList[Index++]}.png"));
                         }
                     }
                 }
@@ -237,12 +249,12 @@ namespace SPICA.WinForms
             Save();
         }
 
-        private void ToolButtonShowGrid_Click(object sender, EventArgs e)
+        private void ToggleGrid()
         {
             UIGrid.Visible = ToolButtonShowGrid.Checked; UpdateViewport();
         }
 
-        private void ToolButtonShowAxis_Click(object sender, EventArgs e)
+        private void ToggleAxis()
         {
             UIAxis.Visible = ToolButtonShowAxis.Checked; UpdateViewport();
         }
@@ -350,17 +362,14 @@ namespace SPICA.WinForms
 
                 if (SaveDlg.ShowDialog() == DialogResult.OK)
                 {
+                    int MdlIndex = ModelsList.SelectedIndex;
+                    int AnimIndex = SklAnimsList.SelectedIndex;
+
                     switch (SaveDlg.FilterIndex)
                     {
-                        case 1: new DAE(
-                            SceneData, 
-                            ModelsList.SelectedIndex, 
-                            SklAnimsList.SelectedIndex).Save(SaveDlg.FileName); break;
-                        case 2: new SMDModel(
-                            SceneData,
-                            ModelsList.SelectedIndex,
-                            SklAnimsList.SelectedIndex).Save(SaveDlg.FileName); break;
-                        case 3: H3DXml.Save(SaveDlg.FileName, SceneData); break;
+                        case 1: new DAE(SceneData, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
+                        case 2: new SMD(SceneData, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
+                        case 3: new H3DXML(SceneData).Save(SaveDlg.FileName); break;
                     }
                 }
             }
@@ -405,9 +414,9 @@ namespace SPICA.WinForms
             Renderer.AddLight(new Light
             {
                 Position = new Vector3(0, Center.Y, Center.Z),
-                Ambient = new Color4(0.0f, 0.0f, 0.0f, 1f),
-                Diffuse = new Color4(0.8f, 0.8f, 0.8f, 1f),
-                Specular = new Color4(0.8f, 0.8f, 0.8f, 1f)
+                Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1f),
+                Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1f),
+                Specular = new Color4(0.5f, 0.5f, 0.5f, 1f)
             });
 
             Model.TranslateAbs(-Center);
@@ -685,7 +694,7 @@ namespace SPICA.WinForms
 
         private void UpdateAnimLbls()
         {
-            LblAnimSpeed.Text = string.Format("{0:N2}x", Math.Abs(Model.SkeletalAnimation.Step));
+            LblAnimSpeed.Text = $"{Math.Abs(Model.SkeletalAnimation.Step).ToString("N2")}x";
 
             bool Loop = false;
 

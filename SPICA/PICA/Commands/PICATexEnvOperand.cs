@@ -1,23 +1,25 @@
-﻿namespace SPICA.PICA.Commands
+﻿using System.Xml.Serialization;
+
+namespace SPICA.PICA.Commands
 {
     public class PICATexEnvOperand
     {
-        public PICATextureCombinerRGBOp[] RGBOp;
-        public PICATextureCombinerAlphaOp[] AlphaOp;
+        [XmlAttribute] public PICATextureCombinerColorOp[] ColorOp;
+        [XmlAttribute] public PICATextureCombinerAlphaOp[] AlphaOp;
 
         public PICATexEnvOperand()
         {
-            RGBOp = new PICATextureCombinerRGBOp[3];
+            ColorOp = new PICATextureCombinerColorOp[3];
             AlphaOp = new PICATextureCombinerAlphaOp[3];
         }
 
         public PICATexEnvOperand(uint Param)
         {
-            RGBOp = new PICATextureCombinerRGBOp[3];
-            
-            RGBOp[0] = (PICATextureCombinerRGBOp)((Param >> 0) & 0xf);
-            RGBOp[1] = (PICATextureCombinerRGBOp)((Param >> 4) & 0xf);
-            RGBOp[2] = (PICATextureCombinerRGBOp)((Param >> 8) & 0xf);
+            ColorOp = new PICATextureCombinerColorOp[3];
+
+            ColorOp[0] = (PICATextureCombinerColorOp)((Param >> 0) & 0xf);
+            ColorOp[1] = (PICATextureCombinerColorOp)((Param >> 4) & 0xf);
+            ColorOp[2] = (PICATextureCombinerColorOp)((Param >> 8) & 0xf);
 
             AlphaOp = new PICATextureCombinerAlphaOp[3];
 
@@ -30,9 +32,9 @@
         {
             uint Param = 0;
 
-            Param |= ((uint)RGBOp[0] & 0xf) << 0;
-            Param |= ((uint)RGBOp[1] & 0xf) << 4;
-            Param |= ((uint)RGBOp[2] & 0xf) << 8;
+            Param |= ((uint)ColorOp[0] & 0xf) << 0;
+            Param |= ((uint)ColorOp[1] & 0xf) << 4;
+            Param |= ((uint)ColorOp[2] & 0xf) << 8;
 
             Param |= ((uint)AlphaOp[0] & 0xf) << 12;
             Param |= ((uint)AlphaOp[1] & 0xf) << 16;

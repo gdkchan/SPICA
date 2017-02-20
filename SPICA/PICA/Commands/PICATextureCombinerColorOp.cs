@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICATextureCombinerRGBOp
+    public enum PICATextureCombinerColorOp
     {
         Color = 0,
         OneMinusColor = 1,

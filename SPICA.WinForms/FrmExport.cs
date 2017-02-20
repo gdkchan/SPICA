@@ -95,8 +95,8 @@ namespace SPICA.WinForms
 
                             switch (Format)
                             {
-                                case 0: new DAE     (Data, Index).Save(FileName + ".dae"); break;
-                                case 1: new SMDModel(Data, Index).Save(FileName + ".smd"); break;
+                                case 0: new DAE(Data, Index).Save(FileName + ".dae"); break;
+                                case 1: new SMD(Data, Index).Save(FileName + ".smd"); break;
                             }
                         }
                     }
@@ -109,8 +109,8 @@ namespace SPICA.WinForms
 
                             switch (Format)
                             {
-                                case 0: new DAE     (Data, 0, Index).Save(FileName + ".dae"); break;
-                                case 1: new SMDModel(Data, 0, Index).Save(FileName + ".smd"); break;
+                                case 0: new DAE(Data, 0, Index).Save(FileName + ".dae"); break;
+                                case 1: new SMD(Data, 0, Index).Save(FileName + ".smd"); break;
                             }
                         }
                     }

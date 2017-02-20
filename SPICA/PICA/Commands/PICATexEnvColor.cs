@@ -1,13 +1,13 @@
-﻿using SPICA.Math3D;
+﻿using System.Xml.Serialization;
 
 namespace SPICA.PICA.Commands
 {
     public struct PICATexEnvColor
     {
-        public byte R;
-        public byte G;
-        public byte B;
-        public byte A;
+        [XmlAttribute] public byte R;
+        [XmlAttribute] public byte G;
+        [XmlAttribute] public byte B;
+        [XmlAttribute] public byte A;
 
         public PICATexEnvColor(uint Param)
         {

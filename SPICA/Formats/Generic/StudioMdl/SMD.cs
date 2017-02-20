@@ -10,15 +10,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
-using SPICA.Formats.Generic;
 using System.Text;
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
-    class SMDModel
+    class SMD
     {
-        private ConversionParams ConvParams;
-
         private List<SMDNode> Nodes    = new List<SMDNode>();
         private List<SMDBone> Skeleton = new List<SMDBone>();
         private List<SMDMesh> Meshes   = new List<SMDMesh>();
@@ -31,7 +28,7 @@ namespace SPICA.Formats.Generic.StudioMdl
             Triangles
         }
 
-        public SMDModel(H3D SceneData, int MdlIndex, int AnimIndex = -1)
+        public SMD(H3D SceneData, int MdlIndex, int AnimIndex = -1)
         {
             int Index = 0;
 
@@ -45,16 +42,16 @@ namespace SPICA.Formats.Generic.StudioMdl
                 {
                     SMDNode Node = new SMDNode
                     {
-                        Index = Index,
-                        Name = Bone.Name,
+                        Index       = Index,
+                        Name        = Bone.Name,
                         ParentIndex = Bone.ParentIndex
                     };
 
                     SMDBone B = new SMDBone
                     {
-                        NodeIndex = Index++,
+                        NodeIndex   = Index++,
                         Translation = Bone.Translation,
-                        Rotation = Bone.Rotation
+                        Rotation    = Bone.Rotation
                     };
 
                     Nodes.Add(Node);
@@ -82,20 +79,21 @@ namespace SPICA.Formats.Generic.StudioMdl
             }
         }
 
-        public SMDModel(string FileName, ConversionParams ConvParams)
+        public SMD(string FileName)
         {
-            using (FileStream FS = new FileStream(FileName, FileMode.Open)) SMDModelImpl(FS, ConvParams);
+            using (FileStream FS = new FileStream(FileName, FileMode.Open))
+            {
+                SMDModelImpl(FS);
+            }
         }
 
-        public SMDModel(Stream Stream, ConversionParams ConvParams)
+        public SMD(Stream Stream)
         {
-            SMDModelImpl(Stream, ConvParams);
+            SMDModelImpl(Stream);
         }
 
-        private void SMDModelImpl(Stream Stream, ConversionParams ConvParams)
+        private void SMDModelImpl(Stream Stream)
         {
-            this.ConvParams = ConvParams;
-
             TextReader Reader = new StreamReader(Stream);
 
             SMDMesh CurrMesh = new SMDMesh();
@@ -214,7 +212,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             foreach (SMDNode Node in Nodes)
             {
-                SB.AppendLine(string.Format("{0} \"{1}\" {2}", Node.Index, Node.Name, Node.ParentIndex));
+                SB.AppendLine($"{Node.Index} \"{Node.Name}\" {Node.ParentIndex}");
             }
 
             SB.AppendLine("end");
@@ -265,9 +263,7 @@ namespace SPICA.Formats.Generic.StudioMdl
             {
                 if (Vtx.Weights[i] == 0) break;
 
-                Indices +=
-                    " " + Vtx.Indices[i] +
-                    " " + Vtx.Weights[i].ToString(CultureInfo.InvariantCulture);
+                Indices += $" {Vtx.Indices[i]} {Vtx.Weights[i].ToString(CultureInfo.InvariantCulture)}";
             }
 
             return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9}{10}",
@@ -317,7 +313,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                 while (VerticesQueue.Count > 2)
                 {
-                    List<ushort> Indices = new List<ushort>();
+                    List<ushort> Indices     = new List<ushort>();
                     List<ushort> BoneIndices = new List<ushort>();
 
                     int TriCount = VerticesQueue.Count / 3;
@@ -412,7 +408,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                 M.Skinning = H3DMeshSkinning.Smooth;
                 M.MeshCenter = (MinVector + MaxVector) * 0.5f;
-                M.MaterialIndex = MaterialIndex++;
+                M.MaterialIndex = MaterialIndex;
 
                 Model.AddMesh(M);
 
@@ -422,7 +418,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                 string MatName = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
                 uint MatHash = (uint)MatName.GetHashCode();
 
-                Material.Name = string.Format("{0}_Mat{1:D5}", MatName, MaterialIndex - 1);
+                Material.Name = $"{MatName}_Mat{MaterialIndex.ToString("D5")}";
                 Material.Texture0Name = MatName;
                 Material.MaterialParams.UniqueId = MatHash;
 
@@ -432,19 +428,16 @@ namespace SPICA.Formats.Generic.StudioMdl
             //Build Skeleton
             foreach (SMDBone Bone in Skeleton)
             {
-                H3DBone B = new H3DBone();
-
                 SMDNode Node = Nodes[Bone.NodeIndex];
 
-                B.Name = Node.Name;
-
-                B.ParentIndex = (short)Node.ParentIndex;
-
-                B.Translation = Bone.Translation;
-                B.Rotation = Bone.Rotation;
-                B.Scale = new Vector3D(1, 1, 1);
-
-                Model.Skeleton.Add(B);
+                Model.Skeleton.Add(new H3DBone
+                {
+                    Name        = Node.Name,
+                    ParentIndex = (short)Node.ParentIndex,
+                    Translation = Bone.Translation,
+                    Rotation    = Bone.Rotation,
+                    Scale       = new Vector3D(1)
+                });
             }
 
             //Calculate Absolute Inverse Transforms for all bones
@@ -457,13 +450,6 @@ namespace SPICA.Formats.Generic.StudioMdl
             Output.Models.Add(Model);
 
             Output.CopyMaterials();
-
-            Output.BackwardCompatibility = ConvParams.Compatibility;
-            Output.ForwardCompatibility = ConvParams.Compatibility;
-
-            Output.ConverterVersion = ConvParams.ConverterVersion;
-
-            Output.Flags = H3DFlags.IsFromNewConverter;
 
             return Output;
         }

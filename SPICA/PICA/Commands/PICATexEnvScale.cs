@@ -1,13 +1,15 @@
-﻿namespace SPICA.PICA.Commands
+﻿using System.Xml.Serialization;
+
+namespace SPICA.PICA.Commands
 {
     public struct PICATexEnvScale
     {
-        public PICATextureCombinerScale RGBScale;
-        public PICATextureCombinerScale AlphaScale;
+        [XmlAttribute] public PICATextureCombinerScale ColorScale;
+        [XmlAttribute] public PICATextureCombinerScale AlphaScale;
 
         public PICATexEnvScale(uint Param)
         {
-            RGBScale = (PICATextureCombinerScale)((Param >> 0) & 3);
+            ColorScale = (PICATextureCombinerScale)((Param >> 0) & 3);
             AlphaScale = (PICATextureCombinerScale)((Param >> 16) & 3);
         }
 
@@ -15,7 +17,7 @@
         {
             uint Param = 0;
 
-            Param |= ((uint)RGBScale & 3) << 0;
+            Param |= ((uint)ColorScale & 3) << 0;
             Param |= ((uint)AlphaScale & 3) << 16;
 
             return Param;

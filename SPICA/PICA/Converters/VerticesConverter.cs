@@ -43,7 +43,7 @@ namespace SPICA.PICA.Converters
                         {
                             V *= Attrib.Scale;
 
-                            if (Attrib.Name == PICAAttributeName.Position) V -= Mesh.PositionOffset;
+                            if (Attrib.Name == PICAAttributeName.Position) V += Mesh.PositionOffset;
                         }
 
                         switch (Attrib.Name)

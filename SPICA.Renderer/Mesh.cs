@@ -113,11 +113,11 @@ namespace SPICA.Renderer
             H3DMaterialParams Params = Material.MaterialParams;
 
             //Blending and Logical Operation
-            BlendEquationMode ColorEquation = Params.BlendFunction.RGBEquation.ToBlendEquation();
+            BlendEquationMode ColorEquation = Params.BlendFunction.ColorEquation.ToBlendEquation();
             BlendEquationMode AlphaEquation = Params.BlendFunction.AlphaEquation.ToBlendEquation();
 
-            BlendingFactorSrc ColorSrcFunc = Params.BlendFunction.RGBSourceFunc.ToBlendingFactorSrc();
-            BlendingFactorDest ColorDstFunc = Params.BlendFunction.RGBDestFunc.ToBlendingFactorDest();
+            BlendingFactorSrc ColorSrcFunc = Params.BlendFunction.ColorSourceFunc.ToBlendingFactorSrc();
+            BlendingFactorDest ColorDstFunc = Params.BlendFunction.ColorDestFunc.ToBlendingFactorDest();
             BlendingFactorSrc AlphaSrcFunc = Params.BlendFunction.AlphaSourceFunc.ToBlendingFactorSrc();
             BlendingFactorDest AlphaDstFunc = Params.BlendFunction.AlphaDestFunc.ToBlendingFactorDest();
 
@@ -207,10 +207,10 @@ namespace SPICA.Renderer
                 int UpColorBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpColorBuff");
                 int UpAlphaBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpAlphaBuff");
 
-                GL.Uniform1(ColorCombLocation, (int)Stage.Combiner.RGBCombiner);
+                GL.Uniform1(ColorCombLocation, (int)Stage.Combiner.ColorCombiner);
                 GL.Uniform1(AlphaCombLocation, (int)Stage.Combiner.AlphaCombiner);
 
-                GL.Uniform1(ColorScaleLocation, (float)(1 << (int)Stage.Scale.RGBScale));
+                GL.Uniform1(ColorScaleLocation, (float)(1 << (int)Stage.Scale.ColorScale));
                 GL.Uniform1(AlphaScaleLocation, (float)(1 << (int)Stage.Scale.AlphaScale));
 
                 GL.Uniform1(UpColorBuffLocation, Stage.UpdateRGBBuffer ? 1 : 0);
@@ -223,9 +223,9 @@ namespace SPICA.Renderer
                     int ColorOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorOp");
                     int AlphaOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaOp");
 
-                    GL.Uniform1(ColorSrcLocation, (int)Stage.Source.RGBSource[Param]);
+                    GL.Uniform1(ColorSrcLocation, (int)Stage.Source.ColorSource[Param]);
                     GL.Uniform1(AlphaSrcLocation, (int)Stage.Source.AlphaSource[Param]);
-                    GL.Uniform1(ColorOpLocation, (int)Stage.Operand.RGBOp[Param]);
+                    GL.Uniform1(ColorOpLocation, (int)Stage.Operand.ColorOp[Param]);
                     GL.Uniform1(AlphaOpLocation, (int)Stage.Operand.AlphaOp[Param]);
                 }
 
@@ -251,28 +251,28 @@ namespace SPICA.Renderer
                 switch (Index)
                 {
                     case 0:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.Dist0Input);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.Dist0Scale.ToFloat());
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.Dist0Input);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.Dist0Scale.ToFloat());
                         break;
                     case 1:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.Dist1Input);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.Dist1Scale.ToFloat());
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.Dist1Input);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.Dist1Scale.ToFloat());
                         break;
                     case 2:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.FresnelInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.FresnelScale.ToFloat());
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.FresnelInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.FresnelScale.ToFloat());
                         break;
                     case 3:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecRInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecRScale.ToFloat());
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.ReflecRInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.ReflecRScale.ToFloat());
                         break;
                     case 4:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecGInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecGScale.ToFloat());
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.ReflecGInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.ReflecGScale.ToFloat());
                         break;
                     case 5:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInputSel.ReflecBInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInputScaleSel.ReflecBScale.ToFloat());
+                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.ReflecBInput);
+                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.ReflecBScale.ToFloat());
                         break;
                 }
             }
@@ -426,7 +426,7 @@ namespace SPICA.Renderer
         {
             if (!(TableName == null || SamplerName == null))
             {
-                string Name = TableName + "/" + SamplerName;
+                string Name = $"{TableName}/{SamplerName}";
 
                 int UBOHandle = Parent.GetLUTHandle(Name);
                 int LUTIsAbsLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].IsAbs");

@@ -1,12 +1,14 @@
-﻿namespace SPICA.PICA.Commands
+﻿using System.Xml.Serialization;
+
+namespace SPICA.PICA.Commands
 {
     public struct PICAStencilTest
     {
-        public bool Enabled;
-        public PICATestFunc Function;
-        public byte BufferMask;
-        public byte Reference;
-        public byte Mask;
+        [XmlAttribute] public bool Enabled;
+        [XmlAttribute] public PICATestFunc Function;
+        [XmlAttribute] public byte BufferMask;
+        [XmlAttribute] public byte Reference;
+        [XmlAttribute] public byte Mask;
 
         public PICAStencilTest(uint Param)
         {

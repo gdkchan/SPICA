@@ -117,7 +117,7 @@ namespace SPICA.Math3D
 
         public override string ToString()
         {
-            return string.Format("X: {0} Y: {1} Z: {2} W: {3}", X, Y, Z, W);
+            return $"X: {X} Y: {Y} Z: {Z} W: {W}";
         }
 
         public string ToSerializableString()

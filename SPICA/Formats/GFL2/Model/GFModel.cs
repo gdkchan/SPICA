@@ -190,9 +190,9 @@ namespace SPICA.Formats.GFL2.Model
                 Params.Constant5Color = Material.Constant5Color;
                 Params.BlendColor     = Material.BlendColor;
 
-                Params.LUTInputAbs      = Material.LUTInputAbs;
-                Params.LUTInputSel      = Material.LUTInputSel;
-                Params.LUTInputScaleSel = Material.LUTInputScaleSel;
+                Params.LUTInAbs   = Material.LUTInAbs;
+                Params.LUTInSel   = Material.LUTInSel;
+                Params.LUTInScale = Material.LUTInScale;
 
                 Params.ColorOperation   = Material.ColorOperation;
                 Params.BlendFunction    = Material.BlendFunction;

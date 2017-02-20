@@ -44,9 +44,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVector3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVector4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEVisualScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\ConversionParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJMesh.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\OBJ\OBJ.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Camera\H3DCamera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Fog\H3DFog.cs" />
@@ -77,7 +76,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DMaterialParams.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DMaterialShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTexCoordConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTranslucencyLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DLayerConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureCoord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureCoordFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureMagFilter.cs" />
@@ -105,9 +104,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Texture\H3DTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDMesh.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMD.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\XML\H3DXml.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\XML\H3DXML.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFModelPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFMotionPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Model\GFBone.cs" />
@@ -171,10 +170,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAVectorFloat24.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAAlphaTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFragOpMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputAbs.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputScale.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputScaleSel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInputSel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInAbs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTScale.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInScale.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInSel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTInput.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilOperation.cs" />
@@ -188,7 +187,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvStage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerAlphaOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerRGBOp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerColorOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerScale.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvSource.cs" />

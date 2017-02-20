@@ -49,18 +49,18 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMaterialLUT ReflecGLUT;
         public H3DMaterialLUT ReflecBLUT;
 
-        private byte LayerConfig;
+        private byte LayerCfg;
 
-        public H3DTranslucencyLayer TranslucencyLayer
+        public H3DLayerConfig LayerConfig
         {
-            get { return (H3DTranslucencyLayer)BitUtils.GetBits(LayerConfig, 0, 4); }
-            set { LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 0, 4); }
+            get { return (H3DLayerConfig)BitUtils.GetBits(LayerCfg, 0, 4); }
+            set { LayerCfg = BitUtils.SetBits(LayerCfg, (uint)value, 0, 4); }
         }
 
         public H3DTexCoordConfig TexCoordConfig
         {
-            get { return (H3DTexCoordConfig)BitUtils.GetBits(LayerConfig, 4, 4); }
-            set { LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 4, 4); }
+            get { return (H3DTexCoordConfig)BitUtils.GetBits(LayerCfg, 4, 4); }
+            set { LayerCfg = BitUtils.SetBits(LayerCfg, (uint)value, 4, 4); }
         }
 
         public H3DFresnelSelector FresnelSelector;
@@ -97,9 +97,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMetaData MetaData;
 
         //LookUp Table
-        [Ignore] public PICALUTInputAbs      LUTInputAbs;
-        [Ignore] public PICALUTInputSel      LUTInputSel;
-        [Ignore] public PICALUTInputScaleSel LUTInputScaleSel;
+        [Ignore] public PICALUTInAbs   LUTInAbs;
+        [Ignore] public PICALUTInSel   LUTInSel;
+        [Ignore] public PICALUTInScale LUTInScale;
 
         //Fragment Lighting
         [Ignore] public PICATexEnvStage[]    TexEnvStages;
@@ -140,13 +140,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 for (int i = 5; i >= 0; i--)
                 {
-                    if (TexEnvStages[i].Combiner.RGBCombiner   == PICATextureCombinerMode.Replace    &&
+                    if (TexEnvStages[i].Combiner.ColorCombiner == PICATextureCombinerMode.Replace    &&
                         TexEnvStages[i].Combiner.AlphaCombiner == PICATextureCombinerMode.Replace    &&
-                        TexEnvStages[i].Source.RGBSource[0]    == PICATextureCombinerSource.Previous &&
+                        TexEnvStages[i].Source.ColorSource[0]  == PICATextureCombinerSource.Previous &&
                         TexEnvStages[i].Source.AlphaSource[0]  == PICATextureCombinerSource.Previous &&
-                        TexEnvStages[i].Operand.RGBOp[0]       == PICATextureCombinerRGBOp.Color     &&
+                        TexEnvStages[i].Operand.ColorOp[0]     == PICATextureCombinerColorOp.Color   &&
                         TexEnvStages[i].Operand.AlphaOp[0]     == PICATextureCombinerAlphaOp.Alpha   &&
-                        TexEnvStages[i].Scale.RGBScale         == PICATextureCombinerScale.One       &&
+                        TexEnvStages[i].Scale.ColorScale       == PICATextureCombinerScale.One       &&
                         TexEnvStages[i].Scale.AlphaScale       == PICATextureCombinerScale.One)
                         Count--;
                     else
@@ -190,9 +190,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInputAbs      = new PICALUTInputAbs(Param);      break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSel      = new PICALUTInputSel(Param);      break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInputScaleSel = new PICALUTInputScaleSel(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInAbs   = new PICALUTInAbs(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInSel   = new PICALUTInSel(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInScale = new PICALUTInScale(Param); break;
                 }
             }
 
@@ -342,9 +342,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             Writer = new PICACommandWriter();
 
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS, LUTInputAbs.ToUInt32());
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT, LUTInputSel.ToUInt32());
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE, LUTInputScaleSel.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS, LUTInAbs.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT, LUTInSel.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE, LUTInScale.ToUInt32());
 
             LUTConfigCommands = Writer.GetBuffer();
 

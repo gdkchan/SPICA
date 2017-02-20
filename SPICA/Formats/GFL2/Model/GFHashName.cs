@@ -1,4 +1,8 @@
-﻿namespace SPICA.Formats.GFL2.Model
+﻿using SPICA.Formats.GFL2.Utils;
+
+using System.IO;
+
+namespace SPICA.Formats.GFL2.Model
 {
     public struct GFHashName
     {
@@ -9,6 +13,12 @@
         {
             this.Hash = Hash;
             this.Name = Name;
+        }
+
+        public GFHashName(BinaryReader Reader)
+        {
+            Hash = Reader.ReadUInt32();
+            Name = GFString.ReadLength(Reader, Reader.ReadByte());
         }
     }
 }
