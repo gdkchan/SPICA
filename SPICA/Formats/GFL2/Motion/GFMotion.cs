@@ -85,8 +85,8 @@ namespace SPICA.Formats.GFL2.Motion
 
                 switch (AnimSections[Anim].SectName)
                 {
-                    case Sect.SkeletalAnim:   SkeletalAnimation   = new GFSkeletonMot(Reader, FramesCount);   break;
-                    case Sect.MaterialAnim:   MaterialAnimation   = new GFMaterialMot(Reader, FramesCount);   break;
+                    case Sect.SkeletalAnim: SkeletalAnimation = new GFSkeletonMot(Reader, FramesCount); break;
+                    case Sect.MaterialAnim: MaterialAnimation = new GFMaterialMot(Reader, FramesCount); break;
                     case Sect.VisibilityAnim: VisibilityAnimation = new GFVisibilityMot(Reader, FramesCount); break;
                 }
             }

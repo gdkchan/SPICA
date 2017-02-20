@@ -332,8 +332,6 @@ namespace SPICA.WinForms
                 }
             }
 
-            //H3D.Save("D:\\recreated.bch", SceneData);
-
             //Allow app to process click from the Open dialog that goes into the Viewport
             //This avoid the model from moving after opening a file on the dialog
             //(Note: The problem only happens if the dialog is on top of the Viewport)
@@ -409,7 +407,7 @@ namespace SPICA.WinForms
             Vector3 Center = CenterDim.Item1;
             Vector3 Dim    = CenterDim.Item2;
 
-            Dimension = Math.Min(Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2, 100f);
+            Dimension = Math.Max(Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2, 100f);
 
             Renderer.ClearLights();
 
