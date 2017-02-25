@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.ES30;
 
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
@@ -345,39 +346,60 @@ namespace SPICA.Renderer
             //Setup Fixed attributes
             int FixedAttributes = 0;
 
-            int FixedNormalLocation = GL.GetUniformLocation(ShaderHandle, "FixedNorm");
-            int FixedTangentLocation = GL.GetUniformLocation(ShaderHandle, "FixedTan");
-            int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedCol");
-            int FixedBoneLocation = GL.GetUniformLocation(ShaderHandle, "FixedBone");
-            int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
-
-            foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
+            if (BaseMesh.FixedAttributes != null)
             {
-                FixedAttributes |= 1 << (int)Attrib.Name;
+                int FixedNormalLocation = GL.GetUniformLocation(ShaderHandle, "FixedNorm");
+                int FixedTangentLocation = GL.GetUniformLocation(ShaderHandle, "FixedTan");
+                int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedCol");
+                int FixedBoneLocation = GL.GetUniformLocation(ShaderHandle, "FixedBone");
+                int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
 
-                Vector4 Value = Attrib.Value.ToVector4();
-
-                switch (Attrib.Name)
+                foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
                 {
-                    case PICAAttributeName.Normal: GL.Uniform4(FixedNormalLocation, Value); break;
-                    case PICAAttributeName.Tangent: GL.Uniform4(FixedTangentLocation, Value); break;
-                    case PICAAttributeName.Color: GL.Uniform4(FixedColorLocation, Value); break;
-                    case PICAAttributeName.BoneIndex: GL.Uniform4(FixedBoneLocation, Value); break;
-                    case PICAAttributeName.BoneWeight: GL.Uniform4(FixedWeightLocation, Value); break;
+                    FixedAttributes |= 1 << (int)Attrib.Name;
+
+                    Vector4 Value = Attrib.Value.ToVector4();
+
+                    switch (Attrib.Name)
+                    {
+                        case PICAAttributeName.Normal: GL.Uniform4(FixedNormalLocation, Value); break;
+                        case PICAAttributeName.Tangent: GL.Uniform4(FixedTangentLocation, Value); break;
+                        case PICAAttributeName.Color: GL.Uniform4(FixedColorLocation, Value); break;
+                        case PICAAttributeName.BoneIndex: GL.Uniform4(FixedBoneLocation, Value); break;
+                        case PICAAttributeName.BoneWeight: GL.Uniform4(FixedWeightLocation, Value); break;
+                    }
                 }
             }
 
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "FixedAttr"), FixedAttributes);
 
             //Vertex related Uniforms
+            Vector4 LightPowerScale = Vector4.Zero;
+
+            if (Params.MetaData != null)
+            {
+                //Only Pokémon uses this (for custom Rim lighting and Phong shading on the shaders)
+                foreach (H3DMetaDataValue MetaData in Params.MetaData.Values)
+                {
+                    if (MetaData.Type == H3DMetaDataType.Single && MetaData.Values.Count > 0)
+                    {
+                        float Value = (float)MetaData.Values[0];
+
+                        switch (MetaData.Name)
+                        {
+                            case "$RimPow":     LightPowerScale[0] = Value; break;
+                            case "$RimScale":   LightPowerScale[1] = Value; break;
+                            case "$PhongPow":   LightPowerScale[2] = Value; break;
+                            case "$PhongScale": LightPowerScale[3] = Value; break;
+                        }
+                    }
+                }
+            }
+
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), PosOffset);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Scales0);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Scales1);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "LightPowerScale"), new Vector4(
-                Params.RimPower,
-                Params.RimScale,
-                Params.PhongPower,
-                Params.PhongScale));
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "LightPowerScale"), LightPowerScale);
 
             //Render all SubMeshes
             GL.BindVertexArray(VAOHandle);

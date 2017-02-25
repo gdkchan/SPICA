@@ -12,8 +12,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 {
     public class H3DMaterialParams : ICustomSerialization, INamed
     {
-        //Original tool uses FNV hash with some of contents here to generate this Id
-        public uint UniqueId;
+        private uint UniqueId;
 
         public H3DMaterialFlags Flags;
         public H3DFragmentFlags FragmentFlags;
@@ -71,7 +70,31 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [Inline, FixedLength(6)] private uint[] LUTConfigCommands;
 
-        public uint ConstantColors;
+        private uint ConstantColors;
+
+        public uint[] ConstantColorIndices
+        {
+            get
+            {
+                return new uint[] {
+                    (ConstantColors >>  0) & 0xf,
+                    (ConstantColors >>  4) & 0xf,
+                    (ConstantColors >>  8) & 0xf,
+                    (ConstantColors >> 12) & 0xf,
+                    (ConstantColors >> 16) & 0xf,
+                    (ConstantColors >> 20) & 0xf};
+            }
+            set
+            {
+                ConstantColors =
+                    ((value[0] <<  0) & 0xf) |
+                    ((value[1] <<  4) & 0xf) |
+                    ((value[2] <<  8) & 0xf) |
+                    ((value[3] << 12) & 0xf) |
+                    ((value[4] << 16) & 0xf) |
+                    ((value[5] << 20) & 0xf);
+            }
+        }
 
         public float PolygonOffsetUnit;
 
@@ -126,12 +149,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [Ignore, XmlIgnore] internal H3DMaterial Parent;
 
-        //Rim Lighting, Pokémon only
-        [Ignore] public float RimPower;
-        [Ignore] public float RimScale;
-        [Ignore] public float PhongPower;
-        [Ignore] public float PhongScale;
-
         public int TexEnvStagesCount
         {
             get
@@ -157,6 +174,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             }
         }
 
+        [XmlIgnore]
         public string Name
         {
             get { return Parent?.Name; }
@@ -173,7 +191,70 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 TexEnvStages[Index] = new PICATexEnvStage();
             }
 
-            TextureSources = new float[3];
+            TextureSources = new float[4];
+        }
+
+        private void GenerateUniqueId()
+        {
+            FNVHash HashGen = new FNVHash();
+
+            HashGen.Hash((ushort)(Flags | H3DMaterialFlags.IsParamCommandSourceAccessible));
+            HashGen.Hash((byte)FragmentFlags);
+
+            foreach (H3DTextureCoord TexCoord in TextureCoords)
+            {
+                HashGen.Hash((byte)TexCoord.Flags);
+                HashGen.Hash((byte)TexCoord.TransformType);
+                HashGen.Hash((byte)TexCoord.MappingType);
+                HashGen.Hash(TexCoord.ReferenceCameraIndex);
+                HashGen.Hash(TexCoord.Scale.X);
+                HashGen.Hash(TexCoord.Scale.Y);
+                HashGen.Hash(TexCoord.Rotation);
+                HashGen.Hash(TexCoord.Translation.X);
+                HashGen.Hash(TexCoord.Translation.Y);
+            }
+
+            HashGen.Hash(LightSetIndex);
+            HashGen.Hash(FogIndex);
+            HashGen.Hash(EmissionColor.ToUInt32());
+            HashGen.Hash(AmbientColor.ToUInt32());
+            HashGen.Hash(DiffuseColor.ToUInt32());
+            HashGen.Hash(Specular0Color.ToUInt32());
+            HashGen.Hash(Specular1Color.ToUInt32());
+            HashGen.Hash(Constant0Color.ToUInt32());
+            HashGen.Hash(Constant1Color.ToUInt32());
+            HashGen.Hash(Constant2Color.ToUInt32());
+            HashGen.Hash(Constant3Color.ToUInt32());
+            HashGen.Hash(Constant4Color.ToUInt32());
+            HashGen.Hash(Constant5Color.ToUInt32());
+            HashGen.Hash(BlendColor.ToUInt32());
+            HashGen.Hash(ColorScale);
+            HashGen.Hash(LayerCfg);
+            HashGen.Hash((byte)FresnelSelector);
+            HashGen.Hash((byte)BumpMode);
+            HashGen.Hash(BumpTexture);
+            HashGen.Hash(LUTConfigCommands);
+            HashGen.Hash(ConstantColors);
+            HashGen.Hash(PolygonOffsetUnit);
+            HashGen.Hash(FragmentShaderCommands);
+
+            HashGen.Hash(LUTDist0TableName);
+            HashGen.Hash(LUTDist1TableName);
+            HashGen.Hash(LUTFresnelTableName);
+            HashGen.Hash(LUTReflecRTableName);
+            HashGen.Hash(LUTReflecGTableName);
+            HashGen.Hash(LUTReflecBTableName);
+
+            HashGen.Hash(LUTDist0SamplerName);
+            HashGen.Hash(LUTDist1SamplerName);
+            HashGen.Hash(LUTFresnelSamplerName);
+            HashGen.Hash(LUTReflecRSamplerName);
+            HashGen.Hash(LUTReflecGSamplerName);
+            HashGen.Hash(LUTReflecBSamplerName);
+
+            HashGen.Hash(ShaderReference);
+
+            UniqueId = HashGen.HashCode;
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -329,11 +410,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureSources[0] = Uniform[10].X;
             TextureSources[1] = Uniform[10].Y;
             TextureSources[2] = Uniform[10].Z;
-
-            RimPower = Uniform[22].X;
-            RimScale = Uniform[22].Y;
-            PhongPower = Uniform[22].Z;
-            PhongScale = Uniform[22].W;
+            TextureSources[3] = Uniform[10].W;
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
@@ -413,7 +490,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000013u, 0, 0, 0, 0);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x8000000au,
-                IOUtils.ToUInt32(0),
+                IOUtils.ToUInt32(TextureSources[3]),
                 IOUtils.ToUInt32(TextureSources[2]),
                 IOUtils.ToUInt32(TextureSources[1]),
                 IOUtils.ToUInt32(TextureSources[0]));
@@ -439,6 +516,8 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Writer.WriteEnd();
 
             FragmentShaderCommands = Writer.GetBuffer();
+
+            GenerateUniqueId();
 
             return false;
         }

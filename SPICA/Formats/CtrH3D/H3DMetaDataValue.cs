@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D
 {
@@ -15,20 +16,45 @@ namespace SPICA.Formats.CtrH3D
     {
         private string _Name;
 
+        [XmlAttribute]
         public string Name
         {
             get { return _Name; }
             set { _Name = value; }
         }
 
-        public H3DMetaDataType Type;
+        [XmlAttribute] public H3DMetaDataType Type;
 
-        [Ignore] public List<object> Values;
+        [Ignore]
+        [XmlElement(Type = typeof(int))]
+        [XmlElement(Type = typeof(float))]
+        [XmlElement(Type = typeof(string))]
+        [XmlElement(Type = typeof(H3DBoundingBox))]
+        public List<object> Values;
 
         public object this[int Index]
         {
             get { return Values[Index]; }
             set { Values[Index] = value; }
+        }
+
+        public H3DMetaDataValue(string Name, object Value)
+        {
+            Type ValueType = Value.GetType();
+
+            if (ValueType == typeof(int))
+                Type = H3DMetaDataType.Integer;
+            else if (ValueType == typeof(float))
+                Type = H3DMetaDataType.Single;
+            else if (ValueType == typeof(string))
+                Type = H3DMetaDataType.ASCIIString;
+            else if (ValueType == typeof(H3DBoundingBox))
+                Type = H3DMetaDataType.BoundingBox;
+            else
+                throw new ArgumentException($"Type {ValueType} is not valid as Meta Data!");
+
+            _Name = $"${Name}";
+            Values = new List<object> { Value };
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -99,13 +125,13 @@ namespace SPICA.Formats.CtrH3D
             //FIXME: Unicode Strings will serialize as ASCII too
             Serializer.Strings.Values.Add(new RefValue
             {
-                Value = Name,
+                Value    = Name,
                 Position = Serializer.BaseStream.Position
             });
 
             Serializer.Contents.Values.Add(new RefValue
             {
-                Value = GetCastedValues(),
+                Value    = Values,
                 Position = Serializer.BaseStream.Position + 8
             });
 
@@ -115,22 +141,6 @@ namespace SPICA.Formats.CtrH3D
             Serializer.Writer.Write(0u);
 
             return true;
-        }
-
-        public IList GetCastedValues()
-        {
-            switch (Type)
-            {
-                case H3DMetaDataType.Integer: return Values.Cast<int>().ToList();
-                case H3DMetaDataType.Single: return Values.Cast<float>().ToList();
-
-                case H3DMetaDataType.ASCIIString: return Values.Cast<string>().ToList();
-                case H3DMetaDataType.UnicodeString: return Values.Cast<string>().ToList();
-
-                case H3DMetaDataType.BoundingBox: return Values.Cast<H3DBoundingBox>().ToList();
-
-                default: throw new NotImplementedException();
-            }
         }
     }
 }

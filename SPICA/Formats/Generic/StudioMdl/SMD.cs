@@ -2,6 +2,7 @@
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
+using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.Text;
+
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
@@ -178,9 +180,11 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                                         if (Params.Length > 9)
                                         {
+                                            //NOTE: 3DS formats only supports 4 bones per vertex max
+                                            //Warn user when more nodes are used?
                                             int NodesCount = int.Parse(Params[9]);
 
-                                            for (int Node = 0; Node < NodesCount; Node++)
+                                            for (int Node = 0; Node < Math.Min(NodesCount, 4); Node++)
                                             {
                                                 Vertex.Indices[Node] = int.Parse(Params[10 + Node * 2]);
                                                 Vertex.Weights[Node] = ParseFloat(Params[11 + Node * 2]);
@@ -280,7 +284,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                 Indices);
         }
 
-        public H3D ToH3D()
+        public H3D ToH3D(string TextureSearchPath = null)
         {
             H3D Output = new H3D();
 
@@ -288,12 +292,12 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             Model.Name = "Model";
 
+            ushort MaterialIndex = 0;
+
             if (Skeleton.Count > 0) Model.Flags = H3DModelFlags.HasSkeleton;
 
             Model.BoneScaling = H3DBoneScaling.Maya;
             Model.MeshNodesVisibility.Add(true);
-
-            ushort MaterialIndex = 0;
 
             foreach (SMDMesh Mesh in Meshes)
             {
@@ -410,19 +414,28 @@ namespace SPICA.Formats.Generic.StudioMdl
                 M.MeshCenter = (MinVector + MaxVector) * 0.5f;
                 M.MaterialIndex = MaterialIndex;
 
+                M.UpdateBoolUniforms();
+
                 Model.AddMesh(M);
 
                 //Material
                 H3DMaterial Material = H3DMaterial.Default;
 
                 string MatName = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
-                uint MatHash = (uint)MatName.GetHashCode();
 
-                Material.Name = $"{MatName}_Mat{MaterialIndex.ToString("D5")}";
+                Material.Name = $"Mat{MaterialIndex++.ToString("D5")}_{MatName}";
                 Material.Texture0Name = MatName;
-                Material.MaterialParams.UniqueId = MatHash;
-
                 Model.Materials.Add(Material);
+
+                if (TextureSearchPath != null)
+                {
+                    string TextureFile = Path.Combine(TextureSearchPath, Mesh.MaterialName);
+
+                    if (File.Exists(TextureFile))
+                    {
+                        Output.Textures.Add(new H3DTexture(TextureFile));
+                    }
+                }
             }
 
             //Build Skeleton
@@ -443,8 +456,7 @@ namespace SPICA.Formats.Generic.StudioMdl
             //Calculate Absolute Inverse Transforms for all bones
             foreach (H3DBone Bone in Model.Skeleton)
             {
-                Bone.InverseTransform = Bone.CalculateTransform(Model.Skeleton);
-                Bone.InverseTransform.Invert();
+                Bone.CalculateTransform(Model.Skeleton);
             }
 
             Output.Models.Add(Model);
@@ -471,27 +483,27 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                 Attributes[i] = new PICAAttribute
                 {
-                    Name = Name,
-                    Format = PICAAttributeFormat.Float,
+                    Name     = Name,
+                    Format   = PICAAttributeFormat.Float,
                     Elements = Name == PICAAttributeName.TexCoord0 ? 2 : 3,
-                    Scale = 1
+                    Scale    = 1
                 };
             }
 
             Attributes[3] = new PICAAttribute
             {
-                Name = PICAAttributeName.BoneIndex,
-                Format = PICAAttributeFormat.Ubyte,
+                Name     = PICAAttributeName.BoneIndex,
+                Format   = PICAAttributeFormat.Ubyte,
                 Elements = 4,
-                Scale = 1
+                Scale    = 1
             };
 
             Attributes[4] = new PICAAttribute
             {
-                Name = PICAAttributeName.BoneWeight,
-                Format = PICAAttributeFormat.Ubyte,
+                Name     = PICAAttributeName.BoneWeight,
+                Format   = PICAAttributeFormat.Ubyte,
                 Elements = 4,
-                Scale = 0.01f
+                Scale    = 0.01f
             };
 
             return Attributes;

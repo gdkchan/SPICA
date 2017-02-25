@@ -15,6 +15,10 @@ namespace SPICA.Math3D
 
         public float Length { get { return (float)Math.Sqrt(Dot(this, this)); } }
 
+        public bool IsZero { get { return X == 0 && Y == 0 && Z == 0; } }
+
+        public bool IsOne { get { return X == 1 && Y == 1 && Z == 1; } }
+
         public Vector3D(float Value) : this(Value, Value, Value) { }
 
         public Vector3D(float X, float Y, float Z)

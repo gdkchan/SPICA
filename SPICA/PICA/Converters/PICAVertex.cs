@@ -32,10 +32,10 @@ namespace SPICA.PICA.Converters
         {
             PICAVertex Output = new PICAVertex();
 
-            Output.Position = Position;
-            Output.Normal = Normal;
-            Output.Tangent = Tangent;
-            Output.Color = Color;
+            Output.Position  = Position;
+            Output.Normal    = Normal;
+            Output.Tangent   = Tangent;
+            Output.Color     = Color;
             Output.TexCoord0 = TexCoord0;
             Output.TexCoord1 = TexCoord1;
             Output.TexCoord2 = TexCoord2;
@@ -83,10 +83,10 @@ namespace SPICA.PICA.Converters
         {
             bool Equals = true;
 
-            Equals &= LHS.Position == RHS.Position;
-            Equals &= LHS.Normal == RHS.Normal;
-            Equals &= LHS.Tangent == RHS.Tangent;
-            Equals &= LHS.Color == RHS.Color;
+            Equals &= LHS.Position  == RHS.Position;
+            Equals &= LHS.Normal    == RHS.Normal;
+            Equals &= LHS.Tangent   == RHS.Tangent;
+            Equals &= LHS.Color     == RHS.Color;
             Equals &= LHS.TexCoord0 == RHS.TexCoord0;
             Equals &= LHS.TexCoord1 == RHS.TexCoord1;
             Equals &= LHS.TexCoord2 == RHS.TexCoord2;

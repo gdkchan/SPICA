@@ -407,7 +407,9 @@ namespace SPICA.WinForms
             Vector3 Center = CenterDim.Item1;
             Vector3 Dim    = CenterDim.Item2;
 
-            Dimension = Math.Max(Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2, 100f);
+            Dimension = Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2;
+
+            if (Dimension == 0) Dimension = 100f;
 
             Renderer.ClearLights();
 

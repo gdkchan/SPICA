@@ -2,7 +2,6 @@
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
-using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Math3D;
@@ -26,13 +25,13 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public DAEAsset asset = new DAEAsset();
 
-        [XmlArrayItem("animation")]    public List<DAEAnimation>   library_animations    = new List<DAEAnimation>();
-        [XmlArrayItem("image")]        public List<DAEImage>       library_images        = new List<DAEImage>();
-        [XmlArrayItem("material")]     public List<DAEMaterial>    library_materials     = new List<DAEMaterial>();
-        [XmlArrayItem("effect")]       public List<DAEEffect>      library_effects       = new List<DAEEffect>();
-        [XmlArrayItem("geometry")]     public List<DAEGeometry>    library_geometries    = new List<DAEGeometry>();
-        [XmlArrayItem("controller")]   public List<DAEController>  library_controllers   = new List<DAEController>();
-        [XmlArrayItem("visual_scene")] public List<DAEVisualScene> library_visual_scenes = new List<DAEVisualScene>();
+        [XmlArrayItem("animation")]    public List<DAEAnimation>   library_animations;
+        [XmlArrayItem("image")]        public List<DAEImage>       library_images;
+        [XmlArrayItem("material")]     public List<DAEMaterial>    library_materials;
+        [XmlArrayItem("effect")]       public List<DAEEffect>      library_effects;
+        [XmlArrayItem("geometry")]     public List<DAEGeometry>    library_geometries;
+        [XmlArrayItem("controller")]   public List<DAEController>  library_controllers;
+        [XmlArrayItem("visual_scene")] public List<DAEVisualScene> library_visual_scenes;
 
         public DAEScene scene = new DAEScene();
 
@@ -42,6 +41,8 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             if (MdlIndex != -1)
             {
+                library_visual_scenes = new List<DAEVisualScene>();
+
                 H3DModel Mdl = SceneData.Models[MdlIndex];
 
                 DAEVisualScene VN = new DAEVisualScene();
@@ -50,6 +51,12 @@ namespace SPICA.Formats.Generic.COLLADA
                 VN.id = $"{VN.name}_id";
 
                 //Materials
+                if (Mdl.Materials.Count > 0)
+                {
+                    library_materials = new List<DAEMaterial>();
+                    library_effects   = new List<DAEEffect>();
+                }
+
                 foreach (H3DMaterial Mtl in Mdl.Materials)
                 {
                     string MtlName = $"{MdlIndex.ToString("D2")}_{Mtl.Name}";
@@ -72,10 +79,10 @@ namespace SPICA.Formats.Generic.COLLADA
 
                     ImgSampler.sid = $"{Mtl.Name}_samp";
                     ImgSampler.sampler2D.source = ImgSurface.sid;
-                    ImgSampler.sampler2D.wrap_s = GetWrap(Mtl.TextureMappers[0].WrapU);
-                    ImgSampler.sampler2D.wrap_t = GetWrap(Mtl.TextureMappers[0].WrapV);
-                    ImgSampler.sampler2D.minfilter = DAEFilter.LINEAR;
-                    ImgSampler.sampler2D.magfilter = DAEFilter.LINEAR;
+                    ImgSampler.sampler2D.wrap_s = Mtl.TextureMappers[0].WrapU.ToDAEWrap();
+                    ImgSampler.sampler2D.wrap_t = Mtl.TextureMappers[0].WrapV.ToDAEWrap();
+                    ImgSampler.sampler2D.minfilter = Mtl.TextureMappers[0].MinFilter.ToDAEFilter();
+                    ImgSampler.sampler2D.magfilter = Mtl.TextureMappers[0].MagFilter.ToDAEFilter();
                     ImgSampler.sampler2D.mipfilter = DAEFilter.LINEAR;
 
                     Effect.profile_COMMON.newparam.Add(ImgSurface);
@@ -144,6 +151,11 @@ namespace SPICA.Formats.Generic.COLLADA
                 }
 
                 //Mesh
+                if (Mdl.Meshes.Count > 0)
+                {
+                    library_geometries = new List<DAEGeometry>();
+                }
+
                 for (int MeshIndex = 0; MeshIndex < Mdl.Meshes.Count; MeshIndex++)
                 {
                     H3DMesh Mesh = Mdl.Meshes[MeshIndex];
@@ -192,9 +204,7 @@ namespace SPICA.Formats.Generic.COLLADA
                                     case PICAAttributeName.Position:  Values[Index] = V.Position.ToSerializableString();  break;
                                     case PICAAttributeName.Normal:    Values[Index] = V.Normal.ToSerializableString();    break;
                                     case PICAAttributeName.Tangent:   Values[Index] = V.Tangent.ToSerializableString();   break;
-
                                     case PICAAttributeName.Color:     Values[Index] = V.Color.ToSerializableString();     break;
-
                                     case PICAAttributeName.TexCoord0: Values[Index] = V.TexCoord0.ToSerializableString(); break;
                                     case PICAAttributeName.TexCoord1: Values[Index] = V.TexCoord1.ToSerializableString(); break;
                                     case PICAAttributeName.TexCoord2: Values[Index] = V.TexCoord2.ToSerializableString(); break;
@@ -208,15 +218,15 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             Source.float_array = new DAEArray
                             {
-                                id = $"{Source.name}_array_id",
+                                id    = $"{Source.name}_array_id",
                                 count = (uint)(Vertices.Length * Attr.Elements),
-                                data = string.Join(" ", Values)
+                                data  = string.Join(" ", Values)
                             };
 
                             DAEAccessor Accessor = new DAEAccessor
                             {
                                 source = $"#{Source.float_array.id}",
-                                count = (uint)Vertices.Length,
+                                count  = (uint)Vertices.Length,
                                 stride = (uint)Attr.Elements
                             };
 
@@ -254,111 +264,127 @@ namespace SPICA.Formats.Generic.COLLADA
                         library_geometries.Add(Geometry);
 
                         //Controller
+                        bool HasController = SM.BoneIndicesCount > 0 && (Mdl.Skeleton?.Count ?? 0) > 0;
+
                         DAEController Controller = new DAEController();
 
-                        Controller.name = $"{MeshName}_ctrl";
-                        Controller.id = $"{Controller.name}_id";
-
-                        Controller.skin.source = $"#{Geometry.id}";
-                        Controller.skin.vertex_weights.count = (uint)Vertices.Length;
-
-                        string[] BoneNames = new string[SM.BoneIndicesCount];
-                        string[] BindPoses = new string[SM.BoneIndicesCount];
-
-                        for (int Index = 0; Index < SM.BoneIndicesCount; Index++)
+                        if (HasController)
                         {
-                            if (SM.BoneIndices[Index] >= Mdl.Skeleton.Count) break;
-
-                            BoneNames[Index] = Mdl.Skeleton[SM.BoneIndices[Index]].Name;
-                            BindPoses[Index] = $"{Mdl.Skeleton[SM.BoneIndices[Index]].InverseTransform.ToSerializableString()} 0 0 0 1";
-                        }
-
-                        StringBuilder v = new StringBuilder();
-                        StringBuilder vcount = new StringBuilder();
-
-                        Dictionary<string, int> Weights = new Dictionary<string, int>();
-
-                        if (SM.Skinning == H3DSubMeshSkinning.Smooth)
-                        {
-                            foreach (PICAVertex Vertex in Vertices)
+                            if (library_controllers == null)
                             {
-                                int Count = 0;
+                                library_controllers = new List<DAEController>();
+                            }
 
-                                for (int Index = 0; Index < 4; Index++)
+                            Controller.name = $"{MeshName}_ctrl";
+                            Controller.id = $"{Controller.name}_id";
+
+                            Controller.skin.source = $"#{Geometry.id}";
+                            Controller.skin.vertex_weights.count = (uint)Vertices.Length;
+
+                            string[] BoneNames = new string[SM.BoneIndicesCount];
+                            string[] BindPoses = new string[SM.BoneIndicesCount];
+
+                            for (int Index = 0; Index < SM.BoneIndicesCount; Index++)
+                            {
+                                if (SM.BoneIndices[Index] >= Mdl.Skeleton.Count) break;
+
+                                BoneNames[Index] = Mdl.Skeleton[SM.BoneIndices[Index]].Name;
+                                BindPoses[Index] = $"{Mdl.Skeleton[SM.BoneIndices[Index]].InverseTransform.ToSerializableString()} 0 0 0 1";
+                            }
+
+                            StringBuilder v = new StringBuilder();
+                            StringBuilder vcount = new StringBuilder();
+
+                            Dictionary<string, int> Weights = new Dictionary<string, int>();
+
+                            if (SM.Skinning == H3DSubMeshSkinning.Smooth)
+                            {
+                                foreach (PICAVertex Vertex in Vertices)
                                 {
-                                    float BIndex = Vertex.Indices[Index];
-                                    float Weight = Vertex.Weights[Index];
+                                    int Count = 0;
 
-                                    if (Weight == 0) break;
-
-                                    string WStr = Weight.ToString(CultureInfo.InvariantCulture);
-
-                                    v.Append($"{BIndex} ");
-
-                                    if (Weights.ContainsKey(WStr))
+                                    for (int Index = 0; Index < 4; Index++)
                                     {
-                                        v.Append($"{Weights[WStr]} ");
-                                    }
-                                    else
-                                    {
-                                        v.Append($"{Weights.Count} ");
+                                        float BIndex = Vertex.Indices[Index];
+                                        float Weight = Vertex.Weights[Index];
 
-                                        Weights.Add(WStr, Weights.Count);
+                                        if (Weight == 0) break;
+
+                                        string WStr = Weight.ToString(CultureInfo.InvariantCulture);
+
+                                        v.Append($"{BIndex} ");
+
+                                        if (Weights.ContainsKey(WStr))
+                                        {
+                                            v.Append($"{Weights[WStr]} ");
+                                        }
+                                        else
+                                        {
+                                            v.Append($"{Weights.Count} ");
+
+                                            Weights.Add(WStr, Weights.Count);
+                                        }
+
+                                        Count++;
                                     }
 
-                                    Count++;
+                                    vcount.Append($"{Count} ");
+                                }
+                            }
+                            else
+                            {
+                                foreach (PICAVertex Vertex in Vertices)
+                                {
+                                    v.Append($"{Vertex.Indices[0]} 1 ");
+
+                                    vcount.Append("1 ");
                                 }
 
-                                vcount.Append($"{Count} ");
-                            }
-                        }
-                        else
-                        {
-                            foreach (PICAVertex Vertex in Vertices)
-                            {
-                                v.Append($"{Vertex.Indices[0]} 1 ");
-
-                                vcount.Append("1 ");
+                                Weights.Add("1", 0);
                             }
 
-                            Weights.Add("1", 0);
+                            Controller.skin.src.Add(new DAESource($"{Controller.name}_names", 1, BoneNames, "JOINT", "Name"));
+                            Controller.skin.src.Add(new DAESource($"{Controller.name}_poses", 16, BindPoses, "TRANSFORM", "float4x4"));
+                            Controller.skin.src.Add(new DAESource($"{Controller.name}_weights", 1, Weights.Keys.ToArray(), "WEIGHT", "float"));
+
+                            Controller.skin.joints.AddInput("JOINT", $"#{Controller.skin.src[0].id}");
+                            Controller.skin.joints.AddInput("INV_BIND_MATRIX", $"#{Controller.skin.src[1].id}");
+
+                            Controller.skin.vertex_weights.AddInput("JOINT", $"#{Controller.skin.src[0].id}", 0);
+                            Controller.skin.vertex_weights.AddInput("WEIGHT", $"#{Controller.skin.src[2].id}", 1);
+
+                            Controller.skin.vertex_weights.vcount = vcount
+                                .ToString()
+                                .TrimEnd();
+
+                            Controller.skin.vertex_weights.v = v
+                                .ToString()
+                                .TrimEnd();
+
+                            library_controllers.Add(Controller);
                         }
-
-                        Controller.skin.src.Add(GetSource($"{Controller.name}_names", 1, BoneNames, "JOINT", "Name"));
-                        Controller.skin.src.Add(GetSource($"{Controller.name}_poses", 16, BindPoses, "TRANSFORM", "float4x4"));
-                        Controller.skin.src.Add(GetSource($"{Controller.name}_weights", 1, Weights.Keys.ToArray(), "WEIGHT", "float"));
-
-                        Controller.skin.joints.AddInput("JOINT", $"#{Controller.skin.src[0].id}");
-                        Controller.skin.joints.AddInput("INV_BIND_MATRIX", $"#{Controller.skin.src[1].id}");
-
-                        Controller.skin.vertex_weights.AddInput("JOINT", $"#{Controller.skin.src[0].id}", 0);
-                        Controller.skin.vertex_weights.AddInput("WEIGHT", $"#{Controller.skin.src[2].id}", 1);
-
-                        Controller.skin.vertex_weights.vcount = vcount
-                            .ToString()
-                            .TrimEnd();
-
-                        Controller.skin.vertex_weights.v = v
-                            .ToString()
-                            .TrimEnd();
-
-                        library_controllers.Add(Controller);
 
                         //Mesh node
                         DAENode Node = new DAENode();
 
-                        Node.name = $"{MeshName}_node";
-                        Node.id = $"{Node.name}_id";
+                        Node.name   = $"{MeshName}_node";
+                        Node.id     = $"{Node.name}_id";
+                        Node.matrix = DAEMatrix.Identity;
 
-                        Node.instance_controller = new DAENodeInstance();
+                        DAENodeInstance NodeInstance = new DAENodeInstance();
 
-                        Node.instance_controller.url = $"#{Controller.id}";
-                        Node.instance_controller.bind_material.technique_common.instance_material.symbol = MtlName;
-                        Node.instance_controller.bind_material.technique_common.instance_material.target = $"#{MtlTgt}";
+                        NodeInstance.url = $"#{(HasController ? Controller.id : Geometry.id)}";
+                        NodeInstance.bind_material.technique_common.instance_material.symbol = MtlName;
+                        NodeInstance.bind_material.technique_common.instance_material.target = $"#{MtlTgt}";
 
-                        if ((Mdl.Skeleton?.Count ?? 0) > 0)
+                        if (HasController)
                         {
-                            Node.instance_controller.skeleton = $"#{VN.node[0].id}";
+                            NodeInstance.skeleton = $"#{VN.node[0].id}";
+                            Node.instance_controller = NodeInstance;
+                        }
+                        else
+                        {
+                            Node.instance_geometry = NodeInstance;
                         }
 
                         VN.node.Add(Node);
@@ -372,18 +398,25 @@ namespace SPICA.Formats.Generic.COLLADA
                     scene.instance_visual_scene.url = $"#{library_visual_scenes[0].id}";
                 }
 
+                if (SceneData.Textures.Count > 0)
+                {
+                    library_images = new List<DAEImage>();
+                }
+
                 foreach (H3DTexture Tex in SceneData.Textures)
                 {
                     library_images.Add(new DAEImage
                     {
-                        id = Tex.Name,
+                        id        = Tex.Name,
                         init_from = $"./{Tex.Name}.png"
                     });
                 }
-            }
+            } //MdlIndex != -1
 
             if (AnimIndex != -1)
             {
+                library_animations = new List<DAEAnimation>();
+
                 string[] AnimElemNames = { "translate", "rotateX", "rotateY", "rotateZ", "scale" };
 
                 H3DAnimation SklAnim = SceneData.SkeletalAnimations[AnimIndex];
@@ -441,7 +474,7 @@ namespace SPICA.Formats.Generic.COLLADA
                                     H3DAnimTransform Transform = (H3DAnimTransform)Elem.Content;
 
                                     //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (Parent != null)
+                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
                                     {
                                         if (PElem != null)
                                         {
@@ -511,7 +544,7 @@ namespace SPICA.Formats.Generic.COLLADA
                                     if (IsRotation) Rotation = QuatTransform.GetRotationValue(Frame).ToEuler();
 
                                     //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (Parent != null)
+                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
                                     {
                                         if (PElem != null)
                                             InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
@@ -541,12 +574,12 @@ namespace SPICA.Formats.Generic.COLLADA
                         Anim.name = $"{SklAnim.Name}_{Elem.Name}_{AnimElemNames[i]}";
                         Anim.id = $"{Anim.name}_id";
 
-                        Anim.src.Add(GetSource($"{Anim.name}_frame", 1, AnimTimes, "TIME", "float"));
-                        Anim.src.Add(GetSource($"{Anim.name}_interp", 1, AnimLerps, "INTERPOLATION", "Name"));
+                        Anim.src.Add(new DAESource($"{Anim.name}_frame", 1, AnimTimes, "TIME", "float"));
+                        Anim.src.Add(new DAESource($"{Anim.name}_interp", 1, AnimLerps, "INTERPOLATION", "Name"));
 
                         Anim.src.Add(IsRotation
-                            ? GetSource($"{Anim.name}_pose", 1, AnimPoses, "ANGLE", "float")
-                            : GetSource($"{Anim.name}_pose", 3, AnimPoses,
+                            ? new DAESource($"{Anim.name}_pose", 1, AnimPoses, "ANGLE", "float")
+                            : new DAESource($"{Anim.name}_pose", 3, AnimPoses,
                             "X", "float",
                             "Y", "float",
                             "Z", "float"));
@@ -562,58 +595,9 @@ namespace SPICA.Formats.Generic.COLLADA
                         if (IsRotation) Anim.channel.target += ".ANGLE";
 
                         library_animations.Add(Anim);
-                    }
-                }
-            }
-        }
-
-        private DAESource GetSource(string Name, int Stride, string[] Elems, params string[] Accs)
-        {
-            DAEArray Array = new DAEArray
-            {
-                id    = $"{Name}_array_id",
-                count = (uint)(Elems.Length * Stride),
-                data  = string.Join(" ", Elems)
-            };
-
-            DAEAccessor Accessor = new DAEAccessor
-            {
-                source = $"#{Array.id}",
-                count  = (uint)Elems.Length,
-                stride = (uint)Stride
-            };
-
-            DAESource Source = new DAESource();
-
-            Source.id = $"{Name}_id";
-            Source.name = Name;
-
-            for (int Index = 0; Index < Accs.Length; Index += 2)
-            {
-                Accessor.AddParam(Accs[Index + 0], Accs[Index + 1]);
-            }
-
-            Source.technique_common.accessor = Accessor;
-
-            if (Accs[1] == "Name")
-                Source.Name_array = Array;
-            else
-                Source.float_array = Array;
-
-            return Source;
-        }
-
-        private DAEWrap GetWrap(H3DTextureWrap Wrap)
-        {
-            switch (Wrap)
-            {
-                case H3DTextureWrap.ClampToEdge:   return DAEWrap.CLAMP;
-                case H3DTextureWrap.ClampToBorder: return DAEWrap.BORDER;
-                case H3DTextureWrap.Repeat:        return DAEWrap.WRAP;
-                case H3DTextureWrap.Mirror:        return DAEWrap.MIRROR;
-
-                default: throw new ArgumentException("Invalid Texture wrap!");
-            }
+                    } //Axis 0-5
+                } //SklAnim.Elements
+            } //AnimIndex != -1
         }
 
         private float ToAngle(float Radians)

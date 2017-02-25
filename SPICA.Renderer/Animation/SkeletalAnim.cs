@@ -27,7 +27,7 @@ namespace SPICA.Renderer.Animation
 
         private const string InvalidPrimitiveTypeEx = "Invalid Primitive type used on Skeleton Bone!";
 
-        public Matrix4[] GetSkeletonTransforms(PatriciaList<H3DBone> Skeleton, bool AbsPos = true)
+        public Matrix4[] GetSkeletonTransforms(PatriciaList<H3DBone> Skeleton)
         {
             Matrix4[] Output = new Matrix4[Skeleton.Count];
             Bone[] FrameSkeleton = new Bone[Skeleton.Count];
@@ -122,6 +122,8 @@ namespace SPICA.Renderer.Animation
             {
                 int PIndex, BIndex = Index;
 
+                bool ScaleCompensate = (Skeleton[Index].Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
+
                 if (FrameSkeleton[BIndex].HasMtxTransform) continue;
 
                 Output[Index] = Matrix4.CreateScale(FrameSkeleton[BIndex].Scale);
@@ -135,11 +137,17 @@ namespace SPICA.Renderer.Animation
 
                     PIndex = FrameSkeleton[BIndex].ParentIndex;
 
-                    Vector3 Scale = PIndex != -1 && AbsPos ? FrameSkeleton[PIndex].Scale : Vector3.One;
+                    /*
+                     * Scale is inherited when Scale Compensate is not specified.
+                     * Otherwise Scale only applies to the bone where it is set and child bones doesn't inherit it.
+                     */
+                    Vector3 Scale = PIndex != -1 && ScaleCompensate ? FrameSkeleton[PIndex].Scale : Vector3.One;
 
                     Output[Index] *= Matrix4.CreateTranslation(Scale * FrameSkeleton[BIndex].Translation);
+
+                    if (PIndex != -1 && !ScaleCompensate) Output[Index] *= Matrix4.CreateScale(FrameSkeleton[PIndex].Scale);
                 }
-                while ((BIndex = PIndex) != -1 && AbsPos);
+                while ((BIndex = PIndex) != -1);
             }
 
             return Output;

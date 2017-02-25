@@ -12,11 +12,7 @@ namespace SPICA.Formats.CtrH3D
         [Ignore] private List<PatriciaTreeNode> Nodes;
         [Ignore] private List<string> Names;
 
-        public PatriciaTreeNode this[int Index]
-        {
-            get { return Nodes[Index]; }
-            set { Nodes[Index] = value; }
-        }
+        [Ignore] private bool TreeNeedsRebuild;
 
         public int MaxLength
         {
@@ -59,14 +55,16 @@ namespace SPICA.Formats.CtrH3D
                 MaxIndex = Math.Max(MaxIndex, Node.LeftNodeIndex);
                 MaxIndex = Math.Max(MaxIndex, Node.RightNodeIndex);
 
-                Nodes.Add(Node);
+                if (Nodes.Count > 0) Names.Add(Node.Name);
 
-                if (Node.Name != null) Names.Add(Node.Name);
+                Nodes.Add(Node);
             }
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
+            if (TreeNeedsRebuild) RebuildTree();
+
             Serializer.WriteValue(Nodes);
 
             return true;
@@ -90,11 +88,13 @@ namespace SPICA.Formats.CtrH3D
 
         public string Find(int Index)
         {
-            return Nodes[Index + 1].Name;
+            return Names[Index];
         }
 
         public int Find(string Name)
         {
+            if (TreeNeedsRebuild) RebuildTree();
+
             int Output = 0;
 
             if (Nodes != null && Nodes.Count > 0)
@@ -112,25 +112,29 @@ namespace SPICA.Formats.CtrH3D
         public void Add(string Name)
         {
             Names.Add(Name);
-            RebuildTree();
+
+            TreeNeedsRebuild = true;
         }
 
         public void Insert(int Index, string Name)
         {
             Names.Insert(Index, Name);
-            RebuildTree();
+
+            TreeNeedsRebuild = true;
         }
 
         public void Remove(string Name)
         {
             Names.Remove(Name);
-            RebuildTree();
+
+            TreeNeedsRebuild = true;
         }
 
         public void Clear()
         {
             Names.Clear();
-            RebuildTree();
+
+            TreeNeedsRebuild = true;
         }
 
         private void RebuildTree()
@@ -143,6 +147,8 @@ namespace SPICA.Formats.CtrH3D
                 Nodes.Add(new PatriciaTreeNode());
 
             foreach (string Name in Names) Insert(Name);
+
+            TreeNeedsRebuild = false;
         }
 
         private void Insert(string Name)

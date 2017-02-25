@@ -5,6 +5,7 @@ using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model
 {
@@ -19,7 +20,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public PatriciaList<H3DMaterial> Materials;
 
-        public List<H3DMesh> Meshes;
+        [XmlIgnore] public List<H3DMesh> Meshes;
 
         [Range] public List<H3DMesh> MeshesLayer0;
         [Range] public List<H3DMesh> MeshesLayer1;
@@ -34,6 +35,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         private string _Name;
 
+        [XmlAttribute]
         public string Name
         {
             get { return _Name; }

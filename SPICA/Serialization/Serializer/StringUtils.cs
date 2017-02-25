@@ -20,17 +20,11 @@ namespace SPICA.Serialization.Serializer
             }
 
             if (LHS.Length == RHS.Length)
-            {
                 return 0;
-            }
             else if (LHS.Length < RHS.Length)
-            {
                 return -1;
-            }
             else
-            {
                 return 1;
-            }
         }
     }
 }

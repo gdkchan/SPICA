@@ -9,6 +9,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Texture
 {
@@ -25,13 +26,14 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         private string _Name;
 
+        [XmlAttribute]
         public string Name
         {
             get { return _Name; }
             set { _Name = value; }
         }
 
-        public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
+        [XmlIgnore] public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 
         [Ignore] public byte[] RawBufferXPos;
         [Ignore] public byte[] RawBufferXNeg;

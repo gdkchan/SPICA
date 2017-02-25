@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SPICA.Formats.CtrH3D.Model.Material.Texture;
+using System;
+using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.Generic.COLLADA
@@ -64,6 +66,51 @@ namespace SPICA.Formats.Generic.COLLADA
         LINEAR_MIPMAP_NEAREST,
         NEAREST_MIPMAP_LINEAR,
         LINEAR_MIPMAP_LINEAR
+    }
+
+    public static class DAEH3DTextureWrapExtensions
+    {
+        public static DAEWrap ToDAEWrap(this H3DTextureWrap Wrap)
+        {
+            switch (Wrap)
+            {
+                case H3DTextureWrap.ClampToEdge:   return DAEWrap.CLAMP;
+                case H3DTextureWrap.ClampToBorder: return DAEWrap.BORDER;
+                case H3DTextureWrap.Repeat:        return DAEWrap.WRAP;
+                case H3DTextureWrap.Mirror:        return DAEWrap.MIRROR;
+
+                default: throw new ArgumentException("Invalid Texture wrap!");
+            }
+        }
+    }
+
+    public static class DAEH3DTextureFilterExtensions
+    {
+        public static DAEFilter ToDAEFilter(this H3DTextureMinFilter Filter)
+        {
+            switch (Filter)
+            {
+                case H3DTextureMinFilter.Nearest:              return DAEFilter.NEAREST;
+                case H3DTextureMinFilter.NearestMipmapNearest: return DAEFilter.NEAREST_MIPMAP_NEAREST;
+                case H3DTextureMinFilter.NearestMipmapLinear:  return DAEFilter.NEAREST_MIPMAP_LINEAR;
+                case H3DTextureMinFilter.Linear:               return DAEFilter.LINEAR;
+                case H3DTextureMinFilter.LinearMipmapNearest:  return DAEFilter.LINEAR_MIPMAP_NEAREST;
+                case H3DTextureMinFilter.LinearMipmapLinear:   return DAEFilter.LINEAR_MIPMAP_LINEAR;
+
+                default: throw new ArgumentException("Invalid Minification filter!");
+            }
+        }
+
+        public static DAEFilter ToDAEFilter(this H3DTextureMagFilter Filter)
+        {
+            switch (Filter)
+            {
+                case H3DTextureMagFilter.Nearest: return DAEFilter.NEAREST;
+                case H3DTextureMagFilter.Linear:  return DAEFilter.LINEAR;
+
+                default: throw new ArgumentException("Invalid Magnification filter!");
+            }
+        }
     }
 
     public class DAEEffectProfileCOMMONTechnique

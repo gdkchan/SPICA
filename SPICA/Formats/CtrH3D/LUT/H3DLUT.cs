@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.LUT
 {
@@ -8,6 +9,7 @@ namespace SPICA.Formats.CtrH3D.LUT
 
         private string _Name;
 
+        [XmlAttribute]
         public string Name
         {
             get { return _Name; }

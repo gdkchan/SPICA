@@ -2,19 +2,22 @@
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
+using System.Xml.Serialization;
+
 namespace SPICA.Formats.CtrH3D.LUT
 {
     public struct H3DLUTSampler : ICustomSerialization
     {
-        public H3DLUTFlags Flags;
+        [XmlAttribute] public H3DLUTFlags Flags;
+
         private byte Padding0;
         private ushort Padding1;
 
         private uint[] Commands;
 
-        public string Name;
+        [XmlAttribute] public string Name;
 
-        [Ignore] public float[] Table;
+        [Ignore, XmlAttribute] public float[] Table;
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {

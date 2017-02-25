@@ -94,7 +94,7 @@ namespace SPICA.Formats.CtrH3D
 
         public string FindName(int Index)
         {
-            return NameTree[Index + 1].Name;
+            return NameTree.Find(Index);
         }
 
         public void Remove(int Index)

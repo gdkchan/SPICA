@@ -19,10 +19,10 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlElement("rotate")]    public DAEVector4[] Rotation;
         [XmlElement("scale")]     public DAEVector3   Scale;
 
-        [XmlElement("node", IsNullable = false)] public List<DAENode> Nodes;
+        [XmlElement("node")] public List<DAENode> Nodes;
 
-        [XmlElement(IsNullable = false)] public DAENodeInstance instance_geometry;
-        [XmlElement(IsNullable = false)] public DAENodeInstance instance_controller;
+        public DAENodeInstance instance_geometry;
+        public DAENodeInstance instance_controller;
 
         public void SetBoneEuler(Vector3D T, Vector3D R, Vector3D S)
         {

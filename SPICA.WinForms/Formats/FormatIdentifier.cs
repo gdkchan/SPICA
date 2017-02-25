@@ -1,6 +1,7 @@
 ﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
+using SPICA.Formats.Generic.StudioMdl;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Motion;
 
@@ -13,6 +14,15 @@ namespace SPICA.WinForms.Formats
     {
         public static H3D IdentifyAndOpen(string FileName, PatriciaList<H3DBone> Skeleton = null)
         {
+            //Formats that can by identified by extensions
+            string FilePath = Path.GetDirectoryName(FileName);
+
+            switch (Path.GetExtension(FileName).ToLower())
+            {
+                case ".smd": return new SMD(FileName).ToH3D(FilePath);
+            }
+
+            //Formats that can only be indetified by "magic numbers"
             H3D Output = null;
 
             using (FileStream FS = new FileStream(FileName, FileMode.Open))

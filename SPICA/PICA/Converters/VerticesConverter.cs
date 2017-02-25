@@ -77,26 +77,29 @@ namespace SPICA.PICA.Converters
                         }
                     }
 
-                    bool HasFixedIndices = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneIndex);
-                    bool HasFixedWeights = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneWeight);
-
-                    if (HasFixedIndices || HasFixedWeights)
+                    if (Mesh.FixedAttributes != null)
                     {
-                        foreach (PICAFixedAttribute Attr in Mesh.FixedAttributes)
-                        {
-                            switch (Attr.Name)
-                            {
-                                case PICAAttributeName.BoneIndex:
-                                    O.Indices[0] = (int)Attr.Value[0];
-                                    O.Indices[1] = (int)Attr.Value[1];
-                                    O.Indices[2] = (int)Attr.Value[2];
-                                    break;
+                        bool HasFixedIndices = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneIndex);
+                        bool HasFixedWeights = Mesh.FixedAttributes.Any(x => x.Name == PICAAttributeName.BoneWeight);
 
-                                case PICAAttributeName.BoneWeight:
-                                    O.Weights[0] = Attr.Value[0];
-                                    O.Weights[1] = Attr.Value[1];
-                                    O.Weights[2] = Attr.Value[2];
-                                    break;
+                        if (HasFixedIndices || HasFixedWeights)
+                        {
+                            foreach (PICAFixedAttribute Attr in Mesh.FixedAttributes)
+                            {
+                                switch (Attr.Name)
+                                {
+                                    case PICAAttributeName.BoneIndex:
+                                        O.Indices[0] = (int)Attr.Value[0];
+                                        O.Indices[1] = (int)Attr.Value[1];
+                                        O.Indices[2] = (int)Attr.Value[2];
+                                        break;
+
+                                    case PICAAttributeName.BoneWeight:
+                                        O.Weights[0] = Attr.Value[0];
+                                        O.Weights[1] = Attr.Value[1];
+                                        O.Weights[2] = Attr.Value[2];
+                                        break;
+                                }
                             }
                         }
                     }

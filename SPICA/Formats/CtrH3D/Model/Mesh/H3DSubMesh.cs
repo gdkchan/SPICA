@@ -5,21 +5,24 @@ using SPICA.Serialization.Serializer;
 
 using System;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Mesh
 {
     [Inline]
     public class H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
     {
-        public H3DSubMeshSkinning Skinning;
+        [XmlAttribute] public H3DSubMeshSkinning Skinning;
+
         private byte Padding;
 
-        public ushort BoneIndicesCount;
+        [XmlAttribute] public ushort BoneIndicesCount;
 
-        [FixedLength(20), Inline] public ushort[] BoneIndices;
+        [FixedLength(20), Inline, XmlAttribute] public ushort[] BoneIndices;
 
         private uint[] Commands;
 
+        [XmlIgnore]
         public int MaxIndex
         {
             get
@@ -37,7 +40,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         [Ignore] internal ushort BoolUniforms;
 
-        [Ignore] public ushort[] Indices;
+        [Ignore, XmlAttribute] public ushort[] Indices;
 
         public H3DSubMesh()
         {

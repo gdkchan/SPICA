@@ -193,12 +193,11 @@ namespace SPICA.Serialization
 
         private void WriteList(IList List)
         {
-            Type Type = List.GetType();
+            //NOTE: This doesn't work as expected for Lists containing different types (not used through)
+            //Assumes that the Type of the first element is the same for all other elements
+            if (List.Count == 0) return;
 
-            if (Type.IsArray)
-                Type = Type.GetElementType();
-            else
-                Type = Type.GetGenericArguments()[0];
+            Type Type = List[0].GetType();
 
             bool Inline = Type.IsDefined(typeof(InlineAttribute));
             bool Pointers = !(Type.IsValueType || Type.IsEnum || Inline);

@@ -151,7 +151,7 @@ void main() {
 	vec4 Color2 = GetTexColor(2);
 
 	vec4 FragPrimaryColor = MEmission + MAmbient * SAmbient;
-	vec4 FragSecondaryColor = vec4(0, 0, 0, 1);
+	vec4 FragSecondaryColor = vec4(0);
 
 	for (int i = 0; i < LightsCount; i++) {
 		vec3 LightDir = normalize(Lights[i].Position - WorldPos);
@@ -169,7 +169,7 @@ void main() {
 		float d0 = (FragFlags & FLAG_D0_ENB) != 0 ? GetLUTVal(LUT_DIST0) : 1;
 		float d1 = (FragFlags & FLAG_D1_ENB) != 0 ? GetLUTVal(LUT_DIST1) : 1;
 
-		vec4 r = vec4(0, 0, 0, 1);
+		vec4 r = vec4(0);
 
 		if ((FragFlags & FLAG_R_ENB) != 0) {
 			r.r = GetLUTVal(LUT_REFLECR);
@@ -267,10 +267,10 @@ void main() {
 			case 3: Output.rgb = clamp(ColorArgs[0].rgb + ColorArgs[1].rgb - 0.5, 0, 1); break;
 			case 4: Output.rgb = mix(ColorArgs[1].rgb, ColorArgs[0].rgb, ColorArgs[2].rgb); break;
 			case 5: Output.rgb = max(ColorArgs[0].rgb - ColorArgs[1].rgb, 0); break;
-			case 6: Output.rgb = vec3(clamp(dot(ColorArgs[0].rgb, ColorArgs[1].rgb), 0, 1)); break;
-			case 7: Output.rgb = vec3(clamp(dot(ColorArgs[0], ColorArgs[1]), 0, 1)); break;
-			case 8: Output.rgb = clamp(ColorArgs[0].rgb * ColorArgs[1].rgb + ColorArgs[2].rgb, 0, 1); break;
-			case 9: Output.rgb = clamp(min(ColorArgs[0].rgb + ColorArgs[1].rgb, 1) * ColorArgs[2].rgb, 0, 1); break;
+			case 6: Output.rgb = vec3(min(dot(ColorArgs[0].rgb, ColorArgs[1].rgb), 1)); break;
+			case 7: Output.rgb = vec3(min(dot(ColorArgs[0], ColorArgs[1]), 1)); break;
+			case 8: Output.rgb = min(ColorArgs[0].rgb * ColorArgs[1].rgb + ColorArgs[2].rgb, 1); break;
+			case 9: Output.rgb = min(min(ColorArgs[0].rgb + ColorArgs[1].rgb, 1) * ColorArgs[2].rgb, 1); break;
 		}
 
 		switch (Combiners[Stage].AlphaCombine) {
@@ -280,10 +280,10 @@ void main() {
 			case 3: Output.a = clamp(AlphaArgs[0].a + AlphaArgs[1].a - 0.5, 0, 1); break;
 			case 4: Output.a = mix(AlphaArgs[1].a, AlphaArgs[0].a, AlphaArgs[2].a); break;
 			case 5: Output.a = max(AlphaArgs[0].a - AlphaArgs[1].a, 0); break;
-			case 6: Output.a = clamp(dot(AlphaArgs[0].rgb, AlphaArgs[1].rgb), 0, 1); break;
-			case 7: Output.a = clamp(dot(AlphaArgs[0], AlphaArgs[1]), 0, 1); break;
-			case 8: Output.a = clamp(AlphaArgs[0].a * AlphaArgs[1].a + AlphaArgs[2].a, 0, 1); break;
-			case 9: Output.a = clamp(min(AlphaArgs[0].a + AlphaArgs[1].a, 1) * AlphaArgs[2].a, 0, 1); break;
+			case 6: Output.a = min(dot(AlphaArgs[0].rgb, AlphaArgs[1].rgb), 1); break;
+			case 7: Output.a = min(dot(AlphaArgs[0], AlphaArgs[1]), 1); break;
+			case 8: Output.a = min(AlphaArgs[0].a * AlphaArgs[1].a + AlphaArgs[2].a, 1); break;
+			case 9: Output.a = min(min(AlphaArgs[0].a + AlphaArgs[1].a, 1) * AlphaArgs[2].a, 1); break;
 		}
 
 		Output.rgb = min(Output.rgb * Combiners[Stage].ColorScale, 1);
@@ -386,5 +386,5 @@ float GetLUTVal(int SrcLUT) {
 
 	float Value = mix(LVal, RVal, (IndexVal - float(Left) * LUT_STEP) / LUT_STEP);
 
-	return clamp(Value * LUTs[SrcLUT].Scale, 0, 1);
+	return min(Value * LUTs[SrcLUT].Scale, 1);
 }

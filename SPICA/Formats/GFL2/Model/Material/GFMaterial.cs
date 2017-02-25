@@ -100,7 +100,7 @@ namespace SPICA.Formats.GFL2.Model.Material
         {
             TextureCoords  = new GFTextureCoord[3];
 
-            TextureSources = new float[3];
+            TextureSources = new float[4];
         }
 
         public GFMaterial(BinaryReader Reader, string MaterialName) : this()
@@ -272,6 +272,7 @@ namespace SPICA.Formats.GFL2.Model.Material
             TextureSources[0] = Uniform[0].X;
             TextureSources[1] = Uniform[0].Y;
             TextureSources[2] = Uniform[0].Z;
+            TextureSources[3] = Uniform[0].W;
         }
 
         public static List<GFMaterial> ReadList(BinaryReader Reader, GFHashName[] Names)

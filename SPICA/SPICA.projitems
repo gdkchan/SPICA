@@ -139,10 +139,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBoneTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotKeyFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CLTS.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CMDL.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\NW4C\CTEX.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\BitUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\FNVHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\IOUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\StringUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Interpolation.cs" />

@@ -2,6 +2,8 @@
 using SPICA.Math3D;
 using SPICA.Serialization.Attributes;
 
+using System.Xml.Serialization;
+
 namespace SPICA.Formats.CtrH3D.Model
 {
     [Inline]
@@ -26,6 +28,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         private string _Name;
 
+        [XmlAttribute]
         public string Name
         {
             get { return _Name; }
@@ -55,22 +58,34 @@ namespace SPICA.Formats.CtrH3D.Model
             InverseTransform = new Matrix3x4();
         }
 
-        public Matrix3x4 CalculateTransform(PatriciaList<H3DBone> Skeleton)
+        public void CalculateTransform(PatriciaList<H3DBone> Skeleton)
         {
             Matrix3x4 Transform = new Matrix3x4();
 
             H3DBone Bone = this;
 
+            bool UniformScale = true;
+
             while (true)
             {
                 Transform *= Bone.Transform;
+
+                if (!Bone.Scale.IsOne) UniformScale = false;
 
                 if (Bone.ParentIndex == -1) break;
 
                 Bone = Skeleton[Bone.ParentIndex];
             }
 
-            return Transform;
+            Flags = ParentIndex != -1 ? H3DBoneFlags.IsSegmentScaleCompensate : 0;
+
+            if (UniformScale)       Flags |= H3DBoneFlags.IsScaleUniform;
+            if (Scale.IsOne)        Flags |= H3DBoneFlags.IsScaleVolumeOne;
+            if (Rotation.IsZero)    Flags |= H3DBoneFlags.IsRotationZero;
+            if (Translation.IsZero) Flags |= H3DBoneFlags.IsTranslationZero;
+
+            InverseTransform = Transform;
+            InverseTransform.Invert();
         }
     }
 }
