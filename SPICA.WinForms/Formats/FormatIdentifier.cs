@@ -2,6 +2,7 @@
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.Generic.StudioMdl;
+using SPICA.Formats.Generic.WavefrontOBJ;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Motion;
 
@@ -20,6 +21,7 @@ namespace SPICA.WinForms.Formats
             switch (Path.GetExtension(FileName).ToLower())
             {
                 case ".smd": return new SMD(FileName).ToH3D(FilePath);
+                case ".obj": return new OBJ(FileName).ToH3D(FilePath);
             }
 
             //Formats that can only be indetified by "magic numbers"

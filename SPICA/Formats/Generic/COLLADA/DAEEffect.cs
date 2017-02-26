@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D.Model.Material.Texture;
+
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;

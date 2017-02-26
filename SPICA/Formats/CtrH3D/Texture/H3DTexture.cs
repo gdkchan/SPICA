@@ -1,4 +1,5 @@
-﻿using SPICA.PICA;
+﻿using SPICA.Formats.Utils;
+using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Serialization;
@@ -64,7 +65,7 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public H3DTexture(string Name, Bitmap Img, PICATextureFormat Format = 0)
         {
-            this.Name = Name;
+            this.Name   = Name;
             this.Format = Format;
 
             H3DTextureImpl(Img);
@@ -74,10 +75,24 @@ namespace SPICA.Formats.CtrH3D.Texture
         {
             MipmapSize = 1;
 
-            Width = (uint)Img.Width;
-            Height = (uint)Img.Height;
+            Width  = IOUtils.Pow2RoundDown((uint)Img.Width);
+            Height = IOUtils.Pow2RoundDown((uint)Img.Height);
 
-            RawBufferXPos = TextureConverter.Encode(Img, Format);
+            if (Img.Width != Width || Img.Height != Height)
+            {
+                /*
+                 * 3DS GPU only accepts textures with power of 2 sizes
+                 * If the texture doesn't have a power of 2 size, we need to resize it then
+                 */
+                using (Bitmap NewImg = new Bitmap(Img, (int)Width, (int)Height))
+                {
+                    RawBufferXPos = TextureConverter.Encode(NewImg, Format);
+                }
+            }
+            else
+            {
+                RawBufferXPos = TextureConverter.Encode(Img, Format);
+            }
         }
 
         public Bitmap ToBitmap(int Face = 0)
@@ -113,7 +128,7 @@ namespace SPICA.Formats.CtrH3D.Texture
 
             RawBufferXPos = Texture.RawBufferXPos;
 
-            Width = Texture.Width;
+            Width  = Texture.Width;
             Height = Texture.Height;
         }
 
@@ -132,8 +147,8 @@ namespace SPICA.Formats.CtrH3D.Texture
                 switch (Cmd.Register)
                 {
                     case PICARegister.GPUREG_TEXUNIT0_DIM:
-                        Height = Param & 0x7ff;
-                        Width = (Param >> 16) & 0x7ff;
+                        Height = (Param >>  0) & 0x7ff;
+                        Width  = (Param >> 16) & 0x7ff;
                         break;
                     case PICARegister.GPUREG_TEXUNIT0_ADDR1: Address[0] = Param; break;
                     case PICARegister.GPUREG_TEXUNIT0_ADDR2: Address[1] = Param; break;
@@ -170,6 +185,12 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
+            if (Width > 1024 || Height > 1024)
+            {
+                //PICA max texture size is 1024x1024. Anything bigger than this makes it hang?
+                throw new OverflowException($"Texture \"{_Name}\" with size {Width}x{Height} is too big!");
+            }
+
             for (int Unit = 0; Unit < 3; Unit++)
             {
                 PICACommandWriter Writer = new PICACommandWriter();

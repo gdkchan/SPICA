@@ -17,7 +17,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMaterialFlags Flags;
         public H3DFragmentFlags FragmentFlags;
 
-        public byte FrameAccessOffset;
+        private byte FrameAccessOffset;
 
         public H3DMaterialShader MaterialShader;
 
@@ -460,6 +460,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Writer.SetCommand(PICARegister.GPUREG_FACECULLING_CONFIG, (uint)FaceCulling);
             Writer.SetCommand(PICARegister.GPUREG_FRAMEBUFFER_FLUSH, true);
             Writer.SetCommand(PICARegister.GPUREG_FRAMEBUFFER_INVALIDATE, true);
+
+            FrameAccessOffset = (byte)Writer.Index;
+
             Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_READ, ColorBufferRead ? 0xfu : 0u, 1);
             Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_WRITE, ColorBufferWrite ? 0xfu : 0u, 1);
             Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_READ, StencilBufferRead, DepthBufferRead);

@@ -1,5 +1,6 @@
 ﻿using SPICA.Serialization;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -14,6 +15,8 @@ namespace SPICA.Formats.CtrH3D
         private BinaryWriter Writer;
 
         public Dictionary<long, H3DRelocationType> RelocTypes;
+
+        private const string PointerTooBigEx = "Pointer address {0:X8} doesn't fit on 25-bits space!";
 
         public H3DRelocator(Stream BaseStream, H3DHeader Header)
         {
@@ -52,20 +55,20 @@ namespace SPICA.Formats.CtrH3D
         {
             switch (RType)
             {
-                case H3DRelocationType.Contents: return Header.ContentsAddress;
-                case H3DRelocationType.Strings: return Header.StringsAddress;
-                case H3DRelocationType.Commands: return Header.CommandsAddress;
-                case H3DRelocationType.CommandsSrc: return Header.CommandsAddress;
-                case H3DRelocationType.RawData: return Header.RawDataAddress;
+                case H3DRelocationType.Contents:       return Header.ContentsAddress;
+                case H3DRelocationType.Strings:        return Header.StringsAddress;
+                case H3DRelocationType.Commands:       return Header.CommandsAddress;
+                case H3DRelocationType.CommandsSrc:    return Header.CommandsAddress;
+                case H3DRelocationType.RawData:        return Header.RawDataAddress;
                 case H3DRelocationType.RawDataTexture: return Header.RawDataAddress;
-                case H3DRelocationType.RawDataVertex: return Header.RawDataAddress;
+                case H3DRelocationType.RawDataVertex:  return Header.RawDataAddress;
                 case H3DRelocationType.RawDataIndex16: return Header.RawDataAddress | (1u << 31);
-                case H3DRelocationType.RawDataIndex8: return Header.RawDataAddress;
-                case H3DRelocationType.RawExt: return Header.RawExtAddress;
-                case H3DRelocationType.RawExtTexture: return Header.RawExtAddress;
-                case H3DRelocationType.RawExtVertex: return Header.RawExtAddress;
-                case H3DRelocationType.RawExtIndex16: return Header.RawExtAddress | (1u << 31);
-                case H3DRelocationType.RawExtIndex8: return Header.RawExtAddress;
+                case H3DRelocationType.RawDataIndex8:  return Header.RawDataAddress;
+                case H3DRelocationType.RawExt:         return Header.RawExtAddress;
+                case H3DRelocationType.RawExtTexture:  return Header.RawExtAddress;
+                case H3DRelocationType.RawExtVertex:   return Header.RawExtAddress;
+                case H3DRelocationType.RawExtIndex16:  return Header.RawExtAddress | (1u << 31);
+                case H3DRelocationType.RawExtIndex8:   return Header.RawExtAddress;
             }
 
             return 0;
@@ -115,6 +118,13 @@ namespace SPICA.Formats.CtrH3D
 
                 if (Target != H3DRelocationType.Strings) PointerAddress >>= 2;
 
+                if (PointerAddress > 0x1ffffff)
+                {
+                    //The limit for a pointer value is 25 bits, that is, 32mb addressing space
+                    //Note: Since most Addresses are actually 4-byte aligned, the actual limit is 27 bits
+                    throw new OverflowException(string.Format(PointerTooBigEx, PointerAddress));
+                }
+
                 BaseStream.Seek(Position, SeekOrigin.Begin);
 
                 Writer.Write(PointerAddress | (Flags << 25));
@@ -126,29 +136,17 @@ namespace SPICA.Formats.CtrH3D
         private H3DRelocationType GetRelocation(long Position)
         {
             if (InRange(Position, Header.ContentsAddress, Header.ContentsLength))
-            {
                 return H3DRelocationType.Contents;
-            }
             else if (InRange(Position, Header.StringsAddress, Header.StringsLength))
-            {
                 return H3DRelocationType.Strings;
-            }
             else if (InRange(Position, Header.CommandsAddress, Header.CommandsLength))
-            {
                 return H3DRelocationType.Commands;
-            }
             else if (InRange(Position, Header.RawDataAddress, Header.RawDataLength))
-            {
                 return H3DRelocationType.RawData;
-            }
             else if (InRange(Position, Header.RawExtAddress, Header.RawExtLength))
-            {
                 return H3DRelocationType.RawExt;
-            }
             else
-            {
                 return H3DRelocationType.NotFound;
-            }
         }
 
         private uint ToRelative(long Position, H3DRelocationType Relocation)
@@ -156,10 +154,10 @@ namespace SPICA.Formats.CtrH3D
             switch (Relocation)
             {
                 case H3DRelocationType.Contents: return (uint)(Position - Header.ContentsAddress);
-                case H3DRelocationType.Strings: return (uint)(Position - Header.StringsAddress);
+                case H3DRelocationType.Strings:  return (uint)(Position - Header.StringsAddress);
                 case H3DRelocationType.Commands: return (uint)(Position - Header.CommandsAddress);
-                case H3DRelocationType.RawData: return (uint)(Position - Header.RawDataAddress);
-                case H3DRelocationType.RawExt: return (uint)(Position - Header.RawExtAddress);
+                case H3DRelocationType.RawData:  return (uint)(Position - Header.RawDataAddress);
+                case H3DRelocationType.RawExt:   return (uint)(Position - Header.RawExtAddress);
             }
 
             return (uint)Position;

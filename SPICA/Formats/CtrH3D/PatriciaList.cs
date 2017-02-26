@@ -82,7 +82,7 @@ namespace SPICA.Formats.CtrH3D
             OnCollectionChanged(NotifyCollectionChangedAction.Reset, default(T));
         }
 
-        public bool ContainsName(string Name)
+        public bool Contains(string Name)
         {
             return NameTree.Contains(Name);
         }

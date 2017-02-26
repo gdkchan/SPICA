@@ -6,7 +6,8 @@ using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.LUT
 {
-    public struct H3DLUTSampler : ICustomSerialization
+    [Inline]
+    public class H3DLUTSampler : ICustomSerialization
     {
         [XmlAttribute] public H3DLUTFlags Flags;
 
@@ -19,11 +20,14 @@ namespace SPICA.Formats.CtrH3D.LUT
 
         [Ignore, XmlAttribute] public float[] Table;
 
+        public H3DLUTSampler()
+        {
+            Table = new float[256];
+        }
+
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             int Index = 0;
-
-            Table = new float[256];
 
             PICACommandReader Reader = new PICACommandReader(Commands);
 

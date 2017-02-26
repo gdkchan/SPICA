@@ -10,6 +10,12 @@ namespace SPICA.Math3D
         [XmlAttribute] public byte B;
         [XmlAttribute] public byte A;
 
+        public static RGBA Black { get { return new RGBA(0, 0, 0, 255); } }
+
+        public static RGBA Gray { get { return new RGBA(127, 127, 127, 255); } }
+
+        public static RGBA White { get { return new RGBA(255, 255, 255, 255); } }
+
         public RGBA(byte R, byte G, byte B, byte A)
         {
             this.R = R;

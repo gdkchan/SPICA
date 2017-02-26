@@ -130,7 +130,10 @@ namespace SPICA.Renderer
 
         public void ClearModels()
         {
-            foreach (Model Mdl in Models) Mdl.Dispose();
+            foreach (Model Mdl in Models)
+            {
+                Mdl.Dispose();
+            }
 
             Models.Clear();
         }
@@ -174,7 +177,10 @@ namespace SPICA.Renderer
 
             GL.Viewport(0, 0, Width, Height);
 
-            foreach (GUIControl Ctrl in Controls) Ctrl.Resize();
+            foreach (GUIControl Ctrl in Controls)
+            {
+                Ctrl.Resize();
+            }
 
             float AR = Width / (float)Height;
 
@@ -192,17 +198,23 @@ namespace SPICA.Renderer
 
         public void AddLight(Light Light)
         {
-            Lights.Add(Light); UpdateLights();
+            Lights.Add(Light);
+
+            UpdateLights();
         }
 
         public void RemoveLight(Light Light)
         {
-            Lights.Remove(Light); UpdateLights();
+            Lights.Remove(Light);
+
+            UpdateLights();
         }
 
         public void ClearLights()
         {
-            Lights.Clear(); UpdateLights();
+            Lights.Clear();
+
+            UpdateLights();
         }
 
         private void UpdateLights()
@@ -239,7 +251,10 @@ namespace SPICA.Renderer
 
         public void ClearControls()
         {
-            foreach (GUIControl Ctrl in Controls) Ctrl.Dispose();
+            foreach (GUIControl Ctrl in Controls)
+            {
+                Ctrl.Dispose();
+            }
 
             Controls.Clear();
         }
@@ -263,7 +278,10 @@ namespace SPICA.Renderer
 
             GL.Uniform1(ObjectSpaceNormalMapLocation, ObjectSpaceNormalMap ? 1 : 0);
 
-            foreach (Model Mdl in Models) Mdl.Render();
+            foreach (Model Mdl in Models)
+            {
+                Mdl.Render();
+            }
 
             GL.UseProgram(GUIShaderHandle);
 
@@ -277,7 +295,10 @@ namespace SPICA.Renderer
 
             GL.DepthFunc(DepthFunction.Less);
 
-            foreach (GUIControl Ctrl in Controls) Ctrl.Render();
+            foreach (GUIControl Ctrl in Controls)
+            {
+                Ctrl.Render();
+            }
 
             AfterDraw?.Invoke(this, EventArgs.Empty);
         }
@@ -291,9 +312,15 @@ namespace SPICA.Renderer
                 MdlShader.Dispose();
                 GUIShader.Dispose();
 
-                foreach (Model Mdl in Models) Mdl.Dispose();
+                foreach (Model Mdl in Models)
+                {
+                    Mdl.Dispose();
+                }
 
-                foreach (GUIControl Ctrl in Controls) Ctrl.Dispose();
+                foreach (GUIControl Ctrl in Controls)
+                {
+                    Ctrl.Dispose();
+                }
 
                 Disposed = true;
             }

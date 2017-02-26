@@ -48,10 +48,12 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             {
                 H3DMaterial Output = new H3DMaterial();
 
-                Output.MaterialParams.TextureCoords[0].Scale = new Vector2D(1, 1);
+                Output.MaterialParams.Flags = H3DMaterialFlags.IsFragmentLightingEnabled;
+                Output.MaterialParams.FragmentFlags = H3DFragmentFlags.IsLUTDist0Enabled;
 
-                Output.MaterialParams.AmbientColor = new RGBA(255, 255, 255, 255);
-                Output.MaterialParams.DiffuseColor = new RGBA(0, 0, 0, 255);
+                Output.MaterialParams.AmbientColor = RGBA.White;
+                Output.MaterialParams.DiffuseColor = RGBA.White;
+                Output.MaterialParams.Specular0Color = RGBA.Gray;
 
                 Output.MaterialParams.ColorScale = 1;
 
@@ -67,13 +69,18 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 Output.MaterialParams.DepthColorMask.AlphaWrite = true;
                 Output.MaterialParams.DepthColorMask.DepthWrite = true;
 
-                for (int Stage = 0; Stage < 6; Stage++)
-                {
-                    Output.MaterialParams.TexEnvStages[Stage].Source.ColorSource[0] = PICATextureCombinerSource.Texture0;
-                    Output.MaterialParams.TexEnvStages[Stage].Source.AlphaSource[0] = PICATextureCombinerSource.Texture0;
-                }
+                Output.MaterialParams.ColorBufferRead  = true;
+                Output.MaterialParams.ColorBufferWrite = true;
 
-                Output.MaterialParams.FaceCulling = PICAFaceCulling.BackFace;
+                Output.MaterialParams.DepthBufferRead  = true;
+                Output.MaterialParams.DepthBufferWrite = true;
+
+                Output.MaterialParams.TexEnvStages[0] = PICATexEnvStage.Texture0SubSecColor;
+                Output.MaterialParams.TexEnvStages[1] = PICATexEnvStage.PassThrough;
+                Output.MaterialParams.TexEnvStages[2] = PICATexEnvStage.PassThrough;
+                Output.MaterialParams.TexEnvStages[3] = PICATexEnvStage.PassThrough;
+                Output.MaterialParams.TexEnvStages[4] = PICATexEnvStage.PassThrough;
+                Output.MaterialParams.TexEnvStages[5] = PICATexEnvStage.PassThrough;
 
                 Output.MaterialParams.ColorBufferWrite   = true;
                 Output.MaterialParams.StencilBufferRead  = true;
@@ -83,7 +90,14 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 Output.TextureMappers[0].WrapU = H3DTextureWrap.Repeat;
                 Output.TextureMappers[0].WrapV = H3DTextureWrap.Repeat;
-                
+
+                Output.TextureMappers[0].MinFilter = H3DTextureMinFilter.Linear;
+                Output.TextureMappers[0].MagFilter = H3DTextureMagFilter.Linear;
+
+                Output.MaterialParams.TextureCoords[0].Scale = new Vector2D(1);
+
+                Output.MaterialParams.LUTInSel.Dist0Input = PICALUTInput.CosLightNormal;
+
                 Output.EnabledTextures[0] = true;
 
                 return Output;

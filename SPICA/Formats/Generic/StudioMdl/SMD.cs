@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.Text;
-
+using SPICA.Formats.CtrH3D.LUT;
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
@@ -211,7 +211,6 @@ namespace SPICA.Formats.Generic.StudioMdl
             StringBuilder SB = new StringBuilder();
 
             SB.AppendLine("version 1");
-
             SB.AppendLine("nodes");
 
             foreach (SMDNode Node in Nodes)
@@ -396,7 +395,10 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                     ushort[] BI = new ushort[20];
 
-                    for (int Index = 0; Index < BoneIndices.Count; Index++) BI[Index] = BoneIndices[Index];
+                    for (int Index = 0; Index < BoneIndices.Count; Index++)
+                    {
+                        BI[Index] = BoneIndices[Index];
+                    }
 
                     SubMeshes.Add(new H3DSubMesh
                     {
@@ -419,15 +421,20 @@ namespace SPICA.Formats.Generic.StudioMdl
                 Model.AddMesh(M);
 
                 //Material
-                H3DMaterial Material = H3DMaterial.Default;
-
                 string MatName = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
+
+                H3DMaterial Material = H3DMaterial.Default;
 
                 Material.Name = $"Mat{MaterialIndex++.ToString("D5")}_{MatName}";
                 Material.Texture0Name = MatName;
+                Material.MaterialParams.ShaderReference = "0@DefaultShader";
+                Material.MaterialParams.ModelReference = $"{Material.Name}@{Model.Name}";
+                Material.MaterialParams.LUTDist0TableName = "SpecTable";
+                Material.MaterialParams.LUTDist0SamplerName = "SpecSampler";
+
                 Model.Materials.Add(Material);
 
-                if (TextureSearchPath != null)
+                if (TextureSearchPath != null && !Output.Textures.Contains(MatName))
                 {
                     string TextureFile = Path.Combine(TextureSearchPath, Mesh.MaterialName);
 
@@ -437,6 +444,8 @@ namespace SPICA.Formats.Generic.StudioMdl
                     }
                 }
             }
+
+            Output.LUTs.Add(H3DLUT.CelShading);
 
             //Build Skeleton
             foreach (SMDBone Bone in Skeleton)

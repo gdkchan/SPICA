@@ -6,13 +6,19 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 {
     class OBJMesh
     {
-        public List<PICAVertex> Vertices;
-        public List<ushort> Indices;
+        public bool HasPosition;
+        public bool HasNormal;
+        public bool HasTexCoord;
 
-        public OBJMesh()
+        public string MaterialName;
+
+        public List<PICAVertex> Vertices;
+
+        public OBJMesh(string MaterialName = "NoMaterial")
         {
+            this.MaterialName = MaterialName;
+
             Vertices = new List<PICAVertex>();
-            Indices = new List<ushort>();
         }
     }
 }

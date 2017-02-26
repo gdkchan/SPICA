@@ -182,7 +182,7 @@ namespace SPICA.Formats.CtrH3D
                 string Name = Value.Name;
                 int Index = 0;
 
-                while (Tgt.ContainsName(Name))
+                while (Tgt.Contains(Name))
                 {
                     Name = $"{Value.Name}_{++Index}";
                 }
@@ -203,7 +203,7 @@ namespace SPICA.Formats.CtrH3D
                 {
                     //Note: The IF is a workaround for multiple models with same material names
                     //This kind of problem doesn't happen on BCH, but may happen on converted formats
-                    if (!Materials.ContainsName(Material.Name)) Materials.Add(Material.MaterialParams);
+                    if (!Materials.Contains(Material.Name)) Materials.Add(Material.MaterialParams);
                 }
             }
         }

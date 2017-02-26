@@ -146,7 +146,10 @@ namespace SPICA.Formats.CtrH3D
             else
                 Nodes.Add(new PatriciaTreeNode());
 
-            foreach (string Name in Names) Insert(Name);
+            foreach (string Name in Names)
+            {
+                Insert(Name);
+            }
 
             TreeNeedsRebuild = false;
         }
@@ -170,12 +173,12 @@ namespace SPICA.Formats.CtrH3D
 
             if (GetBit(Name, Bit))
             {
-                New.LeftNodeIndex = (ushort)Traverse(Name, out Root, Bit);
+                New.LeftNodeIndex  = (ushort)Traverse(Name, out Root, Bit);
                 New.RightNodeIndex = (ushort)Nodes.Count;
             }
             else
             {
-                New.LeftNodeIndex = (ushort)Nodes.Count;
+                New.LeftNodeIndex  = (ushort)Nodes.Count;
                 New.RightNodeIndex = (ushort)Traverse(Name, out Root, Bit);
             }
 
@@ -186,7 +189,7 @@ namespace SPICA.Formats.CtrH3D
             if (GetBit(Name, Root.ReferenceBit))
                 Root.RightNodeIndex = (ushort)Nodes.Count;
             else
-                Root.LeftNodeIndex = (ushort)Nodes.Count;
+                Root.LeftNodeIndex  = (ushort)Nodes.Count;
 
             Nodes.Add(New);
 

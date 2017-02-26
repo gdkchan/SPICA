@@ -86,6 +86,17 @@ namespace SPICA.Math3D
             return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2} {3}", R, G, B, A);
         }
 
+        public RGBA ToRGBA()
+        {
+            return new RGBA
+            {
+                R = (byte)(R * byte.MaxValue),
+                G = (byte)(G * byte.MaxValue),
+                B = (byte)(B * byte.MaxValue),
+                A = (byte)(A * byte.MaxValue)
+            };
+        }
+
         public void Write(BinaryWriter Writer)
         {
             Writer.Write(R);

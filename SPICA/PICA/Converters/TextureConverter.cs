@@ -209,6 +209,8 @@ namespace SPICA.PICA.Converters
             byte[] Input = GetBuffer(Img);
             byte[] Output = new byte[CalculateLength(Img.Width, Img.Height, Format)];
 
+            int BytesPerPixel = Image.GetPixelFormatSize(Img.PixelFormat) >> 3;
+
             int OOffs = 0;
 
             if (Format == PICATextureFormat.ETC1 || Format == PICATextureFormat.ETC1A4)
@@ -225,12 +227,16 @@ namespace SPICA.PICA.Converters
                         {
                             int X = SwizzleLUT[Px] & 7;
                             int Y = (SwizzleLUT[Px] - X) >> 3;
-                            int IOffs = (TX + X + ((TY + Y) * Img.Width)) * 4;
+                            int IOffs = (TX + X + ((TY + Y) * Img.Width)) * BytesPerPixel;
 
                             switch (Format)
                             {
                                 case PICATextureFormat.RGBA8:
-                                    Output[OOffs + 0] = Input[IOffs + 3];
+                                    if (BytesPerPixel == 4)
+                                        Output[OOffs + 0] = Input[IOffs + 3];
+                                    else
+                                        Output[OOffs + 0] = byte.MaxValue;
+
                                     Output[OOffs + 1] = Input[IOffs + 0];
                                     Output[OOffs + 2] = Input[IOffs + 1];
                                     Output[OOffs + 3] = Input[IOffs + 2];
