@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.ES30;
 
-using SPICA.Formats.CtrH3D;
 using SPICA.Renderer.GUI;
 using SPICA.Renderer.Shaders;
 
@@ -13,35 +12,32 @@ using System.Reflection;
 
 namespace SPICA.Renderer
 {
-    public class RenderEngine : IDisposable
+    public class RenderEngine : TransformableObject, IDisposable
     {
         public const float ClipDistance = 100000f;
 
-        private int Width, Height;
+        public event EventHandler BeforeDraw;
+        public event EventHandler AfterDraw;
 
-        private Shader MdlShader;
-        private Shader GUIShader;
+        public ShaderManager MdlShader;
+        public ShaderManager GUIShader;
 
-        public int MdlShaderHandle { get; private set; }
-        public int GUIShaderHandle { get; private set; }
+        public List<Model> Models;
+        public List<Light> Lights;
+
+        public List<GUIControl> Controls;
+
+        public Vector4 SceneAmbient;
+
+        public Matrix4 ProjectionMatrix;
+
+        public bool ObjectSpaceNormalMap;
 
         private int ProjMtxLocation;
         private int ViewMtxLocation;
 
-        private Matrix4 ProjMtx;
-        private Matrix4 ViewMtx;
-
-        private List<Model> Models;
-        private List<Light> Lights;
-
-        private List<GUIControl> Controls;
-
-        public Vector4 SceneAmbient;
-
-        public bool ObjectSpaceNormalMap;
-
-        public event EventHandler BeforeDraw;
-        public event EventHandler AfterDraw;
+        private int Width;
+        private int Height;
 
         public RenderEngine(int Width, int Height)
         {
@@ -53,49 +49,45 @@ namespace SPICA.Renderer
 
             SceneAmbient = new Vector4(0.1f);
 
-            ViewMtx = Matrix4.Identity;
-
             //Create Shaders
-            MdlShader = new Shader(
+            MdlShader = new ShaderManager(
                 GetEmbeddedString("SPICA.Shader.MdlVertexShader"),
                 GetEmbeddedString("SPICA.Shader.MdlFragmentShader"));
 
-            GUIShader = new Shader(
+            GUIShader = new ShaderManager(
                 GetEmbeddedString("SPICA.Shader.GUIVertexShader"),
                 GetEmbeddedString("SPICA.Shader.GUIFragmentShader"));
 
-            MdlShaderHandle = MdlShader.ShaderHandle;
-            GUIShaderHandle = GUIShader.ShaderHandle;
-
             //Configure Model Shader
-            GL.UseProgram(MdlShaderHandle);
+            GL.UseProgram(MdlShader.Handle);
 
-            ProjMtxLocation = GL.GetUniformLocation(MdlShaderHandle, "ProjMatrix");
-            ViewMtxLocation = GL.GetUniformLocation(MdlShaderHandle, "ViewMatrix");
+            ProjMtxLocation = GL.GetUniformLocation(MdlShader.Handle, "ProjMatrix");
+            ViewMtxLocation = GL.GetUniformLocation(MdlShader.Handle, "ViewMatrix");
 
-            GL.UniformMatrix4(ViewMtxLocation, false, ref ViewMtx);
+            int MdlMtxLocation = GL.GetUniformLocation(MdlShader.Handle, "ModelMatrix");
 
-            GL.UniformMatrix4(GL.GetUniformLocation(MdlShaderHandle, "ModelMatrix"), false, ref ViewMtx);
+            GL.UniformMatrix4(ViewMtxLocation, false, ref Transform);
+            GL.UniformMatrix4(MdlMtxLocation, false, ref Transform);
 
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture[0]"), 0);
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture[1]"), 1);
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "Texture[2]"), 2);
+            GL.Uniform1(GL.GetUniformLocation(MdlShader.Handle, "Texture[0]"), 0);
+            GL.Uniform1(GL.GetUniformLocation(MdlShader.Handle, "Texture[1]"), 1);
+            GL.Uniform1(GL.GetUniformLocation(MdlShader.Handle, "Texture[2]"), 2);
 
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "TextureCube"), 3);
+            GL.Uniform1(GL.GetUniformLocation(MdlShader.Handle, "TextureCube"), 3);
 
-            GL.UniformBlockBinding(MdlShaderHandle, GL.GetUniformBlockIndex(MdlShaderHandle, "UBDist0"), 0);
-            GL.UniformBlockBinding(MdlShaderHandle, GL.GetUniformBlockIndex(MdlShaderHandle, "UBDist1"), 1);
-            GL.UniformBlockBinding(MdlShaderHandle, GL.GetUniformBlockIndex(MdlShaderHandle, "UBFresnel"), 2);
-            GL.UniformBlockBinding(MdlShaderHandle, GL.GetUniformBlockIndex(MdlShaderHandle, "UBReflecR"), 3);
-            GL.UniformBlockBinding(MdlShaderHandle, GL.GetUniformBlockIndex(MdlShaderHandle, "UBReflecG"), 4);
-            GL.UniformBlockBinding(MdlShaderHandle, GL.GetUniformBlockIndex(MdlShaderHandle, "UBReflecB"), 5);
+            GL.UniformBlockBinding(MdlShader.Handle, GL.GetUniformBlockIndex(MdlShader.Handle, "UBDist0"), 0);
+            GL.UniformBlockBinding(MdlShader.Handle, GL.GetUniformBlockIndex(MdlShader.Handle, "UBDist1"), 1);
+            GL.UniformBlockBinding(MdlShader.Handle, GL.GetUniformBlockIndex(MdlShader.Handle, "UBFresnel"), 2);
+            GL.UniformBlockBinding(MdlShader.Handle, GL.GetUniformBlockIndex(MdlShader.Handle, "UBReflecR"), 3);
+            GL.UniformBlockBinding(MdlShader.Handle, GL.GetUniformBlockIndex(MdlShader.Handle, "UBReflecG"), 4);
+            GL.UniformBlockBinding(MdlShader.Handle, GL.GetUniformBlockIndex(MdlShader.Handle, "UBReflecB"), 5);
 
-            GL.Uniform4(GL.GetUniformLocation(MdlShaderHandle, "SAmbient"), SceneAmbient);
+            GL.Uniform4(GL.GetUniformLocation(MdlShader.Handle, "SAmbient"), SceneAmbient);
 
             //Configure GUI Shader
-            GL.UseProgram(GUIShaderHandle);
+            GL.UseProgram(GUIShader.Handle);
 
-            GL.Uniform1(GL.GetUniformLocation(GUIShaderHandle, "UITexture"), 0);
+            GL.Uniform1(GL.GetUniformLocation(GUIShader.Handle, "UITexture"), 0);
 
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
 
@@ -111,68 +103,10 @@ namespace SPICA.Renderer
                 return new StreamReader(Text).ReadToEnd();
             }
         }
-        
-        public Model AddModel(H3D SceneData)
-        {
-            Model Model = new Model(SceneData, MdlShaderHandle);
-
-            Models.Add(Model);
-
-            return Model;
-        }
-
-        public void RemoveModel(Model Model)
-        {
-            Model.Dispose();
-
-            Models.Remove(Model);
-        }
-
-        public void ClearModels()
-        {
-            foreach (Model Mdl in Models)
-            {
-                Mdl.Dispose();
-            }
-
-            Models.Clear();
-        }
-
-        public void ResetView()
-        {
-            ViewMtx = Matrix4.Identity; UpdateView();
-        }
-
-        public void Rotate(Vector3 Rotation)
-        {
-            ViewMtx *= RenderUtils.EulerRotate(Rotation); UpdateView();
-        }
-
-        public void Translate(Vector3 Translation)
-        {
-            ViewMtx *= Matrix4.CreateTranslation(Translation); UpdateView();
-        }
-
-        public void RotateAbs(Vector3 Rotation)
-        {
-            ViewMtx = ViewMtx.ClearRotation() * RenderUtils.EulerRotate(Rotation); UpdateView();
-        }
-
-        public void TranslateAbs(Vector3 Translation)
-        {
-            ViewMtx = ViewMtx.ClearTranslation() * Matrix4.CreateTranslation(Translation); UpdateView();
-        }
-
-        private void UpdateView()
-        {
-            GL.UseProgram(MdlShaderHandle);
-
-            GL.UniformMatrix4(ViewMtxLocation, false, ref ViewMtx);
-        }
 
         public void UpdateResolution(int Width, int Height)
         {
-            this.Width = Width;
+            this.Width  = Width;
             this.Height = Height;
 
             GL.Viewport(0, 0, Width, Height);
@@ -184,11 +118,11 @@ namespace SPICA.Renderer
 
             float AR = Width / (float)Height;
 
-            ProjMtx = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.25f, ClipDistance);
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.25f, ClipDistance);
 
-            GL.UseProgram(MdlShaderHandle);
+            GL.UseProgram(MdlShader.Handle);
 
-            GL.UniformMatrix4(ProjMtxLocation, false, ref ProjMtx);
+            GL.UniformMatrix4(ProjMtxLocation, false, ref ProjectionMatrix);
         }
 
         public void SetBackgroundColor(Color Color)
@@ -196,75 +130,8 @@ namespace SPICA.Renderer
             GL.ClearColor(Color);
         }
 
-        public void AddLight(Light Light)
-        {
-            Lights.Add(Light);
-
-            UpdateLights();
-        }
-
-        public void RemoveLight(Light Light)
-        {
-            Lights.Remove(Light);
-
-            UpdateLights();
-        }
-
-        public void ClearLights()
-        {
-            Lights.Clear();
-
-            UpdateLights();
-        }
-
-        private void UpdateLights()
-        {
-            GL.UseProgram(MdlShaderHandle);
-
-            GL.Uniform1(GL.GetUniformLocation(MdlShaderHandle, "LightsCount"), Lights.Count);
-
-            for (int Index = 0; Index < Lights.Count; Index++)
-            {
-                int LightPositionLocation = GL.GetUniformLocation(MdlShaderHandle, $"Lights[{Index}].Position");
-                int LightAmbientLocation = GL.GetUniformLocation(MdlShaderHandle, $"Lights[{Index}].Ambient");
-                int LightDiffuseLocation = GL.GetUniformLocation(MdlShaderHandle, $"Lights[{Index}].Diffuse");
-                int LightSpecularLocation = GL.GetUniformLocation(MdlShaderHandle, $"Lights[{Index}].Specular");
-
-                GL.Uniform3(LightPositionLocation, Lights[Index].Position);
-                GL.Uniform4(LightAmbientLocation, Lights[Index].Ambient);
-                GL.Uniform4(LightDiffuseLocation, Lights[Index].Diffuse);
-                GL.Uniform4(LightSpecularLocation, Lights[Index].Specular);
-            }
-        }
-
-        public void AddControl(GUIControl Control)
-        {
-            Controls.Add(Control);
-        }
-
-        public void RemoveControl(GUIControl Control)
-        {
-            Control.Dispose();
-
-            Controls.Remove(Control);
-        }
-
-        public void ClearControls()
-        {
-            foreach (GUIControl Ctrl in Controls)
-            {
-                Ctrl.Dispose();
-            }
-
-            Controls.Clear();
-        }
-
         public void RenderScene()
         {
-            //Make sure writes are enabled otherwise the Clear function may not work
-            GL.DepthMask(true);
-            GL.ColorMask(true, true, true, true);
-
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
                 ClearBufferMask.StencilBufferBit |
@@ -272,18 +139,37 @@ namespace SPICA.Renderer
 
             BeforeDraw?.Invoke(this, EventArgs.Empty);
 
-            GL.UseProgram(MdlShaderHandle);
+            GL.UseProgram(MdlShader.Handle);
 
-            int ObjectSpaceNormalMapLocation = GL.GetUniformLocation(MdlShaderHandle, "ObjNormalMap");
+            int ObjNormalMapLocation = GL.GetUniformLocation(MdlShader.Handle, "ObjNormalMap");
+            int LightsCountLocation = GL.GetUniformLocation(MdlShader.Handle, "LightsCount");
 
-            GL.Uniform1(ObjectSpaceNormalMapLocation, ObjectSpaceNormalMap ? 1 : 0);
+            GL.Uniform1(ObjNormalMapLocation, ObjectSpaceNormalMap ? 1 : 0);
+            GL.Uniform1(LightsCountLocation, Lights.Count);
+
+            for (int Index = 0; Index < Lights.Count; Index++)
+            {
+                int LightPositionLocation = GL.GetUniformLocation(MdlShader.Handle, $"Lights[{Index}].Position");
+                int LightAmbientLocation  = GL.GetUniformLocation(MdlShader.Handle, $"Lights[{Index}].Ambient");
+                int LightDiffuseLocation  = GL.GetUniformLocation(MdlShader.Handle, $"Lights[{Index}].Diffuse");
+                int LightSpecularLocation = GL.GetUniformLocation(MdlShader.Handle, $"Lights[{Index}].Specular");
+
+                GL.Uniform3(LightPositionLocation, Lights[Index].Position);
+                GL.Uniform4(LightAmbientLocation,  Lights[Index].Ambient);
+                GL.Uniform4(LightDiffuseLocation,  Lights[Index].Diffuse);
+                GL.Uniform4(LightSpecularLocation, Lights[Index].Specular);
+            }
+
+            GL.UniformMatrix4(ViewMtxLocation, false, ref Transform);
 
             foreach (Model Mdl in Models)
             {
                 Mdl.Render();
             }
 
-            GL.UseProgram(GUIShaderHandle);
+            //Reset needed settings back to "default" state
+            GL.DepthMask(true);
+            GL.ColorMask(true, true, true, true);
 
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.StencilTest);
@@ -294,6 +180,8 @@ namespace SPICA.Renderer
             GL.BlendEquation(BlendEquationMode.FuncAdd);
 
             GL.DepthFunc(DepthFunction.Less);
+
+            GL.UseProgram(GUIShader.Handle);
 
             foreach (GUIControl Ctrl in Controls)
             {

@@ -22,7 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Mesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderEngine.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Shaders\Shader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shaders\ShaderManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Matrix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICABlendEquation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICABlendFunc.cs" />

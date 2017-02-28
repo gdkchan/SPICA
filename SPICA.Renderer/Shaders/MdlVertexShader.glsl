@@ -186,6 +186,11 @@ void main() {
 
 	ViewDir = -normalize(vec3(ViewMatrix * ModelMatrix * Position));
 
+	if (Scales0[S0_COL] == 0 && (FixedAttr & FA_COL)  == 0) {
+		//Color doesn't exist, use Material Diffuse instead
+		Color = MDiffuse;
+	}
+
 	if ((BoolUniforms & BOOL_HEMI_ENB) != 0) {
 		/*
 		 * On Pokémon models, when this bit is set output Color seems to contain Rim Color.
@@ -194,15 +199,10 @@ void main() {
 		 * To make both games happy, we output Hemisphere color on RGB and Rim intensity on Alpha.
 		 * TODO: Hemisphere lighting values are hardcoded, make then configurable on Light instead.
 		 */
-		float Sky = dot(ONormal, vec3(0, 1, 0)) * 0.8f + 0.2f;
+		float Sky = ONormal.y * 0.8f + 0.2f;
 		float Rim = 1 - dot(ONormal, ViewDir);
 
 		vec3 HemiCol = mix(vec3(0), vec3(1), Sky);
-
-		if (Scales0[S0_COL] == 0) {
-			//Color doesn't exist, use Material Diffuse instead
-			Color = MDiffuse;
-		}
 
 		if ((BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
 			//Ambient occlusion is stored on Alpha of Vertex Color

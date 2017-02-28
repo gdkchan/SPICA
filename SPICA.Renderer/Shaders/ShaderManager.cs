@@ -5,16 +5,16 @@ using System.Diagnostics;
 
 namespace SPICA.Renderer.Shaders
 {
-    class Shader : IDisposable
+    public class ShaderManager : IDisposable
     {
-        public int ShaderHandle { get; private set; }
+        public int Handle { get; private set; }
 
         private int VertexShaderHandle;
         private int FragmentShaderHandle;
 
-        public Shader(string VShCode, string FShCode)
+        public ShaderManager(string VShCode, string FShCode)
         {
-            ShaderHandle = GL.CreateProgram();
+            Handle = GL.CreateProgram();
 
             VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
             FragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
@@ -25,16 +25,16 @@ namespace SPICA.Renderer.Shaders
             GL.CompileShader(VertexShaderHandle);
             GL.CompileShader(FragmentShaderHandle);
 
-            GL.AttachShader(ShaderHandle, VertexShaderHandle);
-            GL.AttachShader(ShaderHandle, FragmentShaderHandle);
+            GL.AttachShader(Handle, VertexShaderHandle);
+            GL.AttachShader(Handle, FragmentShaderHandle);
 
-            GL.LinkProgram(ShaderHandle);
+            GL.LinkProgram(Handle);
 
             Debug.WriteLine("[RenderEngine] Shader compilation result (Vertex/Fragment/Shader):");
 
             Debug.WriteLine(GL.GetShaderInfoLog(VertexShaderHandle));
             Debug.WriteLine(GL.GetShaderInfoLog(FragmentShaderHandle));
-            Debug.WriteLine(GL.GetProgramInfoLog(ShaderHandle));
+            Debug.WriteLine(GL.GetProgramInfoLog(Handle));
         }
 
         private bool Disposed;
@@ -43,7 +43,7 @@ namespace SPICA.Renderer.Shaders
         {
             if (!Disposed)
             {
-                GL.DeleteProgram(ShaderHandle);
+                GL.DeleteProgram(Handle);
 
                 GL.DeleteShader(VertexShaderHandle);
                 GL.DeleteShader(FragmentShaderHandle);

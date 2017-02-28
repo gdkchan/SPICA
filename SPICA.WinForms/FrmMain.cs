@@ -305,9 +305,13 @@ namespace SPICA.WinForms
                         SklAnimsList.Bind(SceneData.SkeletalAnimations);
                         MatAnimsList.Bind(SceneData.MaterialAnimations);
 
-                        Renderer.ClearModels();
+                        Renderer.Models.Clear();
 
-                        Model = Renderer.AddModel(SceneData);
+                        Model?.Dispose();
+
+                        Model = new Model(Renderer, SceneData);
+
+                        Renderer.Models.Add(Model);
 
                         if (SceneData.Models.Count > 0) ModelsList.Select(0);
 
@@ -331,6 +335,8 @@ namespace SPICA.WinForms
                     }
                 }
             }
+
+            //H3D.Save("D:\\recreated.bch", SceneData);
 
             //Allow app to process click from the Open dialog that goes into the Viewport
             //This avoid the model from moving after opening a file on the dialog
@@ -411,9 +417,9 @@ namespace SPICA.WinForms
 
             if (Dimension == 0) Dimension = 100f;
 
-            Renderer.ClearLights();
+            Renderer.Lights.Clear();
 
-            Renderer.AddLight(new Light
+            Renderer.Lights.Add(new Light
             {
                 Position = new Vector3(0, Center.Y, Dimension),
                 Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1f),
@@ -426,7 +432,7 @@ namespace SPICA.WinForms
 
             Zoom = (Dimension < RenderEngine.ClipDistance ? -Dimension : 0);
 
-            Renderer.ResetView();
+            Renderer.ResetTransform();
 
             UpdateTransforms();
         }

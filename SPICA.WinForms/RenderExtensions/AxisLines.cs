@@ -49,7 +49,7 @@ namespace SPICA.WinForms.RenderExtensions
         {
             if (Visible)
             {
-                int ShaderHandle = ((RenderEngine)sender).MdlShaderHandle;
+                int ShaderHandle = ((RenderEngine)sender).MdlShader.Handle;
 
                 GL.UseProgram(ShaderHandle);
 

@@ -7,7 +7,6 @@ using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
-using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Renderer.Animation;
@@ -20,7 +19,7 @@ namespace SPICA.Renderer
 {
     public class Model : TransformableObject, IDisposable
     {
-        private int ShaderHandle;
+        public RenderEngine Parent;
 
         //Per model
         public List<Mesh> Meshes;
@@ -49,7 +48,7 @@ namespace SPICA.Renderer
             public Range(int Start, int End)
             {
                 this.Start = Start;
-                this.End = End;
+                this.End   = End;
             }
         }
 
@@ -78,9 +77,9 @@ namespace SPICA.Renderer
 
         private const string InvalidModelIndexEx = "Expected a value >= 0 and < {0}!";
 
-        public Model(H3D SceneData, int ShaderHandle)
+        public Model(RenderEngine Parent, H3D SceneData)
         {
-            this.ShaderHandle = ShaderHandle;
+            this.Parent = Parent;
 
             ResetTransform();
 
@@ -113,7 +112,7 @@ namespace SPICA.Renderer
 
                 foreach (H3DMesh Mesh in Model.Meshes)
                 {
-                    Meshes.Add(new Mesh(this, Mesh, Model.Materials[Mesh.MaterialIndex], ShaderHandle));
+                    Meshes.Add(new Mesh(this, Mesh, Model.Materials[Mesh.MaterialIndex], Parent.MdlShader.Handle));
                 }
 
                 //Mesh ranges are used to separate different models
@@ -248,7 +247,9 @@ namespace SPICA.Renderer
 
         public void Render()
         {
-            GL.UniformMatrix4(GL.GetUniformLocation(ShaderHandle, "ModelMatrix"), false, ref Transform);
+            int MdlMtxLocation = GL.GetUniformLocation(Parent.MdlShader.Handle, "ModelMatrix");
+
+            GL.UniformMatrix4(MdlMtxLocation, false, ref Transform);
 
             if (MeshRanges.Length > 0)
             {

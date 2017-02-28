@@ -2,6 +2,7 @@
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
@@ -278,8 +279,8 @@ namespace SPICA.Renderer
                 }
             }
 
-            BindLUT(0, Params.LUTDist0TableName, Params.LUTDist0SamplerName);
-            BindLUT(1, Params.LUTDist1TableName, Params.LUTDist1SamplerName);
+            BindLUT(0, Params.LUTDist0TableName,   Params.LUTDist0SamplerName);
+            BindLUT(1, Params.LUTDist1TableName,   Params.LUTDist1SamplerName);
             BindLUT(2, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
             BindLUT(3, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
 
@@ -296,8 +297,8 @@ namespace SPICA.Renderer
 
             for (int Index = 0; Index < MatTrans.Length; Index++)
             {
-                int ScaleLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Scale");
-                int TransformLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Transform");
+                int ScaleLocation       = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Scale");
+                int TransformLocation   = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Transform");
                 int TranslationLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Translation");
 
                 GL.Uniform2(ScaleLocation, MatTrans[Index].Scale);
@@ -348,11 +349,11 @@ namespace SPICA.Renderer
 
             if (BaseMesh.FixedAttributes != null)
             {
-                int FixedNormalLocation = GL.GetUniformLocation(ShaderHandle, "FixedNorm");
+                int FixedNormalLocation  = GL.GetUniformLocation(ShaderHandle, "FixedNorm");
                 int FixedTangentLocation = GL.GetUniformLocation(ShaderHandle, "FixedTan");
-                int FixedColorLocation = GL.GetUniformLocation(ShaderHandle, "FixedCol");
-                int FixedBoneLocation = GL.GetUniformLocation(ShaderHandle, "FixedBone");
-                int FixedWeightLocation = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
+                int FixedColorLocation   = GL.GetUniformLocation(ShaderHandle, "FixedCol");
+                int FixedBoneLocation    = GL.GetUniformLocation(ShaderHandle, "FixedBone");
+                int FixedWeightLocation  = GL.GetUniformLocation(ShaderHandle, "FixedWeight");
 
                 foreach (PICAFixedAttribute Attrib in BaseMesh.FixedAttributes)
                 {
@@ -362,11 +363,11 @@ namespace SPICA.Renderer
 
                     switch (Attrib.Name)
                     {
-                        case PICAAttributeName.Normal: GL.Uniform4(FixedNormalLocation, Value); break;
-                        case PICAAttributeName.Tangent: GL.Uniform4(FixedTangentLocation, Value); break;
-                        case PICAAttributeName.Color: GL.Uniform4(FixedColorLocation, Value); break;
-                        case PICAAttributeName.BoneIndex: GL.Uniform4(FixedBoneLocation, Value); break;
-                        case PICAAttributeName.BoneWeight: GL.Uniform4(FixedWeightLocation, Value); break;
+                        case PICAAttributeName.Normal:     GL.Uniform4(FixedNormalLocation,  Value); break;
+                        case PICAAttributeName.Tangent:    GL.Uniform4(FixedTangentLocation, Value); break;
+                        case PICAAttributeName.Color:      GL.Uniform4(FixedColorLocation,   Value); break;
+                        case PICAAttributeName.BoneIndex:  GL.Uniform4(FixedBoneLocation,    Value); break;
+                        case PICAAttributeName.BoneWeight: GL.Uniform4(FixedWeightLocation,  Value); break;
                     }
                 }
             }
@@ -416,11 +417,73 @@ namespace SPICA.Renderer
 
                     if (Index < SubMesh.BoneIndicesCount)
                     {
-                        Transform = Parent.GetSkeletonTransform(SubMesh.BoneIndices[Index]);
+                        int BoneIndex = SubMesh.BoneIndices[Index];
+
+                        Transform = Parent.GetSkeletonTransform(BoneIndex);
 
                         if (SmoothSkin)
                         {
-                            Transform = Parent.GetInverseTransform(SubMesh.BoneIndices[Index]) * Transform;
+                            Transform = Parent.GetInverseTransform(BoneIndex) * Transform;
+                        }
+
+                        //Build billboard matrix if needed (used to make the bones follow the camera view)
+                        H3DBone Bone = Parent.Skeletons[Parent.CurrentModelIndex][BoneIndex];
+
+                        if (Bone.BillboardMode != H3DBillboardMode.Off)
+                        {
+                            Matrix4 BillMtx = Matrix4.Identity;
+
+                            Matrix4 WrldMtx = Parent.Transform * Parent.Parent.Transform;
+
+                            Matrix4 BoneMtx =
+                                Matrix4.CreateRotationX(Bone.Rotation.X) *
+                                Matrix4.CreateRotationY(Bone.Rotation.Y) *
+                                Matrix4.CreateRotationZ(Bone.Rotation.Z);
+
+                            Vector3 X, Y, Z;
+
+                            X = Y = Z = Vector3.Zero;
+
+                            switch (Bone.BillboardMode)
+                            {
+                                case H3DBillboardMode.World:
+                                    Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.UnitZ;
+                                    break;
+
+                                case H3DBillboardMode.WorldViewpoint:
+                                    Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.Normalize(-WrldMtx.Row3.Xyz);
+                                    break;
+
+                                case H3DBillboardMode.Screen:
+                                    Y = Vector3.Normalize(BoneMtx.Row1.Xyz); Z = Vector3.UnitZ;
+                                    break;
+
+                                case H3DBillboardMode.ScreenViewpoint:
+                                    Y = Vector3.Normalize(BoneMtx.Row1.Xyz); Z = Vector3.Normalize(-WrldMtx.Row3.Xyz);
+                                    break;
+
+                                case H3DBillboardMode.YAxis:
+                                    Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.UnitZ;
+                                    break;
+
+                                case H3DBillboardMode.YAxialViewpoint:
+                                    Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.Normalize(-WrldMtx.Row3.Xyz);
+                                    break;
+                            }
+
+                            X = Vector3.Normalize(Vector3.Cross(Y, Z));
+                            Y = Vector3.Normalize(Vector3.Cross(Z, X));
+
+                            BillMtx.Row0 = new Vector4(X.X, Y.X, Z.X, 0);
+                            BillMtx.Row1 = new Vector4(X.Y, Y.Y, Z.Y, 0);
+                            BillMtx.Row2 = new Vector4(X.Z, Y.Z, Z.Z, 0);
+                            BillMtx.Row3 = (Transform * WrldMtx).Row3;
+
+                            WrldMtx = WrldMtx.ClearScale();
+
+                            WrldMtx.Invert();
+
+                            Transform = Matrix4.CreateScale(Transform.ExtractScale()) * BillMtx * WrldMtx;
                         }
                     }
                     else
