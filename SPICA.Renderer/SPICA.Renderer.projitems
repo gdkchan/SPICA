@@ -19,9 +19,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUILabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Light.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Mesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Shaders\ShaderGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Shaders\ShaderManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Matrix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICABlendEquation.cs" />
@@ -31,6 +33,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\PICATestFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\RGBA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Vector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Texture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TransformableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderUtils.cs" />
   </ItemGroup>

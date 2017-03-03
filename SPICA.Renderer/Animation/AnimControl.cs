@@ -6,12 +6,12 @@ namespace SPICA.Renderer.Animation
 {
     public class AnimControl
     {
-        public float Frame;
-        public float Step;
-
         protected H3DAnimation BaseAnimation;
 
         protected AnimState State;
+
+        public float Frame;
+        public float Step;
 
         public bool HasData { get { return BaseAnimation != null; } }
         public bool IsLooping { get; set; }

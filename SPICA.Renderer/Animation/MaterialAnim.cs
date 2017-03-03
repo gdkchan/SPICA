@@ -12,9 +12,9 @@ namespace SPICA.Renderer.Animation
 {
     public class MaterialAnim : AnimControl
     {
-        public UVTransform[][] GetUVTransforms(PatriciaList<H3DMaterial> Materials)
+        public Matrix3[][] GetUVTransforms(PatriciaList<H3DMaterial> Materials)
         {
-            UVTransform[][] Output = new UVTransform[Materials.Count][];
+            Matrix3[][] Output = new Matrix3[Materials.Count][];
 
             for (int Index = 0; Index < Output.Length; Index++)
             {
@@ -26,17 +26,19 @@ namespace SPICA.Renderer.Animation
             return Output;
         }
 
-        public UVTransform[] GetUVTransform(string MaterialName, H3DTextureCoord[] TexCoords)
+        public Matrix3[] GetUVTransform(string MaterialName, H3DTextureCoord[] TexCoords)
         {
-            Vector2[] Scale = new Vector2[3];
-            float[]   Rot   = new float[3];
-            Vector2[] Trans = new Vector2[3];
+            Vector2[]
+                Scale       = new Vector2[3],
+                Translation = new Vector2[3];
+
+            float[] Rotation = new float[3];
 
             for (int Index = 0; Index < TexCoords.Length; Index++)
             {
-                Scale[Index] = TexCoords[Index].Scale.ToVector2();
-                Rot[Index]   = TexCoords[Index].Rotation;
-                Trans[Index] = TexCoords[Index].Translation.ToVector2();
+                Scale[Index]       = TexCoords[Index].Scale.ToVector2();
+                Rotation[Index]    = TexCoords[Index].Rotation;
+                Translation[Index] = TexCoords[Index].Translation.ToVector2();
             }
 
             if (BaseAnimation != null && State != AnimState.Stopped)
@@ -53,9 +55,9 @@ namespace SPICA.Renderer.Animation
                             case H3DAnimTargetType.MaterialTexCoord1Scale: SetVector2(Vector, ref Scale[1]); break;
                             case H3DAnimTargetType.MaterialTexCoord2Scale: SetVector2(Vector, ref Scale[2]); break;
 
-                            case H3DAnimTargetType.MaterialTexCoord0Trans: SetVector2(Vector, ref Trans[0]); break;
-                            case H3DAnimTargetType.MaterialTexCoord1Trans: SetVector2(Vector, ref Trans[1]); break;
-                            case H3DAnimTargetType.MaterialTexCoord2Trans: SetVector2(Vector, ref Trans[2]); break;
+                            case H3DAnimTargetType.MaterialTexCoord0Trans: SetVector2(Vector, ref Translation[0]); break;
+                            case H3DAnimTargetType.MaterialTexCoord1Trans: SetVector2(Vector, ref Translation[1]); break;
+                            case H3DAnimTargetType.MaterialTexCoord2Trans: SetVector2(Vector, ref Translation[2]); break;
                         }
                     }
                     else if (Elem.PrimitiveType == H3DAnimPrimitiveType.Float)
@@ -68,21 +70,29 @@ namespace SPICA.Renderer.Animation
 
                         switch (Elem.TargetType)
                         {
-                            case H3DAnimTargetType.MaterialTexCoord0Rot: Rot[0] = Value; break;
-                            case H3DAnimTargetType.MaterialTexCoord1Rot: Rot[1] = Value; break;
-                            case H3DAnimTargetType.MaterialTexCoord2Rot: Rot[2] = Value; break;
+                            case H3DAnimTargetType.MaterialTexCoord0Rot: Rotation[0] = Value; break;
+                            case H3DAnimTargetType.MaterialTexCoord1Rot: Rotation[1] = Value; break;
+                            case H3DAnimTargetType.MaterialTexCoord2Rot: Rotation[2] = Value; break;
                         }
                     }
                 }
             }
 
-            UVTransform[] Transforms = new UVTransform[3];
+            Matrix3[] Transforms = new Matrix3[3];
 
             for (int Index = 0; Index < 3; Index++)
             {
-                Transforms[Index].Scale       = Scale[Index];
-                Transforms[Index].Transform   = Matrix2.CreateRotation(Rot[Index]);
-                Transforms[Index].Translation = Trans[Index];
+                Matrix3 Transform = Matrix3.Identity;
+
+                Vector2 Offset = new Vector2(0.5f);
+
+                Transform.Row2.Xy = -Translation[Index] - Offset;
+                Transform.Row0.X = Scale[Index].X;
+                Transform.Row1.Y = Scale[Index].Y;
+                Transform *= Matrix3.CreateRotationZ(Rotation[Index]);
+                Transform.Row2.Xy += Offset;
+
+                Transforms[Index] = Transform;
             }
 
             return Transforms;

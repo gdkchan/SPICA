@@ -7,22 +7,22 @@ namespace SPICA.PICA.Commands
         [XmlAttribute] public PICABlendEquation ColorEquation;
         [XmlAttribute] public PICABlendEquation AlphaEquation;
 
-        [XmlAttribute] public PICABlendFunc ColorSourceFunc;
-        [XmlAttribute] public PICABlendFunc ColorDestFunc;
+        [XmlAttribute] public PICABlendFunc ColorSrcFunc;
+        [XmlAttribute] public PICABlendFunc ColorDstFunc;
 
-        [XmlAttribute] public PICABlendFunc AlphaSourceFunc;
-        [XmlAttribute] public PICABlendFunc AlphaDestFunc;
+        [XmlAttribute] public PICABlendFunc AlphaSrcFunc;
+        [XmlAttribute] public PICABlendFunc AlphaDstFunc;
 
         public PICABlendFunction(uint Param)
         {
             ColorEquation = (PICABlendEquation)((Param >> 0) & 7);
             AlphaEquation = (PICABlendEquation)((Param >> 8) & 7);
 
-            ColorSourceFunc = (PICABlendFunc)((Param >> 16) & 0xf);
-            ColorDestFunc   = (PICABlendFunc)((Param >> 20) & 0xf);
+            ColorSrcFunc = (PICABlendFunc)((Param >> 16) & 0xf);
+            ColorDstFunc = (PICABlendFunc)((Param >> 20) & 0xf);
 
-            AlphaSourceFunc = (PICABlendFunc)((Param >> 24) & 0xf);
-            AlphaDestFunc   = (PICABlendFunc)((Param >> 28) & 0xf);
+            AlphaSrcFunc = (PICABlendFunc)((Param >> 24) & 0xf);
+            AlphaDstFunc = (PICABlendFunc)((Param >> 28) & 0xf);
         }
 
         public uint ToUInt32()
@@ -32,11 +32,11 @@ namespace SPICA.PICA.Commands
             Param |= ((uint)ColorEquation & 7) << 0;
             Param |= ((uint)AlphaEquation & 7) << 8;
 
-            Param |= ((uint)ColorSourceFunc & 0xf) << 16;
-            Param |= ((uint)ColorDestFunc   & 0xf) << 20;
+            Param |= ((uint)ColorSrcFunc & 0xf) << 16;
+            Param |= ((uint)ColorDstFunc & 0xf) << 20;
 
-            Param |= ((uint)AlphaSourceFunc & 0xf) << 24;
-            Param |= ((uint)AlphaDestFunc   & 0xf) << 28;
+            Param |= ((uint)AlphaSrcFunc & 0xf) << 24;
+            Param |= ((uint)AlphaDstFunc & 0xf) << 28;
 
             return Param;
         }

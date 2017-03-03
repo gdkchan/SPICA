@@ -34,5 +34,26 @@ namespace SPICA.Renderer.SPICA_GL
         {
             return (DepthFunction)ToFunction(Func);
         }
+
+        public static void SetGL(this PICAStencilTest StencilTest)
+        {
+            GL.StencilFunc(
+                StencilTest.Function.ToStencilFunction(),
+                StencilTest.Reference,
+                StencilTest.Mask);
+
+            GL.StencilMask(StencilTest.BufferMask);
+        }
+
+        public static void SetGL(this PICADepthColorMask DepthColorMask)
+        {
+            GL.DepthFunc(DepthColorMask.DepthFunc.ToDepthFunction());
+            GL.DepthMask(DepthColorMask.DepthWrite);
+            GL.ColorMask(
+                DepthColorMask.RedWrite,
+                DepthColorMask.GreenWrite,
+                DepthColorMask.BlueWrite,
+                DepthColorMask.AlphaWrite);
+        }
     }
 }

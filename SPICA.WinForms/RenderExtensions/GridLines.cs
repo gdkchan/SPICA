@@ -66,12 +66,10 @@ namespace SPICA.WinForms.RenderExtensions
             GL.BindVertexArray(0);
         }
 
-        public void Render(object sender, EventArgs e)
+        public void Render(int ShaderHandle)
         {
             if (Visible)
             {
-                int ShaderHandle = ((RenderEngine)sender).MdlShader.Handle;
-
                 GL.UseProgram(ShaderHandle);
 
                 RenderUtils.SetupShaderForPosCol(ShaderHandle);

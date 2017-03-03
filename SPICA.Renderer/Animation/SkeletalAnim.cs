@@ -122,9 +122,9 @@ namespace SPICA.Renderer.Animation
             {
                 int PIndex, BIndex = Index;
 
-                bool ScaleCompensate = (Skeleton[Index].Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
-
                 if (FrameSkeleton[BIndex].HasMtxTransform) continue;
+
+                bool ScaleCompensate = (Skeleton[Index].Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
 
                 Output[Index] = Matrix4.CreateScale(FrameSkeleton[BIndex].Scale);
 

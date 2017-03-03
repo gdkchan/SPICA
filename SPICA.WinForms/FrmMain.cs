@@ -26,19 +26,18 @@ namespace SPICA.WinForms
     {
         #region Declarations
         private RenderEngine Renderer;
-        private GLControl Viewport;
-        private GridLines UIGrid;
-        private AxisLines UIAxis;
-        private Vector2 InitialMov;
-        private Vector2 CurrentRot;
-        private Vector2 CurrentMov;
-        private Model Model;
-        private H3D SceneData;
+        private GLControl    Viewport;
+        private GridLines    UIGrid;
+        private AxisLines    UIAxis;
+        private Vector2      InitialMov;
+        private Vector2      CurrentRot;
+        private Vector2      CurrentMov;
+        private Model        Model;
+        private H3D          SceneData;
+
         private Bitmap[] CachedTextures;
 
-        private float Dimension;
-
-        private float Zoom;
+        private float Dimension, Zoom;
 
         private bool IgnoreClicks;
 
@@ -103,9 +102,6 @@ namespace SPICA.WinForms
             UIGrid = new GridLines();
             UIAxis = new AxisLines();
 
-            Renderer.BeforeDraw += UIGrid.Render;
-            Renderer.AfterDraw += UIAxis.Render;
-
             Dimension =  100f;
             Zoom      = -100f;
 
@@ -167,7 +163,16 @@ namespace SPICA.WinForms
 
         private void Viewport_Paint(object sender, PaintEventArgs e)
         {
-            Renderer.RenderScene();
+            Renderer.Clear();
+
+            //UIGrid.Render(Renderer.MdlShader.Handle);
+
+            if (ModelsList.SelectedIndex != -1)
+            {
+                Renderer.Render(ModelsList.SelectedIndex);
+            }
+
+            //UIAxis.Render(Renderer.MdlShader.Handle);
 
             Viewport.SwapBuffers();
         }
@@ -305,15 +310,14 @@ namespace SPICA.WinForms
                         SklAnimsList.Bind(SceneData.SkeletalAnimations);
                         MatAnimsList.Bind(SceneData.MaterialAnimations);
 
-                        Renderer.Models.Clear();
+                        Renderer.DeleteAll();
+                        Renderer.Merge(SceneData);
 
-                        Model?.Dispose();
-
-                        Model = new Model(Renderer, SceneData);
-
-                        Renderer.Models.Add(Model);
-
-                        if (SceneData.Models.Count > 0) ModelsList.Select(0);
+                        if (SceneData.Models.Count > 0)
+                        {
+                            ModelsList.Select(0);
+                            Model = Renderer.Models[0];
+                        }
 
                         Animator.Enabled     = false;
                         AnimSeekBar.Value    = 0;
@@ -408,7 +412,7 @@ namespace SPICA.WinForms
             UIGrid.ResetTransform();
             UIAxis.ResetTransform();
 
-            Tuple<Vector3, Vector3> CenterDim = Model.GetCenterDim(ModelsList.SelectedIndex);
+            Tuple<Vector3, Vector3> CenterDim = Model.GetCenterDim();
 
             Vector3 Center = CenterDim.Item1;
             Vector3 Dim    = CenterDim.Item2;
@@ -426,6 +430,8 @@ namespace SPICA.WinForms
                 Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1f),
                 Specular = new Color4(0.5f, 0.5f, 0.5f, 1f)
             });
+
+            Model.UpdateLights();
 
             Model.TranslateAbs(-Center);
             UIGrid.TranslateAbs(-Center);
@@ -464,7 +470,7 @@ namespace SPICA.WinForms
         {
             if (ModelsList.SelectedIndex != -1 && Model != null)
             {
-                Model.CurrentModelIndex = ModelsList.SelectedIndex;
+                Model = Renderer.Models[ModelsList.SelectedIndex];
 
                 ResetView();
             }

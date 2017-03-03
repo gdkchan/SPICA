@@ -41,5 +41,18 @@ namespace SPICA.Renderer.SPICA_GL
         {
             return (BlendingFactorDest)ToBlendingFactor(Func);
         }
+
+        public static void SetGL(this PICABlendFunction BlendFunction)
+        {
+            GL.BlendEquationSeparate(
+                BlendFunction.ColorEquation.ToBlendEquation(),
+                BlendFunction.AlphaEquation.ToBlendEquation());
+
+            GL.BlendFuncSeparate(
+                BlendFunction.ColorSrcFunc.ToBlendingFactorSrc(),
+                BlendFunction.ColorDstFunc.ToBlendingFactorDest(),
+                BlendFunction.AlphaSrcFunc.ToBlendingFactorSrc(),
+                BlendFunction.AlphaDstFunc.ToBlendingFactorDest());
+        }
     }
 }

@@ -2,14 +2,13 @@
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
-using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
-using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Renderer.Animation;
+using SPICA.Renderer.Shaders;
 using SPICA.Renderer.SPICA_GL;
 
 using System;
@@ -19,190 +18,144 @@ namespace SPICA.Renderer
 {
     public class Model : TransformableObject, IDisposable
     {
-        public RenderEngine Parent;
+        internal RenderEngine Renderer;
+        internal H3DModel     BaseModel;
+        internal List<Mesh>   Meshes;
+        internal Matrix4[]    InverseTransform;
+        internal Matrix4[]    SkeletonTransform;
+        internal Matrix3[][]  MaterialTransform;
 
-        //Per model
-        public List<Mesh> Meshes;
-        public PatriciaList<H3DBone>[] Skeletons;
-        public PatriciaList<H3DMaterial>[] Materials;
-
-        //Per model mesh
-        private Matrix4[][] InverseTransform;
-        private Matrix4[] SkeletonTransform;
-        private UVTransform[][] MaterialTransform;
-
-        //Shared
-        private Dictionary<string, int> TextureIds;
-        private Dictionary<string, int> LUTHandles;
-        private Dictionary<string, bool> IsLUTAbs;
-
-        //Animation related
         public SkeletalAnim SkeletalAnimation;
         public MaterialAnim MaterialAnimation;
 
-        private struct Range
+        private List<ShaderManager> MaterialShaders;
+
+        public Model(RenderEngine Renderer, H3DModel BaseModel)
         {
-            public int Start;
-            public int End;
-
-            public Range(int Start, int End)
-            {
-                this.Start = Start;
-                this.End   = End;
-            }
-        }
-
-        private Range[] MeshRanges;
-
-        private int CurrModel;
-
-        public int CurrentModelIndex
-        {
-            get
-            {
-                return CurrModel;
-            }
-            set
-            {
-                if (value < 0 || value >= MeshRanges.Length)
-                {
-                    throw new ArgumentOutOfRangeException(string.Format(InvalidModelIndexEx, MeshRanges.Length));
-                }
-
-                CurrModel = value;
-
-                UpdateAnimationTransforms();
-            }
-        }
-
-        private const string InvalidModelIndexEx = "Expected a value >= 0 and < {0}!";
-
-        public Model(RenderEngine Parent, H3D SceneData)
-        {
-            this.Parent = Parent;
-
-            ResetTransform();
+            this.Renderer  = Renderer;
+            this.BaseModel = BaseModel;
 
             Meshes = new List<Mesh>();
 
-            Skeletons = new PatriciaList<H3DBone>[SceneData.Models.Count];
-            Materials = new PatriciaList<H3DMaterial>[SceneData.Models.Count];
+            InverseTransform = new Matrix4[BaseModel.Skeleton.Count];
 
-            InverseTransform = new Matrix4[SceneData.Models.Count][];
-
-            MeshRanges = new Range[SceneData.Models.Count];
-
-            int MeshStart = 0;
-
-            for (int Mdl = 0; Mdl < SceneData.Models.Count; Mdl++)
+            for (int Bone = 0; Bone < BaseModel.Skeleton.Count; Bone++)
             {
-                H3DModel Model = SceneData.Models[Mdl];
-
-                Skeletons[Mdl] = Model.Skeleton;
-                Materials[Mdl] = Model.Materials;
-
-                PatriciaList<H3DBone> Skeleton = Skeletons[Mdl];
-
-                InverseTransform[Mdl] = new Matrix4[Skeleton.Count];
-
-                for (int Bone = 0; Bone < Skeleton.Count; Bone++)
-                {
-                    InverseTransform[Mdl][Bone] = Skeleton[Bone].InverseTransform.ToMatrix4();
-                }
-
-                foreach (H3DMesh Mesh in Model.Meshes)
-                {
-                    Meshes.Add(new Mesh(this, Mesh, Model.Materials[Mesh.MaterialIndex], Parent.MdlShader.Handle));
-                }
-
-                //Mesh ranges are used to separate different models
-                //Each model have a mesh start and end index
-                MeshRanges[Mdl] = new Range(MeshStart, MeshStart += Model.Meshes.Count);
+                InverseTransform[Bone] = BaseModel.Skeleton[Bone].InverseTransform.ToMatrix4();
             }
 
-            TextureIds = new Dictionary<string, int>();
+            MaterialShaders = new List<ShaderManager>();
 
-            foreach (H3DTexture Texture in SceneData.Textures)
+            foreach (H3DMaterial Material in BaseModel.Materials)
             {
-                int TextureId = GL.GenTexture();
+                ShaderManager Shader = new ShaderManager();
 
-                if (Texture.IsCubeTexture)
+                H3DMaterialParams Params = Material.MaterialParams;
+
+                string ShaderCode = ShaderGenerator.GenFragShader(Params, Renderer.FragmentBaseCode);
+
+                Shader.SetVertexShaderHandle(Renderer.VertexShaderHandle);
+                Shader.SetFragmentShaderCode(ShaderCode);
+
+                Shader.Link();
+
+                MaterialShaders.Add(Shader);
+
+                GL.UseProgram(Shader.Handle);
+
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "Textures[0]"), 0);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "Textures[1]"), 1);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "Textures[2]"), 2);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "TextureCube"), 3);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "LUTs[0]"),     4);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "LUTs[1]"),     5);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "LUTs[2]"),     6);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "LUTs[3]"),     7);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "LUTs[4]"),     8);
+                GL.Uniform1(GL.GetUniformLocation(Shader.Handle, "LUTs[5]"),     9);
+
+                Vector4 PowerScale = Vector4.Zero;
+
+                if (Params.MetaData != null)
                 {
-                    GL.BindTexture(TextureTarget.TextureCubeMap, TextureId);
-
-                    for (int Face = 0; Face < 6; Face++)
+                    //Only Pokémon uses this (for custom Rim lighting and Phong shading on the shaders)
+                    foreach (H3DMetaDataValue MetaData in Params.MetaData.Values)
                     {
-                        GL.TexImage2D(TextureTarget2d.TextureCubeMapPositiveX + Face,
-                            0,
-                            TextureComponentCount.Rgba,
-                            (int)Texture.Width,
-                            (int)Texture.Height,
-                            0,
-                            PixelFormat.Rgba,
-                            PixelType.UnsignedByte,
-                            Texture.ToRGBA(Face));
+                        if (MetaData.Type == H3DMetaDataType.Single && MetaData.Values.Count > 0)
+                        {
+                            float Value = (float)MetaData.Values[0];
+
+                            switch (MetaData.Name)
+                            {
+                                case "$RimPow":     PowerScale[0] = Value; break;
+                                case "$RimScale":   PowerScale[1] = Value; break;
+                                case "$PhongPow":   PowerScale[2] = Value; break;
+                                case "$PhongScale": PowerScale[3] = Value; break;
+                            }
+                        }
                     }
                 }
-                else
-                {
-                    GL.BindTexture(TextureTarget.Texture2D, TextureId);
 
-                    GL.TexImage2D(TextureTarget2d.Texture2D,
-                        0,
-                        TextureComponentCount.Rgba,
-                        (int)Texture.Width,
-                        (int)Texture.Height,
-                        0,
-                        PixelFormat.Rgba,
-                        PixelType.UnsignedByte,
-                        Texture.ToRGBA());
-                }
+                int MDiffuseLocation   = GL.GetUniformLocation(Shader.Handle, "MDiffuse");
+                int PowerScaleLocation = GL.GetUniformLocation(Shader.Handle, "PowerScale");
+                int ColorScaleLocation = GL.GetUniformLocation(Shader.Handle, "ColorScale");
 
-                TextureIds.Add(Texture.Name, TextureId);
+                GL.Uniform4(MDiffuseLocation,   Params.DiffuseColor.ToColor4());
+                GL.Uniform4(PowerScaleLocation, PowerScale);
+                GL.Uniform1(ColorScaleLocation, Params.ColorScale);
             }
 
-            LUTHandles = new Dictionary<string, int>();
-            IsLUTAbs = new Dictionary<string, bool>();
-
-            foreach (H3DLUT LUT in SceneData.LUTs)
+            foreach (H3DMesh Mesh in BaseModel.Meshes)
             {
-                foreach (H3DLUTSampler Sampler in LUT.Samplers)
-                {
-                    string Name = $"{LUT.Name}/{Sampler.Name}";
-                    bool IsAbs = (Sampler.Flags & H3DLUTFlags.IsAbsolute) != 0;
+                int ShaderHandle = MaterialShaders[Mesh.MaterialIndex].Handle;
 
-                    int UBOHandle = GL.GenBuffer();
-
-                    GL.BindBuffer(BufferTarget.UniformBuffer, UBOHandle);
-                    GL.BufferData(BufferTarget.UniformBuffer, 1024, Sampler.Table, BufferUsageHint.StaticRead);
-                    GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-                    LUTHandles.Add(Name, UBOHandle);
-                    IsLUTAbs.Add(Name, IsAbs);
-                }
+                Meshes.Add(new Mesh(this, Mesh, ShaderHandle));
             }
 
             SkeletalAnimation = new SkeletalAnim();
             MaterialAnimation = new MaterialAnim();
 
+            ResetTransform();
             UpdateAnimationTransforms();
         }
 
-        public Tuple<Vector3, Vector3> GetCenterDim(int MdlIndex)
+        public void UpdateLights()
         {
-            if (MdlIndex == -1) return Tuple.Create(Vector3.Zero, Vector3.Zero);
+            foreach (ShaderManager Shader in MaterialShaders)
+            {
+                GL.UseProgram(Shader.Handle);
 
+                int ObjNormalMapLocation = GL.GetUniformLocation(Shader.Handle, "ObjNormalMap");
+                int LightsCountLocation  = GL.GetUniformLocation(Shader.Handle, "LightsCount");
+
+                GL.Uniform1(ObjNormalMapLocation, Renderer.ObjectSpaceNormalMap ? 1 : 0);
+                GL.Uniform1(LightsCountLocation,  Renderer.Lights.Count);
+
+                for (int Index = 0; Index < Renderer.Lights.Count; Index++)
+                {
+                    int LightPositionLocation = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Position");
+                    int LightAmbientLocation  = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Ambient");
+                    int LightDiffuseLocation  = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Diffuse");
+                    int LightSpecularLocation = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Specular");
+
+                    GL.Uniform3(LightPositionLocation, Renderer.Lights[Index].Position);
+                    GL.Uniform4(LightAmbientLocation,  Renderer.Lights[Index].Ambient);
+                    GL.Uniform4(LightDiffuseLocation,  Renderer.Lights[Index].Diffuse);
+                    GL.Uniform4(LightSpecularLocation, Renderer.Lights[Index].Specular);
+                }
+            }
+        }
+
+        public Tuple<Vector3, Vector3> GetCenterDim()
+        {
             bool IsFirst = true;
 
             Vector3 Min = Vector3.Zero;
             Vector3 Max = Vector3.Zero;
 
-            for (int
-            Index = MeshRanges[CurrModel].Start;
-            Index < MeshRanges[CurrModel].End;
-            Index++)
+            foreach (Mesh Mesh in Meshes)
             {
-                PICAVertex[] Vertices = Meshes[Index].BaseMesh.ToVertices(true);
+                PICAVertex[] Vertices = Mesh.BaseMesh.ToVertices(true);
 
                 if (Vertices.Length == 0) continue;
 
@@ -240,74 +193,52 @@ namespace SPICA.Renderer
         {
             if (Meshes.Count > 0)
             {
-                SkeletonTransform = SkeletalAnimation.GetSkeletonTransforms(Skeletons[CurrModel]);
-                MaterialTransform = MaterialAnimation.GetUVTransforms(Materials[CurrModel]);
+                SkeletonTransform = SkeletalAnimation.GetSkeletonTransforms(BaseModel.Skeleton);
+                MaterialTransform = MaterialAnimation.GetUVTransforms(BaseModel.Materials);
             }
         }
 
         public void Render()
         {
-            int MdlMtxLocation = GL.GetUniformLocation(Parent.MdlShader.Handle, "ModelMatrix");
+            List<Mesh> RenderLater = new List<Mesh>(Meshes.Count);
 
-            GL.UniformMatrix4(MdlMtxLocation, false, ref Transform);
-
-            if (MeshRanges.Length > 0)
+            foreach (Mesh Mesh in Meshes)
             {
-                List<Mesh> RenderLater = new List<Mesh>(Meshes.Count);
+                GL.UseProgram(Mesh.ShaderHandle);
 
-                for (int
-                Index = MeshRanges[CurrModel].Start;
-                Index < MeshRanges[CurrModel].End;
-                Index++)
+                int ProjMtxLocation = GL.GetUniformLocation(Mesh.ShaderHandle, "ProjMatrix");
+                int ViewMtxLocation = GL.GetUniformLocation(Mesh.ShaderHandle, "ViewMatrix");
+                int MdlMtxLocation  = GL.GetUniformLocation(Mesh.ShaderHandle, "ModelMatrix");
+
+                GL.UniformMatrix4(ProjMtxLocation, false, ref Renderer.ProjectionMatrix);
+                GL.UniformMatrix4(ViewMtxLocation, false, ref Renderer.Transform);
+                GL.UniformMatrix4(MdlMtxLocation,  false, ref Transform);
+
+                Mesh.Render();
+
+                if (Mesh.BaseMesh.MaterialIndex < BaseModel.Materials.Count)
                 {
-                    Meshes[Index].Render();
+                    H3DMaterial Material = BaseModel.Materials[Mesh.BaseMesh.MaterialIndex];
 
-                    if (Meshes[Index].Material.MaterialParams.StencilTest.Enabled &&
-                        Meshes[Index].Material.MaterialParams.StencilTest.Function != PICATestFunc.Always)
+                    if (Material.MaterialParams.StencilTest.Enabled &&
+                        Material.MaterialParams.StencilTest.Function != PICATestFunc.Always)
                     {
-                        RenderLater.Add(Meshes[Index]);
+                        RenderLater.Add(Mesh);
                     }
                 }
-
-                /*
-                 * Objects that have the Stencil Test enabled may need to be rendered twice
-                 * This ensures that the Stencil buffer have the required values when a object
-                 * that relies on said values to "cut off" an region will render properly,
-                 * independent of the order the meshes are organized.
-                 * This may have some impact on performance through.
-                 */
-                foreach (Mesh Mesh in RenderLater) Mesh.Render();
             }
-        }
 
-        internal Matrix4 GetInverseTransform(int MeshIndex)
-        {
-            return MeshIndex < InverseTransform[CurrModel].Length ? InverseTransform[CurrModel][MeshIndex] : Matrix4.Identity;
-        }
-
-        internal Matrix4 GetSkeletonTransform(int MeshIndex)
-        {
-            return MeshIndex < SkeletonTransform.Length ? SkeletonTransform[MeshIndex] : Matrix4.Identity;
-        }
-
-        internal UVTransform[] GetMaterialTransform(int MatIndex)
-        {
-            return MaterialTransform[MatIndex];
-        }
-
-        internal int GetTextureId(string Name)
-        {
-            return TextureIds.ContainsKey(Name) ? TextureIds[Name] : -1;
-        }
-
-        internal int GetLUTHandle(string Name)
-        {
-            return LUTHandles.ContainsKey(Name) ? LUTHandles[Name] : -1;
-        }
-
-        internal bool GetIsLUTAbs(string Name)
-        {
-            return IsLUTAbs.ContainsKey(Name) ? IsLUTAbs[Name] : false;
+            /*
+             * Objects that have the Stencil Test enabled may need to be rendered twice.
+             * This ensures that the Stencil buffer have the required values when a object.
+             * that relies on said values to "cut off" an region will render properly,
+             * independent of the order the meshes are organized.
+             * This may have some impact on performance through.
+             */
+            foreach (Mesh Mesh in RenderLater)
+            {
+                Mesh.Render();
+            }
         }
 
         private bool Disposed;
@@ -316,10 +247,10 @@ namespace SPICA.Renderer
         {
             if (!Disposed)
             {
-                foreach (int Handle in TextureIds.Values) GL.DeleteTexture(Handle);
-                foreach (int Handle in LUTHandles.Values) GL.DeleteBuffer(Handle);
-
-                foreach (Mesh Mesh in Meshes) Mesh.Dispose();
+                foreach (Mesh Mesh in Meshes)
+                {
+                    Mesh.Dispose();
+                }
 
                 Disposed = true;
             }

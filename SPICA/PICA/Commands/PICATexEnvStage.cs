@@ -8,8 +8,34 @@
         public PICATexEnvColor    Color;
         public PICATexEnvScale    Scale;
 
-        public bool UpdateRGBBuffer;
+        public bool UpdateColorBuffer;
         public bool UpdateAlphaBuffer;
+
+        public bool IsColorPassThrough
+        {
+            get
+            {
+                return
+                    Combiner.Color   == PICATextureCombinerMode.Replace    &&
+                    Source.Color[0]  == PICATextureCombinerSource.Previous &&
+                    Operand.Color[0] == PICATextureCombinerColorOp.Color   &&
+                    Scale.Color      == PICATextureCombinerScale.One       &&
+                    !UpdateColorBuffer;
+            }
+        }
+
+        public bool IsAlphaPassThrough
+        {
+            get
+            {
+                return
+                    Combiner.Alpha   == PICATextureCombinerMode.Replace    &&
+                    Source.Alpha[0]  == PICATextureCombinerSource.Previous &&
+                    Operand.Alpha[0] == PICATextureCombinerAlphaOp.Alpha   &&
+                    Scale.Alpha      == PICATextureCombinerScale.One       &&
+                    !UpdateAlphaBuffer;
+            }
+        }
 
         public static PICATexEnvStage Texture0SubSecColor
         {
@@ -19,12 +45,12 @@
                 //Note: This is meant to be used on the first stage
                 PICATexEnvStage Output = new PICATexEnvStage();
 
-                Output.Source.ColorSource[0] = PICATextureCombinerSource.Texture0;
-                Output.Source.ColorSource[1] = PICATextureCombinerSource.FragmentSecondaryColor;
-                Output.Source.AlphaSource[0] = PICATextureCombinerSource.Texture0;
+                Output.Source.Color[0] = PICATextureCombinerSource.Texture0;
+                Output.Source.Color[1] = PICATextureCombinerSource.FragmentSecondaryColor;
+                Output.Source.Alpha[0] = PICATextureCombinerSource.Texture0;
 
-                Output.Combiner.ColorCombiner = PICATextureCombinerMode.Subtract;
-                Output.Combiner.AlphaCombiner = PICATextureCombinerMode.Replace;
+                Output.Combiner.Color = PICATextureCombinerMode.Subtract;
+                Output.Combiner.Alpha = PICATextureCombinerMode.Replace;
 
                 return Output;
             }
@@ -37,8 +63,8 @@
                 //Does nothing, just pass the previous color down the pipeline
                 PICATexEnvStage Output = new PICATexEnvStage();
 
-                Output.Source.ColorSource[0] = PICATextureCombinerSource.Previous;
-                Output.Source.AlphaSource[0] = PICATextureCombinerSource.Previous;
+                Output.Source.Color[0] = PICATextureCombinerSource.Previous;
+                Output.Source.Alpha[0] = PICATextureCombinerSource.Previous;
 
                 return Output;
             }

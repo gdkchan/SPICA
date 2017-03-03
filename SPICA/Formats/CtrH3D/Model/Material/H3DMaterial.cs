@@ -96,7 +96,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 Output.MaterialParams.TextureCoords[0].Scale = new Vector2D(1);
 
-                Output.MaterialParams.LUTInSel.Dist0Input = PICALUTInput.CosLightNormal;
+                Output.MaterialParams.LUTInSel.Dist0 = PICALUTInput.CosLightNormal;
 
                 Output.EnabledTextures[0] = true;
 

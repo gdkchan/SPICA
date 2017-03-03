@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
@@ -11,7 +12,6 @@ using SPICA.Renderer.Animation;
 using SPICA.Renderer.SPICA_GL;
 
 using System;
-using System.Collections.Generic;
 
 namespace SPICA.Renderer
 {
@@ -19,57 +19,46 @@ namespace SPICA.Renderer
     {
         private int VBOHandle;
         private int VAOHandle;
-        private int ShaderHandle;
+        public int ShaderHandle;
 
-        public Model Parent;
-        public H3DMesh BaseMesh;
-        public H3DMaterial Material;
+        internal Model Parent;
+        internal H3DMesh BaseMesh;
+        internal H3DMaterial Material;
 
-        private int TexEnvStagesCount;
-
-        private List<H3DSubMesh> SubMeshes;
-
-        public Vector3 MeshCenter;
-        private Vector4 PosOffset;
+        private Vector4 PositionOffset;
         private Vector4 Scales0;
         private Vector4 Scales1;
 
-        public Mesh(Model Parent, H3DMesh Mesh, H3DMaterial Mat, int ShaderHandle)
+        public Mesh(Model Parent, H3DMesh BaseMesh, int ShaderHandle)
         {
+            this.Parent   = Parent;
+            this.BaseMesh = BaseMesh;
+
             this.ShaderHandle = ShaderHandle;
-            
-            this.Parent = Parent;
 
-            BaseMesh = Mesh;
-            Material = Mat;
-            SubMeshes = BaseMesh.SubMeshes;
+            Material = Parent.BaseModel.Materials[BaseMesh.MaterialIndex];
 
-            TexEnvStagesCount = Mat.MaterialParams.TexEnvStagesCount;
-
-            MeshCenter = Mesh.MeshCenter.ToVector3();
-            PosOffset = Mesh.PositionOffset.ToVector4();
-
-            IntPtr Length = new IntPtr(Mesh.RawBuffer.Length);
+            IntPtr Length = new IntPtr(BaseMesh.RawBuffer.Length);
 
             VBOHandle = GL.GenBuffer();
             VAOHandle = GL.GenVertexArray();
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBOHandle);
-            GL.BufferData(BufferTarget.ArrayBuffer, Length, Mesh.RawBuffer, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, Length, BaseMesh.RawBuffer, BufferUsageHint.StaticDraw);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
             GL.BindVertexArray(VAOHandle);
 
             int Offset = 0;
 
-            foreach (PICAAttribute Attrib in Mesh.Attributes)
+            foreach (PICAAttribute Attrib in BaseMesh.Attributes)
             {
                 GL.DisableVertexAttribArray((int)Attrib.Name);
             }
 
-            for (int Index = 0; Index < Mesh.Attributes.Length; Index++)
+            for (int Index = 0; Index < BaseMesh.Attributes.Length; Index++)
             {
-                PICAAttribute Attrib = Mesh.Attributes[Index];
+                PICAAttribute Attrib = BaseMesh.Attributes[Index];
 
                 int Size = Attrib.Elements;
 
@@ -77,8 +66,8 @@ namespace SPICA.Renderer
 
                 switch (Attrib.Format)
                 {
-                    case PICAAttributeFormat.Byte: Type = VertexAttribPointerType.Byte; break;
-                    case PICAAttributeFormat.Ubyte: Type = VertexAttribPointerType.UnsignedByte; break;
+                    case PICAAttributeFormat.Byte:  Type = VertexAttribPointerType.Byte;              break;
+                    case PICAAttributeFormat.Ubyte: Type = VertexAttribPointerType.UnsignedByte;      break;
                     case PICAAttributeFormat.Short: Type = VertexAttribPointerType.Short; Size <<= 1; break;
                     case PICAAttributeFormat.Float: Type = VertexAttribPointerType.Float; Size <<= 2; break;
                 }
@@ -89,13 +78,13 @@ namespace SPICA.Renderer
                 {
                     GL.EnableVertexAttribArray(AttribIndex);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, VBOHandle);
-                    GL.VertexAttribPointer(AttribIndex, Attrib.Elements, Type, false, Mesh.VertexStride, Offset);
+                    GL.VertexAttribPointer(AttribIndex, Attrib.Elements, Type, false, BaseMesh.VertexStride, Offset);
 
                     //Bone Index (7) doesn't have Scale so we need to ignore it here
                     if (AttribIndex == 8) AttribIndex--;
 
                     int i = AttribIndex >> 2;
-                    int j = AttribIndex & 3;
+                    int j = AttribIndex &  3;
 
                     if (i == 0)
                         Scales0[j] = Attrib.Scale;
@@ -111,205 +100,51 @@ namespace SPICA.Renderer
 
         public void Render()
         {
-            //Upload Material data to Fragment Shader
             H3DMaterialParams Params = Material.MaterialParams;
 
-            //Blending and Logical Operation
-            BlendEquationMode ColorEquation = Params.BlendFunction.ColorEquation.ToBlendEquation();
-            BlendEquationMode AlphaEquation = Params.BlendFunction.AlphaEquation.ToBlendEquation();
+            Params.BlendFunction.SetGL();
+            Params.StencilTest.SetGL();
+            Params.StencilOperation.SetGL();
+            Params.DepthColorMask.SetGL();
 
-            BlendingFactorSrc ColorSrcFunc = Params.BlendFunction.ColorSourceFunc.ToBlendingFactorSrc();
-            BlendingFactorDest ColorDstFunc = Params.BlendFunction.ColorDestFunc.ToBlendingFactorDest();
-            BlendingFactorSrc AlphaSrcFunc = Params.BlendFunction.AlphaSourceFunc.ToBlendingFactorSrc();
-            BlendingFactorDest AlphaDstFunc = Params.BlendFunction.AlphaDestFunc.ToBlendingFactorDest();
-
-            GL.BlendEquationSeparate(ColorEquation, AlphaEquation);
-            GL.BlendFuncSeparate(ColorSrcFunc, ColorDstFunc, AlphaSrcFunc, AlphaDstFunc);
             GL.BlendColor(Params.BlendColor.ToColor4());
-
-            //Alpha, Stencil and Depth testing
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestEnb"), Params.AlphaTest.Enabled ? 1 : 0);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestFunc"), (int)Params.AlphaTest.Function);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestRef"), Params.AlphaTest.Reference);
-
-            StencilFunction StencilFunc = Params.StencilTest.Function.ToStencilFunction();
-            DepthFunction DepthFunc = Params.DepthColorMask.DepthFunc.ToDepthFunction();
-
-            StencilOp Fail = Params.StencilOperation.FailOp.ToStencilOp();
-            StencilOp ZFail = Params.StencilOperation.ZFailOp.ToStencilOp();
-            StencilOp ZPass = Params.StencilOperation.ZPassOp.ToStencilOp();
-
-            byte StencilRef = Params.StencilTest.Reference;
-            byte StencilMask = Params.StencilTest.Mask;
-
-            GL.StencilFunc(StencilFunc, StencilRef, StencilMask);
-            GL.StencilMask(Params.StencilTest.BufferMask);
-            GL.StencilOp(Fail, ZFail, ZPass);
-
-            GL.DepthFunc(DepthFunc);
-            GL.DepthMask(Params.DepthColorMask.DepthWrite);
-
-            GL.ColorMask(
-                Params.DepthColorMask.RedWrite,
-                Params.DepthColorMask.GreenWrite,
-                Params.DepthColorMask.BlueWrite,
-                Params.DepthColorMask.AlphaWrite);
 
             GL.CullFace(Params.FaceCulling.ToCullFaceMode());
 
             GL.PolygonOffset(0, Params.PolygonOffsetUnit);
 
-            RenderUtils.SetState(EnableCap.CullFace, Params.FaceCulling != PICAFaceCulling.Never);
+            RenderUtils.SetState(EnableCap.Blend,       Params.ColorOperation.BlendMode == PICABlendMode.Blend);
             RenderUtils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
-            RenderUtils.SetState(EnableCap.DepthTest, Params.DepthColorMask.Enabled);
-            RenderUtils.SetState(EnableCap.Blend, Params.ColorOperation.BlendMode == PICABlendMode.Blend);
+            RenderUtils.SetState(EnableCap.DepthTest,   Params.DepthColorMask.Enabled);
+            RenderUtils.SetState(EnableCap.CullFace,    Params.FaceCulling != PICAFaceCulling.Never);
 
-            //Coordinate sources
-            int TexUnit0SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnitSource[0]");
-            int TexUnit1SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnitSource[1]");
-            int TexUnit2SourceLocation = GL.GetUniformLocation(ShaderHandle, "TexUnitSource[2]");
+            Parent.Renderer.BindLUT(4, Params.LUTDist0TableName,   Params.LUTDist0SamplerName);
+            Parent.Renderer.BindLUT(5, Params.LUTDist1TableName,   Params.LUTDist1SamplerName);
+            Parent.Renderer.BindLUT(6, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
+            Parent.Renderer.BindLUT(7, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
 
-            GL.Uniform1(TexUnit0SourceLocation, (int)Params.TextureSources[0]);
-            GL.Uniform1(TexUnit1SourceLocation, (int)Params.TextureSources[1]);
-            GL.Uniform1(TexUnit2SourceLocation, (int)Params.TextureSources[2]);
-
-            //Material colors
-            int MEmissionLocation = GL.GetUniformLocation(ShaderHandle, "MEmission");
-            int MDiffuseLocation = GL.GetUniformLocation(ShaderHandle, "MDiffuse");
-            int MAmbientLocation = GL.GetUniformLocation(ShaderHandle, "MAmbient");
-            int MSpecularLocation = GL.GetUniformLocation(ShaderHandle, "MSpecular");
-
-            GL.Uniform4(MEmissionLocation, Params.EmissionColor.ToColor4());
-            GL.Uniform4(MDiffuseLocation, Params.DiffuseColor.ToColor4());
-            GL.Uniform4(MAmbientLocation, Params.AmbientColor.ToColor4());
-            GL.Uniform4(MSpecularLocation, Params.Specular0Color.ToColor4());
-
-            //Shader math parameters
-            int FragFlagsLocation = GL.GetUniformLocation(ShaderHandle, "FragFlags");
-            int FresnelSelLocation = GL.GetUniformLocation(ShaderHandle, "FresnelSel");
-            int BumpIndexLocation = GL.GetUniformLocation(ShaderHandle, "BumpIndex");
-            int BumpModeLocation = GL.GetUniformLocation(ShaderHandle, "BumpMode");
-
-            GL.Uniform1(FragFlagsLocation, (int)Params.FragmentFlags);
-            GL.Uniform1(FresnelSelLocation, (int)Params.FresnelSelector);
-            GL.Uniform1(BumpIndexLocation, Params.BumpTexture);
-            GL.Uniform1(BumpModeLocation, (int)Params.BumpMode);
-
-            //Texture Environment stages
-            for (int Index = 0; Index < 6; Index++)
-            {
-                PICATexEnvStage Stage = Params.TexEnvStages[Index];
-
-                int ColorCombLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].ColorCombine");
-                int AlphaCombLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].AlphaCombine");
-
-                int ColorScaleLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].ColorScale");
-                int AlphaScaleLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].AlphaScale");
-
-                int UpColorBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpColorBuff");
-                int UpAlphaBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpAlphaBuff");
-
-                GL.Uniform1(ColorCombLocation, (int)Stage.Combiner.ColorCombiner);
-                GL.Uniform1(AlphaCombLocation, (int)Stage.Combiner.AlphaCombiner);
-
-                GL.Uniform1(ColorScaleLocation, (float)(1 << (int)Stage.Scale.ColorScale));
-                GL.Uniform1(AlphaScaleLocation, (float)(1 << (int)Stage.Scale.AlphaScale));
-
-                GL.Uniform1(UpColorBuffLocation, Stage.UpdateRGBBuffer ? 1 : 0);
-                GL.Uniform1(UpAlphaBuffLocation, Stage.UpdateAlphaBuffer ? 1 : 0);
-
-                for (int Param = 0; Param < 3; Param++)
-                {
-                    int ColorSrcLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorSrc");
-                    int AlphaSrcLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaSrc");
-                    int ColorOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorOp");
-                    int AlphaOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaOp");
-
-                    GL.Uniform1(ColorSrcLocation, (int)Stage.Source.ColorSource[Param]);
-                    GL.Uniform1(AlphaSrcLocation, (int)Stage.Source.AlphaSource[Param]);
-                    GL.Uniform1(ColorOpLocation, (int)Stage.Operand.ColorOp[Param]);
-                    GL.Uniform1(AlphaOpLocation, (int)Stage.Operand.AlphaOp[Param]);
-                }
-
-                int ColorLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Color");
-
-                GL.Uniform4(ColorLocation, Stage.Color.ToColor4());
-            }
-
-            int BuffColorLocation = GL.GetUniformLocation(ShaderHandle, "BuffColor");
-            int CombCountLocation = GL.GetUniformLocation(ShaderHandle, "CombinersCount");
-            int VtxColorScaleLocation = GL.GetUniformLocation(ShaderHandle, "ColorScale");
-
-            GL.Uniform4(BuffColorLocation, Params.TexEnvBufferColor.ToColor4());
-            GL.Uniform1(CombCountLocation, TexEnvStagesCount);
-            GL.Uniform1(VtxColorScaleLocation, Params.ColorScale);
-
-            //Setup LUTs
-            for (int Index = 0; Index < 6; Index++)
-            {
-                int LUTInputLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].Input");
-                int LUTScaleLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].Scale");
-
-                switch (Index)
-                {
-                    case 0:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.Dist0Input);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.Dist0Scale.ToFloat());
-                        break;
-                    case 1:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.Dist1Input);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.Dist1Scale.ToFloat());
-                        break;
-                    case 2:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.FresnelInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.FresnelScale.ToFloat());
-                        break;
-                    case 3:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.ReflecRInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.ReflecRScale.ToFloat());
-                        break;
-                    case 4:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.ReflecGInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.ReflecGScale.ToFloat());
-                        break;
-                    case 5:
-                        GL.Uniform1(LUTInputLocation, (int)Params.LUTInSel.ReflecBInput);
-                        GL.Uniform1(LUTScaleLocation, Params.LUTInScale.ReflecBScale.ToFloat());
-                        break;
-                }
-            }
-
-            BindLUT(0, Params.LUTDist0TableName,   Params.LUTDist0SamplerName);
-            BindLUT(1, Params.LUTDist1TableName,   Params.LUTDist1SamplerName);
-            BindLUT(2, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
-            BindLUT(3, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
-
-            BindLUT(4,
+            Parent.Renderer.BindLUT(8,
                 Params.LUTReflecGTableName   ?? Params.LUTReflecRTableName, 
                 Params.LUTReflecGSamplerName ?? Params.LUTReflecRSamplerName);
 
-            BindLUT(5,
+            Parent.Renderer.BindLUT(9,
                 Params.LUTReflecBTableName   ?? Params.LUTReflecRTableName, 
                 Params.LUTReflecBSamplerName ?? Params.LUTReflecRSamplerName);
 
             //Setup texture transforms
-            UVTransform[] MatTrans = Parent.GetMaterialTransform(BaseMesh.MaterialIndex);
+            Matrix3[] MaterialTransform = Parent.MaterialTransform[BaseMesh.MaterialIndex];
 
-            for (int Index = 0; Index < MatTrans.Length; Index++)
+            for (int Index = 0; Index < MaterialTransform.Length; Index++)
             {
-                int ScaleLocation       = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Scale");
-                int TransformLocation   = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Transform");
-                int TranslationLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}].Translation");
+                int TransformLocation = GL.GetUniformLocation(ShaderHandle, $"UVTransforms[{Index}]");
 
-                GL.Uniform2(ScaleLocation, MatTrans[Index].Scale);
-                GL.UniformMatrix2(TransformLocation, false, ref MatTrans[Index].Transform);
-                GL.Uniform2(TranslationLocation, MatTrans[Index].Translation);
+                GL.UniformMatrix3(TransformLocation, false, ref MaterialTransform[Index]);
             }
 
             //Setup texture units
             if (Material.EnabledTextures[0])
             {
-                int TextureId = Parent.GetTextureId(Material.Texture0Name);
+                int TextureId = Parent.Renderer.GetTextureId(Material.Texture0Name);
 
                 //Only the texture unit 0 can have a Cube Map texture
                 if (Params.TextureCoords[0].MappingType == H3DTextureMappingType.CameraCubeEnvMap)
@@ -331,7 +166,7 @@ namespace SPICA.Renderer
             if (Material.EnabledTextures[1])
             {
                 GL.ActiveTexture(TextureUnit.Texture1);
-                GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture1Name));
+                GL.BindTexture(TextureTarget.Texture2D, Parent.Renderer.GetTextureId(Material.Texture1Name));
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 1);
             }
@@ -339,7 +174,7 @@ namespace SPICA.Renderer
             if (Material.EnabledTextures[2])
             {
                 GL.ActiveTexture(TextureUnit.Texture2);
-                GL.BindTexture(TextureTarget.Texture2D, Parent.GetTextureId(Material.Texture2Name));
+                GL.BindTexture(TextureTarget.Texture2D, Parent.Renderer.GetTextureId(Material.Texture2Name));
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 2);
             }
@@ -373,41 +208,16 @@ namespace SPICA.Renderer
             }
 
             GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "FixedAttr"), FixedAttributes);
-
-            //Vertex related Uniforms
-            Vector4 LightPowerScale = Vector4.Zero;
-
-            if (Params.MetaData != null)
-            {
-                //Only Pokémon uses this (for custom Rim lighting and Phong shading on the shaders)
-                foreach (H3DMetaDataValue MetaData in Params.MetaData.Values)
-                {
-                    if (MetaData.Type == H3DMetaDataType.Single && MetaData.Values.Count > 0)
-                    {
-                        float Value = (float)MetaData.Values[0];
-
-                        switch (MetaData.Name)
-                        {
-                            case "$RimPow":     LightPowerScale[0] = Value; break;
-                            case "$RimScale":   LightPowerScale[1] = Value; break;
-                            case "$PhongPow":   LightPowerScale[2] = Value; break;
-                            case "$PhongScale": LightPowerScale[3] = Value; break;
-                        }
-                    }
-                }
-            }
-
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), PosOffset);
+            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), BaseMesh.PositionOffset.ToVector4());
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Scales0);
             GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Scales1);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "LightPowerScale"), LightPowerScale);
 
             //Render all SubMeshes
             GL.BindVertexArray(VAOHandle);
 
-            foreach (H3DSubMesh SubMesh in SubMeshes)
+            foreach (H3DSubMesh SM in BaseMesh.SubMeshes)
             {
-                bool SmoothSkin = SubMesh.Skinning == H3DSubMeshSkinning.Smooth;
+                bool SmoothSkin = SM.Skinning == H3DSubMeshSkinning.Smooth;
 
                 Matrix4[] Transforms = new Matrix4[32];
 
@@ -415,25 +225,25 @@ namespace SPICA.Renderer
                 {
                     Matrix4 Transform;
 
-                    if (Index < SubMesh.BoneIndicesCount)
+                    if (Index < SM.BoneIndicesCount)
                     {
-                        int BoneIndex = SubMesh.BoneIndices[Index];
+                        int BoneIndex = SM.BoneIndices[Index];
 
-                        Transform = Parent.GetSkeletonTransform(BoneIndex);
+                        Transform = Parent.SkeletonTransform[BoneIndex];
 
                         if (SmoothSkin)
                         {
-                            Transform = Parent.GetInverseTransform(BoneIndex) * Transform;
+                            Transform = Parent.InverseTransform[BoneIndex] * Transform;
                         }
 
                         //Build billboard matrix if needed (used to make the bones follow the camera view)
-                        H3DBone Bone = Parent.Skeletons[Parent.CurrentModelIndex][BoneIndex];
+                        H3DBone Bone = Parent.BaseModel.Skeleton[BoneIndex];
 
                         if (Bone.BillboardMode != H3DBillboardMode.Off)
                         {
                             Matrix4 BillMtx = Matrix4.Identity;
 
-                            Matrix4 WrldMtx = Parent.Transform * Parent.Parent.Transform;
+                            Matrix4 WrldMtx = Parent.Transform * Parent.Renderer.Transform;
 
                             Matrix4 BoneMtx =
                                 Matrix4.CreateRotationX(Bone.Rotation.X) *
@@ -462,7 +272,7 @@ namespace SPICA.Renderer
                                     Y = Vector3.Normalize(BoneMtx.Row1.Xyz); Z = Vector3.Normalize(-WrldMtx.Row3.Xyz);
                                     break;
 
-                                case H3DBillboardMode.YAxis:
+                                case H3DBillboardMode.YAxial:
                                     Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.UnitZ;
                                     break;
 
@@ -496,29 +306,15 @@ namespace SPICA.Renderer
                     GL.UniformMatrix4(Location, false, ref Transform);
                 }
 
-                GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "BoolUniforms"), SubMesh.BoolUniforms);
+                GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "BoolUniforms"), SM.BoolUniforms);
 
-                GL.DrawElements(PrimitiveType.Triangles, SubMesh.Indices.Length, DrawElementsType.UnsignedShort, SubMesh.Indices);
+                GL.DrawElements(PrimitiveType.Triangles, SM.Indices.Length, DrawElementsType.UnsignedShort, SM.Indices);
             }
 
             GL.BindVertexArray(0);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
             GL.BindTexture(TextureTarget.TextureCubeMap, 0);
-        }
-
-        private void BindLUT(int Index, string TableName, string SamplerName)
-        {
-            if (!(TableName == null || SamplerName == null))
-            {
-                string Name = $"{TableName}/{SamplerName}";
-
-                int UBOHandle = Parent.GetLUTHandle(Name);
-                int LUTIsAbsLocation = GL.GetUniformLocation(ShaderHandle, $"LUTs[{Index}].IsAbs");
-
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, Index, UBOHandle);
-                GL.Uniform1(LUTIsAbsLocation, Parent.GetIsLUTAbs(Name) ? 1 : 0);
-            }
         }
 
         private void SetWrapAndFilter(TextureTarget Target, int Unit)

@@ -14,7 +14,7 @@ namespace SPICA.PICA.Commands
 
     public static class PICALUTScaleExtensions
     {
-        public static float ToFloat(this PICALUTScale Scale)
+        public static float ToSingle(this PICALUTScale Scale)
         {
             switch (Scale)
             {

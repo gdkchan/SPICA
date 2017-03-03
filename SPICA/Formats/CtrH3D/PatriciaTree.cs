@@ -221,7 +221,7 @@ namespace SPICA.Formats.CtrH3D
         private bool GetBit(string Name, uint Bit)
         {
             int Position = (int)(Bit >> 3);
-            int CharBit = (int)(Bit & 7);
+            int CharBit  = (int)(Bit &  7);
 
             if (Name != null && Position < Name.Length)
                 return ((Name[Position] >> CharBit) & 1) != 0;

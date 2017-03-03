@@ -4,36 +4,36 @@ namespace SPICA.PICA.Commands
 {
     public struct PICALUTInScale
     {
-        [XmlAttribute] public PICALUTScale Dist0Scale;
-        [XmlAttribute] public PICALUTScale Dist1Scale;
-        [XmlAttribute] public PICALUTScale SpecularScale;
-        [XmlAttribute] public PICALUTScale FresnelScale;
-        [XmlAttribute] public PICALUTScale ReflecRScale;
-        [XmlAttribute] public PICALUTScale ReflecGScale;
-        [XmlAttribute] public PICALUTScale ReflecBScale;
+        [XmlAttribute] public PICALUTScale Dist0;
+        [XmlAttribute] public PICALUTScale Dist1;
+        [XmlAttribute] public PICALUTScale Specular;
+        [XmlAttribute] public PICALUTScale Fresnel;
+        [XmlAttribute] public PICALUTScale ReflecR;
+        [XmlAttribute] public PICALUTScale ReflecG;
+        [XmlAttribute] public PICALUTScale ReflecB;
 
         public PICALUTInScale(uint Param)
         {
-            Dist0Scale    = (PICALUTScale)((Param >> 0)  & 7);
-            Dist1Scale    = (PICALUTScale)((Param >> 4)  & 7);
-            SpecularScale = (PICALUTScale)((Param >> 8)  & 7);
-            FresnelScale  = (PICALUTScale)((Param >> 12) & 7);
-            ReflecRScale  = (PICALUTScale)((Param >> 16) & 7);
-            ReflecGScale  = (PICALUTScale)((Param >> 20) & 7);
-            ReflecBScale  = (PICALUTScale)((Param >> 24) & 7);
+            Dist0    = (PICALUTScale)((Param >> 0)  & 7);
+            Dist1    = (PICALUTScale)((Param >> 4)  & 7);
+            Specular = (PICALUTScale)((Param >> 8)  & 7);
+            Fresnel  = (PICALUTScale)((Param >> 12) & 7);
+            ReflecR  = (PICALUTScale)((Param >> 16) & 7);
+            ReflecG  = (PICALUTScale)((Param >> 20) & 7);
+            ReflecB  = (PICALUTScale)((Param >> 24) & 7);
         }
 
         public uint ToUInt32()
         {
             uint Param = 0;
 
-            Param |= ((uint)Dist0Scale    & 7) << 0;
-            Param |= ((uint)Dist1Scale    & 7) << 4;
-            Param |= ((uint)SpecularScale & 7) << 8;
-            Param |= ((uint)FresnelScale  & 7) << 12;
-            Param |= ((uint)ReflecRScale  & 7) << 16;
-            Param |= ((uint)ReflecGScale  & 7) << 20;
-            Param |= ((uint)ReflecBScale  & 7) << 24;
+            Param |= ((uint)Dist0    & 7) << 0;
+            Param |= ((uint)Dist1    & 7) << 4;
+            Param |= ((uint)Specular & 7) << 8;
+            Param |= ((uint)Fresnel  & 7) << 12;
+            Param |= ((uint)ReflecR  & 7) << 16;
+            Param |= ((uint)ReflecG  & 7) << 20;
+            Param |= ((uint)ReflecB  & 7) << 24;
 
             return Param;
         }

@@ -58,7 +58,7 @@ uniform vec4 FixedTex2;
 uniform vec4 FixedBone;
 uniform vec4 FixedWeight;
 
-uniform vec4 LightPowerScale;
+uniform vec4 PowerScale;
 
 uniform vec4 MDiffuse;
 
@@ -87,8 +87,8 @@ uniform int BumpMode;
 	in vec4 a8_weight;
 #endif
 
-out vec3 ViewDir;
-out vec3 WorldPos;
+out vec3 View;
+out vec3 World;
 out vec3 ONormal;
 out vec3 Normal;
 out vec3 Tangent;
@@ -184,7 +184,7 @@ void main() {
 
 	Color.rgb *= ColorScale;
 
-	ViewDir = -normalize(vec3(ViewMatrix * ModelMatrix * Position));
+	View = -normalize(vec3(ViewMatrix * ModelMatrix * Position));
 
 	if (Scales0[S0_COL] == 0 && (FixedAttr & FA_COL)  == 0) {
 		//Color doesn't exist, use Material Diffuse instead
@@ -199,8 +199,8 @@ void main() {
 		 * To make both games happy, we output Hemisphere color on RGB and Rim intensity on Alpha.
 		 * TODO: Hemisphere lighting values are hardcoded, make then configurable on Light instead.
 		 */
-		float Sky = ONormal.y * 0.8f + 0.2f;
-		float Rim = 1 - dot(ONormal, ViewDir);
+		float Sky = ONormal.y * 0.8 + 0.2;
+		float Rim = 1 - dot(ONormal, View);
 
 		vec3 HemiCol = mix(vec3(0), vec3(1), Sky);
 
@@ -209,13 +209,13 @@ void main() {
 			HemiCol *= Color.aaa;
 
 			//This is needed by Pokémon only (their custom shader calculates Rim light)
-			Color.a = pow(Rim, LightPowerScale.x) * LightPowerScale.y;
+			Color.a = pow(Rim, PowerScale.x) * PowerScale.y;
 		}
 
 		Color.rgb += HemiCol * MDiffuse.rgb;
 	}
 
-	WorldPos = vec3(ModelMatrix * Position);
+	World = vec3(ModelMatrix * Position);
 
 	gl_Position = ProjMatrix * ViewMatrix * ModelMatrix * Position;
 }

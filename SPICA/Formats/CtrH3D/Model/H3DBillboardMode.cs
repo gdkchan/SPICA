@@ -7,7 +7,7 @@
         WorldViewpoint = 3,
         Screen = 4,
         ScreenViewpoint = 5,
-        YAxis = 6,
+        YAxial = 6,
         YAxialViewpoint = 7,
     }
 }

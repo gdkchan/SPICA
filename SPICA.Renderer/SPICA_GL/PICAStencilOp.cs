@@ -24,5 +24,13 @@ namespace SPICA.Renderer.SPICA_GL
                 default: throw new ArgumentException("Invalid Stencil operation!");
             }
         }
+
+        public static void SetGL(this PICAStencilOperation StencilOperation)
+        {
+            GL.StencilOp(
+                StencilOperation.FailOp.ToStencilOp(),
+                StencilOperation.ZFailOp.ToStencilOp(),
+                StencilOperation.ZPassOp.ToStencilOp());
+        }
     }
 }
