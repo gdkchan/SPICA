@@ -100,8 +100,8 @@ out vec2 TexCoord2;
 void main() {
 	/*
 	 * Note: The order in which variables in accessed in important on (some) GPUs, so don't change it!
-	 * In particular, Intel drivers seems to order attributes in the order they're accessed on the code
-	 * This is hacky, but GPUs that supports the explicit location doesn't have this problem (yay!)
+	 * In particular, Intel drivers seems to order attributes in the order they're accessed on the code.
+	 * This is hacky, but GPUs that supports the explicit location doesn't have this problem (yay!).
 	 */
 	vec4 Position = PosOffset + vec4(a0_pos * Scales0[S0_POS], 1);
 

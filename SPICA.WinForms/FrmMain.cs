@@ -113,6 +113,7 @@ namespace SPICA.WinForms
              */
             SettingsManager.BindBool("RenderShowGrid", ToggleGrid, MenuShowGrid, ToolButtonShowGrid);
             SettingsManager.BindBool("RenderShowAxis", ToggleAxis, MenuShowAxis, ToolButtonShowAxis);
+            SettingsManager.BindBool("UIShowSideMenu", ToggleSide, MenuShowSide, ToolButtonShowSide);
         }
 
         private void Viewport_MouseDown(object sender, MouseEventArgs e)
@@ -165,21 +166,21 @@ namespace SPICA.WinForms
         {
             Renderer.Clear();
 
-            //UIGrid.Render(Renderer.MdlShader.Handle);
+            UIGrid.Render(Renderer.Set3DColorShader());
 
             if (ModelsList.SelectedIndex != -1)
             {
                 Renderer.Render(ModelsList.SelectedIndex);
             }
 
-            //UIAxis.Render(Renderer.MdlShader.Handle);
+            UIAxis.Render(Renderer.Set3DColorShader());
 
             Viewport.SwapBuffers();
         }
 
         private void Viewport_Resize(object sender, EventArgs e)
         {
-            Renderer?.UpdateResolution(Viewport.Width, Viewport.Height);
+            Renderer?.Resize(Viewport.Width, Viewport.Height);
 
             UpdateViewport();
         }
@@ -264,6 +265,11 @@ namespace SPICA.WinForms
             UIAxis.Visible = ToolButtonShowAxis.Checked; UpdateViewport();
         }
 
+        private void ToggleSide()
+        {
+            MainContainer.Panel2Collapsed = !ToolButtonShowSide.Checked;
+        }
+
         private void Open(bool MergeMode)
         {
             IgnoreClicks = true;
@@ -275,8 +281,15 @@ namespace SPICA.WinForms
 
                 if (OpenDlg.ShowDialog() == DialogResult.OK && OpenDlg.FileNames.Length > 0)
                 {
-                    if (!MergeMode) SceneData = null;
+                    //Clean up from previously opened file (when in "merge" mode we keep everything)
+                    if (!MergeMode)
+                    {
+                        SceneData = null;
 
+                        Renderer.DeleteAll();
+                    }
+
+                    //Load all selected files
                     for (int Index = 0; Index < OpenDlg.FileNames.Length; Index++)
                     {
                         //We need to ensure that the Skeleton we will use is the one from the lastest loaded Model
@@ -298,6 +311,8 @@ namespace SPICA.WinForms
                                 SceneData.Merge(Data);
                             else
                                 SceneData = Data;
+
+                            Renderer.Merge(Data);
                         }
                     }
 
@@ -310,12 +325,10 @@ namespace SPICA.WinForms
                         SklAnimsList.Bind(SceneData.SkeletalAnimations);
                         MatAnimsList.Bind(SceneData.MaterialAnimations);
 
-                        Renderer.DeleteAll();
-                        Renderer.Merge(SceneData);
-
                         if (SceneData.Models.Count > 0)
                         {
                             ModelsList.Select(0);
+
                             Model = Renderer.Models[0];
                         }
 
@@ -339,8 +352,6 @@ namespace SPICA.WinForms
                     }
                 }
             }
-
-            //H3D.Save("D:\\recreated.bch", SceneData);
 
             //Allow app to process click from the Open dialog that goes into the Viewport
             //This avoid the model from moving after opening a file on the dialog
@@ -428,10 +439,11 @@ namespace SPICA.WinForms
                 Position = new Vector3(0, Center.Y, Dimension),
                 Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1f),
                 Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1f),
-                Specular = new Color4(0.5f, 0.5f, 0.5f, 1f)
+                Specular = new Color4(0.5f, 0.5f, 0.5f, 1f),
+                Enabled  = true
             });
 
-            Model.UpdateLights();
+            Model.UpdateUniforms();
 
             Model.TranslateAbs(-Center);
             UIGrid.TranslateAbs(-Center);

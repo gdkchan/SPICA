@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
@@ -18,66 +19,113 @@ namespace SPICA.Renderer
     {
         public const float ClipDistance = 100000f;
 
-        public List<Model>   Models;
-        public List<Texture> Textures;
-        public List<LUT>     LUTs;
+        public readonly List<Model>      Models;
+        public readonly List<Texture>    Textures;
+        public readonly List<LUT>        LUTs;
+        public readonly List<Light>      Lights;
+        public readonly List<GUIControl> Controls;
 
-        public List<Light> Lights;
+        private Shader GUI2DShader;
+        private Shader GUI3DShader;
 
-        public ShaderManager GUIShader;
-
-        public List<GUIControl> Controls;
-
-        public Vector4 SceneAmbient;
-
-        public Matrix4 ProjectionMatrix;
-
-        public bool ObjectSpaceNormalMap;
-
-        internal int VertexShaderHandle;
+        internal Matrix4 ProjectionMatrix;
 
         internal string FragmentBaseCode;
 
-        private int Width;
-        private int Height;
+        internal int VertexShaderHandle;
+
+        private int Width, Height;
+
+        private Color4 _SceneAmbient;
+
+        public Color4 SceneAmbient
+        {
+            get
+            {
+                return _SceneAmbient;
+            }
+            set
+            {
+                _SceneAmbient = value;
+
+                UpdateAllUniforms();
+            }
+        }
+
+        private bool _ObjectSpaceNormalMap;
+
+        public bool ObjectSpaceNormalMap
+        {
+            get
+            {
+                return _ObjectSpaceNormalMap;
+            }
+            set
+            {
+                _ObjectSpaceNormalMap = value;
+
+                UpdateAllUniforms();
+            }
+        }
 
         public RenderEngine(int Width, int Height)
         {
-            //Set initial and default values
             Models   = new List<Model>();
             Textures = new List<Texture>();
             LUTs     = new List<LUT>();
-
-            Lights = new List<Light>();
-
+            Lights   = new List<Light>();
             Controls = new List<GUIControl>();
 
-            SceneAmbient = new Vector4(0.1f);
-
-            //Create Shaders
-            GUIShader = new ShaderManager(
-                GetEmbeddedString("SPICA.Shader.GUIVertexShader"),
-                GetEmbeddedString("SPICA.Shader.GUIFragmentShader"));
-
-            VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+            string VertexShaderCode = GetEmbeddedString("SPICA.Shader.MdlVertexShader");
 
             FragmentBaseCode = GetEmbeddedString("SPICA.Shader.MdlFragmentShader");
 
-            GL.ShaderSource(VertexShaderHandle, GetEmbeddedString("SPICA.Shader.MdlVertexShader"));
+            VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
 
+            GL.ShaderSource(VertexShaderHandle, VertexShaderCode);
             GL.CompileShader(VertexShaderHandle);
-
-            //Configure GUI Shader
-            GL.UseProgram(GUIShader.Handle);
-
-            GL.Uniform1(GL.GetUniformLocation(GUIShader.Handle, "UITexture"), 0);
 
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
 
-            UpdateResolution(Width, Height);
+            SetupGUI2DShader();
+            SetupGUI3DShader();
+
+            Resize(Width, Height);
         }
 
-        public void UpdateResolution(int Width, int Height)
+        private void SetupGUI2DShader()
+        {
+            GUI2DShader = new Shader(
+                GetEmbeddedString("SPICA.Shader.GUIVertexShader"),
+                GetEmbeddedString("SPICA.Shader.GUIFragmentShader"));
+
+            GL.UseProgram(GUI2DShader.Handle);
+
+            GL.Uniform1(GL.GetUniformLocation(GUI2DShader.Handle, "UITexture"), 0);
+        }
+
+        private void SetupGUI3DShader()
+        {
+            string Code = GetEmbeddedString("SPICA.Shader.GUIColFragmentShader");
+
+            GUI3DShader = new Shader();
+
+            GUI3DShader.SetVertexShaderHandle(VertexShaderHandle);
+            GUI3DShader.SetFragmentShaderCode(Code);
+            GUI3DShader.Link();
+
+            GL.UseProgram(GUI3DShader.Handle);
+
+            int Scales0Location    = GL.GetUniformLocation(GUI3DShader.Handle, "Scales0");
+            int Scales1Location    = GL.GetUniformLocation(GUI3DShader.Handle, "Scales1");
+            int ColorScaleLocation = GL.GetUniformLocation(GUI3DShader.Handle, "ColorScale");
+
+            GL.Uniform4(Scales0Location, Vector4.One);
+            GL.Uniform4(Scales1Location, Vector4.One);
+            GL.Uniform1(ColorScaleLocation, 1f);
+        }
+
+        public void Resize(int Width, int Height)
         {
             this.Width  = Width;
             this.Height = Height;
@@ -89,9 +137,36 @@ namespace SPICA.Renderer
                 Ctrl.Resize();
             }
 
-            float AR = Width / (float)Height;
+            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
+                (float)Math.PI * 0.25f,
+                (float)Width / Height,
+                0.25f,
+                ClipDistance);
+        }
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI * 0.25f, AR, 0.25f, ClipDistance);
+        public int Set3DColorShader()
+        {
+            Matrix4 Identity = Matrix4.Identity;
+
+            GL.UseProgram(GUI3DShader.Handle);
+
+            int TransformLocation = GL.GetUniformLocation(GUI3DShader.Handle, "Transforms[0]");
+            int ProjMtxLocation   = GL.GetUniformLocation(GUI3DShader.Handle, "ProjMatrix");
+            int ViewMtxLocation   = GL.GetUniformLocation(GUI3DShader.Handle, "ViewMatrix");
+
+            GL.UniformMatrix4(TransformLocation, false, ref Identity);
+            GL.UniformMatrix4(ProjMtxLocation,   false, ref ProjectionMatrix);
+            GL.UniformMatrix4(ViewMtxLocation,   false, ref Transform);
+
+            return GUI3DShader.Handle;
+        }
+
+        public void UpdateAllUniforms()
+        {
+            foreach (Model Model in Models)
+            {
+                Model.UpdateUniforms();
+            }
         }
 
         public void SetBackgroundColor(Color Color)
@@ -111,6 +186,31 @@ namespace SPICA.Renderer
             DisposeAndClear(Models);
             DisposeAndClear(Textures);
             DisposeAndClear(LUTs);
+        }
+
+        public void Clear()
+        {
+            GL.DepthMask(true);
+            GL.ColorMask(true, true, true, true);
+            GL.Clear(
+                ClearBufferMask.ColorBufferBit |
+                ClearBufferMask.StencilBufferBit |
+                ClearBufferMask.DepthBufferBit);
+        }
+
+        public void Render(int ModelIndex)
+        {
+            Models[ModelIndex].Render();
+        }
+
+        internal void BindTexture(int Unit, string TextureName)
+        {
+            Textures.FirstOrDefault(x => x.Name == TextureName)?.Bind(Unit);
+        }
+
+        internal bool BindLUT(int Unit, string TableName, string SamplerName)
+        {
+            return LUTs.FirstOrDefault(x => x.Name == TableName)?.BindSampler(Unit, SamplerName) ?? false;
         }
 
         //Helper methods
@@ -144,31 +244,6 @@ namespace SPICA.Renderer
             Values.Clear();
         }
 
-        public void Clear()
-        {
-            GL.DepthMask(true);
-            GL.ColorMask(true, true, true, true);
-            GL.Clear(
-                ClearBufferMask.ColorBufferBit |
-                ClearBufferMask.StencilBufferBit |
-                ClearBufferMask.DepthBufferBit);
-        }
-
-        public void Render(int ModelIndex)
-        {
-            Models[ModelIndex].Render();
-        }
-
-        internal int GetTextureId(string TextureName)
-        {
-            return Textures.FirstOrDefault(x => x.Name == TextureName)?.Id ?? -1;
-        }
-
-        internal bool BindLUT(int Unit, string TableName, string SamplerName)
-        {
-            return LUTs.FirstOrDefault(x => x.Name == TableName)?.BindSampler(Unit, SamplerName) ?? false;
-        }
-
         private bool Disposed;
 
         protected virtual void Dispose(bool Disposing)
@@ -177,7 +252,8 @@ namespace SPICA.Renderer
             {
                 DeleteAll();
 
-                GUIShader.Dispose();
+                GUI2DShader.Dispose();
+                GUI3DShader.Dispose();
 
                 GL.DeleteShader(VertexShaderHandle);
 

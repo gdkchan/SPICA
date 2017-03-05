@@ -1,14 +1,11 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 
-using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
-using SPICA.Renderer.Animation;
 using SPICA.Renderer.SPICA_GL;
 
 using System;
@@ -19,15 +16,13 @@ namespace SPICA.Renderer
     {
         private int VBOHandle;
         private int VAOHandle;
-        public int ShaderHandle;
+        public  int ShaderHandle;
 
-        internal Model Parent;
-        internal H3DMesh BaseMesh;
+        private  Model       Parent;
+        internal H3DMesh     BaseMesh;
         internal H3DMaterial Material;
-
-        private Vector4 PositionOffset;
-        private Vector4 Scales0;
-        private Vector4 Scales1;
+        private  Vector4     Scales0;
+        private  Vector4     Scales1;
 
         public Mesh(Model Parent, H3DMesh BaseMesh, int ShaderHandle)
         {
@@ -144,20 +139,16 @@ namespace SPICA.Renderer
             //Setup texture units
             if (Material.EnabledTextures[0])
             {
-                int TextureId = Parent.Renderer.GetTextureId(Material.Texture0Name);
-
                 //Only the texture unit 0 can have a Cube Map texture
                 if (Params.TextureCoords[0].MappingType == H3DTextureMappingType.CameraCubeEnvMap)
                 {
-                    GL.ActiveTexture(TextureUnit.Texture3);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, TextureId);
+                    Parent.Renderer.BindTexture(3, Material.Texture0Name);
 
                     SetWrapAndFilter(TextureTarget.TextureCubeMap, 0);
                 }
                 else
                 {
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, TextureId);
+                    Parent.Renderer.BindTexture(0, Material.Texture0Name);
 
                     SetWrapAndFilter(TextureTarget.Texture2D, 0);
                 }
@@ -165,16 +156,14 @@ namespace SPICA.Renderer
 
             if (Material.EnabledTextures[1])
             {
-                GL.ActiveTexture(TextureUnit.Texture1);
-                GL.BindTexture(TextureTarget.Texture2D, Parent.Renderer.GetTextureId(Material.Texture1Name));
+                Parent.Renderer.BindTexture(1, Material.Texture1Name);
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 1);
             }
 
             if (Material.EnabledTextures[2])
             {
-                GL.ActiveTexture(TextureUnit.Texture2);
-                GL.BindTexture(TextureTarget.Texture2D, Parent.Renderer.GetTextureId(Material.Texture2Name));
+                Parent.Renderer.BindTexture(2, Material.Texture2Name);
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 2);
             }
@@ -207,10 +196,15 @@ namespace SPICA.Renderer
                 }
             }
 
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "FixedAttr"), FixedAttributes);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), BaseMesh.PositionOffset.ToVector4());
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Scales0);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Scales1);
+            int FixedAttrLocation = GL.GetUniformLocation(ShaderHandle, "FixedAttr");
+            int PosOffsetLocation = GL.GetUniformLocation(ShaderHandle, "PosOffset");
+            int Scales0Location   = GL.GetUniformLocation(ShaderHandle, "Scales0");
+            int Scales1Location   = GL.GetUniformLocation(ShaderHandle, "Scales1");
+
+            GL.Uniform1(FixedAttrLocation, FixedAttributes);
+            GL.Uniform4(PosOffsetLocation, BaseMesh.PositionOffset.ToVector4());
+            GL.Uniform4(Scales0Location,   Scales0);
+            GL.Uniform4(Scales1Location,   Scales1);
 
             //Render all SubMeshes
             GL.BindVertexArray(VAOHandle);
@@ -259,23 +253,18 @@ namespace SPICA.Renderer
                                 case H3DBillboardMode.World:
                                     Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.UnitZ;
                                     break;
-
                                 case H3DBillboardMode.WorldViewpoint:
                                     Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.Normalize(-WrldMtx.Row3.Xyz);
                                     break;
-
                                 case H3DBillboardMode.Screen:
                                     Y = Vector3.Normalize(BoneMtx.Row1.Xyz); Z = Vector3.UnitZ;
                                     break;
-
                                 case H3DBillboardMode.ScreenViewpoint:
                                     Y = Vector3.Normalize(BoneMtx.Row1.Xyz); Z = Vector3.Normalize(-WrldMtx.Row3.Xyz);
                                     break;
-
                                 case H3DBillboardMode.YAxial:
                                     Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.UnitZ;
                                     break;
-
                                 case H3DBillboardMode.YAxialViewpoint:
                                     Y = Vector3.Normalize(WrldMtx.Row1.Xyz); Z = Vector3.Normalize(-WrldMtx.Row3.Xyz);
                                     break;
@@ -306,7 +295,9 @@ namespace SPICA.Renderer
                     GL.UniformMatrix4(Location, false, ref Transform);
                 }
 
-                GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "BoolUniforms"), SM.BoolUniforms);
+                int BoolUniformsLocation = GL.GetUniformLocation(ShaderHandle, "BoolUniforms");
+
+                GL.Uniform1(BoolUniformsLocation, SM.BoolUniforms);
 
                 GL.DrawElements(PrimitiveType.Triangles, SM.Indices.Length, DrawElementsType.UnsignedShort, SM.Indices);
             }

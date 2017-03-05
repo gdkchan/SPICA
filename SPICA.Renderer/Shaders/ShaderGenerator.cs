@@ -86,59 +86,8 @@ namespace SPICA.Renderer.Shaders
                     AlphaArgs[Param] = AlphaArg;
                 }
 
-                if (!Stage.IsColorPassThrough)
-                {
-                    switch (Stage.Combiner.Color)
-                    {
-                        case PICATextureCombinerMode.Replace:
-                            SB.AppendLine($"\tOutput.rgb = ({ColorArgs[0]}).rgb;"); break;
-                        case PICATextureCombinerMode.Modulate:
-                            SB.AppendLine($"\tOutput.rgb = ({ColorArgs[0]}).rgb * ({ColorArgs[1]}).rgb;"); break;
-                        case PICATextureCombinerMode.Add:
-                            SB.AppendLine($"\tOutput.rgb = min(({ColorArgs[0]}).rgb + ({ColorArgs[1]}).rgb, 1);"); break;
-                        case PICATextureCombinerMode.AddSigned:
-                            SB.AppendLine($"\tOutput.rgb = clamp(({ColorArgs[0]}).rgb + ({ColorArgs[1]}).rgb - 0.5, 0, 1);"); break;
-                        case PICATextureCombinerMode.Interpolate:
-                            SB.AppendLine($"\tOutput.rgb = mix(({ColorArgs[1]}).rgb, ({ColorArgs[0]}).rgb, ({ColorArgs[2]}).rgb);"); break;
-                        case PICATextureCombinerMode.Subtract:
-                            SB.AppendLine($"\tOutput.rgb = max(({ColorArgs[0]}).rgb - ({ColorArgs[1]}).rgb, 0);"); break;
-                        case PICATextureCombinerMode.DotProduct3Rgb:
-                            SB.AppendLine($"\tOutput.rgb = vec3(min(dot(({ColorArgs[0]}).rgb, ({ColorArgs[1]}).rgb), 1));"); break;
-                        case PICATextureCombinerMode.DotProduct3Rgba:
-                            SB.AppendLine($"\tOutput.rgb = vec3(min(dot(({ColorArgs[0]}), ({ColorArgs[1]})), 1));"); break;
-                        case PICATextureCombinerMode.MultAdd:
-                            SB.AppendLine($"\tOutput.rgb = min(({ColorArgs[0]}).rgb * ({ColorArgs[1]}).rgb + ({ColorArgs[2]}).rgb, 1);"); break;
-                        case PICATextureCombinerMode.AddMult:
-                            SB.AppendLine($"\tOutput.rgb = min(({ColorArgs[0]}).rgb + ({ColorArgs[1]}).rgb, 1) * ({ColorArgs[2]}).rgb;"); break;
-                    }
-                }
-
-                if (!Stage.IsAlphaPassThrough)
-                {
-                    switch (Stage.Combiner.Alpha)
-                    {
-                        case PICATextureCombinerMode.Replace:
-                            SB.AppendLine($"\tOutput.a = ({AlphaArgs[0]});"); break;
-                        case PICATextureCombinerMode.Modulate:
-                            SB.AppendLine($"\tOutput.a = ({AlphaArgs[0]}) * ({AlphaArgs[1]});"); break;
-                        case PICATextureCombinerMode.Add:
-                            SB.AppendLine($"\tOutput.a = min(({AlphaArgs[0]}) + ({AlphaArgs[1]}), 1);"); break;
-                        case PICATextureCombinerMode.AddSigned:
-                            SB.AppendLine($"\tOutput.a = clamp(({AlphaArgs[0]}) + ({AlphaArgs[1]}) - 0.5, 0, 1);"); break;
-                        case PICATextureCombinerMode.Interpolate:
-                            SB.AppendLine($"\tOutput.a = mix(({AlphaArgs[1]}), ({AlphaArgs[0]}), ({AlphaArgs[2]}));"); break;
-                        case PICATextureCombinerMode.Subtract:
-                            SB.AppendLine($"\tOutput.a = max(({AlphaArgs[0]}) - ({AlphaArgs[1]}), 0);"); break;
-                        case PICATextureCombinerMode.DotProduct3Rgb:
-                            SB.AppendLine($"\tOutput.a = min(dot(vec3({AlphaArgs[0]}), vec3({AlphaArgs[1]})), 1);"); break;
-                        case PICATextureCombinerMode.DotProduct3Rgba:
-                            SB.AppendLine($"\tOutput.a = min(dot(vec4({AlphaArgs[0]}), vec4({AlphaArgs[1]})), 1);"); break;
-                        case PICATextureCombinerMode.MultAdd:
-                            SB.AppendLine($"\tOutput.a = min(({AlphaArgs[0]}) * ({AlphaArgs[1]}) + ({AlphaArgs[2]}), 1);"); break;
-                        case PICATextureCombinerMode.AddMult:
-                            SB.AppendLine($"\tOutput.a = min(({AlphaArgs[0]}) + ({AlphaArgs[1]}), 1) * ({AlphaArgs[2]});"); break;
-                    }
-                }
+                GenCombinerColor(SB, Stage, ColorArgs);
+                GenCombinerAlpha(SB, Stage, AlphaArgs);
 
                 int ColorScale = 1 << (int)Stage.Scale.Color;
                 int AlphaScale = 1 << (int)Stage.Scale.Alpha;
@@ -324,17 +273,94 @@ namespace SPICA.Renderer.Shaders
 
             string TexCoords;
 
-            switch ((int)Params.TextureSources[Index])
-            {
-                default:
-                case 0: TexCoords = $"(UVTransforms[{Index}] * vec3(TexCoord0, 1)).xy"; break;
-                case 1: TexCoords = $"(UVTransforms[{Index}] * vec3(TexCoord1, 1)).xy"; break;
-                case 2: TexCoords = $"(UVTransforms[{Index}] * vec3(TexCoord2, 1)).xy"; break;
-                case 3: TexCoords = "reflect(-View, ONormal)";                          break;
-                case 4: TexCoords = "CalcSpherical()";                                  break;
-            }
+            if (Source >= 0 && Source < 3)
+                TexCoords = $"(UVTransforms[{Index}] * vec3(TexCoord{Source}, 1)).xy";
+            else if (Source == 3)
+                TexCoords = "reflect(-View, ONormal)";
+            else if (Source == 4)
+                TexCoords = "CalcSpherical()";
+            else //Invalid
+                TexCoords = "vec2(0)";
 
             SB.AppendLine($"\tvec4 Color{Index} = texture({TexSampler}, {TexCoords});");
+        }
+
+        private static void GenCombinerColor(StringBuilder SB, PICATexEnvStage Stage, string[] ColorArgs)
+        {
+            if (Stage.IsColorPassThrough) return;
+
+            switch (Stage.Combiner.Color)
+            {
+                case PICATextureCombinerMode.Replace:
+                    SB.AppendLine($"\tOutput.rgb = ({ColorArgs[0]}).rgb;");
+                    break;
+                case PICATextureCombinerMode.Modulate:
+                    SB.AppendLine($"\tOutput.rgb = ({ColorArgs[0]}).rgb * ({ColorArgs[1]}).rgb;");
+                    break;
+                case PICATextureCombinerMode.Add:
+                    SB.AppendLine($"\tOutput.rgb = min(({ColorArgs[0]}).rgb + ({ColorArgs[1]}).rgb, 1);");
+                    break;
+                case PICATextureCombinerMode.AddSigned:
+                    SB.AppendLine($"\tOutput.rgb = clamp(({ColorArgs[0]}).rgb + ({ColorArgs[1]}).rgb - 0.5, 0, 1);");
+                    break;
+                case PICATextureCombinerMode.Interpolate:
+                    SB.AppendLine($"\tOutput.rgb = mix(({ColorArgs[1]}).rgb, ({ColorArgs[0]}).rgb, ({ColorArgs[2]}).rgb);");
+                    break;
+                case PICATextureCombinerMode.Subtract:
+                    SB.AppendLine($"\tOutput.rgb = max(({ColorArgs[0]}).rgb - ({ColorArgs[1]}).rgb, 0);");
+                    break;
+                case PICATextureCombinerMode.DotProduct3Rgb:
+                    SB.AppendLine($"\tOutput.rgb = vec3(min(dot(({ColorArgs[0]}).rgb, ({ColorArgs[1]}).rgb), 1));");
+                    break;
+                case PICATextureCombinerMode.DotProduct3Rgba:
+                    SB.AppendLine($"\tOutput.rgb = vec3(min(dot(({ColorArgs[0]}), ({ColorArgs[1]})), 1));");
+                    break;
+                case PICATextureCombinerMode.MultAdd:
+                    SB.AppendLine($"\tOutput.rgb = min(({ColorArgs[0]}).rgb * ({ColorArgs[1]}).rgb + ({ColorArgs[2]}).rgb, 1);");
+                    break;
+                case PICATextureCombinerMode.AddMult:
+                    SB.AppendLine($"\tOutput.rgb = min(({ColorArgs[0]}).rgb + ({ColorArgs[1]}).rgb, 1) * ({ColorArgs[2]}).rgb;");
+                    break;
+            }
+        }
+
+        private static void GenCombinerAlpha(StringBuilder SB, PICATexEnvStage Stage, string[] AlphaArgs)
+        {
+            if (Stage.IsAlphaPassThrough) return;
+
+            switch (Stage.Combiner.Alpha)
+            {
+                case PICATextureCombinerMode.Replace:
+                    SB.AppendLine($"\tOutput.a = ({AlphaArgs[0]});");
+                    break;
+                case PICATextureCombinerMode.Modulate:
+                    SB.AppendLine($"\tOutput.a = ({AlphaArgs[0]}) * ({AlphaArgs[1]});");
+                    break;
+                case PICATextureCombinerMode.Add:
+                    SB.AppendLine($"\tOutput.a = min(({AlphaArgs[0]}) + ({AlphaArgs[1]}), 1);");
+                    break;
+                case PICATextureCombinerMode.AddSigned:
+                    SB.AppendLine($"\tOutput.a = clamp(({AlphaArgs[0]}) + ({AlphaArgs[1]}) - 0.5, 0, 1);");
+                    break;
+                case PICATextureCombinerMode.Interpolate:
+                    SB.AppendLine($"\tOutput.a = mix(({AlphaArgs[1]}), ({AlphaArgs[0]}), ({AlphaArgs[2]}));");
+                    break;
+                case PICATextureCombinerMode.Subtract:
+                    SB.AppendLine($"\tOutput.a = max(({AlphaArgs[0]}) - ({AlphaArgs[1]}), 0);");
+                    break;
+                case PICATextureCombinerMode.DotProduct3Rgb:
+                    SB.AppendLine($"\tOutput.a = min(dot(vec3({AlphaArgs[0]}), vec3({AlphaArgs[1]})), 1);");
+                    break;
+                case PICATextureCombinerMode.DotProduct3Rgba:
+                    SB.AppendLine($"\tOutput.a = min(dot(vec4({AlphaArgs[0]}), vec4({AlphaArgs[1]})), 1);");
+                    break;
+                case PICATextureCombinerMode.MultAdd:
+                    SB.AppendLine($"\tOutput.a = min(({AlphaArgs[0]}) * ({AlphaArgs[1]}) + ({AlphaArgs[2]}), 1);");
+                    break;
+                case PICATextureCombinerMode.AddMult:
+                    SB.AppendLine($"\tOutput.a = min(({AlphaArgs[0]}) + ({AlphaArgs[1]}), 1) * ({AlphaArgs[2]});");
+                    break;
+            }
         }
 
         private static string GetCombinerSource(PICATextureCombinerSource Source, string Constant)

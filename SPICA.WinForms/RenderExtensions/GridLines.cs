@@ -9,7 +9,7 @@ namespace SPICA.WinForms.RenderExtensions
 {
     class GridLines : TransformableObject, IDisposable
     {
-        const int LinesCount = 102;
+        private const int LinesCount = 102;
 
         private int VBOHandle;
         private int VAOHandle;
@@ -72,9 +72,9 @@ namespace SPICA.WinForms.RenderExtensions
             {
                 GL.UseProgram(ShaderHandle);
 
-                RenderUtils.SetupShaderForPosCol(ShaderHandle);
+                int MdlMtxLocation = GL.GetUniformLocation(ShaderHandle, "ModelMatrix");
 
-                GL.UniformMatrix4(GL.GetUniformLocation(ShaderHandle, "ModelMatrix"), false, ref Transform);
+                GL.UniformMatrix4(MdlMtxLocation, false, ref Transform);
 
                 GL.LineWidth(1);
 

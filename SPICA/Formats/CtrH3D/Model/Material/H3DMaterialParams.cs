@@ -72,29 +72,12 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private uint ConstantColors;
 
-        public uint[] ConstantColorIndices
-        {
-            get
-            {
-                return new uint[] {
-                    (ConstantColors >>  0) & 0xf,
-                    (ConstantColors >>  4) & 0xf,
-                    (ConstantColors >>  8) & 0xf,
-                    (ConstantColors >> 12) & 0xf,
-                    (ConstantColors >> 16) & 0xf,
-                    (ConstantColors >> 20) & 0xf};
-            }
-            set
-            {
-                ConstantColors =
-                    ((value[0] <<  0) & 0xf) |
-                    ((value[1] <<  4) & 0xf) |
-                    ((value[2] <<  8) & 0xf) |
-                    ((value[3] << 12) & 0xf) |
-                    ((value[4] << 16) & 0xf) |
-                    ((value[5] << 20) & 0xf);
-            }
-        }
+        [Ignore] public uint Constant0Assignment;
+        [Ignore] public uint Constant1Assignment;
+        [Ignore] public uint Constant2Assignment;
+        [Ignore] public uint Constant3Assignment;
+        [Ignore] public uint Constant4Assignment;
+        [Ignore] public uint Constant5Assignment;
 
         public float PolygonOffsetUnit;
 
@@ -159,7 +142,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMaterialParams()
         {
             TextureCoords = new H3DTextureCoord[3];
-            TexEnvStages = new PICATexEnvStage[6];
+            TexEnvStages  = new PICATexEnvStage[6];
 
             for (int Index = 0; Index < TexEnvStages.Length; Index++)
             {
@@ -386,6 +369,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureSources[1] = Uniform[10].Y;
             TextureSources[2] = Uniform[10].Z;
             TextureSources[3] = Uniform[10].W;
+
+            Constant0Assignment = (ConstantColors >>  0) & 0xf;
+            Constant1Assignment = (ConstantColors >>  4) & 0xf;
+            Constant2Assignment = (ConstantColors >>  8) & 0xf;
+            Constant3Assignment = (ConstantColors >> 12) & 0xf;
+            Constant4Assignment = (ConstantColors >> 16) & 0xf;
+            Constant5Assignment = (ConstantColors >> 20) & 0xf;
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
@@ -394,9 +384,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             Writer = new PICACommandWriter();
 
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS, LUTInAbs.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS,    LUTInAbs.ToUInt32());
             Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT, LUTInSel.ToUInt32());
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE, LUTInScale.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE,  LUTInScale.ToUInt32());
 
             LUTConfigCommands = Writer.GetBuffer();
 
@@ -494,6 +484,14 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Writer.WriteEnd();
 
             FragmentShaderCommands = Writer.GetBuffer();
+
+            ConstantColors =
+                (Constant0Assignment <<  0) |
+                (Constant1Assignment <<  4) |
+                (Constant2Assignment <<  8) |
+                (Constant3Assignment << 12) |
+                (Constant4Assignment << 16) |
+                (Constant5Assignment << 20);
 
             GenerateUniqueId();
 

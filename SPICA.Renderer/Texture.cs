@@ -12,11 +12,17 @@ namespace SPICA.Renderer
 
         public int Id;
 
+        private TextureTarget Target;
+
         public Texture(RenderEngine Renderer, H3DTexture Texture)
         {
             Name = Texture.Name;
 
             Id = GL.GenTexture();
+
+            Target = Texture.IsCubeTexture
+                ? TextureTarget.TextureCubeMap
+                : TextureTarget.Texture2D;
 
             if (Texture.IsCubeTexture)
             {
@@ -49,6 +55,13 @@ namespace SPICA.Renderer
                     PixelType.UnsignedByte,
                     Texture.ToRGBA());
             }
+        }
+
+        public void Bind(int Unit)
+        {
+            GL.ActiveTexture(TextureUnit.Texture0 + Unit);
+
+            GL.BindTexture(Target, Id);
         }
 
         private bool Disposed;

@@ -4,25 +4,16 @@ using System;
 
 namespace SPICA.Renderer.Shaders
 {
-    public class ShaderCompilationException : Exception
-    {
-        public ShaderCompilationException() : base() { }
-
-        public ShaderCompilationException(string message) : base(message) { }
-
-        public ShaderCompilationException(string message, Exception inner) : base(message, inner) { }
-    }
-
-    public class ShaderManager : IDisposable
+    class Shader : IDisposable
     {
         public int Handle { get; private set; }
 
         private int VertexShaderHandle;
         private int FragmentShaderHandle;
 
-        public ShaderManager() { }
+        public Shader() { }
 
-        public ShaderManager(string VShCode, string FShCode)
+        public Shader(string VShCode, string FShCode)
         {
             SetVertexShaderCode(VShCode);
             SetFragmentShaderCode(FShCode);
@@ -45,7 +36,6 @@ namespace SPICA.Renderer.Shaders
             VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
 
             GL.ShaderSource(VertexShaderHandle, Code);
-
             GL.CompileShader(VertexShaderHandle);
         }
 
@@ -54,7 +44,6 @@ namespace SPICA.Renderer.Shaders
             FragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
             GL.ShaderSource(FragmentShaderHandle, Code);
-
             GL.CompileShader(FragmentShaderHandle);
         }
 
@@ -66,7 +55,6 @@ namespace SPICA.Renderer.Shaders
 
                 GL.AttachShader(Handle, VertexShaderHandle);
                 GL.AttachShader(Handle, FragmentShaderHandle);
-
                 GL.LinkProgram(Handle);
 
                 int Status = 0;

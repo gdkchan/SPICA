@@ -13,6 +13,7 @@ using SPICA.Renderer.SPICA_GL;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SPICA.Renderer
 {
@@ -21,6 +22,7 @@ namespace SPICA.Renderer
         internal RenderEngine Renderer;
         internal H3DModel     BaseModel;
         internal List<Mesh>   Meshes;
+        internal List<Shader> Shaders;
         internal Matrix4[]    InverseTransform;
         internal Matrix4[]    SkeletonTransform;
         internal Matrix3[][]  MaterialTransform;
@@ -28,14 +30,13 @@ namespace SPICA.Renderer
         public SkeletalAnim SkeletalAnimation;
         public MaterialAnim MaterialAnimation;
 
-        private List<ShaderManager> MaterialShaders;
-
         public Model(RenderEngine Renderer, H3DModel BaseModel)
         {
             this.Renderer  = Renderer;
             this.BaseModel = BaseModel;
 
-            Meshes = new List<Mesh>();
+            Meshes  = new List<Mesh>();
+            Shaders = new List<Shader>();
 
             InverseTransform = new Matrix4[BaseModel.Skeleton.Count];
 
@@ -44,11 +45,9 @@ namespace SPICA.Renderer
                 InverseTransform[Bone] = BaseModel.Skeleton[Bone].InverseTransform.ToMatrix4();
             }
 
-            MaterialShaders = new List<ShaderManager>();
-
             foreach (H3DMaterial Material in BaseModel.Materials)
             {
-                ShaderManager Shader = new ShaderManager();
+                Shader Shader = new Shader();
 
                 H3DMaterialParams Params = Material.MaterialParams;
 
@@ -56,10 +55,9 @@ namespace SPICA.Renderer
 
                 Shader.SetVertexShaderHandle(Renderer.VertexShaderHandle);
                 Shader.SetFragmentShaderCode(ShaderCode);
-
                 Shader.Link();
 
-                MaterialShaders.Add(Shader);
+                Shaders.Add(Shader);
 
                 GL.UseProgram(Shader.Handle);
 
@@ -99,15 +97,17 @@ namespace SPICA.Renderer
                 int MDiffuseLocation   = GL.GetUniformLocation(Shader.Handle, "MDiffuse");
                 int PowerScaleLocation = GL.GetUniformLocation(Shader.Handle, "PowerScale");
                 int ColorScaleLocation = GL.GetUniformLocation(Shader.Handle, "ColorScale");
+                int BumpModeLocation   = GL.GetUniformLocation(Shader.Handle, "BumpMode");
 
                 GL.Uniform4(MDiffuseLocation,   Params.DiffuseColor.ToColor4());
                 GL.Uniform4(PowerScaleLocation, PowerScale);
                 GL.Uniform1(ColorScaleLocation, Params.ColorScale);
+                GL.Uniform1(BumpModeLocation,   (int)Params.BumpMode);
             }
 
             foreach (H3DMesh Mesh in BaseModel.Meshes)
             {
-                int ShaderHandle = MaterialShaders[Mesh.MaterialIndex].Handle;
+                int ShaderHandle = Shaders[Mesh.MaterialIndex].Handle;
 
                 Meshes.Add(new Mesh(this, Mesh, ShaderHandle));
             }
@@ -119,19 +119,15 @@ namespace SPICA.Renderer
             UpdateAnimationTransforms();
         }
 
-        public void UpdateLights()
+        public void UpdateUniforms()
         {
-            foreach (ShaderManager Shader in MaterialShaders)
+            foreach (Shader Shader in Shaders)
             {
                 GL.UseProgram(Shader.Handle);
 
-                int ObjNormalMapLocation = GL.GetUniformLocation(Shader.Handle, "ObjNormalMap");
-                int LightsCountLocation  = GL.GetUniformLocation(Shader.Handle, "LightsCount");
+                int Index = 0;
 
-                GL.Uniform1(ObjNormalMapLocation, Renderer.ObjectSpaceNormalMap ? 1 : 0);
-                GL.Uniform1(LightsCountLocation,  Renderer.Lights.Count);
-
-                for (int Index = 0; Index < Renderer.Lights.Count; Index++)
+                foreach (Light Light in Renderer.Lights.Where(x => x.Enabled))
                 {
                     int LightPositionLocation = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Position");
                     int LightAmbientLocation  = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Ambient");
@@ -142,7 +138,15 @@ namespace SPICA.Renderer
                     GL.Uniform4(LightAmbientLocation,  Renderer.Lights[Index].Ambient);
                     GL.Uniform4(LightDiffuseLocation,  Renderer.Lights[Index].Diffuse);
                     GL.Uniform4(LightSpecularLocation, Renderer.Lights[Index].Specular);
+
+                    if (++Index == 8) break;
                 }
+
+                int ObjNormalMapLocation = GL.GetUniformLocation(Shader.Handle, "ObjNormalMap");
+                int LightsCountLocation  = GL.GetUniformLocation(Shader.Handle, "LightsCount");
+
+                GL.Uniform1(ObjNormalMapLocation, Renderer.ObjectSpaceNormalMap ? 1 : 0);
+                GL.Uniform1(LightsCountLocation, Index);
             }
         }
 
@@ -250,6 +254,11 @@ namespace SPICA.Renderer
                 foreach (Mesh Mesh in Meshes)
                 {
                     Mesh.Dispose();
+                }
+
+                foreach (Shader Shader in Shaders)
+                {
+                    Shader.Dispose();
                 }
 
                 Disposed = true;

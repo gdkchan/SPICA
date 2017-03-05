@@ -8,69 +8,8 @@ using System;
 
 namespace SPICA.Renderer
 {
-    public static class RenderUtils
+    static class RenderUtils
     {
-        public static void SetupShaderForPosCol(int ShaderHandle)
-        {
-            //Set the fragment shader to a state capable of rendering our Vertex Buffer
-            //In this case we set all stages to the default values (output = Vertex Color)
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "AlphaTestEnb"), 0);
-
-            for (int Index = 0; Index < 6; Index++)
-            {
-                int ColorCombLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].ColorCombine");
-                int AlphaCombLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].AlphaCombine");
-
-                int ColorScaleLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].ColorScale");
-                int AlphaScaleLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].AlphaScale");
-
-                int UpColorBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpColorBuff");
-                int UpAlphaBuffLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].UpAlphaBuff");
-
-                GL.Uniform1(ColorCombLocation, 0);
-                GL.Uniform1(AlphaCombLocation, 0);
-
-                GL.Uniform1(ColorScaleLocation, 1f);
-                GL.Uniform1(AlphaScaleLocation, 1f);
-
-                GL.Uniform1(UpColorBuffLocation, 1);
-                GL.Uniform1(UpAlphaBuffLocation, 1);
-
-                for (int Param = 0; Param < 3; Param++)
-                {
-                    int ColorSrcLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorSrc");
-                    int AlphaSrcLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaSrc");
-                    int ColorOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].ColorOp");
-                    int AlphaOpLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Args[{Param}].AlphaOp");
-
-                    GL.Uniform1(ColorSrcLocation, 0);
-                    GL.Uniform1(AlphaSrcLocation, 0);
-                    GL.Uniform1(ColorOpLocation, 0);
-                    GL.Uniform1(AlphaOpLocation, 0);
-                }
-
-                int ColorLocation = GL.GetUniformLocation(ShaderHandle, $"Combiners[{Index}].Color");
-
-                GL.Uniform4(ColorLocation, new Color4(0, 0, 0, 0));
-            }
-
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "CombinersCount"), 1);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "ColorScale"), 1f);
-
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "PosOffset"), Vector4.Zero);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales0"), Vector4.One);
-            GL.Uniform4(GL.GetUniformLocation(ShaderHandle, "Scales1"), Vector4.One);
-
-            Matrix4 RootTransform = Matrix4.Identity;
-
-            int RootTransformLocation = GL.GetUniformLocation(ShaderHandle, "Transforms[0]");
-
-            GL.UniformMatrix4(RootTransformLocation, false, ref RootTransform);
-
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "BoolUniforms"), 0);
-            GL.Uniform1(GL.GetUniformLocation(ShaderHandle, "FixedAttr"), 0);
-        }
-
         public static Tuple<int, int> UploadQuad(Vector2 Position, Vector2 Size, GUIDockMode DockMode)
         {
             int[] Viewport = new int[4];

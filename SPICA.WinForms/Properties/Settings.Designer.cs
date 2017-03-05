@@ -82,5 +82,17 @@ namespace SPICA.WinForms.Properties {
                 this["RenderWireframe"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UIShowSideMenu {
+            get {
+                return ((bool)(this["UIShowSideMenu"]));
+            }
+            set {
+                this["UIShowSideMenu"] = value;
+            }
+        }
     }
 }
