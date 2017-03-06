@@ -37,6 +37,7 @@ namespace SPICA.Renderer.Shaders
 
             GL.ShaderSource(VertexShaderHandle, Code);
             GL.CompileShader(VertexShaderHandle);
+            CheckCompilation(VertexShaderHandle);
         }
 
         public void SetFragmentShaderCode(string Code)
@@ -45,6 +46,21 @@ namespace SPICA.Renderer.Shaders
 
             GL.ShaderSource(FragmentShaderHandle, Code);
             GL.CompileShader(FragmentShaderHandle);
+            CheckCompilation(FragmentShaderHandle);
+        }
+
+        private void CheckCompilation(int Handle)
+        {
+            int Status = 0;
+
+            GL.GetShader(Handle, ShaderParameter.CompileStatus, out Status);
+
+            if (Status == 0)
+            {
+                throw new ShaderCompilationException(
+                    "Error compiling Shader!" + Environment.NewLine +
+                    GL.GetShaderInfoLog(Handle));
+            }
         }
 
         public void Link()
@@ -56,20 +72,6 @@ namespace SPICA.Renderer.Shaders
                 GL.AttachShader(Handle, VertexShaderHandle);
                 GL.AttachShader(Handle, FragmentShaderHandle);
                 GL.LinkProgram(Handle);
-
-                int Status = 0;
-
-                GL.GetShader(Handle, ShaderParameter.CompileStatus, out Status);
-
-                if (Status != 0)
-                {
-                    throw new ShaderCompilationException(
-                        "Error compiling Fragment Shader!"        + Environment.NewLine +
-                        "Error log (Vertex/Fragment/Program):"    + Environment.NewLine +
-                        GL.GetShaderInfoLog(VertexShaderHandle)   + Environment.NewLine +
-                        GL.GetShaderInfoLog(FragmentShaderHandle) + Environment.NewLine +
-                        GL.GetProgramInfoLog(Handle));
-                }
             }
         }
 

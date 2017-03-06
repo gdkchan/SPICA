@@ -60,25 +60,27 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 3] = Input[IOffs + 0];
 
                                     IOffs += 4;
+
                                     break;
 
                                 case PICATextureFormat.RGB8:
                                     Output[OOffs + 0] = Input[IOffs + 0];
                                     Output[OOffs + 1] = Input[IOffs + 1];
                                     Output[OOffs + 2] = Input[IOffs + 2];
-                                    Output[OOffs + 3] = byte.MaxValue;
+                                    Output[OOffs + 3] = 0xff;
 
                                     IOffs += 3;
+
                                     break;
 
                                 case PICATextureFormat.RGBA5551:
                                     Value = Input[IOffs + 0];
                                     Value |= Input[IOffs + 1] << 8;
 
-                                    R = (byte)(((Value >> 1) & 0x1f) << 3);
-                                    G = (byte)(((Value >> 6) & 0x1f) << 3);
+                                    R = (byte)(((Value >>  1) & 0x1f) << 3);
+                                    G = (byte)(((Value >>  6) & 0x1f) << 3);
                                     B = (byte)(((Value >> 11) & 0x1f) << 3);
-                                    A = (byte)((Value & 1) * byte.MaxValue);
+                                    A = (byte)((Value & 1) * 0xff);
 
                                     Output[OOffs + 0] = (byte)(R | (R >> 5));
                                     Output[OOffs + 1] = (byte)(G | (G >> 5));
@@ -86,16 +88,17 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 3] = A;
 
                                     IOffs += 2;
+
                                     break;
 
                                 case PICATextureFormat.RGB565:
                                     Value = Input[IOffs + 0];
                                     Value |= Input[IOffs + 1] << 8;
 
-                                    R = (byte)((Value & 0x1f) << 3);
-                                    G = (byte)(((Value >> 5) & 0x3f) << 2);
+                                    R = (byte)(((Value >>  0) & 0x1f) << 3);
+                                    G = (byte)(((Value >>  5) & 0x3f) << 2);
                                     B = (byte)(((Value >> 11) & 0x1f) << 3);
-                                    A = byte.MaxValue;
+                                    A = 0xff;
 
                                     Output[OOffs + 0] = (byte)(R | (R >> 5));
                                     Output[OOffs + 1] = (byte)(G | (G >> 5));
@@ -103,16 +106,17 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 3] = A;
 
                                     IOffs += 2;
+
                                     break;
 
                                 case PICATextureFormat.RGBA4:
                                     Value = Input[IOffs + 0];
                                     Value |= Input[IOffs + 1] << 8;
 
-                                    R = (byte)((Value >> 4) & 0xf);
-                                    G = (byte)((Value >> 8) & 0xf);
+                                    R = (byte)((Value >>  4) & 0xf);
+                                    G = (byte)((Value >>  8) & 0xf);
                                     B = (byte)((Value >> 12) & 0xf);
-                                    A = (byte)(Value & 0xf);
+                                    A = (byte)((Value >>  0) & 0xf);
 
                                     Output[OOffs + 0] = (byte)(R | (R << 4));
                                     Output[OOffs + 1] = (byte)(G | (G << 4));
@@ -120,34 +124,47 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 3] = (byte)(A | (A << 4));
 
                                     IOffs += 2;
+
                                     break;
 
                                 case PICATextureFormat.LA8:
-                                case PICATextureFormat.HiLo8:
-                                    Output[OOffs + 0] = Input[IOffs];
-                                    Output[OOffs + 1] = Input[IOffs];
-                                    Output[OOffs + 2] = Input[IOffs];
-                                    Output[OOffs + 3] = Input[IOffs + 1];
+                                    Output[OOffs + 0] = Input[IOffs + 1];
+                                    Output[OOffs + 1] = Input[IOffs + 1];
+                                    Output[OOffs + 2] = Input[IOffs + 1];
+                                    Output[OOffs + 3] = Input[IOffs + 0];
 
                                     IOffs += 2;
+
+                                    break;
+
+                                case PICATextureFormat.HiLo8:
+                                    Output[OOffs + 0] = 0;
+                                    Output[OOffs + 1] = Input[IOffs + 0];
+                                    Output[OOffs + 2] = Input[IOffs + 1];
+                                    Output[OOffs + 3] = 0xff;
+
+                                    IOffs += 2;
+
                                     break;
 
                                 case PICATextureFormat.L8:
                                     Output[OOffs + 0] = Input[IOffs];
                                     Output[OOffs + 1] = Input[IOffs];
                                     Output[OOffs + 2] = Input[IOffs];
-                                    Output[OOffs + 3] = byte.MaxValue;
+                                    Output[OOffs + 3] = 0xff;
 
                                     IOffs++;
+
                                     break;
 
                                 case PICATextureFormat.A8:
-                                    Output[OOffs + 0] = byte.MaxValue;
-                                    Output[OOffs + 1] = byte.MaxValue;
-                                    Output[OOffs + 2] = byte.MaxValue;
+                                    Output[OOffs + 0] = 0xff;
+                                    Output[OOffs + 1] = 0xff;
+                                    Output[OOffs + 2] = 0xff;
                                     Output[OOffs + 3] = Input[IOffs];
 
                                     IOffs++;
+
                                     break;
 
                                 case PICATextureFormat.LA4:
@@ -157,28 +174,31 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 3] = (byte)(Input[IOffs] & 0xf);
 
                                     IOffs++;
+
                                     break;
 
                                 case PICATextureFormat.L4:
-                                    Value = (Input[IOffs >> 1] >> ((IOffs & 1) != 0 ? 4 : 0)) & 0xf;
+                                    Value = (Input[IOffs >> 1] >> ((IOffs & 1) << 2)) & 0xf;
 
                                     Output[OOffs + 0] = (byte)((Value << 4) | Value);
                                     Output[OOffs + 1] = (byte)((Value << 4) | Value);
                                     Output[OOffs + 2] = (byte)((Value << 4) | Value);
-                                    Output[OOffs + 3] = byte.MaxValue;
+                                    Output[OOffs + 3] = 0xff;
 
                                     IOffs++;
+
                                     break;
 
                                 case PICATextureFormat.A4:
-                                    Value = (Input[IOffs >> 1] >> ((IOffs & 1) != 0 ? 4 : 0)) & 0xf;
+                                    Value = (Input[IOffs >> 1] >> ((IOffs & 1) << 2)) & 0xf;
 
-                                    Output[OOffs + 0] = byte.MaxValue;
-                                    Output[OOffs + 1] = byte.MaxValue;
-                                    Output[OOffs + 2] = byte.MaxValue;
+                                    Output[OOffs + 0] = 0xff;
+                                    Output[OOffs + 1] = 0xff;
+                                    Output[OOffs + 2] = 0xff;
                                     Output[OOffs + 3] = (byte)((Value << 4) | Value);
 
                                     IOffs++;
+
                                     break;
 
                                 default: throw new ArgumentException("Invalid Texture format!");
@@ -242,6 +262,7 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 3] = Input[IOffs + 2];
 
                                     OOffs += 4;
+
                                     break;
 
                                 default: throw new NotImplementedException();
