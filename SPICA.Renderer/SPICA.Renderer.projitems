@@ -13,7 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Animation\SkeletalAnim.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animation\UVTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIDockMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUILabel.cs" />

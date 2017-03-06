@@ -3,6 +3,9 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.LUT;
+using SPICA.Formats.CtrH3D.Model;
+using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Renderer.GUI;
 using SPICA.Renderer.Shaders;
 
@@ -176,9 +179,33 @@ namespace SPICA.Renderer
 
         public void Merge(H3D SceneData)
         {
-            Merge(Models,   SceneData.Models);
-            Merge(Textures, SceneData.Textures);
-            Merge(LUTs,     SceneData.LUTs);
+            MergeModels  (SceneData.Models);
+            MergeTextures(SceneData.Textures);
+            MergeLUTs    (SceneData.LUTs);
+        }
+
+        public void MergeModels(PatriciaList<H3DModel> Models)
+        {
+            foreach (H3DModel Mdl in Models)
+            {
+                this.Models.Add(new Model(this, Mdl));
+            }
+        }
+
+        public void MergeTextures(PatriciaList<H3DTexture> Textures)
+        {
+            foreach (H3DTexture Tex in Textures)
+            {
+                this.Textures.Add(new Texture(this, Tex));
+            }
+        }
+
+        public void MergeLUTs(PatriciaList<H3DLUT> LUTs)
+        {
+            foreach (H3DLUT LUT in LUTs)
+            {
+                this.LUTs.Add(new LUT(LUT));
+            }
         }
 
         public void DeleteAll()
@@ -221,16 +248,6 @@ namespace SPICA.Renderer
             using (Stream Text = Asm.GetManifestResourceStream(Name))
             {
                 return new StreamReader(Text).ReadToEnd();
-            }
-        }
-
-        private void Merge<T, T2>(List<T2> Dst, PatriciaList<T> Src) where T : INamed
-        {
-            foreach (T Value in Src)
-            {
-                T2 NewVal = (T2)Activator.CreateInstance(typeof(T2), this, Value);
-
-                Dst.Add(NewVal);
             }
         }
 

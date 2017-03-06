@@ -240,6 +240,8 @@
             // 
             // MenuShowSide
             // 
+            this.MenuShowSide.Checked = true;
+            this.MenuShowSide.CheckState = System.Windows.Forms.CheckState.Checked;
             this.MenuShowSide.Name = "MenuShowSide";
             this.MenuShowSide.Size = new System.Drawing.Size(161, 22);
             this.MenuShowSide.Text = "Show &side menu";
@@ -679,7 +681,9 @@
             // ToolButtonShowSide
             // 
             this.ToolButtonShowSide.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.ToolButtonShowSide.Checked = true;
             this.ToolButtonShowSide.CheckOnClick = true;
+            this.ToolButtonShowSide.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ToolButtonShowSide.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.ToolButtonShowSide.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowSide.Image")));
             this.ToolButtonShowSide.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;

@@ -13,7 +13,7 @@ namespace SPICA.Renderer
 
         private Dictionary<string, int> Ids;
 
-        public LUT(RenderEngine Renderer, H3DLUT LUT)
+        public LUT(H3DLUT LUT)
         {
             Name = LUT.Name;
 
