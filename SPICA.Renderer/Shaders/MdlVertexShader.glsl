@@ -208,8 +208,10 @@ void main() {
 			//Ambient occlusion is stored on Alpha of Vertex Color
 			HemiCol *= Color.aaa;
 
-			//This is needed by Pokémon only (their custom shader calculates Rim light)
-			Color.a = pow(Rim, PowerScale.x) * PowerScale.y;
+			if (PowerScale.y != 0) {
+				//This is needed by Pokémon only (their custom shader calculates Rim light)
+				Color.a = pow(Rim, PowerScale.x) * PowerScale.y;
+			}
 		}
 
 		Color.rgb += HemiCol * MDiffuse.rgb;

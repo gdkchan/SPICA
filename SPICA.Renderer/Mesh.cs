@@ -219,7 +219,7 @@ namespace SPICA.Renderer
                 {
                     Matrix4 Transform;
 
-                    if (Index < SM.BoneIndicesCount)
+                    if (Index < SM.BoneIndicesCount && SM.BoneIndices[Index] < Parent.SkeletonTransform.Length)
                     {
                         int BoneIndex = SM.BoneIndices[Index];
 
