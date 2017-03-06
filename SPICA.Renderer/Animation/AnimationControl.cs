@@ -4,19 +4,19 @@ using System;
 
 namespace SPICA.Renderer.Animation
 {
-    public class AnimControl
+    public class AnimationControl : IAnimationControl
     {
         protected H3DAnimation BaseAnimation;
 
-        protected AnimState State;
+        protected AnimationState State;
 
-        public float Frame;
-        public float Step;
+        public float Frame       { get; set; }
+        public float Step        { get; set; }
+        public bool  IsLooping   { get; set; }
+        public bool  HasData     { get { return BaseAnimation != null; } }
+        public float FramesCount { get { return BaseAnimation?.FramesCount ?? 0; } }
 
-        public bool HasData { get { return BaseAnimation != null; } }
-        public bool IsLooping { get; set; }
-
-        public AnimControl()
+        public AnimationControl()
         {
             Step = 1;
         }
@@ -34,7 +34,7 @@ namespace SPICA.Renderer.Animation
 
             IsLooping = (BaseAnimation.AnimationFlags & H3DAnimationFlags.IsLooping) != 0;
 
-            if (State == AnimState.Playing)
+            if (State == AnimationState.Playing)
             {
                 if (Step < 0)
                     Frame = BaseAnimation.FramesCount;
@@ -51,7 +51,7 @@ namespace SPICA.Renderer.Animation
         {
             if (BaseAnimation != null &&
                 BaseAnimation.FramesCount >= Math.Abs(Step) &&
-                State == AnimState.Playing)
+                State == AnimationState.Playing)
             {
                 Frame += Step;
 
@@ -68,12 +68,12 @@ namespace SPICA.Renderer.Animation
 
         public void SlowDown()
         {
-            if (State == AnimState.Playing && Math.Abs(Step) > 0.125f) Step *= 0.5f;
+            if (State == AnimationState.Playing && Math.Abs(Step) > 0.125f) Step *= 0.5f;
         }
 
         public void SpeedUp()
         {
-            if (State == AnimState.Playing && Math.Abs(Step) < 8) Step *= 2;
+            if (State == AnimationState.Playing && Math.Abs(Step) < 8) Step *= 2;
         }
 
         public void Play(float Step)
@@ -85,17 +85,17 @@ namespace SPICA.Renderer.Animation
 
         public void Play()
         {
-            State = AnimState.Playing;
+            State = AnimationState.Playing;
         }
 
         public void Pause()
         {
-            State = AnimState.Paused;
+            State = AnimationState.Paused;
         }
 
         public void Stop()
         {
-            State = AnimState.Stopped;
+            State = AnimationState.Stopped;
 
             Frame = 0;
         }

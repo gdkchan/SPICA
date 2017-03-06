@@ -8,11 +8,11 @@ using SPICA.Formats.Generic.XML;
 using SPICA.Formats.Generic.COLLADA;
 using SPICA.Formats.Generic.StudioMdl;
 using SPICA.Renderer;
-using SPICA.Renderer.Animation;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
+using SPICA.WinForms.GUI.Animation;
+using SPICA.WinForms.GUI.Viewport;
 using SPICA.WinForms.Properties;
-using SPICA.WinForms.RenderExtensions;
 
 using System;
 using System.Collections.Specialized;
@@ -35,21 +35,13 @@ namespace SPICA.WinForms
         private Model        Model;
         private H3D          SceneData;
 
+        private AllAnimations Animations;
+
         private Bitmap[] CachedTextures;
 
         private float Dimension, Zoom;
 
         private bool IgnoreClicks;
-
-        private enum AnimType
-        {
-            None,
-            Skeletal,
-            Material,
-            Visibility
-        }
-
-        private AnimType CurrAnimType;
         #endregion
 
         #region Initialization/Termination
@@ -77,6 +69,8 @@ namespace SPICA.WinForms
             InitializeComponent();
 
             MainContainer.Panel1.Controls.Add(Viewport);
+
+            Animations = new AllAnimations();
 
             TopMenu.Renderer      = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer     = new ToolsRenderer(TopIcons.BackColor);
@@ -239,7 +233,7 @@ namespace SPICA.WinForms
         }
         #endregion
 
-        #region Tool buttons
+        #region Tool buttons and Menus
         private void ToolButtonOpen_Click(object sender, EventArgs e)
         {
             Open(false);
@@ -268,6 +262,16 @@ namespace SPICA.WinForms
         private void ToggleSide()
         {
             MainContainer.Panel2Collapsed = !ToolButtonShowSide.Checked;
+        }
+
+        private void MenuNormalMapTangent_Click(object sender, EventArgs e)
+        {
+            Renderer.ObjectSpaceNormalMap = false; UpdateViewport();
+        }
+
+        private void MenuNormalMapObject_Click(object sender, EventArgs e)
+        {
+            Renderer.ObjectSpaceNormalMap = true; UpdateViewport();
         }
 
         private void Open(bool MergeMode)
@@ -318,6 +322,8 @@ namespace SPICA.WinForms
 
                     if (SceneData != null)
                     {
+                        Animations.SceneData = SceneData;
+
                         SceneData.Textures.CollectionChanged += TexturesList_CollectionChanged;
 
                         ModelsList.Bind(SceneData.Models);
@@ -330,6 +336,8 @@ namespace SPICA.WinForms
                             ModelsList.Select(0);
 
                             Model = Renderer.Models[0];
+
+                            Animations.Model = Model;
                         }
 
                         Animator.Enabled     = false;
@@ -337,7 +345,6 @@ namespace SPICA.WinForms
                         AnimSeekBar.Maximum  = 0;
                         LblAnimSpeed.Text    = string.Empty;
                         LblAnimLoopMode.Text = string.Empty;
-                        CurrAnimType         = AnimType.None;
 
                         CacheTextures();
                         ResetView();
@@ -484,6 +491,8 @@ namespace SPICA.WinForms
             {
                 Model = Renderer.Models[ModelsList.SelectedIndex];
 
+                Animations.Model = Model;
+
                 ResetView();
             }
         }
@@ -519,23 +528,41 @@ namespace SPICA.WinForms
         }
         #endregion
 
-        #region Animation timing
+        #region Animation related + playback controls
         private void Animator_Tick(object sender, EventArgs e)
         {
-            Model.Animate();
+            Model.UpdateAnimationTransforms();
+
+            Animations.AdvanceFrame();
 
             UpdateSeekBar();
 
             Viewport.Invalidate();
         }
 
+        private void SetAnimation(int Index, AnimationType Type)
+        {
+            if (Index != -1)
+                Animations.SetAnimation(Index, Type);
+            else
+                Animations.Reset();
+
+            AnimSeekBar.Maximum = Animations.FramesCount;
+
+            UpdateSeekBar();
+            UpdateAnimLbls();
+        }
+
+        private void UpdateAnimLbls()
+        {
+            LblAnimSpeed.Text = $"{Math.Abs(Animations.Step).ToString("N2")}x";
+
+            LblAnimLoopMode.Text = Animations.IsLooping ? "LOOP" : "1 GO";
+        }
+
         private void UpdateSeekBar()
         {
-            switch (CurrAnimType)
-            {
-                case AnimType.Skeletal: AnimSeekBar.Value = Model.SkeletalAnimation.Frame; break;
-                case AnimType.Material: AnimSeekBar.Value = Model.MaterialAnimation.Frame; break;
-            }
+            AnimSeekBar.Value = Animations.Frame;
         }
 
         private void EnableAnimator()
@@ -552,198 +579,86 @@ namespace SPICA.WinForms
         {
             if (!Animator.Enabled) Viewport.Invalidate();
         }
-        #endregion
 
-        #region Animation related + playback controls
         private void SklAnimsList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Here we automatically select materials with a matching name for convenience
-            //If an material anim with matching name isn't found, then it is disabled
-            if (SklAnimsList.SelectedIndex != -1)
-            {
-                H3DAnimation SklAnim = SceneData.SkeletalAnimations[SklAnimsList.SelectedIndex];
-
-                Model.SkeletalAnimation.SetAnimation(SklAnim);
-
-                MatAnimsList.SelectedIndex = FindAndSetAnim(
-                    SceneData.MaterialAnimations,
-                    Model.MaterialAnimation,
-                    SklAnim.Name);
-
-                SetAnimationControls(SklAnim, AnimType.Skeletal);
-            }
-        }
-
-        private int FindAndSetAnim(PatriciaList<H3DAnimation> Src, AnimControl Tgt, string Name)
-        {
-            int AnimIndex = Src.FindIndex(Name);
-
-            Tgt.SetAnimation(AnimIndex != -1 ? Src[AnimIndex] : null);
-
-            return AnimIndex;
+            SetAnimation(SklAnimsList.SelectedIndex, AnimationType.Skeletal);
         }
 
         private void MatAnimsList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (MatAnimsList.SelectedIndex != -1)
-            {
-                SklAnimsList.SelectedIndex = -1;
-
-                H3DAnimation MatAnim = SceneData.MaterialAnimations[MatAnimsList.SelectedIndex];
-
-                Model.SkeletalAnimation.SetAnimation(null);
-                Model.MaterialAnimation.SetAnimation(MatAnim);
-
-                SetAnimationControls(MatAnim, AnimType.Material);
-            }
-        }
-
-        private void SetAnimationControls(H3DAnimation Anim, AnimType Type)
-        {
-            AnimSeekBar.Maximum = Anim.FramesCount;
-
-            CurrAnimType = Type;
-
-            UpdateSeekBar();
-            UpdateAnimLbls();
+            SetAnimation(MatAnimsList.SelectedIndex, AnimationType.Material);
         }
 
         private void AnimButtonPlayBackward_Click(object sender, EventArgs e)
         {
-            if (Model != null)
-            {
-                Model.SkeletalAnimation.Play(-1);
-                Model.MaterialAnimation.Play(-1);
-
-                EnableAnimator();
-            }
+            Animations.Play(-1); EnableAnimator();
         }
 
         private void AnimButtonPlayForward_Click(object sender, EventArgs e)
         {
-            if (Model != null)
-            {
-                Model.SkeletalAnimation.Play(1);
-                Model.MaterialAnimation.Play(1);
-
-                EnableAnimator();
-            }
+            Animations.Play(1); EnableAnimator();
         }
 
         private void AnimButtonPause_Click(object sender, EventArgs e)
         {
-            if (Model != null)
-            {
-                Model.SkeletalAnimation.Pause();
-                Model.MaterialAnimation.Pause();
-
-                DisableAnimator();
-            }
+            Animations.Pause(); DisableAnimator();
         }
 
         private void AnimButtonStop_Click(object sender, EventArgs e)
         {
-            if (Model != null)
-            {
-                Model.SkeletalAnimation.Stop();
-                Model.MaterialAnimation.Stop();
+            Animations.Stop();
 
-                DisableAnimator();
+            DisableAnimator();
 
-                AnimSeekBar.Value = 0;
+            AnimSeekBar.Value = 0;
 
-                Model.UpdateAnimationTransforms();
-            }
+            Model.UpdateAnimationTransforms();
         }
 
         private void AnimButtonSlowDown_Click(object sender, EventArgs e)
         {
-            if (Model != null)
-            {
-                Model.SkeletalAnimation.SlowDown();
-                Model.MaterialAnimation.SlowDown();
-
-                UpdateAnimLbls();
-            }
+            Animations.SlowDown(); UpdateAnimLbls();
         }
 
         private void AnimButtonSpeedUp_Click(object sender, EventArgs e)
         {
-            if (Model != null)
-            {
-                Model.SkeletalAnimation.SpeedUp();
-                Model.MaterialAnimation.SpeedUp();
-
-                UpdateAnimLbls();
-            }
+            Animations.SpeedUp(); UpdateAnimLbls();
         }
 
         private void AnimButtonPrev_Click(object sender, EventArgs e)
         {
-            switch (CurrAnimType)
+            switch (Animations.Type)
             {
-                case AnimType.Skeletal: SklAnimsList.SelectUp(); break;
-                case AnimType.Material: MatAnimsList.SelectUp(); break;
+                case AnimationType.Skeletal: SklAnimsList.SelectUp(); break;
+                case AnimationType.Material: MatAnimsList.SelectUp(); break;
             }
         }
 
         private void AnimButtonNext_Click(object sender, EventArgs e)
         {
-            switch (CurrAnimType)
+            switch (Animations.Type)
             {
-                case AnimType.Skeletal: SklAnimsList.SelectDown(); break;
-                case AnimType.Material: MatAnimsList.SelectDown(); break;
+                case AnimationType.Skeletal: SklAnimsList.SelectDown(); break;
+                case AnimationType.Material: MatAnimsList.SelectDown(); break;
             }
         }
 
         private void AnimSeekBar_Seek(object sender, EventArgs e)
         {
-            if (Model != null)
-            {
-                Model.SkeletalAnimation.Pause();
-                Model.MaterialAnimation.Pause();
+            Animations.Pause();
 
-                Model.SkeletalAnimation.Frame = AnimSeekBar.Value;
-                Model.MaterialAnimation.Frame = AnimSeekBar.Value;
+            Animations.Frame = AnimSeekBar.Value;
 
-                Model.UpdateAnimationTransforms();
+            Model.UpdateAnimationTransforms();
 
-                UpdateViewport();
-            }
+            UpdateViewport();
         }
 
         private void AnimSeekBar_MouseUp(object sender, MouseEventArgs e)
         {
-            Model?.SkeletalAnimation.Play();
-            Model?.MaterialAnimation.Play();
-        }
-
-        private void UpdateAnimLbls()
-        {
-            LblAnimSpeed.Text = $"{Math.Abs(Model.SkeletalAnimation.Step).ToString("N2")}x";
-
-            bool Loop = false;
-
-            switch (CurrAnimType)
-            {
-                case AnimType.Skeletal: Loop = Model.SkeletalAnimation.IsLooping; break;
-                case AnimType.Material: Loop = Model.MaterialAnimation.IsLooping; break;
-            }
-
-            LblAnimLoopMode.Text = Loop ? "LOOP" : "1 GO";
+            Animations.Play();
         }
         #endregion
-
-        private void MenuNormalMapTangent_Click(object sender, EventArgs e)
-        {
-            Renderer.ObjectSpaceNormalMap = false;
-            UpdateViewport();
-        }
-
-        private void MenuNormalMapObject_Click(object sender, EventArgs e)
-        {
-            Renderer.ObjectSpaceNormalMap = true;
-            UpdateViewport();
-        }
     }
 }

@@ -36,7 +36,7 @@ namespace SPICA.Formats.GFL2.Motion
             uint Flags = Reader.ReadUInt32();
             uint Length = Reader.ReadUInt32();
 
-            for (int Elem = 0; Elem < 9; Elem++)
+            for (int Elem = 0; Elem < 5; Elem++)
             {
                 List<GFMotKeyFrame> KeyFrames = GFMotKeyFrame.ReadList(Reader, Flags, FramesCount);
 

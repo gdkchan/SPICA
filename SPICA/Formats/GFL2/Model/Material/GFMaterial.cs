@@ -10,9 +10,7 @@ namespace SPICA.Formats.GFL2.Model.Material
 {
     public class GFMaterial
     {
-        public string Name;
-
-        public GFHashName SubMeshName;
+        public GFHashName MaterialName;
         public GFHashName GeoShaderName;
         public GFHashName VtxShaderName;
         public GFHashName FragShaderName;
@@ -23,12 +21,12 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public sbyte BumpTexture;
 
-        public byte Stage0ConstantIndex;
-        public byte Stage1ConstantIndex;
-        public byte Stage2ConstantIndex;
-        public byte Stage3ConstantIndex;
-        public byte Stage4ConstantIndex;
-        public byte Stage5ConstantIndex;
+        public byte Constant0Assignment;
+        public byte Constant1Assignment;
+        public byte Constant2Assignment;
+        public byte Constant3Assignment;
+        public byte Constant4Assignment;
+        public byte Constant5Assignment;
 
         public RGBA Constant0Color;
         public RGBA Constant1Color;
@@ -103,10 +101,8 @@ namespace SPICA.Formats.GFL2.Model.Material
             TextureSources = new float[4];
         }
 
-        public GFMaterial(BinaryReader Reader, string MaterialName) : this()
+        public GFMaterial(BinaryReader Reader) : this()
         {
-            Name = MaterialName;
-
             GFSection MaterialSection = new GFSection(Reader);
 
             long Position = Reader.BaseStream.Position;
@@ -118,7 +114,7 @@ namespace SPICA.Formats.GFL2.Model.Material
                 Names[i] = new GFHashName(Reader);
             }
 
-            SubMeshName    = Names[0];
+            MaterialName   = Names[0];
             GeoShaderName  = Names[1];
             VtxShaderName  = Names[2];
             FragShaderName = Names[3];
@@ -131,12 +127,12 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             BumpTexture = (sbyte)Reader.ReadUInt16();
 
-            Stage0ConstantIndex = Reader.ReadByte();
-            Stage1ConstantIndex = Reader.ReadByte();
-            Stage2ConstantIndex = Reader.ReadByte();
-            Stage3ConstantIndex = Reader.ReadByte();
-            Stage4ConstantIndex = Reader.ReadByte();
-            Stage5ConstantIndex = Reader.ReadByte();
+            Constant0Assignment = Reader.ReadByte();
+            Constant1Assignment = Reader.ReadByte();
+            Constant2Assignment = Reader.ReadByte();
+            Constant3Assignment = Reader.ReadByte();
+            Constant4Assignment = Reader.ReadByte();
+            Constant5Assignment = Reader.ReadByte();
 
             Constant0Color = new RGBA(Reader);
             Constant1Color = new RGBA(Reader);
@@ -275,13 +271,13 @@ namespace SPICA.Formats.GFL2.Model.Material
             TextureSources[3] = Uniform[0].W;
         }
 
-        public static List<GFMaterial> ReadList(BinaryReader Reader, GFHashName[] Names)
+        public static List<GFMaterial> ReadList(BinaryReader Reader, int Count)
         {
             List<GFMaterial> Output = new List<GFMaterial>();
 
-            foreach (GFHashName HN in Names)
+            for (int Index = 0;  Index < Count; Index++)
             {
-                Output.Add(new GFMaterial(Reader, HN.Name));
+                Output.Add(new GFMaterial(Reader));
             }
 
             return Output;

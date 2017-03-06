@@ -9,10 +9,11 @@
     <Import_RootNamespace>SPICA.Renderer</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Animation\MaterialAnim.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animation\SkeletalAnim.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\IAnimationControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\MaterialAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\SkeletalAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimationControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Animation\AnimationState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIDockMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUIImage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GUI\GUILabel.cs" />

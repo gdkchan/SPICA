@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Renderer.Animation
 {
-    public enum AnimState
+    public enum AnimationState
     {
         Stopped,
         Paused,

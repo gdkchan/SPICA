@@ -9,10 +9,9 @@
 
         public H3DFloatKeyFrame(float Frame, float Value, float InSlope, float OutSlope)
         {
-            this.Frame = Frame;
-            this.Value = Value;
-
-            this.InSlope = InSlope;
+            this.Frame    = Frame;
+            this.Value    = Value;
+            this.InSlope  = InSlope;
             this.OutSlope = OutSlope;
         }
 
@@ -21,8 +20,7 @@
             this.Frame = Frame;
             this.Value = Value;
 
-            InSlope = 0;
-            OutSlope = 0;
+            InSlope = OutSlope = 0;
         }
     }
 }

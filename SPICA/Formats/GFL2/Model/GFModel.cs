@@ -79,7 +79,7 @@ namespace SPICA.Formats.GFL2.Model
             GFSection.SkipPadding(Reader);
 
             LUTs      = GFLUT.ReadList(Reader, ModelName, LUTLength, LUTsCount);
-            Materials = GFMaterial.ReadList(Reader, MaterialNames);
+            Materials = GFMaterial.ReadList(Reader, MaterialNames.Length);
             Meshes    = GFMesh.ReadList(Reader, MeshNames.Length);
         }
 
@@ -130,7 +130,7 @@ namespace SPICA.Formats.GFL2.Model
 
                 H3DMaterialParams Params = Mat.MaterialParams;
 
-                Mat.Name = Material.Name;
+                Mat.Name = Material.MaterialName.Name;
 
                 Params.FragmentFlags = H3DFragmentFlags.IsLUTReflectionEnabled;
                 Params.TextureSources = Material.TextureSources;
@@ -167,8 +167,6 @@ namespace SPICA.Formats.GFL2.Model
                     Mat.TextureMappers[Unit].MinLOD = (byte)Material.TextureCoords[Unit].MinLOD;
                 }
 
-                Params.ColorScale = 1f;
-
                 Params.EmissionColor  = Material.EmissionColor;
                 Params.AmbientColor   = Material.AmbientColor;
                 Params.DiffuseColor   = Material.DiffuseColor;
@@ -181,6 +179,8 @@ namespace SPICA.Formats.GFL2.Model
                 Params.Constant4Color = Material.Constant4Color;
                 Params.Constant5Color = Material.Constant5Color;
                 Params.BlendColor     = Material.BlendColor;
+
+                Params.ColorScale = 1f;
 
                 Params.LUTInAbs   = Material.LUTInAbs;
                 Params.LUTInSel   = Material.LUTInSel;
@@ -227,6 +227,13 @@ namespace SPICA.Formats.GFL2.Model
                     Params.BumpTexture = (byte)Material.BumpTexture;
                     Params.BumpMode = H3DBumpMode.AsBump;
                 }
+
+                Params.Constant0Assignment = Material.Constant0Assignment;
+                Params.Constant1Assignment = Material.Constant1Assignment;
+                Params.Constant2Assignment = Material.Constant2Assignment;
+                Params.Constant3Assignment = Material.Constant3Assignment;
+                Params.Constant4Assignment = Material.Constant4Assignment;
+                Params.Constant5Assignment = Material.Constant5Assignment;
 
                 Params.MetaData = new H3DMetaData();
 
@@ -282,7 +289,7 @@ namespace SPICA.Formats.GFL2.Model
 
                     M.Skinning = H3DMeshSkinning.Smooth;
 
-                    M.MaterialIndex = (ushort)Materials.FindIndex(x => x.SubMeshName.Name == SubMesh.Name);
+                    M.MaterialIndex = (ushort)Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
                     M.NodeIndex     = (ushort)NodeIndex;
 
                     M.RawBuffer       = SubMesh.RawBuffer;

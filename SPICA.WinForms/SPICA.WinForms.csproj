@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GUI\Animation\AllAnimations.cs" />
     <Compile Include="Formats\FormatIdentifier.cs" />
     <Compile Include="Formats\GFBtlSklAnim.cs" />
     <Compile Include="Formats\GFCharaModel.cs" />
@@ -109,10 +110,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\ToolsRenderer.cs" />
+    <Compile Include="GUI\Animation\AnimationType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderExtensions\AxisLines.cs" />
-    <Compile Include="RenderExtensions\GridLines.cs" />
+    <Compile Include="GUI\Viewport\AxisLines.cs" />
+    <Compile Include="GUI\Viewport\GridLines.cs" />
     <Compile Include="SettingsManager.cs" />
     <EmbeddedResource Include="FrmExport.resx">
       <DependentUpon>FrmExport.cs</DependentUpon>

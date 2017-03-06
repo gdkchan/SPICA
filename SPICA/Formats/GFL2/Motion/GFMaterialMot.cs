@@ -105,15 +105,17 @@ namespace SPICA.Formats.GFL2.Motion
         {
             H3DFloatKeyFrameGroup Output = new H3DFloatKeyFrameGroup();
 
+            Output.InterpolationType = H3DInterpolationType.Hermite;
+
             Output.EndFrame = FramesCount;
 
             foreach (GFMotKeyFrame KeyFrame in KeyFrames)
             {
                 Output.KeyFrames.Add(new H3DFloatKeyFrame
                 {
-                    Frame = KeyFrame.Frame,
-                    Value = KeyFrame.Value,
-                    InSlope = KeyFrame.Slope,
+                    Frame    = KeyFrame.Frame,
+                    Value    = KeyFrame.Value,
+                    InSlope  = KeyFrame.Slope,
                     OutSlope = KeyFrame.Slope
                 });
             }

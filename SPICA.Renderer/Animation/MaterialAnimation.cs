@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace SPICA.Renderer.Animation
 {
-    public class MaterialAnim : AnimControl
+    public class MaterialAnimation : AnimationControl
     {
         public Matrix3[][] GetUVTransforms(PatriciaList<H3DMaterial> Materials)
         {
@@ -42,7 +42,7 @@ namespace SPICA.Renderer.Animation
                 Translation[Index] = Params.TextureCoords[Index].Translation;
             }
 
-            if (BaseAnimation != null && State != AnimState.Stopped)
+            if (BaseAnimation != null && State != AnimationState.Stopped)
             {
                 foreach (H3DAnimationElement Elem in BaseAnimation.Elements.Where(x => x.Name == MaterialName))
                 {

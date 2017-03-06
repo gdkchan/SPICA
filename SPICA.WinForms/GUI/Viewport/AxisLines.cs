@@ -5,7 +5,7 @@ using SPICA.Renderer;
 
 using System;
 
-namespace SPICA.WinForms.RenderExtensions
+namespace SPICA.WinForms.GUI.Viewport
 {
     class AxisLines : TransformableObject, IDisposable
     {

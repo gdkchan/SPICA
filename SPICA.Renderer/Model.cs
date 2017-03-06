@@ -27,8 +27,8 @@ namespace SPICA.Renderer
         internal Matrix4[]    SkeletonTransform;
         internal Matrix3[][]  MaterialTransform;
 
-        public SkeletalAnim SkeletalAnimation;
-        public MaterialAnim MaterialAnimation;
+        public SkeletalAnimation SkeletalAnim;
+        public MaterialAnimation MaterialAnim;
 
         public Model(RenderEngine Renderer, H3DModel BaseModel)
         {
@@ -112,8 +112,8 @@ namespace SPICA.Renderer
                 Meshes.Add(new Mesh(this, Mesh, ShaderHandle));
             }
 
-            SkeletalAnimation = new SkeletalAnim();
-            MaterialAnimation = new MaterialAnim();
+            SkeletalAnim = new SkeletalAnimation();
+            MaterialAnim = new MaterialAnimation();
 
             ResetTransform();
             UpdateAnimationTransforms();
@@ -189,16 +189,16 @@ namespace SPICA.Renderer
         {
             UpdateAnimationTransforms();
 
-            SkeletalAnimation.AdvanceFrame();
-            MaterialAnimation.AdvanceFrame();
+            SkeletalAnim.AdvanceFrame();
+            MaterialAnim.AdvanceFrame();
         }
 
         public void UpdateAnimationTransforms()
         {
             if (Meshes.Count > 0)
             {
-                SkeletonTransform = SkeletalAnimation.GetSkeletonTransforms(BaseModel.Skeleton);
-                MaterialTransform = MaterialAnimation.GetUVTransforms(BaseModel.Materials);
+                SkeletonTransform = SkeletalAnim.GetSkeletonTransforms(BaseModel.Skeleton);
+                MaterialTransform = MaterialAnim.GetUVTransforms(BaseModel.Materials);
             }
         }
 

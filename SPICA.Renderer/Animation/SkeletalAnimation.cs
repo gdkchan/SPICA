@@ -9,16 +9,15 @@ using System;
 
 namespace SPICA.Renderer.Animation
 {
-    public class SkeletalAnim : AnimControl
+    public class SkeletalAnimation : AnimationControl
     {
         private struct Bone
         {
             public int ParentIndex;
 
-            public Vector3 Scale;
-            public Vector3 Rotation;
-            public Vector3 Translation;
-
+            public Vector3    Scale;
+            public Vector3    Rotation;
+            public Vector3    Translation;
             public Quaternion QuatRotation;
 
             public bool IsQuatRotation;
@@ -47,58 +46,19 @@ namespace SPICA.Renderer.Animation
 
                 int Elem = BaseAnimation?.Elements.FindIndex(x => x.Name == Bone.Name) ?? -1;
 
-                if (Elem != -1 && State != AnimState.Stopped)
+                if (Elem != -1 && State != AnimationState.Stopped)
                 {
                     H3DAnimationElement Element = BaseAnimation.Elements[Elem];
 
                     switch (Element.PrimitiveType)
                     {
                         case H3DAnimPrimitiveType.Transform:
-                            H3DAnimTransform Transform = (H3DAnimTransform)Element.Content;
-
-                            if (Transform.ScaleX.HasData)       B.Scale.X       = Transform.ScaleX.GetFrameValue(Frame);
-                            if (Transform.ScaleY.HasData)       B.Scale.Y       = Transform.ScaleY.GetFrameValue(Frame);
-                            if (Transform.ScaleZ.HasData)       B.Scale.Z       = Transform.ScaleZ.GetFrameValue(Frame);
-
-                            if (Transform.RotationX.HasData)    B.Rotation.X    = Transform.RotationX.GetFrameValue(Frame);
-                            if (Transform.RotationY.HasData)    B.Rotation.Y    = Transform.RotationY.GetFrameValue(Frame);
-                            if (Transform.RotationZ.HasData)    B.Rotation.Z    = Transform.RotationZ.GetFrameValue(Frame);
-
-                            if (Transform.TranslationX.HasData) B.Translation.X = Transform.TranslationX.GetFrameValue(Frame);
-                            if (Transform.TranslationY.HasData) B.Translation.Y = Transform.TranslationY.GetFrameValue(Frame);
-                            if (Transform.TranslationZ.HasData) B.Translation.Z = Transform.TranslationZ.GetFrameValue(Frame);
+                            SetBone((H3DAnimTransform)Element.Content, ref B);
 
                             break;
 
                         case H3DAnimPrimitiveType.QuatTransform:
-                            H3DAnimQuatTransform QuatTransform = (H3DAnimQuatTransform)Element.Content;
-
-                            int IntFrame = (int)Frame;
-                            float Weight = Frame - IntFrame;
-
-                            if (QuatTransform.HasScale)
-                            {
-                                Vector3 L = QuatTransform.GetScaleValue(IntFrame + 0).ToVector3();
-                                Vector3 R = QuatTransform.GetScaleValue(IntFrame + 1).ToVector3();
-
-                                B.Scale = Vector3.Lerp(L, R, Weight);
-                            }
-
-                            if (B.IsQuatRotation = QuatTransform.HasRotation)
-                            {
-                                Quaternion L = QuatTransform.GetRotationValue(IntFrame + 0).ToQuaternion();
-                                Quaternion R = QuatTransform.GetRotationValue(IntFrame + 1).ToQuaternion();
-
-                                B.QuatRotation = Quaternion.Slerp(L, R, Weight);
-                            }
-
-                            if (QuatTransform.HasTranslation)
-                            {
-                                Vector3 L = QuatTransform.GetTranslationValue(IntFrame + 0).ToVector3();
-                                Vector3 R = QuatTransform.GetTranslationValue(IntFrame + 1).ToVector3();
-
-                                B.Translation = Vector3.Lerp(L, R, Weight);
-                            }
+                            SetBone((H3DAnimQuatTransform)Element.Content, ref B);
 
                             break;
 
@@ -151,6 +111,50 @@ namespace SPICA.Renderer.Animation
             }
 
             return Output;
+        }
+
+        private void SetBone(H3DAnimTransform Transform, ref Bone B)
+        {
+            if (Transform.ScaleX.HasData)       B.Scale.X       = Transform.ScaleX.GetFrameValue(Frame);
+            if (Transform.ScaleY.HasData)       B.Scale.Y       = Transform.ScaleY.GetFrameValue(Frame);
+            if (Transform.ScaleZ.HasData)       B.Scale.Z       = Transform.ScaleZ.GetFrameValue(Frame);
+            if (Transform.RotationX.HasData)    B.Rotation.X    = Transform.RotationX.GetFrameValue(Frame);
+            if (Transform.RotationY.HasData)    B.Rotation.Y    = Transform.RotationY.GetFrameValue(Frame);
+            if (Transform.RotationZ.HasData)    B.Rotation.Z    = Transform.RotationZ.GetFrameValue(Frame);
+            if (Transform.TranslationX.HasData) B.Translation.X = Transform.TranslationX.GetFrameValue(Frame);
+            if (Transform.TranslationY.HasData) B.Translation.Y = Transform.TranslationY.GetFrameValue(Frame);
+            if (Transform.TranslationZ.HasData) B.Translation.Z = Transform.TranslationZ.GetFrameValue(Frame);
+        }
+
+        private void SetBone(H3DAnimQuatTransform Transform, ref Bone B)
+        {
+            int IntFrame = (int)Frame;
+
+            float Weight = Frame - IntFrame;
+
+            if (Transform.HasScale)
+            {
+                Vector3 LHS = Transform.GetScaleValue(IntFrame + 0).ToVector3();
+                Vector3 RHS = Transform.GetScaleValue(IntFrame + 1).ToVector3();
+
+                B.Scale = Vector3.Lerp(LHS, RHS, Weight);
+            }
+
+            if (B.IsQuatRotation = Transform.HasRotation)
+            {
+                Quaternion LHS = Transform.GetRotationValue(IntFrame + 0).ToQuaternion();
+                Quaternion RHS = Transform.GetRotationValue(IntFrame + 1).ToQuaternion();
+
+                B.QuatRotation = Quaternion.Slerp(LHS, RHS, Weight);
+            }
+
+            if (Transform.HasTranslation)
+            {
+                Vector3 LHS = Transform.GetTranslationValue(IntFrame + 0).ToVector3();
+                Vector3 RHS = Transform.GetTranslationValue(IntFrame + 1).ToVector3();
+
+                B.Translation = Vector3.Lerp(LHS, RHS, Weight);
+            }
         }
     }
 }
