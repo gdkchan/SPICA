@@ -74,7 +74,7 @@ namespace SPICA.PICA.Converters
                                     break;
 
                                 case PICATextureFormat.RGBA5551:
-                                    Value = Input[IOffs + 0];
+                                    Value  = Input[IOffs + 0] << 0;
                                     Value |= Input[IOffs + 1] << 8;
 
                                     R = (byte)(((Value >>  1) & 0x1f) << 3);
@@ -92,7 +92,7 @@ namespace SPICA.PICA.Converters
                                     break;
 
                                 case PICATextureFormat.RGB565:
-                                    Value = Input[IOffs + 0];
+                                    Value  = Input[IOffs + 0] << 0;
                                     Value |= Input[IOffs + 1] << 8;
 
                                     R = (byte)(((Value >>  0) & 0x1f) << 3);
@@ -110,7 +110,7 @@ namespace SPICA.PICA.Converters
                                     break;
 
                                 case PICATextureFormat.RGBA4:
-                                    Value = Input[IOffs + 0];
+                                    Value  = Input[IOffs + 0] << 0;
                                     Value |= Input[IOffs + 1] << 8;
 
                                     R = (byte)((Value >>  4) & 0xf);
@@ -168,10 +168,14 @@ namespace SPICA.PICA.Converters
                                     break;
 
                                 case PICATextureFormat.LA4:
-                                    Output[OOffs + 0] = (byte)(Input[IOffs] >> 4);
-                                    Output[OOffs + 1] = (byte)(Input[IOffs] >> 4);
-                                    Output[OOffs + 2] = (byte)(Input[IOffs] >> 4);
-                                    Output[OOffs + 3] = (byte)(Input[IOffs] & 0xf);
+                                    Value = Input[IOffs] >> 4;
+
+                                    int Alpha = Input[IOffs] & 0xf;
+
+                                    Output[OOffs + 0] = (byte)((Value << 4) | Value);
+                                    Output[OOffs + 1] = (byte)((Value << 4) | Value);
+                                    Output[OOffs + 2] = (byte)((Value << 4) | Value);
+                                    Output[OOffs + 3] = (byte)((Alpha << 4) | Alpha);
 
                                     IOffs++;
 
