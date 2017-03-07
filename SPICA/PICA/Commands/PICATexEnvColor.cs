@@ -28,5 +28,10 @@ namespace SPICA.PICA.Commands
 
             return Param;
         }
+
+        public override string ToString()
+        {
+            return $"R: {R} G: {G} B: {B} A: {A}";
+        }
     }
 }

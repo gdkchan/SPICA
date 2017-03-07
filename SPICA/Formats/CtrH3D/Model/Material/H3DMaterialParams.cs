@@ -5,7 +5,7 @@ using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
-
+using System;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
@@ -215,6 +215,29 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             UniqueId = HashGen.HashCode;
         }
 
+        public RGBA GetConstant(int Stage)
+        {
+            if (Stage >= 0 && Stage < 6)
+            {
+                PackConstantAssignments();
+
+                switch ((ConstantColors >> Stage * 4) & 0xf)
+                {
+                    default:
+                    case 0: return Constant0Color;
+                    case 1: return Constant1Color;
+                    case 2: return Constant2Color;
+                    case 3: return Constant3Color;
+                    case 4: return Constant4Color;
+                    case 5: return Constant5Color;
+                }
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("Expected Stage in 0-5 range!");
+            }
+        }
+
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader;
@@ -370,12 +393,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureSources[2] = Uniform[10].Z;
             TextureSources[3] = Uniform[10].W;
 
-            Constant0Assignment = (ConstantColors >>  0) & 0xf;
-            Constant1Assignment = (ConstantColors >>  4) & 0xf;
-            Constant2Assignment = (ConstantColors >>  8) & 0xf;
-            Constant3Assignment = (ConstantColors >> 12) & 0xf;
-            Constant4Assignment = (ConstantColors >> 16) & 0xf;
-            Constant5Assignment = (ConstantColors >> 20) & 0xf;
+            UnpackConstantAssignments();
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
@@ -485,6 +503,25 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             FragmentShaderCommands = Writer.GetBuffer();
 
+            PackConstantAssignments();
+
+            GenerateUniqueId();
+
+            return false;
+        }
+
+        private void UnpackConstantAssignments()
+        {
+            Constant0Assignment = (ConstantColors >>  0) & 0xf;
+            Constant1Assignment = (ConstantColors >>  4) & 0xf;
+            Constant2Assignment = (ConstantColors >>  8) & 0xf;
+            Constant3Assignment = (ConstantColors >> 12) & 0xf;
+            Constant4Assignment = (ConstantColors >> 16) & 0xf;
+            Constant5Assignment = (ConstantColors >> 20) & 0xf;
+        }
+
+        private void PackConstantAssignments()
+        {
             ConstantColors =
                 (Constant0Assignment <<  0) |
                 (Constant1Assignment <<  4) |
@@ -492,10 +529,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 (Constant3Assignment << 12) |
                 (Constant4Assignment << 16) |
                 (Constant5Assignment << 20);
-
-            GenerateUniqueId();
-
-            return false;
         }
     }
 }

@@ -13,6 +13,8 @@ namespace SPICA.Renderer.Shaders
         {
             StringBuilder SB = new StringBuilder(BaseShader);
 
+            int Index = 0;
+
             bool HasFragColors = false;
 
             bool[] HasTexColor = { false, false, false };
@@ -28,7 +30,7 @@ namespace SPICA.Renderer.Shaders
                 string[] ColorArgs = new string[3];
                 string[] AlphaArgs = new string[3];
 
-                string Constant = GetVec4(Stage.Color);
+                string Constant = GetVec4(Params.GetConstant(Index++));
 
                 for (int Param = 0; Param < 3; Param++)
                 {

@@ -125,7 +125,7 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             Reader.ReadUInt32(); //This seems to be always 0
 
-            BumpTexture = (sbyte)Reader.ReadUInt16();
+            BumpTexture = Reader.ReadSByte();
 
             Constant0Assignment = Reader.ReadByte();
             Constant1Assignment = Reader.ReadByte();
@@ -133,6 +133,8 @@ namespace SPICA.Formats.GFL2.Model.Material
             Constant3Assignment = Reader.ReadByte();
             Constant4Assignment = Reader.ReadByte();
             Constant5Assignment = Reader.ReadByte();
+
+            Reader.ReadByte();
 
             Constant0Color = new RGBA(Reader);
             Constant1Color = new RGBA(Reader);
