@@ -22,7 +22,6 @@ namespace SPICA.Formats.GFL2.Model
 
         public Vector4D BBoxMinVector;
         public Vector4D BBoxMaxVector;
-
         public Matrix4x4 Transform;
 
         public List<GFBone>     Skeleton;
@@ -46,16 +45,16 @@ namespace SPICA.Formats.GFL2.Model
             uint ShaderCount = Reader.ReadUInt32();
 
             GFSection.SkipPadding(Reader);
+
             GFSection ModelSection = new GFSection(Reader);
 
-            GFHashName[] ShaderNames   = ReadStringTable(Reader);
-            GFHashName[] LUTNames      = ReadStringTable(Reader);
-            GFHashName[] MaterialNames = ReadStringTable(Reader);
-            GFHashName[] MeshNames     = ReadStringTable(Reader);
+            GFHashName[] ShaderNames   = ReadHashTable(Reader);
+            GFHashName[] LUTNames      = ReadHashTable(Reader);
+            GFHashName[] MaterialNames = ReadHashTable(Reader);
+            GFHashName[] MeshNames     = ReadHashTable(Reader);
 
             BBoxMinVector = new Vector4D(Reader);
             BBoxMaxVector = new Vector4D(Reader);
-
             Transform = new Matrix4x4(Reader);
 
             //TODO: Investigate what is this (maybe Tile permissions?)
@@ -78,12 +77,12 @@ namespace SPICA.Formats.GFL2.Model
 
             GFSection.SkipPadding(Reader);
 
-            LUTs      = GFLUT.ReadList(Reader, ModelName, LUTLength, LUTsCount);
+            LUTs      = GFLUT     .ReadList(Reader, ModelName, LUTLength, LUTsCount);
             Materials = GFMaterial.ReadList(Reader, MaterialNames.Length);
-            Meshes    = GFMesh.ReadList(Reader, MeshNames.Length);
+            Meshes    = GFMesh    .ReadList(Reader, MeshNames.Length);
         }
 
-        private GFHashName[] ReadStringTable(BinaryReader Reader)
+        private GFHashName[] ReadHashTable(BinaryReader Reader)
         {
             uint Count = Reader.ReadUInt32();
 
@@ -109,7 +108,7 @@ namespace SPICA.Formats.GFL2.Model
             {
                 Output.Skeleton.Add(new H3DBone
                 {
-                    ParentIndex = (short)Skeleton.FindIndex(x => x.Name == Bone.ParentName),
+                    ParentIndex = (short)Skeleton.FindIndex(x => x.Name == Bone.Parent),
 
                     Name        = Bone.Name,
                     Scale       = Bone.Scale,
@@ -235,6 +234,9 @@ namespace SPICA.Formats.GFL2.Model
                 Params.Constant4Assignment = Material.Constant4Assignment;
                 Params.Constant5Assignment = Material.Constant5Assignment;
 
+                Params.ShaderReference = "0@DefaultShader";
+                Params.ModelReference = $"{Mat.Name}@{Name}";
+
                 Params.MetaData = new H3DMetaData();
 
                 Params.MetaData.Values.Add(new H3DMetaDataValue("EdgeType",           Material.EdgeType));
@@ -315,7 +317,9 @@ namespace SPICA.Formats.GFL2.Model
 
                     M.UpdateBoolUniforms();
 
-                    Output.AddMesh(M);
+                    int Layer = Materials[M.MaterialIndex].RenderPriority;
+
+                    Output.AddMesh(M, Layer);
                 }
             }
 

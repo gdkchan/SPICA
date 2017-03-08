@@ -101,7 +101,7 @@ namespace SPICA.Formats.GFL2.Motion
                 GFSkeleton.Add(new GFBone
                 {
                     Name        = Bone.Name,
-                    ParentName  = Bone.ParentIndex != -1 ? Skeleton[Bone.ParentIndex].Name : string.Empty,
+                    Parent      = Bone.ParentIndex != -1 ? Skeleton[Bone.ParentIndex].Name : string.Empty,
                     Flags       = (byte)(Bone.ParentIndex == -1 ? 2 : 1), //TODO: Fix, 2 = Identity and 1 Normal bone?
                     Translation = Bone.Translation,
                     Rotation    = Bone.Rotation,

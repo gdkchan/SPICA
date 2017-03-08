@@ -19,12 +19,12 @@ namespace SPICA.PICA
                 int BaseIndex = Index;
 
                 uint Parameter = Cmds[Index++];
-                uint Command = Cmds[Index++];
+                uint Command   = Cmds[Index++];
 
-                ushort Id = (ushort)Command;
-                uint Mask = (Command >> 16) & 0xf;
+                uint Id          = (Command >>  0) & 0xffff;
+                uint Mask        = (Command >> 16) & 0xf;
                 uint ExtraParams = (Command >> 20) & 0x7ff;
-                bool Consecutive = (Command & (1u << 31)) != 0;
+                bool Consecutive = (Command >> 31) != 0;
 
                 if (Consecutive)
                 {
@@ -34,10 +34,10 @@ namespace SPICA.PICA
                     {
                         PICACommand Cmd = new PICACommand
                         {
-                            Register = (PICARegister)Id++,
-                            Parameters = new uint[] { Parameter },
+                            Register        = (PICARegister)Id++,
+                            Parameters      = new uint[] { Parameter },
                             ParametersIndex = BaseIndex++,
-                            Mask = Mask
+                            Mask            = Mask
                         };
 
                         Commands.Add(Cmd);
@@ -61,10 +61,10 @@ namespace SPICA.PICA
 
                     PICACommand Cmd = new PICACommand
                     {
-                        Register = (PICARegister)Id,
-                        Parameters = Parameters.ToArray(),
+                        Register        = (PICARegister)Id,
+                        Parameters      = Parameters.ToArray(),
                         ParametersIndex = BaseIndex,
-                        Mask = Mask
+                        Mask            = Mask
                     };
 
                     Commands.Add(Cmd);

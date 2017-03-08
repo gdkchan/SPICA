@@ -106,7 +106,7 @@ namespace SPICA.Formats.GFL2
                 {
                     L.Samplers.Add(new H3DLUTSampler
                     {
-                        Name = LUT.Name,
+                        Name  = LUT.Name,
                         Table = LUT.Table
                     });
                 }
@@ -122,11 +122,6 @@ namespace SPICA.Formats.GFL2
             {
                 Output.Textures.Add(Texture.ToH3DTexture());
             }
-
-            Output.BackwardCompatibility = 0x21;
-            Output.ForwardCompatibility = 0x21;
-            Output.ConverterVersion = 42607;
-            Output.Flags = H3DFlags.IsFromNewConverter;
 
             return Output;
         }

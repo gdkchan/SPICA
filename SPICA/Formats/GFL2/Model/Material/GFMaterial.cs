@@ -66,6 +66,8 @@ namespace SPICA.Formats.GFL2.Model.Material
         public float ShaderParam2;
         public float ShaderParam3;
 
+        public int RenderPriority;
+
         //Fragment Lighting
         public PICAColorOperation   ColorOperation;
         public PICABlendFunction    BlendFunction;
@@ -134,7 +136,7 @@ namespace SPICA.Formats.GFL2.Model.Material
             Constant4Assignment = Reader.ReadByte();
             Constant5Assignment = Reader.ReadByte();
 
-            Reader.ReadByte();
+            Reader.ReadByte(); //0x0
 
             Constant0Color = new RGBA(Reader);
             Constant1Color = new RGBA(Reader);
@@ -185,7 +187,13 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             uint CommandsLength = Reader.ReadUInt32();
 
-            Reader.BaseStream.Seek(0x1c, SeekOrigin.Current);
+            Reader.ReadUInt32(); //Something related to render priority aswell?
+            Reader.ReadUInt32(); //Seems to be a 24 bits value. Maybe color?
+            RenderPriority = Reader.ReadInt32();
+            Reader.ReadUInt32(); //LUT 0 (Reflection R?) hash again?
+            Reader.ReadUInt32(); //LUT 1 (Reflection G?) hash again?
+            Reader.ReadUInt32(); //LUT 2 (Reflection B?) hash again?
+            Reader.ReadUInt32(); //Another hash?
 
             uint[] Commands = new uint[CommandsLength >> 2];
 

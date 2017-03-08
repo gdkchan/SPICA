@@ -565,7 +565,7 @@
             this.SklAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
             this.SklAnimsList.Size = new System.Drawing.Size(228, 439);
             this.SklAnimsList.TabIndex = 3;
-            this.SklAnimsList.SelectedIndexChanged += new System.EventHandler(this.SklAnimsList_SelectedIndexChanged);
+            this.SklAnimsList.Click += new System.EventHandler(this.SklAnimsList_Click);
             // 
             // TabPageMatAnims
             // 
@@ -594,7 +594,7 @@
             this.MatAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
             this.MatAnimsList.Size = new System.Drawing.Size(228, 439);
             this.MatAnimsList.TabIndex = 4;
-            this.MatAnimsList.SelectedIndexChanged += new System.EventHandler(this.MatAnimsList_SelectedIndexChanged);
+            this.MatAnimsList.Click += new System.EventHandler(this.MatAnimsList_Click);
             // 
             // ToolButtonOpen
             // 

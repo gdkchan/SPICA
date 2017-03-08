@@ -62,8 +62,6 @@ namespace SPICA.WinForms.GUI.Animation
             }
         }
 
-        public bool HasData { get { return MasterAnim != null; } }
-
         public float FramesCount { get { return MasterAnim?.FramesCount ?? 0; } }
 
         public void SetAnimation(int Index, AnimationType Type)

@@ -580,12 +580,12 @@ namespace SPICA.WinForms
             if (!Animator.Enabled) Viewport.Invalidate();
         }
 
-        private void SklAnimsList_SelectedIndexChanged(object sender, EventArgs e)
+        private void SklAnimsList_Click(object sender, EventArgs e)
         {
             SetAnimation(SklAnimsList.SelectedIndex, AnimationType.Skeletal);
         }
 
-        private void MatAnimsList_SelectedIndexChanged(object sender, EventArgs e)
+        private void MatAnimsList_Click(object sender, EventArgs e)
         {
             SetAnimation(MatAnimsList.SelectedIndex, AnimationType.Material);
         }

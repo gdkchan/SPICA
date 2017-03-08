@@ -73,6 +73,7 @@ namespace SPICA.Formats.CtrH3D.Model
         public void AddMesh(H3DMesh Mesh, int Layer = 0)
         {
             Mesh.Parent = this;
+            Mesh.Layer = (uint)Layer;
 
             Meshes.Add(Mesh);
 

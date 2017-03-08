@@ -9,9 +9,8 @@ namespace SPICA.Formats.GFL2.Model
     public struct GFBone
     {
         public string Name;
-        public string ParentName;
-
-        public byte Flags;
+        public string Parent;
+        public byte   Flags;
 
         public Vector3D Scale;
         public Vector3D Rotation;
@@ -19,10 +18,9 @@ namespace SPICA.Formats.GFL2.Model
 
         public GFBone(BinaryReader Reader)
         {
-            Name       = Reader.ReadByteLengthString();
-            ParentName = Reader.ReadByteLengthString();
-
-            Flags = Reader.ReadByte();
+            Name   = Reader.ReadByteLengthString();
+            Parent = Reader.ReadByteLengthString();
+            Flags  = Reader.ReadByte();
 
             Scale       = new Vector3D(Reader);
             Rotation    = new Vector3D(Reader);

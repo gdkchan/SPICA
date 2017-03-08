@@ -5,7 +5,6 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
-using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Renderer.Animation;
 using SPICA.Renderer.Shaders;
@@ -21,7 +20,10 @@ namespace SPICA.Renderer
     {
         internal RenderEngine Renderer;
         internal H3DModel     BaseModel;
-        internal List<Mesh>   Meshes;
+        internal List<Mesh>   Meshes0;
+        internal List<Mesh>   Meshes1;
+        internal List<Mesh>   Meshes2;
+        internal List<Mesh>   Meshes3;
         internal List<Shader> Shaders;
         internal Matrix4[]    InverseTransform;
         internal Matrix4[]    SkeletonTransform;
@@ -35,7 +37,10 @@ namespace SPICA.Renderer
             this.Renderer  = Renderer;
             this.BaseModel = BaseModel;
 
-            Meshes  = new List<Mesh>();
+            Meshes0 = new List<Mesh>();
+            Meshes1 = new List<Mesh>();
+            Meshes2 = new List<Mesh>();
+            Meshes3 = new List<Mesh>();
             Shaders = new List<Shader>();
 
             InverseTransform = new Matrix4[BaseModel.Skeleton.Count];
@@ -105,18 +110,32 @@ namespace SPICA.Renderer
                 GL.Uniform1(BumpModeLocation,   (int)Params.BumpMode);
             }
 
-            foreach (H3DMesh Mesh in BaseModel.Meshes)
-            {
-                int ShaderHandle = Shaders[Mesh.MaterialIndex].Handle;
-
-                Meshes.Add(new Mesh(this, Mesh, ShaderHandle));
-            }
+            AddMeshes(Meshes0, BaseModel.MeshesLayer0);
+            AddMeshes(Meshes1, BaseModel.MeshesLayer1);
+            AddMeshes(Meshes2, BaseModel.MeshesLayer2);
+            AddMeshes(Meshes3, BaseModel.MeshesLayer3);
 
             SkeletalAnim = new SkeletalAnimation();
             MaterialAnim = new MaterialAnimation();
 
             ResetTransform();
             UpdateAnimationTransforms();
+        }
+
+        private void AddMeshes(List<Mesh> Dst, List<H3DMesh> Src)
+        {
+            foreach (H3DMesh Mesh in Src)
+            {
+                Dst.Add(new Mesh(this, Mesh, Shaders[Mesh.MaterialIndex].Handle));
+            }
+        }
+
+        private void DisposeMeshes(List<Mesh> Meshes)
+        {
+            foreach (Mesh Mesh in Meshes)
+            {
+                Mesh.Dispose();
+            }
         }
 
         public void UpdateUniforms()
@@ -157,9 +176,9 @@ namespace SPICA.Renderer
             Vector3 Min = Vector3.Zero;
             Vector3 Max = Vector3.Zero;
 
-            foreach (Mesh Mesh in Meshes)
+            foreach (H3DMesh Mesh in BaseModel.Meshes)
             {
-                PICAVertex[] Vertices = Mesh.BaseMesh.ToVertices(true);
+                PICAVertex[] Vertices = Mesh.ToVertices(true);
 
                 if (Vertices.Length == 0) continue;
 
@@ -185,17 +204,9 @@ namespace SPICA.Renderer
             return Tuple.Create((Min + Max) * 0.5f, Max - Min);
         }
 
-        public void Animate()
-        {
-            UpdateAnimationTransforms();
-
-            SkeletalAnim.AdvanceFrame();
-            MaterialAnim.AdvanceFrame();
-        }
-
         public void UpdateAnimationTransforms()
         {
-            if (Meshes.Count > 0)
+            if (BaseModel.Meshes.Count > 0)
             {
                 SkeletonTransform = SkeletalAnim.GetSkeletonTransforms(BaseModel.Skeleton);
                 MaterialTransform = MaterialAnim.GetUVTransforms(BaseModel.Materials);
@@ -204,8 +215,14 @@ namespace SPICA.Renderer
 
         public void Render()
         {
-            List<Mesh> RenderLater = new List<Mesh>(Meshes.Count);
+            RenderMeshes(Meshes0);
+            RenderMeshes(Meshes1);
+            RenderMeshes(Meshes2);
+            RenderMeshes(Meshes3);
+        }
 
+        private void RenderMeshes(List<Mesh> Meshes)
+        {
             foreach (Mesh Mesh in Meshes)
             {
                 GL.UseProgram(Mesh.ShaderHandle);
@@ -219,29 +236,6 @@ namespace SPICA.Renderer
                 GL.UniformMatrix4(MdlMtxLocation,  false, ref Transform);
 
                 Mesh.Render();
-
-                if (Mesh.BaseMesh.MaterialIndex < BaseModel.Materials.Count)
-                {
-                    H3DMaterial Material = BaseModel.Materials[Mesh.BaseMesh.MaterialIndex];
-
-                    if (Material.MaterialParams.StencilTest.Enabled &&
-                        Material.MaterialParams.StencilTest.Function != PICATestFunc.Always)
-                    {
-                        RenderLater.Add(Mesh);
-                    }
-                }
-            }
-
-            /*
-             * Objects that have the Stencil Test enabled may need to be rendered twice.
-             * This ensures that the Stencil buffer have the required values when a object.
-             * that relies on said values to "cut off" an region will render properly,
-             * independent of the order the meshes are organized.
-             * This may have some impact on performance through.
-             */
-            foreach (Mesh Mesh in RenderLater)
-            {
-                Mesh.Render();
             }
         }
 
@@ -251,10 +245,10 @@ namespace SPICA.Renderer
         {
             if (!Disposed)
             {
-                foreach (Mesh Mesh in Meshes)
-                {
-                    Mesh.Dispose();
-                }
+                DisposeMeshes(Meshes0);
+                DisposeMeshes(Meshes1);
+                DisposeMeshes(Meshes2);
+                DisposeMeshes(Meshes3);
 
                 foreach (Shader Shader in Shaders)
                 {

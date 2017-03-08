@@ -10,9 +10,25 @@ namespace SPICA.Renderer.Animation
 
         protected AnimationState State;
 
-        public float Frame       { get; set; }
-        public float Step        { get; set; }
+        private float _Frame;
+
+        public float Frame
+        {
+            get
+            {
+                return _Frame;
+            }
+            set
+            {
+                if (value > FramesCount)
+                    _Frame = value % FramesCount;
+                else
+                    _Frame = value;
+            }
+        }
+
         public bool  IsLooping   { get; set; }
+        public float Step        { get; set; }
         public bool  HasData     { get { return BaseAnimation != null; } }
         public float FramesCount { get { return BaseAnimation?.FramesCount ?? 0; } }
 

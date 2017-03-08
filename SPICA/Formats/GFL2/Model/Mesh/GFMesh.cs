@@ -24,6 +24,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
         public Vector4D BBoxMinVector;
         public Vector4D BBoxMaxVector;
 
+        public int BoneIndicesPerVertex;
+
         public List<GFSubMesh> SubMeshes;
 
         public GFMesh()
@@ -46,7 +48,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             BBoxMaxVector = new Vector4D(Reader); //Not sure
 
             uint SubMeshesCount = Reader.ReadUInt32();
-            uint MeshGroupFlags = Reader.ReadUInt32();
+
+            BoneIndicesPerVertex = Reader.ReadInt32();
 
             Reader.BaseStream.Seek(0x10, SeekOrigin.Current); //Padding
 
@@ -83,6 +86,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                 string Name = Reader.ReadIntLengthString();
 
                 byte BoneIndicesCount = Reader.ReadByte();
+
                 byte[] BoneIndices = new byte[0x1f];
 
                 for (int Bone = 0; Bone < BoneIndices.Length; Bone++)
@@ -92,7 +96,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
                 SubMeshes.Add(new GFSubMesh
                 {
-                    BoneIndices = BoneIndices,
+                    BoneIndices      = BoneIndices,
                     BoneIndicesCount = BoneIndicesCount,
 
                     VerticesCount  = Reader.ReadUInt32(),

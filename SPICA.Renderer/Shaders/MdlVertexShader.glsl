@@ -6,7 +6,7 @@ precision highp float;
 #define BOOL_SMOOTH_SK   (1 <<  1)
 #define BOOL_RIGID_SK    (1 <<  2)
 #define BOOL_HEMI_ENB    (1 <<  5)
-#define BOOL_HEMIAO_ENB  (1 <<  6)
+#define BOOL_HEMIAO_ENB  (1 <<  6) //Rim Enable on Pokémon?
 #define BOOL_COLOR_A     (1 <<  7)
 #define BOOL_BONE_W      (1 <<  8)
 #define BOOL_UV0_ENB     (1 <<  9)
@@ -191,7 +191,8 @@ void main() {
 		Color = MDiffuse;
 	}
 
-	if ((BoolUniforms & BOOL_HEMI_ENB) != 0) {
+	if ((BoolUniforms & BOOL_HEMI_ENB)   != 0 ||
+		(BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
 		/*
 		 * On Pokémon models, when this bit is set output Color seems to contain Rim Color.
 		 * Alpha value from color is multiplied by a material Constant color and then added to shaded texture color.

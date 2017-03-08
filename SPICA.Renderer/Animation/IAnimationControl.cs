@@ -2,10 +2,9 @@
 {
     interface IAnimationControl
     {
+        bool  IsLooping   { get; set; }
         float Frame       { get; set; }
         float Step        { get; set; }
-        bool  IsLooping   { get; set; }
-        bool  HasData     { get; }
         float FramesCount { get; }
 
         void AdvanceFrame();
