@@ -79,7 +79,7 @@ namespace SPICA.Renderer
                     if (AttribIndex == 8) AttribIndex--;
 
                     int i = AttribIndex >> 2;
-                    int j = AttribIndex & 3;
+                    int j = AttribIndex &  3;
 
                     if (i == 0)
                         Scales0[j] = Attrib.Scale;
@@ -88,11 +88,6 @@ namespace SPICA.Renderer
                 }
 
                 Offset += Size;
-
-                if ((Offset & 3) != 0)
-                {
-                    Offset = (Offset & ~3) + 4;
-                }
             }
 
             GL.BindVertexArray(0);
