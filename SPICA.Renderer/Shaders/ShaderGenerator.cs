@@ -24,6 +24,7 @@ namespace SPICA.Renderer.Shaders
             SB.AppendLine("//SPICA auto-generated Fragment Shader");
             SB.AppendLine("void main() {");
             SB.AppendLine($"\tvec4 CombBuffer = {GetVec4(Params.TexEnvBufferColor)};");
+            SB.AppendLine("\tvec4 Previous;");
 
             foreach (PICATexEnvStage Stage in Params.TexEnvStages)
             {
@@ -105,6 +106,9 @@ namespace SPICA.Renderer.Shaders
 
                 if (Stage.UpdateAlphaBuffer)
                     SB.AppendLine("\tCombBuffer.a = Output.a;");
+
+                if (Index < 6)
+                    SB.AppendLine("Previous = Output;");
             }
 
             if (Params.AlphaTest.Enabled)
@@ -378,7 +382,7 @@ namespace SPICA.Renderer.Shaders
                 case PICATextureCombinerSource.Texture2:               return "Color2";
                 case PICATextureCombinerSource.PreviousBuffer:         return "CombBuffer";
                 case PICATextureCombinerSource.Constant:               return Constant;
-                case PICATextureCombinerSource.Previous:               return "Output";
+                case PICATextureCombinerSource.Previous:               return "Previous";
             }
         }
 
