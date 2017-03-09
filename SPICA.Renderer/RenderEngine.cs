@@ -28,14 +28,11 @@ namespace SPICA.Renderer
         public readonly List<Light>      Lights;
         public readonly List<GUIControl> Controls;
 
-        private Shader GUI2DShader;
-        private Shader GUI3DShader;
-
+        private  Shader  GUI2DShader;
+        private  Shader  GUI3DShader;
         internal Matrix4 ProjectionMatrix;
-
-        internal string FragmentBaseCode;
-
-        internal int VertexShaderHandle;
+        internal string  FragmentBaseCode;
+        internal int     VertexShaderHandle;
 
         private int Width, Height;
 
@@ -88,12 +85,12 @@ namespace SPICA.Renderer
             GL.ShaderSource(VertexShaderHandle, VertexShaderCode);
             GL.CompileShader(VertexShaderHandle);
 
-            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-
             SetupGUI2DShader();
             SetupGUI3DShader();
 
             Resize(Width, Height);
+
+            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
         }
 
         private void SetupGUI2DShader()

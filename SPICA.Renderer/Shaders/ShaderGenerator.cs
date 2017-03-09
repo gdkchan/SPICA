@@ -23,8 +23,8 @@ namespace SPICA.Renderer.Shaders
             SB.AppendLine();
             SB.AppendLine("//SPICA auto-generated Fragment Shader");
             SB.AppendLine("void main() {");
-            SB.AppendLine($"\tvec4 CombBuffer = {GetVec4(Params.TexEnvBufferColor)};");
             SB.AppendLine("\tvec4 Previous;");
+            SB.AppendLine($"\tvec4 CombBuffer = {GetVec4(Params.TexEnvBufferColor)};");
 
             foreach (PICATexEnvStage Stage in Params.TexEnvStages)
             {
@@ -43,7 +43,6 @@ namespace SPICA.Renderer.Shaders
                         Stage.Source.Alpha[Param] == PICATextureCombinerSource.FragmentSecondaryColor))
                     {
                         GenFragColors(SB, Params, ref HasTexColor);
-
                         HasFragColors = true;
                     }
 
@@ -55,7 +54,6 @@ namespace SPICA.Renderer.Shaders
                             Stage.Source.Alpha[Param] == PICATextureCombinerSource.Texture0 + Unit))
                         {
                             GenTexColor(SB, Params, Unit);
-
                             HasTexColor[Unit] = true;
                         }
                     }
@@ -108,7 +106,7 @@ namespace SPICA.Renderer.Shaders
                     SB.AppendLine("\tCombBuffer.a = Output.a;");
 
                 if (Index < 6)
-                    SB.AppendLine("Previous = Output;");
+                    SB.AppendLine("\tPrevious = Output;");
             }
 
             if (Params.AlphaTest.Enabled)
@@ -150,9 +148,11 @@ namespace SPICA.Renderer.Shaders
 
             if (Params.BumpMode == H3DBumpMode.AsBump && Params.BumpTexture < 3)
             {
-                GenTexColor(SB, Params, Params.BumpTexture);
-
-                HasTexColor[Params.BumpTexture] = true;
+                if (!HasTexColor[Params.BumpTexture])
+                {
+                    GenTexColor(SB, Params, Params.BumpTexture);
+                    HasTexColor[Params.BumpTexture] = true;
+                }
 
                 SB.AppendLine($"\tvec3 n = Color{Params.BumpTexture}.xyz * 2 - 1;");
                 SB.AppendLine("\tn = mat3(Tangent, cross(Normal, Tangent), Normal) * n;");

@@ -6,10 +6,16 @@ namespace SPICA.Renderer.Shaders
 {
     class Shader : IDisposable
     {
-        public int Handle { get; private set; }
+        public int Handle               { get; private set; }
+        public int VertexShaderHandle   { get; private set; }
+        public int FragmentShaderHandle { get; private set; }
 
-        private int VertexShaderHandle;
-        private int FragmentShaderHandle;
+        /*
+         * Only delete the Vertex and Fragment Shaders if they were not compiled externally.
+         * This is done to avoid deleting shaders that may be used elsewhere.
+         */
+        private bool KeepVertexShader;
+        private bool KeepFragmentShader;
 
         public Shader() { }
 
@@ -24,11 +30,13 @@ namespace SPICA.Renderer.Shaders
         public void SetVertexShaderHandle(int Handle)
         {
             VertexShaderHandle = Handle;
+            KeepVertexShader = true;
         }
 
         public void SetFragmentShaderHandle(int Handle)
         {
             FragmentShaderHandle = Handle;
+            KeepFragmentShader = true;
         }
 
         public void SetVertexShaderCode(string Code)
@@ -83,8 +91,8 @@ namespace SPICA.Renderer.Shaders
             {
                 GL.DeleteProgram(Handle);
 
-                GL.DeleteShader(VertexShaderHandle);
-                GL.DeleteShader(FragmentShaderHandle);
+                if (!KeepVertexShader)   GL.DeleteShader(VertexShaderHandle);
+                if (!KeepFragmentShader) GL.DeleteShader(FragmentShaderHandle);
 
                 Disposed = true;
             }
