@@ -5,8 +5,8 @@ precision highp float;
 
 #define BOOL_SMOOTH_SK   (1 <<  1)
 #define BOOL_RIGID_SK    (1 <<  2)
-#define BOOL_HEMI_ENB    (1 <<  5)
-#define BOOL_HEMIAO_ENB  (1 <<  6) //Rim Enable on Pokémon?
+#define BOOL_HEMI_ENB    (1 <<  5) //Phong Enable on Pokémon
+#define BOOL_HEMIAO_ENB  (1 <<  6) //Rim Enable on Pokémon
 #define BOOL_COLOR_A     (1 <<  7)
 #define BOOL_BONE_W      (1 <<  8)
 #define BOOL_UV0_ENB     (1 <<  9)
@@ -89,6 +89,7 @@ uniform int BumpMode;
 
 out vec3 View;
 out vec3 World;
+out vec4 Position;
 out vec3 ONormal;
 out vec3 Normal;
 out vec3 Tangent;
@@ -103,7 +104,7 @@ void main() {
 	 * In particular, Intel drivers seems to order attributes in the order they're accessed on the code.
 	 * This is hacky, but GPUs that supports the explicit location doesn't have this problem (yay!).
 	 */
-	vec4 Position = PosOffset + vec4(a0_pos * Scales0[S0_POS], 1);
+	Position = PosOffset + vec4(a0_pos * Scales0[S0_POS], 1);
 
 	Normal    = (FixedAttr & FA_NORM) != 0 ? FixedNorm.xyz : a1_norm * Scales0[S0_NORM];
 	Tangent   = (FixedAttr & FA_TAN)  != 0 ? FixedTan.xyz  : a2_tan  * Scales0[S0_TAN];
@@ -191,8 +192,7 @@ void main() {
 		Color = MDiffuse;
 	}
 
-	if ((BoolUniforms & BOOL_HEMI_ENB)   != 0 ||
-		(BoolUniforms & BOOL_HEMIAO_ENB) != 0) {
+	if ((BoolUniforms & (BOOL_HEMI_ENB | BOOL_HEMIAO_ENB)) != 0) {
 		/*
 		 * On Pokémon models, when this bit is set output Color seems to contain Rim Color.
 		 * Alpha value from color is multiplied by a material Constant color and then added to shaded texture color.
@@ -215,10 +215,12 @@ void main() {
 			}
 		}
 
-		Color.rgb += HemiCol * MDiffuse.rgb;
+		Color.rgb = min(Color.rgb + HemiCol * MDiffuse.rgb, 1);
 	}
 
 	World = vec3(ModelMatrix * Position);
 
-	gl_Position = ProjMatrix * ViewMatrix * ModelMatrix * Position;
+	Position = ProjMatrix * ViewMatrix * ModelMatrix * Position;
+
+	gl_Position = Position;
 }

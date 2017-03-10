@@ -25,6 +25,7 @@ uniform vec4 SAmbient;
 
 in vec3 View;
 in vec3 World;
+in vec4 Position;
 in vec3 ONormal;
 in vec3 Normal;
 in vec3 Tangent;

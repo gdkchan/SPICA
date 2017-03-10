@@ -37,10 +37,6 @@
             this.MenuBatchExport = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuOptionsRoot = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuRenderer = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuNormalMap = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuNormalMapTangent = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuNormalMapObject = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuSeparatorRendererJustIgnore = new System.Windows.Forms.ToolStripSeparator();
             this.MenuShowGrid = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuShowAxis = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuShowSkeleton = new System.Windows.Forms.ToolStripMenuItem();
@@ -161,8 +157,6 @@
             // MenuRenderer
             // 
             this.MenuRenderer.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuNormalMap,
-            this.MenuSeparatorRendererJustIgnore,
             this.MenuShowGrid,
             this.MenuShowAxis,
             this.MenuShowSkeleton,
@@ -171,34 +165,6 @@
             this.MenuRenderer.Name = "MenuRenderer";
             this.MenuRenderer.Size = new System.Drawing.Size(152, 22);
             this.MenuRenderer.Text = "&Renderer";
-            // 
-            // MenuNormalMap
-            // 
-            this.MenuNormalMap.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuNormalMapTangent,
-            this.MenuNormalMapObject});
-            this.MenuNormalMap.Name = "MenuNormalMap";
-            this.MenuNormalMap.Size = new System.Drawing.Size(167, 22);
-            this.MenuNormalMap.Text = "&Normal map";
-            // 
-            // MenuNormalMapTangent
-            // 
-            this.MenuNormalMapTangent.Name = "MenuNormalMapTangent";
-            this.MenuNormalMapTangent.Size = new System.Drawing.Size(150, 22);
-            this.MenuNormalMapTangent.Text = "Tangent space";
-            this.MenuNormalMapTangent.Click += new System.EventHandler(this.MenuNormalMapTangent_Click);
-            // 
-            // MenuNormalMapObject
-            // 
-            this.MenuNormalMapObject.Name = "MenuNormalMapObject";
-            this.MenuNormalMapObject.Size = new System.Drawing.Size(150, 22);
-            this.MenuNormalMapObject.Text = "Object space";
-            this.MenuNormalMapObject.Click += new System.EventHandler(this.MenuNormalMapObject_Click);
-            // 
-            // MenuSeparatorRendererJustIgnore
-            // 
-            this.MenuSeparatorRendererJustIgnore.Name = "MenuSeparatorRendererJustIgnore";
-            this.MenuSeparatorRendererJustIgnore.Size = new System.Drawing.Size(164, 6);
             // 
             // MenuShowGrid
             // 
@@ -787,9 +753,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuBatchExport;
         private System.Windows.Forms.ToolStripMenuItem MenuOptionsRoot;
         private System.Windows.Forms.ToolStripMenuItem MenuRenderer;
-        private System.Windows.Forms.ToolStripMenuItem MenuNormalMap;
-        private System.Windows.Forms.ToolStripMenuItem MenuNormalMapTangent;
-        private System.Windows.Forms.ToolStripMenuItem MenuNormalMapObject;
         private System.Windows.Forms.ToolStripButton ToolButtonOpen;
         private System.Windows.Forms.ToolStripButton ToolButtonMerge;
         private System.Windows.Forms.ToolStripButton ToolButtonSave;
@@ -800,7 +763,6 @@
         private System.Windows.Forms.ToolStripButton ToolButtonShowInfo;
         private System.Windows.Forms.ToolStripButton ToolButtonShowSide;
         private System.Windows.Forms.ToolStrip TopIcons;
-        private System.Windows.Forms.ToolStripSeparator MenuSeparatorRendererJustIgnore;
         private System.Windows.Forms.ToolStripMenuItem MenuShowGrid;
         private System.Windows.Forms.ToolStripMenuItem MenuShowAxis;
         private System.Windows.Forms.ToolStripMenuItem MenuShowSkeleton;

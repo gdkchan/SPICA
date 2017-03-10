@@ -137,7 +137,7 @@ namespace SPICA.Renderer
             }
 
             //Setup texture units
-            if (Material.EnabledTextures[0])
+            if (Material.Texture0Name != null)
             {
                 //Only the texture unit 0 can have a Cube Map texture
                 if (Params.TextureCoords[0].MappingType == H3DTextureMappingType.CameraCubeEnvMap)
@@ -154,14 +154,14 @@ namespace SPICA.Renderer
                 }
             }
 
-            if (Material.EnabledTextures[1])
+            if (Material.Texture1Name != null)
             {
                 Parent.Renderer.BindTexture(1, Material.Texture1Name);
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 1);
             }
 
-            if (Material.EnabledTextures[2])
+            if (Material.Texture2Name != null)
             {
                 Parent.Renderer.BindTexture(2, Material.Texture2Name);
 

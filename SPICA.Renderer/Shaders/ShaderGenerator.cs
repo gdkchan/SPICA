@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D.Model.Material;
+using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 
@@ -28,6 +29,9 @@ namespace SPICA.Renderer.Shaders
 
             foreach (PICATexEnvStage Stage in Params.TexEnvStages)
             {
+                bool HasColor = !Stage.IsColorPassThrough;
+                bool HasAlpha = !Stage.IsAlphaPassThrough;
+
                 string[] ColorArgs = new string[3];
                 string[] AlphaArgs = new string[3];
 
@@ -87,8 +91,11 @@ namespace SPICA.Renderer.Shaders
                     AlphaArgs[Param] = AlphaArg;
                 }
 
-                GenCombinerColor(SB, Stage, ColorArgs);
-                GenCombinerAlpha(SB, Stage, AlphaArgs);
+                if (HasColor)
+                    GenCombinerColor(SB, Stage, ColorArgs);
+
+                if (HasAlpha)
+                    GenCombinerAlpha(SB, Stage, AlphaArgs);
 
                 int ColorScale = 1 << (int)Stage.Scale.Color;
                 int AlphaScale = 1 << (int)Stage.Scale.Alpha;
@@ -100,12 +107,12 @@ namespace SPICA.Renderer.Shaders
                     SB.AppendLine($"\tOutput.a = min(Output.a * {AlphaScale}, 1);");
 
                 if (Stage.UpdateColorBuffer)
-                    SB.AppendLine("\tCombBuffer.rgb = Output.rgb;");
+                    SB.AppendLine("\tCombBuffer.rgb = Previous.rgb;");
 
                 if (Stage.UpdateAlphaBuffer)
-                    SB.AppendLine("\tCombBuffer.a = Output.a;");
+                    SB.AppendLine("\tCombBuffer.a = Previous.a;");
 
-                if (Index < 6)
+                if (Index < 6 && (HasColor || HasAlpha))
                     SB.AppendLine("\tPrevious = Output;");
             }
 
@@ -276,15 +283,16 @@ namespace SPICA.Renderer.Shaders
             int Source = (int)Params.TextureSources[Index];
 
             string TexSampler = Source == 3 ? "TextureCube" : $"Textures[{Index}]";
-
             string TexCoords;
 
-            if (Source >= 0 && Source < 3)
+            if (Params.TextureCoords[Index].MappingType == H3DTextureMappingType.ProjectionMap) //Source = 5 on Sun/Moon
+                TexCoords = $"(UVTransforms[{Index}] * vec3(((Position.xy + Position.w) * 0.5) / Position.w, 1)).xy";
+            else if (Source >= 0 && Source < 3)
                 TexCoords = $"(UVTransforms[{Index}] * vec3(TexCoord{Source}, 1)).xy";
             else if (Source == 3)
-                TexCoords = "reflect(-View, ONormal)";
+                TexCoords = $"UVTransforms[{Index}] * reflect(-View, ONormal)";
             else if (Source == 4)
-                TexCoords = "CalcSpherical()";
+                TexCoords = $"(UVTransforms[{Index}] * vec3(CalcSpherical(), 1)).xy";
             else //Invalid
                 TexCoords = "vec2(0)";
 
@@ -293,8 +301,6 @@ namespace SPICA.Renderer.Shaders
 
         private static void GenCombinerColor(StringBuilder SB, PICATexEnvStage Stage, string[] ColorArgs)
         {
-            if (Stage.IsColorPassThrough) return;
-
             switch (Stage.Combiner.Color)
             {
                 case PICATextureCombinerMode.Replace:
@@ -332,8 +338,6 @@ namespace SPICA.Renderer.Shaders
 
         private static void GenCombinerAlpha(StringBuilder SB, PICATexEnvStage Stage, string[] AlphaArgs)
         {
-            if (Stage.IsAlphaPassThrough) return;
-
             switch (Stage.Combiner.Alpha)
             {
                 case PICATextureCombinerMode.Replace:

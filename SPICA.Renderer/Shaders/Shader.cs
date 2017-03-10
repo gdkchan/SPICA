@@ -30,34 +30,39 @@ namespace SPICA.Renderer.Shaders
         public void SetVertexShaderHandle(int Handle)
         {
             VertexShaderHandle = Handle;
+
             KeepVertexShader = true;
         }
 
         public void SetFragmentShaderHandle(int Handle)
         {
             FragmentShaderHandle = Handle;
+
             KeepFragmentShader = true;
         }
 
         public void SetVertexShaderCode(string Code)
         {
-            VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+            CompileAndCheck(VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader), Code);
 
-            GL.ShaderSource(VertexShaderHandle, Code);
-            GL.CompileShader(VertexShaderHandle);
-            CheckCompilation(VertexShaderHandle);
+            KeepVertexShader = false;
         }
 
         public void SetFragmentShaderCode(string Code)
         {
-            FragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
+            CompileAndCheck(FragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader), Code);
 
-            GL.ShaderSource(FragmentShaderHandle, Code);
-            GL.CompileShader(FragmentShaderHandle);
-            CheckCompilation(FragmentShaderHandle);
+            KeepFragmentShader = false;
         }
 
-        private void CheckCompilation(int Handle)
+        public static void CompileAndCheck(int Handle, string Code)
+        {
+            GL.ShaderSource(Handle, Code);
+            GL.CompileShader(Handle);
+            CheckCompilation(Handle);
+        }
+
+        public static void CheckCompilation(int Handle)
         {
             int Status = 0;
 

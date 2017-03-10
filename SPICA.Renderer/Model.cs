@@ -79,6 +79,14 @@ namespace SPICA.Renderer
 
                 Vector4 PowerScale = Vector4.Zero;
 
+                /*
+                 * AFAIK only Pokémon uses Meta Data with those names (Rim/Phong Pow/Scale),
+                 * so this is a way to identify if the Material is from a Pokémon model.
+                 * It's not an ideal solution, but it's better than having the user select the normal map type.
+                 * Only Pokémon seems to use object space normals, everything else is using tangent space.
+                 */
+                bool IsPoke = false;
+
                 if (Params.MetaData != null)
                 {
                     //Only Pokémon uses this (for custom Rim lighting and Phong shading on the shaders)
@@ -90,24 +98,26 @@ namespace SPICA.Renderer
 
                             switch (MetaData.Name)
                             {
-                                case "$RimPow":     PowerScale[0] = Value; break;
-                                case "$RimScale":   PowerScale[1] = Value; break;
-                                case "$PhongPow":   PowerScale[2] = Value; break;
-                                case "$PhongScale": PowerScale[3] = Value; break;
+                                case "$RimPow":     PowerScale[0] = Value; IsPoke = true; break;
+                                case "$RimScale":   PowerScale[1] = Value; IsPoke = true; break;
+                                case "$PhongPow":   PowerScale[2] = Value; IsPoke = true; break;
+                                case "$PhongScale": PowerScale[3] = Value; IsPoke = true; break;
                             }
                         }
                     }
                 }
 
-                int MDiffuseLocation   = GL.GetUniformLocation(Shader.Handle, "MDiffuse");
-                int PowerScaleLocation = GL.GetUniformLocation(Shader.Handle, "PowerScale");
-                int ColorScaleLocation = GL.GetUniformLocation(Shader.Handle, "ColorScale");
-                int BumpModeLocation   = GL.GetUniformLocation(Shader.Handle, "BumpMode");
+                int MDiffuseLocation     = GL.GetUniformLocation(Shader.Handle, "MDiffuse");
+                int PowerScaleLocation   = GL.GetUniformLocation(Shader.Handle, "PowerScale");
+                int ColorScaleLocation   = GL.GetUniformLocation(Shader.Handle, "ColorScale");
+                int BumpModeLocation     = GL.GetUniformLocation(Shader.Handle, "BumpMode");
+                int ObjNormalMapLocation = GL.GetUniformLocation(Shader.Handle, "ObjNormalMap");
 
-                GL.Uniform4(MDiffuseLocation,   Params.DiffuseColor.ToColor4());
-                GL.Uniform4(PowerScaleLocation, PowerScale);
-                GL.Uniform1(ColorScaleLocation, Params.ColorScale);
-                GL.Uniform1(BumpModeLocation,   (int)Params.BumpMode);
+                GL.Uniform4(MDiffuseLocation,     Params.DiffuseColor.ToColor4());
+                GL.Uniform4(PowerScaleLocation,   PowerScale);
+                GL.Uniform1(ColorScaleLocation,   Params.ColorScale);
+                GL.Uniform1(BumpModeLocation,     (int)Params.BumpMode);
+                GL.Uniform1(ObjNormalMapLocation, IsPoke ? 1 : 0);
             }
 
             AddMeshes(Meshes0, BaseModel.MeshesLayer0);
@@ -161,10 +171,8 @@ namespace SPICA.Renderer
                     if (++Index == 8) break;
                 }
 
-                int ObjNormalMapLocation = GL.GetUniformLocation(Shader.Handle, "ObjNormalMap");
                 int LightsCountLocation  = GL.GetUniformLocation(Shader.Handle, "LightsCount");
 
-                GL.Uniform1(ObjNormalMapLocation, Renderer.ObjectSpaceNormalMap ? 1 : 0);
                 GL.Uniform1(LightsCountLocation, Index);
             }
         }
@@ -223,7 +231,7 @@ namespace SPICA.Renderer
 
         private void RenderMeshes(List<Mesh> Meshes)
         {
-            foreach (Mesh Mesh in Meshes)
+            foreach (Mesh Mesh in Meshes.OrderBy(x => x.BaseMesh.Priority))
             {
                 GL.UseProgram(Mesh.ShaderHandle);
 

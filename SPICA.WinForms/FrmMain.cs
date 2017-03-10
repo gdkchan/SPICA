@@ -264,16 +264,6 @@ namespace SPICA.WinForms
             MainContainer.Panel2Collapsed = !ToolButtonShowSide.Checked;
         }
 
-        private void MenuNormalMapTangent_Click(object sender, EventArgs e)
-        {
-            Renderer.ObjectSpaceNormalMap = false; UpdateViewport();
-        }
-
-        private void MenuNormalMapObject_Click(object sender, EventArgs e)
-        {
-            Renderer.ObjectSpaceNormalMap = true; UpdateViewport();
-        }
-
         private void Open(bool MergeMode)
         {
             IgnoreClicks = true;

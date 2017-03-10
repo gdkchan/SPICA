@@ -6,7 +6,6 @@ using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Math3D;
 
-using System;
 using System.Linq;
 
 namespace SPICA.Renderer.Animation
@@ -29,17 +28,11 @@ namespace SPICA.Renderer.Animation
 
         public Matrix3[] GetUVTransform(string MaterialName, H3DMaterialParams Params)
         {
-            Vector2D[]
-                Scale       = new Vector2D[3],
-                Translation = new Vector2D[3];
-
-            float[] Rotation = new float[3];
+            H3DTextureCoord[] TC = new H3DTextureCoord[3];
 
             for (int Index = 0; Index < 3; Index++)
             {
-                Scale[Index]       = Params.TextureCoords[Index].Scale;
-                Rotation[Index]    = Params.TextureCoords[Index].Rotation;
-                Translation[Index] = Params.TextureCoords[Index].Translation;
+                TC[Index] = Params.TextureCoords[Index];
             }
 
             if (BaseAnimation != null && State != AnimationState.Stopped)
@@ -52,13 +45,13 @@ namespace SPICA.Renderer.Animation
 
                         switch (Elem.TargetType)
                         {
-                            case H3DAnimTargetType.MaterialTexCoord0Scale: SetVector2(Vector, ref Scale[0]); break;
-                            case H3DAnimTargetType.MaterialTexCoord1Scale: SetVector2(Vector, ref Scale[1]); break;
-                            case H3DAnimTargetType.MaterialTexCoord2Scale: SetVector2(Vector, ref Scale[2]); break;
+                            case H3DAnimTargetType.MaterialTexCoord0Scale: SetVector2(Vector, ref TC[0].Scale); break;
+                            case H3DAnimTargetType.MaterialTexCoord1Scale: SetVector2(Vector, ref TC[1].Scale); break;
+                            case H3DAnimTargetType.MaterialTexCoord2Scale: SetVector2(Vector, ref TC[2].Scale); break;
 
-                            case H3DAnimTargetType.MaterialTexCoord0Trans: SetVector2(Vector, ref Translation[0]); break;
-                            case H3DAnimTargetType.MaterialTexCoord1Trans: SetVector2(Vector, ref Translation[1]); break;
-                            case H3DAnimTargetType.MaterialTexCoord2Trans: SetVector2(Vector, ref Translation[2]); break;
+                            case H3DAnimTargetType.MaterialTexCoord0Trans: SetVector2(Vector, ref TC[0].Translation); break;
+                            case H3DAnimTargetType.MaterialTexCoord1Trans: SetVector2(Vector, ref TC[1].Translation); break;
+                            case H3DAnimTargetType.MaterialTexCoord2Trans: SetVector2(Vector, ref TC[2].Translation); break;
                         }
                     }
                     else if (Elem.PrimitiveType == H3DAnimPrimitiveType.Float)
@@ -71,9 +64,9 @@ namespace SPICA.Renderer.Animation
 
                         switch (Elem.TargetType)
                         {
-                            case H3DAnimTargetType.MaterialTexCoord0Rot: Rotation[0] = Value; break;
-                            case H3DAnimTargetType.MaterialTexCoord1Rot: Rotation[1] = Value; break;
-                            case H3DAnimTargetType.MaterialTexCoord2Rot: Rotation[2] = Value; break;
+                            case H3DAnimTargetType.MaterialTexCoord0Rot: TC[0].Rotation = Value; break;
+                            case H3DAnimTargetType.MaterialTexCoord1Rot: TC[1].Rotation = Value; break;
+                            case H3DAnimTargetType.MaterialTexCoord2Rot: TC[2].Rotation = Value; break;
                         }
                     }
                 }
@@ -83,43 +76,16 @@ namespace SPICA.Renderer.Animation
 
             for (int Index = 0; Index < 3; Index++)
             {
+                Math3D.Matrix3x4 Trans = TC[Index].Transform;
+
                 Matrix3 Transform = Matrix3.Identity;
 
-                float SX = Scale[Index].X;
-                float SY = Scale[Index].Y;
-
-                float TX = Translation[Index].X;
-                float TY = Translation[Index].Y;
-
-                float CA = (float)Math.Cos(Rotation[Index]);
-                float SA = (float)Math.Sin(Rotation[Index]);
-
-                Transform.Row0.X = SX *  CA;
-                Transform.Row0.Y = SY *  SA;
-                Transform.Row1.X = SX * -SA;
-                Transform.Row1.Y = SY *  CA;
-
-                switch (Params.TextureCoords[Index].TransformType)
-                {
-                    case H3DTextureTransformType.DccMaya:
-                        Transform.Row2.X = SX * ((0.5f *  SA - 0.5f * CA) + 0.5f - TX);
-                        Transform.Row2.Y = SY * ((0.5f * -SA - 0.5f * CA) + 0.5f - TY);
-                        break;
-
-                    case H3DTextureTransformType.DccSoftImage:
-                        Transform.Row2.X = SX * (-CA * TX - SA * TY);
-                        Transform.Row2.Y = SY * ( SA * TX - CA * TY);
-                        break;
-
-                    case H3DTextureTransformType.Dcc3dsMax:
-                        Transform.Row2.X =
-                            SX * CA * (-TX - 0.5f) -
-                            SX * SA * ( TY - 0.5f) + 0.5f;
-                        Transform.Row2.Y =
-                            SY * SA * (-TX - 0.5f) +
-                            SY * CA * ( TY - 0.5f) + 0.5f;
-                        break;
-                }
+                Transform.Row0.X = Trans.M11;
+                Transform.Row0.Y = Trans.M21;
+                Transform.Row1.X = Trans.M12;
+                Transform.Row1.Y = Trans.M22;
+                Transform.Row2.X = Trans.M14;
+                Transform.Row2.Y = Trans.M24;
 
                 Transforms[Index] = Transform;
             }

@@ -317,9 +317,10 @@ namespace SPICA.Formats.GFL2.Model
 
                     M.UpdateBoolUniforms();
 
-                    int Layer = Materials[M.MaterialIndex].RenderPriority;
+                    int Layer    = Materials[M.MaterialIndex].RenderLayer;
+                    int Priority = Materials[M.MaterialIndex].RenderPriority;
 
-                    Output.AddMesh(M, Layer);
+                    Output.AddMesh(M, Layer, Priority);
                 }
             }
 

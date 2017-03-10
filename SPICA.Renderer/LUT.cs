@@ -51,6 +51,8 @@ namespace SPICA.Renderer
 
                 //Note: Use 2D instead of 1D textures for LUTs because GLES doesn't support 1D textures
                 GL.BindTexture(TextureTarget.Texture2D, Id);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Linear);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Linear);
 

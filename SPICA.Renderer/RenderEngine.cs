@@ -52,22 +52,6 @@ namespace SPICA.Renderer
             }
         }
 
-        private bool _ObjectSpaceNormalMap;
-
-        public bool ObjectSpaceNormalMap
-        {
-            get
-            {
-                return _ObjectSpaceNormalMap;
-            }
-            set
-            {
-                _ObjectSpaceNormalMap = value;
-
-                UpdateAllUniforms();
-            }
-        }
-
         public RenderEngine(int Width, int Height)
         {
             Models   = new List<Model>();
@@ -84,6 +68,8 @@ namespace SPICA.Renderer
 
             GL.ShaderSource(VertexShaderHandle, VertexShaderCode);
             GL.CompileShader(VertexShaderHandle);
+
+            Shader.CheckCompilation(VertexShaderHandle);
 
             SetupGUI2DShader();
             SetupGUI3DShader();

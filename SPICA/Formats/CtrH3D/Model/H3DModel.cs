@@ -70,10 +70,11 @@ namespace SPICA.Formats.CtrH3D.Model
             MeshNodesVisibility = new List<bool>();
         }
 
-        public void AddMesh(H3DMesh Mesh, int Layer = 0)
+        public void AddMesh(H3DMesh Mesh, int Layer = 0, int Priority = 0)
         {
-            Mesh.Parent = this;
-            Mesh.Layer = (uint)Layer;
+            Mesh.Parent   = this;
+            Mesh.Layer    = (uint)Layer;
+            Mesh.Priority = (uint)Priority;
 
             Meshes.Add(Mesh);
 
