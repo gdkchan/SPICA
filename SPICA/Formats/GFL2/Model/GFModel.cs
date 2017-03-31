@@ -1,11 +1,11 @@
-﻿using SPICA.Formats.CtrH3D;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.GFL2.Model.Material;
 using SPICA.Formats.GFL2.Model.Mesh;
-using SPICA.Formats.Utils;
 using SPICA.Math3D;
 
 using System.Collections.Generic;

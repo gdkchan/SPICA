@@ -37,7 +37,7 @@
             }
         }
 
-        public static PICATexEnvStage Texture0SubSecColor
+        public static PICATexEnvStage Texture0
         {
             get
             {
@@ -46,11 +46,7 @@
                 PICATexEnvStage Output = new PICATexEnvStage();
 
                 Output.Source.Color[0] = PICATextureCombinerSource.Texture0;
-                Output.Source.Color[1] = PICATextureCombinerSource.FragmentSecondaryColor;
                 Output.Source.Alpha[0] = PICATextureCombinerSource.Texture0;
-
-                Output.Combiner.Color = PICATextureCombinerMode.Subtract;
-                Output.Combiner.Alpha = PICATextureCombinerMode.Replace;
 
                 return Output;
             }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SPICA.Formats.Utils
+namespace SPICA.Formats.Common
 {
     static class IOUtils
     {

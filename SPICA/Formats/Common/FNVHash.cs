@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace SPICA.Formats.Utils
+namespace SPICA.Formats.Common
 {
     class FNVHash
     {

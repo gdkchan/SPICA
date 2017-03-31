@@ -1,0 +1,86 @@
+﻿using SPICA.Formats.MTFramework.Shader;
+using SPICA.PICA.Commands;
+using System;
+using System.IO;
+
+namespace SPICA.Formats.MTFramework.Model
+{
+    class MTMesh
+    {
+        public ushort[] Indices;
+
+        public byte[] RawBuffer;
+
+        public byte VertexStride;
+
+        public PICAAttribute[] Attributes;
+
+        public uint MaterialIndex;
+        public uint MeshGroupIndex;
+        public sbyte RenderType;
+        public byte RenderLayer;
+
+        public MTMesh(
+            BinaryReader Reader,
+            MTShaderEffects Shader,
+            uint VerticesBufferAddress,
+            uint IndicesBufferAddress)
+        {
+            //Stuff with a ? is most likely wrong
+            //The rest is maybe wrong but probably right
+            ushort MeshTypeFlags  = Reader.ReadUInt16(); //?
+            ushort VerticesCount  = Reader.ReadUInt16();
+            uint MatMeshIndices   = Reader.ReadUInt32();
+            byte MeshFlags        = Reader.ReadByte(); //?
+            byte RenderLayer      = Reader.ReadByte();
+            byte VertexStride     = Reader.ReadByte();
+            byte AttributesCount  = Reader.ReadByte();
+            uint VerticesIndex    = Reader.ReadUInt32();
+            uint VerticesOffset   = Reader.ReadUInt32();
+            uint VertexFormatHash = Reader.ReadUInt32();
+            uint IndicesIndex     = Reader.ReadUInt32();
+            uint IndicesCount     = Reader.ReadUInt32();
+            uint IndicesOffset    = Reader.ReadUInt32();
+            byte BoneIndicesIndex = Reader.ReadByte();
+            byte BoneIndicesCount = Reader.ReadByte();
+            ushort MeshIndex      = Reader.ReadUInt16();
+            ushort StartIndex     = Reader.ReadUInt16(); //?
+            ushort EndIndex       = Reader.ReadUInt16(); //?
+            Reader.ReadUInt16();
+            Reader.ReadByte();
+
+            this.VertexStride = VertexStride;
+            this.RenderLayer  = RenderLayer;
+
+            MeshGroupIndex = (MatMeshIndices >>  0) & 0xfff;
+            MaterialIndex  = (MatMeshIndices >> 12) & 0xfff;
+            RenderType = (sbyte)(MatMeshIndices >> 24);
+
+            Attributes = Shader.GetDescriptor<MTAttributesGroup>(VertexFormatHash).Attributes;
+
+            Reader.BaseStream.Seek(IndicesBufferAddress + IndicesIndex * 2, SeekOrigin.Begin);
+
+            Indices = new ushort[(IndicesCount - 1) * 3];
+
+            for (int Index = 0; Index < Indices.Length; Index++)
+            {
+                //Convert Triangle Strip Index Buffer to Triangle List
+                if (Index > 2)
+                {
+                    Indices[Index + 0] = Indices[Index - 2];
+                    Indices[Index + 1] = Indices[Index - 1];
+
+                    Index += 2;
+                }
+
+                Indices[Index] = (ushort)(Reader.ReadUInt16() - VerticesIndex);
+            }
+
+            VerticesOffset += VerticesIndex * VertexStride;
+
+            Reader.BaseStream.Seek(VerticesBufferAddress + VerticesOffset, SeekOrigin.Begin);
+
+            RawBuffer = Reader.ReadBytes(VerticesCount * VertexStride);
+        }
+    }
+}

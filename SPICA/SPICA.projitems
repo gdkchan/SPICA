@@ -9,6 +9,7 @@
     <Import_RootNamespace>SPICA</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\CRC32Hash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimBoolean.cs" />
@@ -139,12 +140,22 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBoneTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotKeyFrame.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\MTMesh.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\MTModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\BitUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\FNVHash.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\IOUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Utils\StringUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Model\MTMaterials.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Model\MTMaterial.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Model\MTMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Model\MTModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Shader\MTShaderEffects.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Shader\MTAlphaBlendConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Shader\MTAttributesGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Shader\MTBlendFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Shader\MTDepthStencilConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Shader\MTTestFunction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Texture\MTTexture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Texture\MTTextureFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\BitUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\FNVHash.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\IOUtils.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\StringUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Interpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x4.cs" />

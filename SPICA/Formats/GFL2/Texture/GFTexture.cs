@@ -1,5 +1,5 @@
-﻿using SPICA.Formats.CtrH3D.Texture;
-using SPICA.Formats.Utils;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D.Texture;
 
 using System.IO;
 
@@ -30,9 +30,9 @@ namespace SPICA.Formats.GFL2.Texture
 
             Name = Reader.ReadPaddedString(0x40);
 
-            Width = Reader.ReadUInt16();
-            Height = Reader.ReadUInt16();
-            Format = (GFTextureFormat)Reader.ReadUInt16();
+            Width      = Reader.ReadUInt16();
+            Height     = Reader.ReadUInt16();
+            Format     = (GFTextureFormat)Reader.ReadUInt16();
             MipmapSize = Reader.ReadUInt16();
 
             Reader.BaseStream.Seek(0x10, SeekOrigin.Current); //Padding
@@ -44,12 +44,12 @@ namespace SPICA.Formats.GFL2.Texture
         {
             return new H3DTexture
             {
-                Name = Name,
+                Name          = Name,
                 RawBufferXPos = RawBuffer,
-                Width = Width,
-                Height = Height,
-                Format = Format.ToPICATextureFormat(),
-                MipmapSize = (byte)MipmapSize
+                Width         = Width,
+                Height        = Height,
+                Format        = Format.ToPICATextureFormat(),
+                MipmapSize    = (byte)MipmapSize
             };
         }
     }

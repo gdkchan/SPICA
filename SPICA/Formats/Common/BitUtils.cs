@@ -1,4 +1,4 @@
-﻿namespace SPICA.Formats.Utils
+﻿namespace SPICA.Formats.Common
 {
     static class BitUtils
     {

@@ -10,7 +10,7 @@ namespace SPICA.PICA.Commands
 
         public PICAStencilOperation(uint Param)
         {
-            FailOp = (PICAStencilOp)((Param >> 0) & 7);
+            FailOp  = (PICAStencilOp)((Param >> 0) & 7);
             ZFailOp = (PICAStencilOp)((Param >> 4) & 7);
             ZPassOp = (PICAStencilOp)((Param >> 8) & 7);
         }
@@ -19,7 +19,7 @@ namespace SPICA.PICA.Commands
         {
             uint Param = 0;
 
-            Param |= ((uint)FailOp & 7) << 0;
+            Param |= ((uint)FailOp  & 7) << 0;
             Param |= ((uint)ZFailOp & 7) << 4;
             Param |= ((uint)ZPassOp & 7) << 8;
 

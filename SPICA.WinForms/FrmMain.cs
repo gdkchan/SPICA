@@ -301,7 +301,7 @@ namespace SPICA.WinForms
 
                         if (Data != null)
                         {
-                            if ((MergeMode && SceneData != null) || Index > 0)
+                            if ((MergeMode || Index > 0) && SceneData != null)
                                 SceneData.Merge(Data);
                             else
                                 SceneData = Data;
@@ -416,34 +416,37 @@ namespace SPICA.WinForms
             CurrentRot = Vector2.Zero;
             CurrentMov = Vector2.Zero;
 
-            Model.ResetTransform();
+            Model?.ResetTransform();
             UIGrid.ResetTransform();
             UIAxis.ResetTransform();
 
-            Tuple<Vector3, Vector3> CenterDim = Model.GetCenterDim();
-
-            Vector3 Center = CenterDim.Item1;
-            Vector3 Dim    = CenterDim.Item2;
-
-            Dimension = Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2;
-
-            if (Dimension == 0) Dimension = 100f;
-
-            Renderer.Lights.Clear();
-
-            Renderer.Lights.Add(new Light
+            if (Model != null)
             {
-                Position = new Vector3(0, Center.Y, Dimension),
-                Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1f),
-                Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1f),
-                Specular = new Color4(0.5f, 0.5f, 0.5f, 1f),
-                Enabled  = true
-            });
+                Tuple<Vector3, Vector3> CenterDim = Model.GetCenterDim();
 
-            Model.UpdateUniforms();
+                Vector3 Center = CenterDim.Item1;
+                Vector3 Dim = CenterDim.Item2;
 
-            Model.TranslateAbs(-Center);
-            UIGrid.TranslateAbs(-Center);
+                Dimension = Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2;
+
+                if (Dimension == 0) Dimension = 100f;
+
+                Renderer.Lights.Clear();
+
+                Renderer.Lights.Add(new Light
+                {
+                    Position = new Vector3(0, Center.Y, Dimension),
+                    Ambient = new Color4(0.0f, 0.0f, 0.0f, 1f),
+                    Diffuse = new Color4(0.8f, 0.8f, 0.8f, 1f),
+                    Specular = new Color4(0.5f, 0.5f, 0.5f, 1f),
+                    Enabled = true
+                });
+
+                Model?.UpdateUniforms();
+
+                Model?.TranslateAbs(-Center);
+                UIGrid.TranslateAbs(-Center);
+            }
 
             Zoom = (Dimension < RenderEngine.ClipDistance ? -Dimension : 0);
 

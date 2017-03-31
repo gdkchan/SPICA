@@ -1,5 +1,5 @@
-﻿using SPICA.Formats.CtrH3D.Animation;
-using SPICA.Formats.Utils;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D.Animation;
 
 using System.Collections.Generic;
 using System.IO;

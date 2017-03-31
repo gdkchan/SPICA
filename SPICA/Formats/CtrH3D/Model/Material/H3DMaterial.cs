@@ -75,7 +75,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 Output.MaterialParams.DepthBufferRead  = true;
                 Output.MaterialParams.DepthBufferWrite = true;
 
-                Output.MaterialParams.TexEnvStages[0] = PICATexEnvStage.Texture0SubSecColor;
+                Output.MaterialParams.TexEnvStages[0] = PICATexEnvStage.Texture0;
                 Output.MaterialParams.TexEnvStages[1] = PICATexEnvStage.PassThrough;
                 Output.MaterialParams.TexEnvStages[2] = PICATexEnvStage.PassThrough;
                 Output.MaterialParams.TexEnvStages[3] = PICATexEnvStage.PassThrough;
@@ -95,8 +95,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 Output.TextureMappers[0].MagFilter = H3DTextureMagFilter.Linear;
 
                 Output.MaterialParams.TextureCoords[0].Scale = new Vector2D(1);
-
-                Output.MaterialParams.LUTInSel.Dist0 = PICALUTInput.CosLightNormal;
 
                 Output.EnabledTextures[0] = true;
 

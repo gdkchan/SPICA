@@ -1,6 +1,6 @@
-﻿using SPICA.Formats.CtrH3D.Animation;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.GFL2.Model;
-using SPICA.Formats.Utils;
 using SPICA.Math3D;
 
 using System.Collections.Generic;

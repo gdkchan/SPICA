@@ -1,11 +1,11 @@
-﻿using SPICA.Formats.CtrH3D;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.GFL2.Model;
 using SPICA.Formats.GFL2.Shader;
 using SPICA.Formats.GFL2.Texture;
-using SPICA.Formats.Utils;
 
 using System.Collections.Generic;
 using System.IO;

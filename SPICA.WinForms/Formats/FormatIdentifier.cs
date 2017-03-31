@@ -5,9 +5,13 @@ using SPICA.Formats.Generic.StudioMdl;
 using SPICA.Formats.Generic.WavefrontOBJ;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Motion;
-
+using SPICA.Formats.MTFramework.Model;
+using SPICA.Formats.MTFramework.Shader;
+using SPICA.Formats.MTFramework.Texture;
+using System;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace SPICA.WinForms.Formats
 {
@@ -43,9 +47,15 @@ namespace SPICA.WinForms.Formats
 
                     if (Magic.StartsWith("BCH"))
                     {
-                        FS.Close();
-
-                        return H3D.Open(FileName);
+                        return H3D.Open(Reader.ReadBytes((int)FS.Length));
+                    }
+                    else if (Magic.StartsWith("MOD"))
+                    {
+                        return LoadMTModel(Reader, Path.GetDirectoryName(FileName));
+                    }
+                    else if (Magic.StartsWith("TEX"))
+                    {
+                        return new MTTexture(Reader, Path.GetFileNameWithoutExtension(FileName)).ToH3D();
                     }
                     else
                     {
@@ -94,6 +104,73 @@ namespace SPICA.WinForms.Formats
             }
 
             return Output;
+        }
+
+        private static MTShaderEffects MTShader;
+
+        private static H3D LoadMTModel(BinaryReader Reader, string MRLSearchPath)
+        {
+            if (MTShader != null)
+            {
+                MTMaterials MRLData = null;
+
+                foreach (string File in Directory.GetFiles(MRLSearchPath))
+                {
+                    using (FileStream Input = new FileStream(File, FileMode.Open))
+                    {
+                        if (Input.Length < 4) continue;
+
+                        byte[] Magic = new byte[4];
+
+                        Input.Read(Magic, 0, Magic.Length);
+
+                        if (Encoding.ASCII.GetString(Magic) == "MRL\0")
+                        {
+                            Input.Seek(0, SeekOrigin.Begin);
+
+                            MRLData = new MTMaterials(Input, MTShader);
+
+                            break;
+                        }
+                    }
+                }
+
+                return new MTModel(Reader, MRLData, MTShader).ToH3D();
+            }
+            else
+            {
+                DialogResult Result = MessageBox.Show(
+                    "A *.lfx shader is necessary to load this format." + Environment.NewLine +
+                    "Do you want to open the shader file now?",
+                    "Shader file missing",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                if (Result == DialogResult.Yes)
+                {
+                    using (OpenFileDialog OpenDlg = new OpenFileDialog())
+                    {
+                        OpenDlg.Filter = "MT Mobile Shader|*.lfx";
+
+                        if (OpenDlg.ShowDialog() == DialogResult.OK)
+                        {
+                            LoadMTShader(OpenDlg.FileName);
+
+                            return LoadMTModel(Reader, MRLSearchPath);
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static void LoadMTShader(string FileName)
+        {
+            using (FileStream FS = new FileStream(FileName, FileMode.Open))
+            {
+                MTShader = new MTShaderEffects(FS);
+            }
         }
     }
 }

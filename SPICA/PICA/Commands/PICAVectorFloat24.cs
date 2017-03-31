@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.Utils;
+﻿using SPICA.Formats.Common;
 
 using System;
 using System.Xml.Serialization;

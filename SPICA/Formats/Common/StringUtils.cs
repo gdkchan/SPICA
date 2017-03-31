@@ -1,22 +1,43 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace SPICA.Formats.Utils
+namespace SPICA.Formats.Common
 {
     static class StringUtils
     {
         //Read
+        public static string ReadNullTerminatedString(this BinaryReader Reader)
+        {
+            StringBuilder SB = new StringBuilder();
+
+            char Chr;
+            while ((Chr = Reader.ReadChar()) != '\0')
+            {
+                SB.Append(Chr);
+            }
+
+            return SB.ToString();
+        }
+
         public static string ReadPaddedString(this BinaryReader Reader, int Length)
         {
             if (Length > 0)
             {
+                long Position = Reader.BaseStream.Position + Length;
+
                 StringBuilder SB = new StringBuilder();
 
                 while (Length-- > 0)
                 {
                     char Chr = Reader.ReadChar();
-                    if (Chr != '\0') SB.Append(Chr);
+
+                    if (Chr != '\0')
+                        SB.Append(Chr);
+                    else
+                        break;
                 }
+
+                Reader.BaseStream.Seek(Position, SeekOrigin.Begin);
 
                 return SB.ToString();
             }

@@ -10,11 +10,11 @@ namespace SPICA.Formats.GFL2.Model.Mesh
         public byte BoneIndicesCount;
 
         public byte[] BoneIndices;
-
-        public uint VerticesCount;
+        
         public uint IndicesCount;
-        public uint VerticesLength;
         public uint IndicesLength;
+        public uint VerticesCount;
+        public uint VerticesLength;
         public int  VertexStride;
 
         public ushort[] Indices;

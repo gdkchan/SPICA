@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.Utils;
+﻿using SPICA.Formats.Common;
 
 using System;
 using System.Drawing;
@@ -72,8 +72,8 @@ namespace SPICA.PICA.Converters
 
         private static byte[] ETC1Tile(ulong Block)
         {
-            uint BlockLow = (uint)(Block >> 32);
-            uint BlockHigh = (uint)Block;
+            uint BlockLow  = (uint)(Block >> 32);
+            uint BlockHigh = (uint)(Block >>  0);
 
             bool Flip = (BlockHigh & 0x1000000) != 0;
             bool Diff = (BlockHigh & 0x2000000) != 0;
@@ -87,8 +87,8 @@ namespace SPICA.PICA.Converters
                 G1 = (BlockHigh & 0x00f800) >> 8;
                 B1 = (BlockHigh & 0xf80000) >> 16;
 
-                R2 = (uint)((sbyte)(R1 >> 3) + ((sbyte)((BlockHigh & 0x000007) << 5) >> 5));
-                G2 = (uint)((sbyte)(G1 >> 3) + ((sbyte)((BlockHigh & 0x000700) >> 3) >> 5));
+                R2 = (uint)((sbyte)(R1 >> 3) + ((sbyte)((BlockHigh & 0x000007) <<  5) >> 5));
+                G2 = (uint)((sbyte)(G1 >> 3) + ((sbyte)((BlockHigh & 0x000700) >>  3) >> 5));
                 B2 = (uint)((sbyte)(B1 >> 3) + ((sbyte)((BlockHigh & 0x070000) >> 11) >> 5));
 
                 R1 |= R1 >> 5;
@@ -192,7 +192,7 @@ namespace SPICA.PICA.Converters
 
             int Pixel = Index < 8
                 ? ETC1LUT[Table, ((Block >> (Index + 24)) & 1) + ((MSB >> (Index + 8)) & 2)]
-                : ETC1LUT[Table, ((Block >> (Index + 8)) & 1) + ((MSB >> (Index - 8)) & 2)];
+                : ETC1LUT[Table, ((Block >> (Index +  8)) & 1) + ((MSB >> (Index - 8)) & 2)];
 
             R = Saturate((int)(R + Pixel));
             G = Saturate((int)(G + Pixel));

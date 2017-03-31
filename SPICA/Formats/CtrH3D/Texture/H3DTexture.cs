@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.Utils;
+﻿using SPICA.Formats.Common;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;

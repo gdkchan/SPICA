@@ -211,7 +211,7 @@ void main() {
 
 			if (PowerScale.y != 0) {
 				//This is needed by Pokémon only (their custom shader calculates Rim light)
-				Color.a = pow(Rim, PowerScale.x) * PowerScale.y;
+				Color.a = min(pow(Rim, PowerScale.x) * PowerScale.y, 1);
 			}
 		}
 
