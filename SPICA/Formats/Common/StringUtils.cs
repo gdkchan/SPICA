@@ -6,17 +6,32 @@ namespace SPICA.Formats.Common
     static class StringUtils
     {
         //Read
+        public static byte[] ReadNullTerminatedByteArray(this BinaryReader Reader)
+        {
+            using (MemoryStream MS = new MemoryStream())
+            {
+                for (byte Value; (Value = Reader.ReadByte()) != 0;)
+                {
+                    MS.WriteByte(Value);
+                }
+
+                return MS.ToArray();
+            }
+        }
+
         public static string ReadNullTerminatedString(this BinaryReader Reader)
         {
-            StringBuilder SB = new StringBuilder();
+            return Encoding.ASCII.GetString(Reader.ReadNullTerminatedByteArray());
+        }
 
-            char Chr;
-            while ((Chr = Reader.ReadChar()) != '\0')
-            {
-                SB.Append(Chr);
-            }
+        public static string ReadNullTerminatedString(this BinaryReader Reader, int CodePage)
+        {
+            return Encoding.GetEncoding(CodePage).GetString(Reader.ReadNullTerminatedByteArray());
+        }
 
-            return SB.ToString();
+        public static string ReadNullTerminatedStringSJis(this BinaryReader Reader)
+        {
+            return Reader.ReadNullTerminatedString(932);
         }
 
         public static string ReadPaddedString(this BinaryReader Reader, int Length)
@@ -27,14 +42,9 @@ namespace SPICA.Formats.Common
 
                 StringBuilder SB = new StringBuilder();
 
-                while (Length-- > 0)
+                for (char Value; Length-- > 0 && (Value = Reader.ReadChar()) != '\0';)
                 {
-                    char Chr = Reader.ReadChar();
-
-                    if (Chr != '\0')
-                        SB.Append(Chr);
-                    else
-                        break;
+                    SB.Append(Value);
                 }
 
                 Reader.BaseStream.Seek(Position, SeekOrigin.Begin);

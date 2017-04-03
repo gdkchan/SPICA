@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    class MTDepthStencilConfig
+    class MTDepthStencil : MTShaderEffect
     {
         public bool DepthTest;
         public bool DepthWrite;
@@ -14,7 +14,7 @@ namespace SPICA.Formats.MTFramework.Shader
 
         public sbyte StencilRef;
 
-        public MTDepthStencilConfig(BinaryReader Reader)
+        public MTDepthStencil(BinaryReader Reader)
         {
             byte DepthStencilTest = Reader.ReadByte();
 

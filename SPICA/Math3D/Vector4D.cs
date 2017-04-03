@@ -24,6 +24,30 @@ namespace SPICA.Math3D
             this.W = W;
         }
 
+        public Vector4D(Vector2D Value)
+        {
+            X = Value.X;
+            Y = Value.Y;
+            Z = 0;
+            W = 0;
+        }
+
+        public Vector4D(Vector3D Value)
+        {
+            X = Value.X;
+            Y = Value.Y;
+            Z = Value.Z;
+            W = 0;
+        }
+
+        public Vector4D(Vector4D Value)
+        {
+            X = Value.X;
+            Y = Value.Y;
+            Z = Value.Z;
+            W = Value.W;
+        }
+
         public Vector4D(BinaryReader Reader)
         {
             X = Reader.ReadSingle();

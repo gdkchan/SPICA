@@ -1,11 +1,27 @@
 ﻿using SPICA.PICA.Commands;
 
+using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    class MTAttributesGroup
+    class MTAttributesGroup : MTShaderEffect
     {
+        private enum AttributeFormat
+        {
+            F32 = 1,
+            S16 = 3,
+            U16 = 4,
+            S16N = 5,
+            U16N = 6,
+            S8 = 7,
+            U8 = 8,
+            S8N = 9,
+            U8N = 10,
+            RGB = 13,
+            RGBA = 14
+        }
+
         private static float[] Scales = 
         {
             1f / sbyte.MaxValue,
@@ -21,25 +37,28 @@ namespace SPICA.Formats.MTFramework.Shader
         public MTAttributesGroup(BinaryReader Reader, uint StringsTblAddr)
         {
             byte   AttrId    = Reader.ReadByte(); //?
-            ushort Length    = Reader.ReadUInt16();
-            byte   WordCount = Reader.ReadByte();
-            uint   Padding   = Reader.ReadUInt32();
+            ushort AttrCount = Reader.ReadUInt16(); //Bits 4-15 = Total attributes count
+            byte   Stride    = Reader.ReadByte(); //In Word Count (32-bits)
+            uint   Padding   = Reader.ReadUInt32(); //Not sure but seems to be always 0 so padding I guess
 
-            Attributes = new PICAAttribute[WordCount >> 1];
+            AttrCount >>= 4;
 
-            for (int j = 0; j < Attributes.Length; j++)
+            Stride *= 4;
+
+            int RealOffset = 0;
+
+            List<PICAAttribute> Attributes = new List<PICAAttribute>();
+
+            for (int j = 0; j < AttrCount; j++)
             {
                 string Name = MTShaderEffects.GetName(Reader, StringsTblAddr);
 
                 uint Format = Reader.ReadUInt32();
 
-                bool IsNormalized = (Format & 0x40) != 0; //When true number is in 0/1 range (or -1/1 when below is false?)
-                bool IsUnsigned   = (Format & 0x80) != 0; //When true number is unsigned (no negative values)? Not sure
-
-                uint AttrIndex  = (Format >>  0) & 0x3f;
-                uint AttrFormat = (Format >>  8) & 0x7;
-                uint AttrElems  = (Format >> 11) & 0x3;
-                uint AttrOffset = (Format >> 24) & 0xff;
+                uint AttrIndex  = (Format >>  0) & 0x3f; //Used when attribute is repeated usually
+                uint AttrFormat = (Format >>  6) & 0x1f; //See AttributeFormat enumerator
+                uint AttrElems  = (Format >> 11) & 0x3; //2 = 2D, 3 = 3D, 4 = 4D, ...
+                uint AttrOffset = (Format >> 24) & 0xff; //In Word Count (32-bits)
 
                 AttrOffset *= 4;
 
@@ -61,23 +80,35 @@ namespace SPICA.Formats.MTFramework.Shader
                     default: Attr.Name = PICAAttributeName.UserAttribute0; break;
                 }
 
-                switch (AttrFormat)
+                bool Norm = false;
+
+                int Size = 1;
+
+                switch ((AttributeFormat)AttrFormat)
                 {
-                    case 0: Attr.Format = PICAAttributeFormat.Float; break;
-                    case 1: Attr.Format = PICAAttributeFormat.Short; break;
-                    case 2: Attr.Format = PICAAttributeFormat.Byte;  break;
-                    case 3: Attr.Format = PICAAttributeFormat.Ubyte; break;
+                    case AttributeFormat.F32:  Attr.Format = PICAAttributeFormat.Float; Norm = false; Size = 4; break;
+                    case AttributeFormat.S16:  Attr.Format = PICAAttributeFormat.Short; Norm = false; Size = 2; break;
+                    case AttributeFormat.S16N: Attr.Format = PICAAttributeFormat.Short; Norm = true;  Size = 2; break;
+                    case AttributeFormat.S8:   Attr.Format = PICAAttributeFormat.Byte;  Norm = false; Size = 1; break;
+                    case AttributeFormat.U8:   Attr.Format = PICAAttributeFormat.Ubyte; Norm = false; Size = 1; break;
+                    case AttributeFormat.S8N:  Attr.Format = PICAAttributeFormat.Byte;  Norm = true;  Size = 1; break;
+                    case AttributeFormat.U8N:  Attr.Format = PICAAttributeFormat.Ubyte; Norm = true;  Size = 1; break;
+                    case AttributeFormat.RGB:  Attr.Format = PICAAttributeFormat.Ubyte; Norm = true;  Size = 1; break;
+                    case AttributeFormat.RGBA: Attr.Format = PICAAttributeFormat.Ubyte; Norm = true;  Size = 1; break;
                 }
 
-                if (IsNormalized)
-                    Attr.Scale = Scales[(int)Attr.Format];
-                else
-                    Attr.Scale = 1;
+                Attr.Scale = Norm ? Scales[(int)Attr.Format] : 1;
 
                 Attr.Elements = (int)AttrElems;
 
-                Attributes[j] = Attr;
+                Attributes.Add(Attr);
+
+                RealOffset += (int)(Size * AttrElems);
+
+                if (RealOffset >= Stride) break;
             }
+
+            this.Attributes = Attributes.ToArray();
         }
     }
 }

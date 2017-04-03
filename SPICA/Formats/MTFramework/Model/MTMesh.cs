@@ -15,10 +15,11 @@ namespace SPICA.Formats.MTFramework.Model
 
         public PICAAttribute[] Attributes;
 
-        public uint MaterialIndex;
-        public uint MeshGroupIndex;
+        public uint  MaterialIndex;
+        public uint  MeshGroupIndex;
         public sbyte RenderType;
-        public byte RenderLayer;
+        public byte  RenderPriority;
+        public byte  BoneIndicesIndex;
 
         public MTMesh(
             BinaryReader Reader,
@@ -26,13 +27,11 @@ namespace SPICA.Formats.MTFramework.Model
             uint VerticesBufferAddress,
             uint IndicesBufferAddress)
         {
-            //Stuff with a ? is most likely wrong
-            //The rest is maybe wrong but probably right
             ushort MeshTypeFlags  = Reader.ReadUInt16(); //?
             ushort VerticesCount  = Reader.ReadUInt16();
             uint MatMeshIndices   = Reader.ReadUInt32();
             byte MeshFlags        = Reader.ReadByte(); //?
-            byte RenderLayer      = Reader.ReadByte();
+            byte RenderPriority   = Reader.ReadByte();
             byte VertexStride     = Reader.ReadByte();
             byte AttributesCount  = Reader.ReadByte();
             uint VerticesIndex    = Reader.ReadUInt32();
@@ -41,18 +40,15 @@ namespace SPICA.Formats.MTFramework.Model
             uint IndicesIndex     = Reader.ReadUInt32();
             uint IndicesCount     = Reader.ReadUInt32();
             uint IndicesOffset    = Reader.ReadUInt32();
+            byte BoneIndicesCount = Reader.ReadByte(); //Always 0? Probably wrong
             byte BoneIndicesIndex = Reader.ReadByte();
-            byte BoneIndicesCount = Reader.ReadByte();
             ushort MeshIndex      = Reader.ReadUInt16();
-            ushort StartIndex     = Reader.ReadUInt16(); //?
-            ushort EndIndex       = Reader.ReadUInt16(); //?
-            Reader.ReadUInt16();
-            Reader.ReadByte();
 
-            this.VertexStride = VertexStride;
-            this.RenderLayer  = RenderLayer;
+            this.VertexStride     = VertexStride;
+            this.RenderPriority   = RenderPriority;
+            this.BoneIndicesIndex = BoneIndicesIndex;
 
-            MeshGroupIndex = (MatMeshIndices >>  0) & 0xfff;
+            MeshGroupIndex = (MatMeshIndices >>  0) & 0xfff; //?
             MaterialIndex  = (MatMeshIndices >> 12) & 0xfff;
             RenderType = (sbyte)(MatMeshIndices >> 24);
 

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    class MTAlphaBlendConfig
+    class MTAlphaBlend : MTShaderEffect
     {
         public PICABlendMode BlendMode;
         public PICABlendFunction BlendFunction;
@@ -14,7 +14,7 @@ namespace SPICA.Formats.MTFramework.Shader
         public bool BlueWrite;
         public bool AlphaWrite;
 
-        public MTAlphaBlendConfig(BinaryReader Reader)
+        public MTAlphaBlend(BinaryReader Reader)
         {
             //First 4 bytes seems to use bit 0 for something else, so we need to rsh the value by 1?
             BlendMode = (PICABlendMode)(Reader.ReadByte() >> 1);

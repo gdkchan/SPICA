@@ -28,6 +28,27 @@ namespace SPICA.Math3D
             this.Z = Z;
         }
 
+        public Vector3D(Vector2D Value)
+        {
+            X = Value.X;
+            Y = Value.Y;
+            Z = 0;
+        }
+
+        public Vector3D(Vector3D Value)
+        {
+            X = Value.X;
+            Y = Value.Y;
+            Z = Value.Z;
+        }
+
+        public Vector3D(Vector4D Value)
+        {
+            X = Value.X;
+            Y = Value.Y;
+            Z = Value.Z;
+        }
+
         public Vector3D(BinaryReader Reader)
         {
             X = Reader.ReadSingle();

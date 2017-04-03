@@ -98,6 +98,8 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 Output.EnabledTextures[0] = true;
 
+                Output.Name = "SPICA_Material";
+
                 return Output;
             }
         }

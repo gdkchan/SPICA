@@ -51,11 +51,15 @@ namespace SPICA.WinForms.Formats
                     }
                     else if (Magic.StartsWith("MOD"))
                     {
-                        return LoadMTModel(Reader, Path.GetDirectoryName(FileName));
+                        return LoadMTModel(Reader, FileName, Path.GetDirectoryName(FileName));
                     }
                     else if (Magic.StartsWith("TEX"))
                     {
                         return new MTTexture(Reader, Path.GetFileNameWithoutExtension(FileName)).ToH3D();
+                    }
+                    else if (Magic.StartsWith("MFX"))
+                    {
+                        MTShader = new MTShaderEffects(Reader);
                     }
                     else
                     {
@@ -108,14 +112,19 @@ namespace SPICA.WinForms.Formats
 
         private static MTShaderEffects MTShader;
 
-        private static H3D LoadMTModel(BinaryReader Reader, string MRLSearchPath)
+        private static H3D LoadMTModel(BinaryReader Reader, string ModelFile, string MRLSearchPath)
         {
             if (MTShader != null)
             {
-                MTMaterials MRLData = null;
+                MTMaterials MRLData = new MTMaterials();
 
                 foreach (string File in Directory.GetFiles(MRLSearchPath))
                 {
+                    if (File == ModelFile || !File.StartsWith(ModelFile.Substring(0, ModelFile.LastIndexOf('.'))))
+                    {
+                        continue;
+                    }
+
                     using (FileStream Input = new FileStream(File, FileMode.Open))
                     {
                         if (Input.Length < 4) continue;
@@ -128,9 +137,7 @@ namespace SPICA.WinForms.Formats
                         {
                             Input.Seek(0, SeekOrigin.Begin);
 
-                            MRLData = new MTMaterials(Input, MTShader);
-
-                            break;
+                            MRLData.Materials.AddRange(new MTMaterials(Input, MTShader).Materials);
                         }
                     }
                 }
@@ -156,7 +163,7 @@ namespace SPICA.WinForms.Formats
                         {
                             LoadMTShader(OpenDlg.FileName);
 
-                            return LoadMTModel(Reader, MRLSearchPath);
+                            return LoadMTModel(Reader, ModelFile, MRLSearchPath);
                         }
                     }
                 }

@@ -12,10 +12,13 @@ namespace SPICA.Math3D
         [XmlAttribute] public float Z;
         [XmlAttribute] public float W;
 
-        public Vector3D VectorPart { get { return new Vector3D(X, Y, Z); } }
-
         public static Quaternion Empty { get { return new Quaternion(0, 0, 0, 0); } }
+
         public static Quaternion Identity { get { return new Quaternion(0, 0, 0, 1); } }
+
+        public float Length { get { return (float)Math.Sqrt(Dot(this, this)); } }
+
+        public Vector3D VectorPart { get { return new Vector3D(X, Y, Z); } }
 
         public Quaternion(float X, float Y, float Z, float W)
         {
@@ -126,6 +129,20 @@ namespace SPICA.Math3D
         public override string ToString()
         {
             return $"X: {X} Y: {Y} Z: {Z} W: {W}";
+        }
+
+        public Quaternion Normalized()
+        {
+            if (Length == 0)
+            {
+                return this;
+            }
+            else
+            {
+                float IL = 1 / Length;
+
+                return new Quaternion(X * IL, Y * IL, Z * IL, W * IL);
+            }
         }
 
         public Vector3D ToEuler()

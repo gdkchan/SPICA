@@ -26,7 +26,6 @@ namespace SPICA.Formats.MTFramework.Texture
             int  Word0 = Reader.ReadInt32();
             uint Word1 = Reader.ReadUInt32();
             uint Word2 = Reader.ReadUInt32();
-            uint Padding = Reader.ReadUInt32();
 
             int  Version = (Word0 >>  0) & 0xfff;
             int  Shift   = (Word0 >> 24) & 0xf;
@@ -41,6 +40,11 @@ namespace SPICA.Formats.MTFramework.Texture
             this.Format = (MTTextureFormat)Format;
 
             Aspect <<= Shift;
+
+            if (Version > 0xa3)
+            {
+                Reader.ReadUInt32();
+            }
 
             RawBuffer = Reader.ReadBytes((int)(
                 Reader.BaseStream.Length -

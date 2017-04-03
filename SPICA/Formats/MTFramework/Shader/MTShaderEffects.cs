@@ -12,6 +12,10 @@ namespace SPICA.Formats.MTFramework.Shader
             Dictionary<uint, object> Descriptors = new
             Dictionary<uint, object>();
 
+        public readonly
+            List<MTFragmentLighting> FragmentLighting = new
+            List<MTFragmentLighting>();
+
         public MTShaderEffects(Stream Input) : this(new BinaryReader(Input)) { }
 
         public MTShaderEffects(BinaryReader Reader)
@@ -29,8 +33,6 @@ namespace SPICA.Formats.MTFramework.Shader
             uint VtxProgramAddr   = Reader.ReadUInt32();
 
             long VtxFormatsAddr = Reader.BaseStream.Position;
-
-            System.Diagnostics.Debug.WriteLine(DescriptorsCount);
 
             for (uint i = 0; i < DescriptorsCount; i++)
             {
@@ -50,9 +52,7 @@ namespace SPICA.Formats.MTFramework.Shader
 
                 uint Hash = (CRC32Hash.Hash(DescName) << 12) | DescIndex;
 
-                System.Diagnostics.Debug.WriteLine(DescName + " - " + Hash.ToString("x8"));
-
-                object Desc = null;
+                MTShaderEffect Desc = new MTShaderEffect();
 
                 if (TypeName == "__InputLayout")
                 {
@@ -62,16 +62,28 @@ namespace SPICA.Formats.MTFramework.Shader
                 {
                     switch (DescType)
                     {
-                        case 5: Desc = new MTAlphaBlendConfig(Reader); break;
-                        case 6: Desc = new MTDepthStencilConfig(Reader); break;
+                        case 2: Desc = new MTTextureMap(Reader); break;
+                        case 5: Desc = new MTAlphaBlend(Reader); break;
+                        case 6: Desc = new MTDepthStencil(Reader); break;
                     }
                 }
 
-                if (Desc != null) Descriptors.Add(Hash, Desc);
+                Desc.Name = DescName;
+                Desc.Type = TypeName;
+
+                Descriptors.Add(Hash, Desc);
+            }
+
+            for (uint i = 0; i < FragShaderCount; i++)
+            {
+                Reader.BaseStream.Seek(FragShaderAddr + i * 4, SeekOrigin.Begin);
+                Reader.BaseStream.Seek(Reader.ReadUInt32(), SeekOrigin.Begin);
+
+                FragmentLighting.Add(new MTFragmentLighting(Reader));
             }
         }
 
-        internal static string GetName(BinaryReader Reader, uint StringsAddr)
+        internal static string GetName(BinaryReader Reader, uint StringsAddr, bool ShiftJis = false)
         {
             uint Address = Reader.ReadUInt32();
 
@@ -79,14 +91,16 @@ namespace SPICA.Formats.MTFramework.Shader
 
             Reader.BaseStream.Seek(StringsAddr + Address, SeekOrigin.Begin);
 
-            string Output = Reader.ReadNullTerminatedString();
+            string Output = ShiftJis
+                ? Reader.ReadNullTerminatedStringSJis()
+                : Reader.ReadNullTerminatedString();
 
             Reader.BaseStream.Seek(Position, SeekOrigin.Begin);
 
             return Output;
         }
 
-        public T GetDescriptor<T>(uint HashIndex)
+        public T GetDescriptor<T>(uint HashIndex) where T : MTShaderEffect
         {
             object Value;
 

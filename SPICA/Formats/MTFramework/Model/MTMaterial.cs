@@ -2,12 +2,12 @@
 
 namespace SPICA.Formats.MTFramework.Model
 {
-    struct MTMaterial
+    class MTMaterial
     {
         public uint NameHash;
 
-        public MTAlphaBlendConfig AlphaBlend;
-        public MTDepthStencilConfig DepthStencil;
+        public MTAlphaBlend   AlphaBlend;
+        public MTDepthStencil DepthStencil;
 
         public string Texture0Name;
         public string Name;

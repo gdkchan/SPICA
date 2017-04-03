@@ -20,6 +20,30 @@ namespace SPICA.Math3D
             this.A = A;
         }
 
+        public RGBAFloat(Vector2D Value)
+        {
+            R = Value.X;
+            G = Value.Y;
+            B = 0;
+            A = 0;
+        }
+
+        public RGBAFloat(Vector3D Value)
+        {
+            R = Value.X;
+            G = Value.Y;
+            B = Value.Z;
+            A = 0;
+        }
+
+        public RGBAFloat(Vector4D Value)
+        {
+            R = Value.X;
+            G = Value.Y;
+            B = Value.Z;
+            A = Value.W;
+        }
+
         public RGBAFloat(BinaryReader Reader)
         {
             R = Reader.ReadSingle();
