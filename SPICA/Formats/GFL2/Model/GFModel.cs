@@ -7,7 +7,7 @@ using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.GFL2.Model.Material;
 using SPICA.Formats.GFL2.Model.Mesh;
 using SPICA.Math3D;
-using System;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -220,14 +220,7 @@ namespace SPICA.Formats.MTFramework.Model
                     {
                         SM.BoneIndices[i] = BoneIndicesGroups[Mesh.BoneIndicesIndex][i];
                     }
-                }
 
-                SM.Indices = Mesh.Indices;
-
-                M.SubMeshes.Add(SM);
-
-                //if (SM.BoneIndicesCount > 0)
-                {
                     PICAVertex[] Vertices = M.ToVertices(true);
 
                     foreach (PICAVertex Vtx in Vertices)
@@ -274,6 +267,10 @@ namespace SPICA.Formats.MTFramework.Model
 
                     M.RawBuffer = VerticesConverter.GetBuffer(Vertices, M.Attributes);
                 }
+
+                SM.Indices = Mesh.Indices;
+
+                M.SubMeshes.Add(SM);
 
                 Model.AddMesh(M, 0, Mesh.RenderPriority);
 
