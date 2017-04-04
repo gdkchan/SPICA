@@ -66,18 +66,6 @@ namespace SPICA.Formats.GFL2.Model
             }
         }
 
-        public static List<GFLUT> ReadList(BinaryReader Reader, string BaseName, int Length, int Count)
-        {
-            List<GFLUT> Output = new List<GFLUT>();
-
-            for (int Index = 0; Index < Count; Index++)
-            {
-                Output.Add(new GFLUT(Reader, $"Sampler_{BaseName}_{Index}", Length));
-            }
-
-            return Output;
-        }
-
         public void Write(BinaryWriter Writer)
         {
             //TODO

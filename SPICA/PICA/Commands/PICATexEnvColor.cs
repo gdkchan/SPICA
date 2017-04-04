@@ -1,4 +1,6 @@
-﻿using System.Xml.Serialization;
+﻿using SPICA.Math3D;
+
+using System.Xml.Serialization;
 
 namespace SPICA.PICA.Commands
 {
@@ -27,6 +29,11 @@ namespace SPICA.PICA.Commands
             Param |= (uint)A << 24;
 
             return Param;
+        }
+
+        public RGBA ToRGBA()
+        {
+            return new RGBA(R, G, B, A);
         }
 
         public override string ToString()

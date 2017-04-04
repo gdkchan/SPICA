@@ -7,7 +7,7 @@ using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.GFL2.Model.Material;
 using SPICA.Formats.GFL2.Model.Mesh;
 using SPICA.Math3D;
-
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +37,7 @@ namespace SPICA.Formats.GFL2.Model
             Meshes    = new List<GFMesh>();
         }
 
-        public GFModel(BinaryReader Reader, string ModelName)
+        public GFModel(BinaryReader Reader, string ModelName) : this()
         {
             Name = ModelName;
 
@@ -55,7 +55,7 @@ namespace SPICA.Formats.GFL2.Model
 
             BBoxMinVector = new Vector4D(Reader);
             BBoxMaxVector = new Vector4D(Reader);
-            Transform = new Matrix4x4(Reader);
+            Transform     = new Matrix4x4(Reader);
 
             //TODO: Investigate what is this (maybe Tile permissions?)
             uint UnknownDataLength = Reader.ReadUInt32();
@@ -68,7 +68,10 @@ namespace SPICA.Formats.GFL2.Model
 
             Reader.BaseStream.Seek(0xc, SeekOrigin.Current);
 
-            Skeleton = GFBone.ReadList(Reader, BonesCount);
+            for (int Index = 0; Index < BonesCount; Index++)
+            {
+                Skeleton.Add(new GFBone(Reader));
+            }
 
             GFSection.SkipPadding(Reader);
 
@@ -77,9 +80,20 @@ namespace SPICA.Formats.GFL2.Model
 
             GFSection.SkipPadding(Reader);
 
-            LUTs      = GFLUT     .ReadList(Reader, ModelName, LUTLength, LUTsCount);
-            Materials = GFMaterial.ReadList(Reader, MaterialNames.Length);
-            Meshes    = GFMesh    .ReadList(Reader, MeshNames.Length);
+            for (int Index = 0; Index < LUTsCount; Index++)
+            {
+                LUTs.Add(new GFLUT(Reader, $"Sampler_{ModelName}_{Index}", LUTLength));
+            }
+
+            for (int Index = 0; Index < MaterialNames.Length; Index++)
+            {
+                Materials.Add(new GFMaterial(Reader));
+            }
+
+            for (int Index = 0; Index < MeshNames.Length; Index++)
+            {
+                Meshes.Add(new GFMesh(Reader));
+            }
         }
 
         private GFHashName[] ReadHashTable(BinaryReader Reader)
@@ -164,6 +178,8 @@ namespace SPICA.Formats.GFL2.Model
                     Mat.TextureMappers[Unit].MinFilter = (H3DTextureMinFilter)Material.TextureCoords[Unit].MinFilter;
 
                     Mat.TextureMappers[Unit].MinLOD = (byte)Material.TextureCoords[Unit].MinLOD;
+
+                    Mat.TextureMappers[Unit].BorderColor = Material.BorderColor[Unit].ToRGBA();
                 }
 
                 Params.EmissionColor  = Material.EmissionColor;

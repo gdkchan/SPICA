@@ -25,8 +25,6 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public uint MinLOD;
 
-        public PICATexEnvColor BorderColor;
-
         public GFTextureCoord(BinaryReader Reader)
         {
             Hash = Reader.ReadUInt32();
@@ -47,8 +45,6 @@ namespace SPICA.Formats.GFL2.Model.Material
             MinFilter = (GFMinFilter)Reader.ReadUInt32(); //Not sure
 
             MinLOD = Reader.ReadUInt32(); //Not sure
-
-            BorderColor = default(PICATexEnvColor);
         }
     }
 }

@@ -26,17 +26,5 @@ namespace SPICA.Formats.GFL2.Model
             Rotation    = new Vector3D(Reader);
             Translation = new Vector3D(Reader);
         }
-
-        public static List<GFBone> ReadList(BinaryReader Reader, int Count)
-        {
-            List<GFBone> Output = new List<GFBone>();
-
-            for (int Index = 0; Index < Count; Index++)
-            {
-                Output.Add(new GFBone(Reader));
-            }
-
-            return Output;
-        }
     }
 }

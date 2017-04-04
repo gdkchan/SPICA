@@ -72,7 +72,7 @@ namespace SPICA.Formats.GFL2.Model.Material
         //Fragment Lighting
         public PICAColorOperation   ColorOperation;
         public PICABlendFunction    BlendFunction;
-        public PICALogicalOperation LogicalOperation;
+        public PICALogicalOp        LogicalOperation;
         public PICAAlphaTest        AlphaTest;
         public PICAStencilTest      StencilTest;
         public PICAStencilOperation StencilOperation;
@@ -95,11 +95,15 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public GFTextureCoord[] TextureCoords;
 
+        public PICATexEnvColor[] BorderColor;
+
         public float[] TextureSources;
 
         public GFMaterial()
         {
             TextureCoords  = new GFTextureCoord[3];
+
+            BorderColor = new PICATexEnvColor[3];
 
             TextureSources = new float[4];
         }
@@ -217,15 +221,15 @@ namespace SPICA.Formats.GFL2.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR: TextureCoords[0].BorderColor = new PICATexEnvColor(Param); break;
-                    case PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR: TextureCoords[1].BorderColor = new PICATexEnvColor(Param); break;
-                    case PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR: TextureCoords[2].BorderColor = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR: BorderColor[0] = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR: BorderColor[1] = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR: BorderColor[2] = new PICATexEnvColor(Param); break;
 
                     case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
 
                     case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = new PICABlendFunction(Param); break;
 
-                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
+                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOp)(Param & 0xf); break;
 
                     case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: AlphaTest = new PICAAlphaTest(Param); break;
 
@@ -280,18 +284,6 @@ namespace SPICA.Formats.GFL2.Model.Material
             TextureSources[1] = Uniform[0].Y;
             TextureSources[2] = Uniform[0].Z;
             TextureSources[3] = Uniform[0].W;
-        }
-
-        public static List<GFMaterial> ReadList(BinaryReader Reader, int Count)
-        {
-            List<GFMaterial> Output = new List<GFMaterial>();
-
-            for (int Index = 0;  Index < Count; Index++)
-            {
-                Output.Add(new GFMaterial(Reader));
-            }
-
-            return Output;
         }
     }
 }

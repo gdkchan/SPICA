@@ -8,7 +8,8 @@ namespace SPICA.Formats.MTFramework.Texture
     {
         RGBA8  = 0x3,
         ETC1   = 0xb,
-        ETC1A4 = 0xc
+        ETC1A4 = 0xc,
+        RGB8   = 0x11
     }
 
     public static class MTTextureFormatExtensions
@@ -20,6 +21,7 @@ namespace SPICA.Formats.MTFramework.Texture
                 case MTTextureFormat.RGBA8:  return PICATextureFormat.RGBA8;
                 case MTTextureFormat.ETC1:   return PICATextureFormat.ETC1;
                 case MTTextureFormat.ETC1A4: return PICATextureFormat.ETC1A4;
+                case MTTextureFormat.RGB8:   return PICATextureFormat.RGB8;
 
                 default: throw new NotImplementedException($"Unimplemented format {Format}!");
             }

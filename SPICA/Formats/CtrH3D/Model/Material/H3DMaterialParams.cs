@@ -5,6 +5,7 @@ using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+
 using System;
 using System.Xml.Serialization;
 
@@ -112,7 +113,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         [Ignore] public PICATexEnvColor      TexEnvBufferColor;
         [Ignore] public PICAColorOperation   ColorOperation;
         [Ignore] public PICABlendFunction    BlendFunction;
-        [Ignore] public PICALogicalOperation LogicalOperation;
+        [Ignore] public PICALogicalOp        LogicalOperation;
         [Ignore] public PICAAlphaTest        AlphaTest;
         [Ignore] public PICAStencilTest      StencilTest;
         [Ignore] public PICAStencilOperation StencilOperation;
@@ -335,7 +336,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                     case PICARegister.GPUREG_BLEND_FUNC: BlendFunction = new PICABlendFunction(Param); break;
 
-                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOperation)(Param & 0xf); break;
+                    case PICARegister.GPUREG_LOGIC_OP: LogicalOperation = (PICALogicalOp)(Param & 0xf); break;
 
                     case PICARegister.GPUREG_FRAGOP_ALPHA_TEST: AlphaTest = new PICAAlphaTest(Param); break;
 

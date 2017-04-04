@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICALogicalOperation
+    public enum PICALogicalOp
     {
         Clear,
         And,

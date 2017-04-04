@@ -193,7 +193,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilOperation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATestFunc.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALogicalOperation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALogicalOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvCombiner.cs" />

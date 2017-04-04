@@ -155,10 +155,7 @@ namespace SPICA.Formats.MTFramework.Model
                     BoneIndicesGroups[i][j] = Reader.ReadByte();
                 }
 
-                while ((Reader.BaseStream.Position & 3) != 0)
-                {
-                    Reader.ReadByte();
-                }
+                Reader.BaseStream.Seek(0x18 - Count, SeekOrigin.Current);
             }
         }
 
@@ -213,7 +210,7 @@ namespace SPICA.Formats.MTFramework.Model
                 if ((Model.Flags & H3DModelFlags.HasSkeleton) != 0)
                 {
                     SM.Skinning = H3DSubMeshSkinning.Smooth;
-                    M.Skinning = H3DMeshSkinning.Smooth;
+                    M.Skinning  = H3DMeshSkinning.Smooth;
 
                     SM.BoneIndicesCount = (ushort)BoneIndicesGroups[Mesh.BoneIndicesIndex].Length;
 
@@ -229,7 +226,7 @@ namespace SPICA.Formats.MTFramework.Model
 
                 M.SubMeshes.Add(SM);
 
-                if (SM.BoneIndicesCount > 0)
+                //if (SM.BoneIndicesCount > 0)
                 {
                     PICAVertex[] Vertices = M.ToVertices(true);
 
