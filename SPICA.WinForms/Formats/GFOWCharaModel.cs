@@ -40,7 +40,7 @@ namespace SPICA.WinForms.Formats
             }
 
             //Material Animations
-            if (Header.Entries[2].Length > 0)
+            if (Header.Entries.Length > 2)
             {
                 Input.Seek(Header.Entries[2].Address, SeekOrigin.Begin);
 

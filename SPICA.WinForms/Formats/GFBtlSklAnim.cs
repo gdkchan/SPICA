@@ -36,8 +36,6 @@ namespace SPICA.WinForms.Formats
             {
                 Input.Seek(Entry.Address, SeekOrigin.Begin);
 
-                System.Diagnostics.Debug.WriteLine(Input.Position.ToString("x8"));
-
                 if (Entry.Length > 0)
                 {
                     byte[] Data = new byte[Entry.Length];
