@@ -24,7 +24,7 @@ namespace SPICA.Renderer.Animation
             public bool HasMtxTransform;
         }
 
-        private const string InvalidPrimitiveTypeEx = "Invalid Primitive type used on Skeleton Bone!";
+        private const string InvalidPrimitiveTypeEx = "Invalid Primitive type used on Skeleton Bone {0}!";
 
         public Matrix4[] GetSkeletonTransforms(PatriciaList<H3DBone> Skeleton)
         {
@@ -71,7 +71,7 @@ namespace SPICA.Renderer.Animation
 
                             break;
 
-                        default: throw new InvalidOperationException(InvalidPrimitiveTypeEx);
+                        default: throw new InvalidOperationException(string.Format(InvalidPrimitiveTypeEx, Bone.Name));
                     }
                 }
 
@@ -118,9 +118,11 @@ namespace SPICA.Renderer.Animation
             if (Transform.ScaleX.HasData)       B.Scale.X       = Transform.ScaleX.GetFrameValue(Frame);
             if (Transform.ScaleY.HasData)       B.Scale.Y       = Transform.ScaleY.GetFrameValue(Frame);
             if (Transform.ScaleZ.HasData)       B.Scale.Z       = Transform.ScaleZ.GetFrameValue(Frame);
+
             if (Transform.RotationX.HasData)    B.Rotation.X    = Transform.RotationX.GetFrameValue(Frame);
             if (Transform.RotationY.HasData)    B.Rotation.Y    = Transform.RotationY.GetFrameValue(Frame);
             if (Transform.RotationZ.HasData)    B.Rotation.Z    = Transform.RotationZ.GetFrameValue(Frame);
+
             if (Transform.TranslationX.HasData) B.Translation.X = Transform.TranslationX.GetFrameValue(Frame);
             if (Transform.TranslationY.HasData) B.Translation.Y = Transform.TranslationY.GetFrameValue(Frame);
             if (Transform.TranslationZ.HasData) B.Translation.Z = Transform.TranslationZ.GetFrameValue(Frame);

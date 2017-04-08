@@ -92,15 +92,10 @@ namespace SPICA.Renderer.Animation
             if (State == AnimationState.Playing && Math.Abs(Step) < 8) Step *= 2;
         }
 
-        public void Play(float Step)
+        public void Play(float Step = 1)
         {
             this.Step = Step;
 
-            Play();
-        }
-
-        public void Play()
-        {
             State = AnimationState.Playing;
         }
 

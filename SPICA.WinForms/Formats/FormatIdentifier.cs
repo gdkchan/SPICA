@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.CtrH3D;
+﻿using SPICA.Formats;
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.Generic.StudioMdl;
@@ -8,6 +9,7 @@ using SPICA.Formats.GFL2.Motion;
 using SPICA.Formats.MTFramework.Model;
 using SPICA.Formats.MTFramework.Shader;
 using SPICA.Formats.MTFramework.Texture;
+
 using System;
 using System.IO;
 using System.Text;
@@ -15,6 +17,13 @@ using System.Windows.Forms;
 
 namespace SPICA.WinForms.Formats
 {
+    enum OpenResponse
+    {
+        Unsupported,
+        NeedsSkeleton,
+        Success
+    }
+
     static class FormatIdentifier
     {
         public static H3D IdentifyAndOpen(string FileName, PatriciaList<H3DBone> Skeleton = null)
@@ -77,6 +86,7 @@ namespace SPICA.WinForms.Formats
                                 case "MM": Output = GFOWCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, Skeleton); break;
                                 case "PT": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 0); break;
+                                case "PK": Output = GFPkmnSklAnim.OpenAsH3D(FS, PackHeader); break;
                             }
                         }
                         else

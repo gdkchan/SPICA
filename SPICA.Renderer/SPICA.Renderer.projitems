@@ -35,7 +35,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\RGBA.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SPICA_GL\Vector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Texture.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TransformableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderUtils.cs" />
   </ItemGroup>
   <ItemGroup>

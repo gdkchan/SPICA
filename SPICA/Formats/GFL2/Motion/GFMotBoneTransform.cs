@@ -85,10 +85,8 @@ namespace SPICA.Formats.GFL2.Motion
                 float Weight = FrameDiff / (Right.Frame - Left.Frame);
 
                 Value = Interpolation.Herp(
-                    Left.Value,
-                    Right.Value,
-                    Left.Slope,
-                    Right.Slope,
+                    Left.Value, Right.Value,
+                    Left.Slope, Right.Slope,
                     FrameDiff,
                     Weight);
             }

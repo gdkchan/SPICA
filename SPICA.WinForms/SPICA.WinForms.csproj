@@ -69,6 +69,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Formats\FileIO.cs" />
+    <Compile Include="Formats\GFPkmnSklAnim.cs" />
     <Compile Include="GUI\Animation\AllAnimations.cs" />
     <Compile Include="Formats\FormatIdentifier.cs" />
     <Compile Include="Formats\GFBtlSklAnim.cs" />

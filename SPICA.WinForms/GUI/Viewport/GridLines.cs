@@ -1,13 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.ES30;
 
-using SPICA.Renderer;
-
 using System;
 
 namespace SPICA.WinForms.GUI.Viewport
 {
-    class GridLines : TransformableObject, IDisposable
+    class GridLines : IDisposable
     {
         private const int LinesCount = 102;
 
@@ -15,6 +13,8 @@ namespace SPICA.WinForms.GUI.Viewport
         private int VAOHandle;
 
         public bool Visible;
+
+        public Matrix4 Transform;
 
         public GridLines()
         {
@@ -48,6 +48,8 @@ namespace SPICA.WinForms.GUI.Viewport
 
             VBOHandle = GL.GenBuffer();
             VAOHandle = GL.GenVertexArray();
+
+            Transform = Matrix4.Identity;
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBOHandle);
             GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(Buffer.Length * 16), Buffer, BufferUsageHint.StaticDraw);

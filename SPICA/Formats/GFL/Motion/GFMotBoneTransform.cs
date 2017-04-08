@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SPICA.Formats.GFL.Motion
 {
     class GFMotBoneTransform
     {
         public string Name;
+
+        public List<GFMotKeyFrame> ScaleX;
+        public List<GFMotKeyFrame> ScaleY;
+        public List<GFMotKeyFrame> ScaleZ;
 
         public List<GFMotKeyFrame> RotationX;
         public List<GFMotKeyFrame> RotationY;
@@ -18,6 +20,10 @@ namespace SPICA.Formats.GFL.Motion
 
         public GFMotBoneTransform()
         {
+            ScaleX       = new List<GFMotKeyFrame>();
+            ScaleY       = new List<GFMotKeyFrame>();
+            ScaleZ       = new List<GFMotKeyFrame>();
+
             RotationX    = new List<GFMotKeyFrame>();
             RotationY    = new List<GFMotKeyFrame>();
             RotationZ    = new List<GFMotKeyFrame>();

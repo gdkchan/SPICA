@@ -237,7 +237,7 @@ namespace SPICA.Renderer
                         {
                             Matrix4 BillMtx = Matrix4.Identity;
 
-                            Matrix4 WrldMtx = Parent.Transform * Parent.Renderer.Transform;
+                            Matrix4 WrldMtx = Parent.Transform * Parent.Renderer.ViewMatrix;
 
                             Matrix4 BoneMtx =
                                 Matrix4.CreateRotationX(Bone.Rotation.X) *

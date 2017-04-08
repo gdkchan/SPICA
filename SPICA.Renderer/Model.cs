@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace SPICA.Renderer
 {
-    public class Model : TransformableObject, IDisposable
+    public class Model : IDisposable
     {
         internal RenderEngine Renderer;
         internal H3DModel     BaseModel;
@@ -31,6 +31,8 @@ namespace SPICA.Renderer
 
         public SkeletalAnimation SkeletalAnim;
         public MaterialAnimation MaterialAnim;
+
+        public Matrix4 Transform;
 
         public Model(RenderEngine Renderer, H3DModel BaseModel)
         {
@@ -128,7 +130,8 @@ namespace SPICA.Renderer
             SkeletalAnim = new SkeletalAnimation();
             MaterialAnim = new MaterialAnimation();
 
-            ResetTransform();
+            Transform = Matrix4.Identity;
+
             UpdateAnimationTransforms();
         }
 
@@ -240,7 +243,7 @@ namespace SPICA.Renderer
                 int MdlMtxLocation  = GL.GetUniformLocation(Mesh.ShaderHandle, "ModelMatrix");
 
                 GL.UniformMatrix4(ProjMtxLocation, false, ref Renderer.ProjectionMatrix);
-                GL.UniformMatrix4(ViewMtxLocation, false, ref Renderer.Transform);
+                GL.UniformMatrix4(ViewMtxLocation, false, ref Renderer.ViewMatrix);
                 GL.UniformMatrix4(MdlMtxLocation,  false, ref Transform);
 
                 Mesh.Render();

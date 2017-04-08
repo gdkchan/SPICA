@@ -63,19 +63,11 @@ namespace SPICA.Formats.CtrH3D
             Scenes               = new PatriciaList<H3DScene>();
 
             BackwardCompatibility = 0x21;
-            ForwardCompatibility = 0x21;
+            ForwardCompatibility  = 0x21;
 
             ConverterVersion = 42607;
 
             Flags = H3DFlags.IsFromNewConverter;
-        }
-
-        public static H3D Open(string FileName)
-        {
-            if (File.Exists(FileName))
-                return Open(File.ReadAllBytes(FileName));
-            else
-                throw new FileNotFoundException($"The file \"{FileName}\" was not found!");
         }
 
         public static H3D Open(byte[] Data)
@@ -88,7 +80,10 @@ namespace SPICA.Formats.CtrH3D
 
         public static H3D Open(MemoryStream MS)
         {
+            //Please note that data should be on Memory when opening because addresses are relocated
+            //Otherwise the original file would be corrupted!
             BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
+
             H3DHeader Header = Deserializer.Deserialize<H3DHeader>();
 
             new H3DRelocator(MS, Header).ToAbsolute();
@@ -96,7 +91,7 @@ namespace SPICA.Formats.CtrH3D
             H3D SceneData = Deserializer.Deserialize<H3D>();
 
             SceneData.BackwardCompatibility = Header.BackwardCompatibility;
-            SceneData.ForwardCompatibility = Header.ForwardCompatibility;
+            SceneData.ForwardCompatibility  = Header.ForwardCompatibility;
 
             SceneData.ConverterVersion = Header.ConverterVersion;
 
@@ -105,7 +100,7 @@ namespace SPICA.Formats.CtrH3D
             return SceneData;
         }
 
-        public static void Save(string FileName, H3D SceneData)
+        public static void Save(string FileName, H3D Scene, SceneContent Content = SceneContent.All)
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
@@ -117,14 +112,14 @@ namespace SPICA.Formats.CtrH3D
 
                 BinarySerializer Serializer = new BinarySerializer(FS, Relocator);
 
-                Serializer.Serialize(SceneData);
+                Serializer.Serialize(Scene);
 
                 Header.Magic = "BCH";
 
-                Header.BackwardCompatibility = SceneData.BackwardCompatibility;
-                Header.ForwardCompatibility  = SceneData.ForwardCompatibility;
+                Header.BackwardCompatibility = Scene.BackwardCompatibility;
+                Header.ForwardCompatibility  = Scene.ForwardCompatibility;
 
-                Header.ConverterVersion = SceneData.ConverterVersion;
+                Header.ConverterVersion = Scene.ConverterVersion;
 
                 Header.ContentsAddress = Serializer.Contents.Info.Position;
                 Header.StringsAddress  = Serializer.Strings.Info.Position;
@@ -144,7 +139,7 @@ namespace SPICA.Formats.CtrH3D
                 Header.UnInitDataLength = Serializer.PhysicalAddressCount * 4;
                 Header.AddressCount     = (ushort)Serializer.PhysicalAddressCount;
 
-                Header.Flags = SceneData.Flags;
+                Header.Flags = Scene.Flags;
 
                 Relocator.ToRelative(Serializer);
 
@@ -180,6 +175,7 @@ namespace SPICA.Formats.CtrH3D
             foreach (T Value in Src)
             {
                 string Name = Value.Name;
+
                 int Index = 0;
 
                 while (Tgt.Contains(Name))

@@ -11,7 +11,6 @@
         void SlowDown();
         void SpeedUp();
         void Play(float Step);
-        void Play();
         void Pause();
         void Stop();
     }

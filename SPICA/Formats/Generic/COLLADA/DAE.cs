@@ -37,13 +37,13 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public DAE() { }
 
-        public DAE(H3D SceneData, int MdlIndex, int AnimIndex = -1)
+        public DAE(H3D Scene, int MdlIndex, int AnimIndex = -1)
         {
             if (MdlIndex != -1)
             {
                 library_visual_scenes = new List<DAEVisualScene>();
 
-                H3DModel Mdl = SceneData.Models[MdlIndex];
+                H3DModel Mdl = Scene.Models[MdlIndex];
 
                 DAEVisualScene VN = new DAEVisualScene();
 
@@ -398,12 +398,12 @@ namespace SPICA.Formats.Generic.COLLADA
                     scene.instance_visual_scene.url = $"#{library_visual_scenes[0].id}";
                 }
 
-                if (SceneData.Textures.Count > 0)
+                if (Scene.Textures.Count > 0)
                 {
                     library_images = new List<DAEImage>();
                 }
 
-                foreach (H3DTexture Tex in SceneData.Textures)
+                foreach (H3DTexture Tex in Scene.Textures)
                 {
                     library_images.Add(new DAEImage
                     {
@@ -419,9 +419,9 @@ namespace SPICA.Formats.Generic.COLLADA
 
                 string[] AnimElemNames = { "translate", "rotateX", "rotateY", "rotateZ", "scale" };
 
-                H3DAnimation SklAnim = SceneData.SkeletalAnimations[AnimIndex];
+                H3DAnimation SklAnim = Scene.SkeletalAnimations[AnimIndex];
 
-                PatriciaList<H3DBone> Skeleton = SceneData.Models[0].Skeleton;
+                PatriciaList<H3DBone> Skeleton = Scene.Models[0].Skeleton;
 
                 int FramesCount = (int)SklAnim.FramesCount + 1;
 

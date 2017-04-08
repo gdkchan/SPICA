@@ -16,7 +16,7 @@ namespace SPICA.Renderer
 
             GL.GetInteger(GetPName.Viewport, Viewport);
 
-            float ScrnWidth = Viewport[2];
+            float ScrnWidth  = Viewport[2];
             float ScrnHeight = Viewport[3];
 
             float PosX = Position.X / ScrnWidth;

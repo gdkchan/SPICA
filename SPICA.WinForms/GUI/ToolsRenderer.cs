@@ -26,23 +26,26 @@ namespace SPICA.WinForms.GUI
 
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
-            Color BC = IsDarkBg ? Color.White : Color.Black;
-            Pen Pen = new Pen(Color.FromArgb(0x3f, BC));
+            Pen Pen = new Pen(Color.FromArgb(0x3f, IsDarkBg ? Color.White : Color.Black));
 
             if (e.Vertical)
-                e.Graphics.DrawLine(Pen, new Point(2, 4), new Point(2, e.Item.Height - 5));
+                e.Graphics.DrawLine(Pen,
+                    new Point(2, 4),
+                    new Point(2, e.Item.Height - 5));
             else
-                e.Graphics.DrawLine(Pen, new Point(4, 2), new Point(e.Item.Width - 5, 2));
+                e.Graphics.DrawLine(Pen,
+                    new Point(4, 2),
+                    new Point(e.Item.Width - 5, 2));
         }
 
         protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
         {
             ToolStripButton Item = (ToolStripButton)e.Item;
 
-            if (Item.Checked)
-                RenderItemBg(e.Graphics, e.Item.Size, 0xbf);
-            else if (Item.Selected)
-                RenderItemBg(e.Graphics, e.Item.Size, 0x3f);
+            if (Item.Checked || Item.Selected)
+            {
+                RenderItemBg(e.Graphics, e.Item.Size, Item.Checked ? 0xbf : 0x3f);
+            }
         }
 
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
@@ -56,10 +59,12 @@ namespace SPICA.WinForms.GUI
             if (Item.Selected || Item.DropDown.Visible) RenderItemBg(e.Graphics, e.Item.Size, 0x7f);
         }
 
-        private void RenderItemBg(Graphics g, Size Sz, byte A)
+        private void RenderItemBg(Graphics g, Size Sz, int Alpha)
         {
-            Brush HoverBrush = new SolidBrush(Color.FromArgb(A, Color.Black));
-            Rectangle Bounds = new Rectangle(new Point(0, 1), new Size(Sz.Width, Sz.Height - 1));
+            Brush HoverBrush = new SolidBrush(Color.FromArgb(Alpha, Color.Black));
+            Rectangle Bounds = new Rectangle(
+                new Point(0, 1),
+                new Size(Sz.Width, Sz.Height - 1));
 
             g.FillRectangle(HoverBrush, Bounds);
         }

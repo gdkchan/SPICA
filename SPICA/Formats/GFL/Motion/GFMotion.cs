@@ -60,12 +60,12 @@ namespace SPICA.Formats.GFL.Motion
 
                 KeyFrames[i][Count + 1] = FramesCount;
 
-                for (int j = 0; j < Count; j++)
+                for (int j = 1; j <= Count; j++)
                 {
                     if (FramesCount > byte.MaxValue)
-                        KeyFrames[i][j + 1] = Reader.ReadUInt16();
+                        KeyFrames[i][j] = Reader.ReadUInt16();
                     else
-                        KeyFrames[i][j + 1] = Reader.ReadByte();
+                        KeyFrames[i][j] = Reader.ReadByte();
                 }
             }
 
@@ -73,50 +73,34 @@ namespace SPICA.Formats.GFL.Motion
 
             GFMotBoneTransform CurrentBone = null;
 
-            int CurrentKFL = 0;
-            int OctalIndex = 0;
-            int NameIndex = 0;
-            int Elem = 0;
-            bool RotOnly = false;
+            int CurrentKFL =  0;
+            int OctalIndex =  2;
+            int ElemIndex  =  0;
+            int OldIndex   = -1;
 
-            while (OctalIndex < OctalsCount && NameIndex + 1 < Skeleton.Count)
+            while (OctalIndex < OctalsCount)
             {
                 CurrentOctal = Octals[OctalIndex++];
 
+                if (CurrentOctal != 1)
+                {
+                    int NameIndex = ElemIndex / 9;
+
+                    if (NameIndex != OldIndex)
+                    {
+                        CurrentBone = new GFMotBoneTransform { Name = Skeleton[NameIndex].Name };
+
+                        Bones.Add(CurrentBone);
+
+                        OldIndex = NameIndex;
+                    }
+                }
+                
                 switch (CurrentOctal)
                 {
-                    case 0: break; //Axis element not used on animation
+                    case 0: break; //Skip Axis
 
-                    /*
-                     * Special code octal where:
-                     * 1   = Bone with translation and rotation (6 octals) ahead
-                     * 11  = Bone with only rotation (3 octals) ahead
-                     * 111 = Bone not used on animation
-                     */
-                    case 1:
-                        if (CurrentBone != null)
-                        {
-                            CurrentBone.Name = Skeleton[NameIndex++].Name;
-
-                            Bones.Add(CurrentBone);
-                        }
-
-                        CurrentBone = new GFMotBoneTransform();
-
-                        Elem = 0;
-
-                        int OneCount = 1;
-
-                        while (OctalIndex < Octals.Length && Octals[OctalIndex] == 1)
-                        {
-                            OneCount++;
-                            OctalIndex++;
-                        }
-
-                        NameIndex += OneCount / 3;
-                        RotOnly    = OneCount % 3 == 2;
-
-                        break;
+                    case 1: ElemIndex += 3; break; //Skip S/R/T Vector
 
                     //Actual Key Frame format
                     case 5:
@@ -133,7 +117,6 @@ namespace SPICA.Formats.GFL.Motion
                                 {
                                     KFs.Add(new GFMotKeyFrame(Frame, Reader.ReadSingle()));
                                 }
-
                                 break;
 
                             case 7: //Spline(?) Key Frames list
@@ -144,36 +127,27 @@ namespace SPICA.Formats.GFL.Motion
                                         Reader.ReadSingle(),
                                         Reader.ReadSingle()));
                                 }
-
                                 break;
                         }
 
-                        switch (Elem)
+                        switch (ElemIndex % 9)
                         {
-                            case 0:
-                                if (RotOnly) CurrentBone.RotationX    = KFs;
-                                else         CurrentBone.TranslationX = KFs;
-                                break;
+                            case 0: CurrentBone.TranslationX = KFs; break;
+                            case 1: CurrentBone.TranslationY = KFs; break;
+                            case 2: CurrentBone.TranslationZ = KFs; break;
 
-                            case 1:
-                                if (RotOnly) CurrentBone.RotationY    = KFs;
-                                else         CurrentBone.TranslationY = KFs;
-                                break;
+                            case 3: CurrentBone.RotationX    = KFs; break;
+                            case 4: CurrentBone.RotationY    = KFs; break;
+                            case 5: CurrentBone.RotationZ    = KFs; break;
 
-                            case 2:
-                                if (RotOnly) CurrentBone.RotationZ    = KFs;
-                                else         CurrentBone.TranslationZ = KFs;
-                                break;
-
-                            case 3: CurrentBone.RotationX = KFs; break;
-                            case 4: CurrentBone.RotationY = KFs; break;
-                            case 5: CurrentBone.RotationZ = KFs; break;
+                            case 6: CurrentBone.ScaleX       = KFs; break;
+                            case 7: CurrentBone.ScaleY       = KFs; break;
+                            case 8: CurrentBone.ScaleZ       = KFs; break;
                         }
-
                         break;
                 }
 
-                if (CurrentOctal != 1) Elem++;
+                if (CurrentOctal != 1) ElemIndex++;
             }
         }
 
@@ -196,6 +170,10 @@ namespace SPICA.Formats.GFL.Motion
                 Transform.RotationY    = GetKeyFrameGroup(Bone.RotationY,    4);
                 Transform.RotationZ    = GetKeyFrameGroup(Bone.RotationZ,    5);
 
+                Transform.ScaleX       = GetKeyFrameGroup(Bone.ScaleX,       6);
+                Transform.ScaleY       = GetKeyFrameGroup(Bone.ScaleY,       7);
+                Transform.ScaleZ       = GetKeyFrameGroup(Bone.ScaleZ,       8);
+
                 Output.Elements.Add(new H3DAnimationElement
                 {
                     Name          = Bone.Name,
@@ -208,6 +186,10 @@ namespace SPICA.Formats.GFL.Motion
             return Output;
         }
 
+        //No idea why the Slope needs to be multiplied by this scale
+        //This was discovered pretty much by trial and error, and may be wrong too
+        private const float SlopeScale = 1 / 30f;
+
         private H3DFloatKeyFrameGroup GetKeyFrameGroup(List<GFMotKeyFrame> KFs, int CurveIndex)
         {
             H3DFloatKeyFrameGroup Output = new H3DFloatKeyFrameGroup
@@ -215,7 +197,7 @@ namespace SPICA.Formats.GFL.Motion
                 StartFrame        = 0,
                 EndFrame          = FramesCount,
                 CurveIndex        = (ushort)CurveIndex,
-                InterpolationType = H3DInterpolationType.Linear
+                InterpolationType = H3DInterpolationType.Hermite
             };
 
             foreach (GFMotKeyFrame KF in KFs)
@@ -223,8 +205,8 @@ namespace SPICA.Formats.GFL.Motion
                 Output.KeyFrames.Add(new H3DFloatKeyFrame(
                     KF.Frame,
                     KF.Value,
-                    KF.Slope,
-                    KF.Slope));
+                    KF.Slope * SlopeScale,
+                    KF.Slope * SlopeScale));
             }
 
             return Output;

@@ -2,7 +2,6 @@
 using OpenTK.Graphics;
 
 using SPICA.Formats.CtrH3D;
-using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.Generic.XML;
 using SPICA.Formats.Generic.COLLADA;
@@ -19,6 +18,7 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using SPICA.Formats;
 
 namespace SPICA.WinForms
 {
@@ -30,16 +30,15 @@ namespace SPICA.WinForms
         private GridLines    UIGrid;
         private AxisLines    UIAxis;
         private Vector2      InitialMov;
-        private Vector2      CurrentRot;
-        private Vector2      CurrentMov;
-        private Model        Model;
-        private H3D          SceneData;
+        private Matrix4      MdlCenter;
+        private Matrix4      MdlTrans;
+        private H3D          Scene;
 
         private AllAnimations Animations;
 
         private Bitmap[] CachedTextures;
 
-        private float Dimension, Zoom;
+        private float Dimension;
 
         private bool IgnoreClicks;
         #endregion
@@ -52,12 +51,12 @@ namespace SPICA.WinForms
             Viewport = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8));
 
             Viewport.BackColor = Color.Gray;
-            Viewport.Dock = DockStyle.Fill;
-            Viewport.Location = Point.Empty;
-            Viewport.Name = "Viewport";
-            Viewport.Size = new Size(256, 256);
-            Viewport.TabIndex = 0;
-            Viewport.VSync = true;
+            Viewport.Dock      = DockStyle.Fill;
+            Viewport.Location  = Point.Empty;
+            Viewport.Name      = "Viewport";
+            Viewport.Size      = new Size(256, 256);
+            Viewport.TabIndex  = 0;
+            Viewport.VSync     = true;
 
             Viewport.Load       += Viewport_Load;
             Viewport.Paint      += Viewport_Paint;
@@ -93,17 +92,19 @@ namespace SPICA.WinForms
 
             Renderer.SetBackgroundColor(Color.Gray);
 
+            Dimension = 100f;
+
             UIGrid = new GridLines();
             UIAxis = new AxisLines();
 
-            Dimension =  100f;
-            Zoom      = -100f;
+            MdlCenter = Matrix4.Identity;
+            MdlTrans  = Matrix4.CreateTranslation(0, 0, -Dimension);
 
-            UpdateViewport();
+            UpdateTransforms();
 
             /*
              * Load settings (needs to be done here cause some of then changes values related to the renderer,
-             * and those needs that OpenTK have been properly initialized.
+             * and those needs that OpenTK have been properly initialized).
              */
             SettingsManager.BindBool("RenderShowGrid", ToggleGrid, MenuShowGrid, ToolButtonShowGrid);
             SettingsManager.BindBool("RenderShowAxis", ToggleAxis, MenuShowAxis, ToolButtonShowAxis);
@@ -122,22 +123,31 @@ namespace SPICA.WinForms
         {
             if (!IgnoreClicks)
             {
-                if (e.Button == MouseButtons.Left)
-                {
-                    CurrentRot.Y = (float)(((e.X - InitialMov.X) / Width) * Math.PI);
-                    CurrentRot.X = (float)(((e.Y - InitialMov.Y) / Height) * Math.PI);
+                Vector3 Translation = MdlTrans.ExtractTranslation();
 
-                    UpdateTransforms();
-                }
-                else if (e.Button == MouseButtons.Right)
-                {
-                    CurrentMov.X = (InitialMov.X - e.X) * Dimension * 0.005f;
-                    CurrentMov.Y = (InitialMov.Y - e.Y) * Dimension * 0.005f;
+                MdlTrans.Row3.Xyz = Vector3.Zero;
 
-                    UpdateTransforms();
+                if ((e.Button & MouseButtons.Left) != 0)
+                {
+                    float Y = (float)(((e.X - InitialMov.X) / Width)  * Math.PI);
+                    float X = (float)(((e.Y - InitialMov.Y) / Height) * Math.PI);
+
+                    MdlTrans *= Matrix4.CreateRotationX(X) * Matrix4.CreateRotationY(Y);
                 }
+
+                if ((e.Button & MouseButtons.Right) != 0)
+                {
+                    float X = (InitialMov.X - e.X) * Dimension * 0.005f;
+                    float Y = (InitialMov.Y - e.Y) * Dimension * 0.005f;
+
+                    MdlTrans.Row3.Xyz += new Vector3(-X, Y, 0);
+                }
+
+                MdlTrans.Row3.Xyz += Translation;
 
                 InitialMov = new Vector2(e.X, e.Y);
+
+                UpdateTransforms();
             }
         }
 
@@ -145,12 +155,11 @@ namespace SPICA.WinForms
         {
             if (e.Button != MouseButtons.Right)
             {
-                float Step = Dimension * 0.025f;
+                float Step = e.Delta > 0
+                    ?  Dimension * 0.025f
+                    : -Dimension * 0.025f;
 
-                if (e.Delta > 0)
-                    Zoom += Step;
-                else
-                    Zoom -= Step;
+                MdlTrans *= Matrix4.CreateTranslation(0, 0, Step);
 
                 UpdateTransforms();
             }
@@ -275,59 +284,24 @@ namespace SPICA.WinForms
 
                 if (OpenDlg.ShowDialog() == DialogResult.OK && OpenDlg.FileNames.Length > 0)
                 {
-                    //Clean up from previously opened file (when in "merge" mode we keep everything)
+                    Scene = MergeMode
+                        ? FileIO.Merge(OpenDlg.FileNames, Renderer, Scene)
+                        : FileIO.Merge(OpenDlg.FileNames, Renderer);
+
                     if (!MergeMode)
                     {
-                        SceneData = null;
+                        Animations.SceneData = Scene;
 
-                        Renderer.DeleteAll();
-                    }
+                        Scene.Textures.CollectionChanged += TexturesList_CollectionChanged;
 
-                    //Load all selected files
-                    for (int Index = 0; Index < OpenDlg.FileNames.Length; Index++)
-                    {
-                        //We need to ensure that the Skeleton we will use is the one from the lastest loaded Model
-                        //Otherwise the wrong Skeleton (from the last loaded model) may be incorrectly used
-                        PatriciaList<H3DBone> Skeleton = null;
+                        ModelsList.Bind(Scene.Models);
+                        TexturesList.Bind(Scene.Textures);
+                        SklAnimsList.Bind(Scene.SkeletalAnimations);
+                        MatAnimsList.Bind(Scene.MaterialAnimations);
 
-                        if (SceneData != null && SceneData.Models.Count > 0)
-                        {
-                            Skeleton = SceneData.Models[0].Skeleton;
-                        }
-
-                        //The Skeleton is used to convert animations to the H3D format that the Renderer understands
-                        //On H3D data the Skeleton is not necessary and is not used, because it doesn't need conversions
-                        H3D Data = FormatIdentifier.IdentifyAndOpen(OpenDlg.FileNames[Index], Skeleton);
-
-                        if (Data != null)
-                        {
-                            if ((MergeMode || Index > 0) && SceneData != null)
-                                SceneData.Merge(Data);
-                            else
-                                SceneData = Data;
-
-                            Renderer.Merge(Data);
-                        }
-                    }
-
-                    if (SceneData != null)
-                    {
-                        Animations.SceneData = SceneData;
-
-                        SceneData.Textures.CollectionChanged += TexturesList_CollectionChanged;
-
-                        ModelsList.Bind(SceneData.Models);
-                        TexturesList.Bind(SceneData.Textures);
-                        SklAnimsList.Bind(SceneData.SkeletalAnimations);
-                        MatAnimsList.Bind(SceneData.MaterialAnimations);
-
-                        if (SceneData.Models.Count > 0)
+                        if (Scene.Models.Count > 0)
                         {
                             ModelsList.Select(0);
-
-                            Model = Renderer.Models[0];
-
-                            Animations.Model = Model;
                         }
 
                         Animator.Enabled     = false;
@@ -337,15 +311,14 @@ namespace SPICA.WinForms
                         LblAnimLoopMode.Text = string.Empty;
 
                         CacheTextures();
-                        ResetView();
-                    }
-                    else
-                    {
-                        MessageBox.Show(
-                            "Unsupported file format!",
-                            "Can't open file!",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Exclamation);
+
+                        InitialMov = Vector2.Zero;
+
+                        float ZDist = Dimension < RenderEngine.ClipDistance ? -Dimension : 0;
+
+                        MdlTrans = Matrix4.CreateTranslation(0, 0, ZDist);
+
+                        UpdateTransforms();
                     }
                 }
             }
@@ -362,35 +335,12 @@ namespace SPICA.WinForms
 
         private void Save()
         {
-            if (SceneData == null)
+            FileIO.Save(Scene, new SceneState
             {
-                MessageBox.Show(
-                    "Please load a file first!",
-                    "No data",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
-
-                return;
-            }
-
-            using (SaveFileDialog SaveDlg = new SaveFileDialog())
-            {
-                SaveDlg.Filter = "COLLADA 1.4.1|*.dae|Valve StudioMdl|*.smd|H3D as XML|*.xml";
-                SaveDlg.FileName = "Model";
-
-                if (SaveDlg.ShowDialog() == DialogResult.OK)
-                {
-                    int MdlIndex = ModelsList.SelectedIndex;
-                    int AnimIndex = SklAnimsList.SelectedIndex;
-
-                    switch (SaveDlg.FilterIndex)
-                    {
-                        case 1: new DAE(SceneData, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
-                        case 2: new SMD(SceneData, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
-                        case 3: new H3DXML(SceneData).Save(SaveDlg.FileName); break;
-                    }
-                }
-            }
+                ModelIndex   = ModelsList.SelectedIndex,
+                SklAnimIndex = SklAnimsList.SelectedIndex,
+                MatAnimIndex = MatAnimsList.SelectedIndex
+            });
         }
 
         private void CacheTextures()
@@ -402,76 +352,23 @@ namespace SPICA.WinForms
 
             //Cache the textures converted to bitmap to avoid making the conversion over and over again
             //The cache needs to be updated when the original collection changes
-            CachedTextures = new Bitmap[SceneData.Textures.Count];
+            CachedTextures = new Bitmap[Scene.Textures.Count];
 
             for (int Index = 0; Index < CachedTextures.Length; Index++)
             {
-                CachedTextures[Index] = SceneData.Textures[Index].ToBitmap();
+                CachedTextures[Index] = Scene.Textures[Index].ToBitmap();
             }
-        }
-
-        private void ResetView()
-        {
-            InitialMov = Vector2.Zero;
-            CurrentRot = Vector2.Zero;
-            CurrentMov = Vector2.Zero;
-
-            Model?.ResetTransform();
-            UIGrid.ResetTransform();
-            UIAxis.ResetTransform();
-
-            if (Model != null)
-            {
-                Tuple<Vector3, Vector3> CenterDim = Model.GetCenterDim();
-
-                Vector3 Center = CenterDim.Item1;
-                Vector3 Dim = CenterDim.Item2;
-
-                Dimension = Math.Max(Math.Abs(Dim.Y), Math.Abs(Dim.Z)) * 2;
-
-                if (Dimension == 0) Dimension = 100f;
-
-                Renderer.Lights.Clear();
-
-                Renderer.Lights.Add(new Light
-                {
-                    Position = new Vector3(0, Center.Y, Dimension),
-                    Ambient = new Color4(0.0f, 0.0f, 0.0f, 1f),
-                    Diffuse = new Color4(0.8f, 0.8f, 0.8f, 1f),
-                    Specular = new Color4(0.5f, 0.5f, 0.5f, 1f),
-                    Enabled = true
-                });
-
-                Model?.UpdateUniforms();
-
-                Model?.TranslateAbs(-Center);
-                UIGrid.TranslateAbs(-Center);
-            }
-
-            Zoom = (Dimension < RenderEngine.ClipDistance ? -Dimension : 0);
-
-            Renderer.ResetTransform();
-
-            UpdateTransforms();
         }
 
         private void UpdateTransforms()
         {
-            Vector3 Translation = new Vector3(-CurrentMov.X, CurrentMov.Y, 0);
-            Vector3 Rotation    = new Vector3( CurrentRot.X, CurrentRot.Y, 0);
+            if (ModelsList.SelectedIndex != -1)
+            {
+                Renderer.Models[ModelsList.SelectedIndex].Transform = MdlCenter * MdlTrans;
+            }
 
-            Model?.Translate(Translation);
-            UIGrid.Translate(Translation);
-
-            Model?.Rotate(Rotation);
-            UIGrid.Rotate(Rotation);
-
-            UIAxis.Rotate(Rotation);
-
-            CurrentMov = Vector2.Zero;
-            CurrentRot = Vector2.Zero;
-
-            Renderer.TranslateAbs(new Vector3(0, 0, Zoom));
+            UIGrid.Transform = MdlCenter * MdlTrans;
+            UIAxis.Transform = MdlCenter.ClearTranslation() * MdlTrans;
 
             UpdateViewport();
         }
@@ -480,13 +377,32 @@ namespace SPICA.WinForms
         #region Side menu events
         private void ModelsList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ModelsList.SelectedIndex != -1 && Model != null)
+            if (ModelsList.SelectedIndex != -1)
             {
-                Model = Renderer.Models[ModelsList.SelectedIndex];
+                Animations.Model = Renderer.Models[ModelsList.SelectedIndex];
 
-                Animations.Model = Model;
+                Tuple<Vector3, Vector3> CD = Renderer.Models[ModelsList.SelectedIndex].GetCenterDim();
 
-                ResetView();
+                Dimension = 0;
+
+                Dimension = Math.Max(Dimension, Math.Abs(CD.Item2.X));
+                Dimension = Math.Max(Dimension, Math.Abs(CD.Item2.Y));
+                Dimension = Math.Max(Dimension, Math.Abs(CD.Item2.Z));
+
+                Dimension *= 2;
+
+                Renderer.Lights.Add(new Light
+                {
+                    Position = new Vector3(0, CD.Item1.Y, Dimension),
+                    Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1.0f),
+                    Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
+                    Specular = new Color4(0.5f, 0.5f, 0.5f, 1.0f),
+                    Enabled  = true
+                });
+
+                Renderer.Models[ModelsList.SelectedIndex].UpdateUniforms();
+
+                MdlCenter = Matrix4.CreateTranslation(-CD.Item1);
             }
         }
 
@@ -508,10 +424,10 @@ namespace SPICA.WinForms
             {
                 TexturePreview.Image = CachedTextures[Index];
                 TextureInfo.Text = string.Format("{0} {1}x{2} {3}",
-                    SceneData.Textures[Index].MipmapSize,
-                    SceneData.Textures[Index].Width,
-                    SceneData.Textures[Index].Height,
-                    SceneData.Textures[Index].Format);
+                    Scene.Textures[Index].MipmapSize,
+                    Scene.Textures[Index].Width,
+                    Scene.Textures[Index].Height,
+                    Scene.Textures[Index].Format);
             }
             else
             {
@@ -524,8 +440,6 @@ namespace SPICA.WinForms
         #region Animation related + playback controls
         private void Animator_Tick(object sender, EventArgs e)
         {
-            Model.UpdateAnimationTransforms();
-
             Animations.AdvanceFrame();
 
             UpdateSeekBar();
@@ -600,13 +514,11 @@ namespace SPICA.WinForms
 
         private void AnimButtonStop_Click(object sender, EventArgs e)
         {
-            Animations.Stop();
-
             DisableAnimator();
 
             AnimSeekBar.Value = 0;
 
-            Model.UpdateAnimationTransforms();
+            Animations.Stop();
         }
 
         private void AnimButtonSlowDown_Click(object sender, EventArgs e)
@@ -642,8 +554,6 @@ namespace SPICA.WinForms
             Animations.Pause();
 
             Animations.Frame = AnimSeekBar.Value;
-
-            Model.UpdateAnimationTransforms();
 
             UpdateViewport();
         }

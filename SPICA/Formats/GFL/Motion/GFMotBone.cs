@@ -1,8 +1,8 @@
-﻿using SPICA.Math3D;
+﻿using SPICA.Formats.Common;
+using SPICA.Math3D;
 
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace SPICA.Formats.GFL.Motion
 {
@@ -38,13 +38,7 @@ namespace SPICA.Formats.GFL.Motion
 
             for (int Index = 1; Index < BonesCount; Index++)
             {
-                Output[Index].Name = string.Empty;
-
-                char Chr;
-                while ((Chr = Reader.ReadChar()) != '\0')
-                {
-                    Output[Index].Name += Chr;
-                }
+                Output[Index].Name = Reader.ReadNullTerminatedString();
             }
 
             GFUtils.Align(Reader);

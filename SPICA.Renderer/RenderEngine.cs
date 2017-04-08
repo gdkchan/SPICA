@@ -18,7 +18,7 @@ using System.Reflection;
 
 namespace SPICA.Renderer
 {
-    public class RenderEngine : TransformableObject, IDisposable
+    public class RenderEngine : IDisposable
     {
         public const float ClipDistance = 100000f;
 
@@ -31,6 +31,7 @@ namespace SPICA.Renderer
         private  Shader  GUI2DShader;
         private  Shader  GUI3DShader;
         internal Matrix4 ProjectionMatrix;
+        internal Matrix4 ViewMatrix;
         internal string  FragmentBaseCode;
         internal int     VertexShaderHandle;
 
@@ -70,6 +71,8 @@ namespace SPICA.Renderer
             GL.CompileShader(VertexShaderHandle);
 
             Shader.CheckCompilation(VertexShaderHandle);
+
+            ViewMatrix = Matrix4.Identity;
 
             SetupGUI2DShader();
             SetupGUI3DShader();
@@ -142,7 +145,7 @@ namespace SPICA.Renderer
 
             GL.UniformMatrix4(TransformLocation, false, ref Identity);
             GL.UniformMatrix4(ProjMtxLocation,   false, ref ProjectionMatrix);
-            GL.UniformMatrix4(ViewMtxLocation,   false, ref Transform);
+            GL.UniformMatrix4(ViewMtxLocation,   false, ref ViewMatrix);
 
             return GUI3DShader.Handle;
         }
@@ -196,6 +199,8 @@ namespace SPICA.Renderer
             DisposeAndClear(Models);
             DisposeAndClear(Textures);
             DisposeAndClear(LUTs);
+
+            Lights.Clear();
         }
 
         public void Clear()

@@ -26,6 +26,8 @@ namespace SPICA.WinForms.GUI.Animation
                 {
                     Model.SkeletalAnim.Frame = value;
                     Model.MaterialAnim.Frame = value;
+
+                    UpdateFrame();
                 }
             }
         }
@@ -112,28 +114,50 @@ namespace SPICA.WinForms.GUI.Animation
             }
         }
 
+        //Needs immediate frame updates
+        private void UpdateFrame()
+        {
+            Model.UpdateAnimationTransforms();
+        }
+        
         public void AdvanceFrame()
         {
-            Model?.SkeletalAnim.AdvanceFrame();
-            Model?.MaterialAnim.AdvanceFrame();
+            if (Model != null)
+            {
+                Model.SkeletalAnim.AdvanceFrame();
+                Model.MaterialAnim.AdvanceFrame();
+
+                UpdateFrame();
+            }
         }
 
+        public void Play(float Step = 1)
+        {
+            if (Model != null)
+            {
+                Model.SkeletalAnim.Play(Step);
+                Model.MaterialAnim.Play(Step);
+
+                UpdateFrame();
+            }
+        }
+
+        public void Stop()
+        {
+            if (Model != null)
+            {
+                Model.SkeletalAnim.Stop();
+                Model.MaterialAnim.Stop();
+
+                UpdateFrame();
+            }
+        }
+
+        //No need for immediate frame updates
         public void Pause()
         {
             Model?.SkeletalAnim.Pause();
             Model?.MaterialAnim.Pause();
-        }
-
-        public void Play()
-        {
-            Model?.SkeletalAnim.Play();
-            Model?.MaterialAnim.Play();
-        }
-
-        public void Play(float Step)
-        {
-            Model?.SkeletalAnim.Play(Step);
-            Model?.MaterialAnim.Play(Step);
         }
 
         public void SlowDown()
@@ -146,12 +170,6 @@ namespace SPICA.WinForms.GUI.Animation
         {
             Model?.SkeletalAnim.SpeedUp();
             Model?.MaterialAnim.SpeedUp();
-        }
-
-        public void Stop()
-        {
-            Model?.SkeletalAnim.Stop();
-            Model?.MaterialAnim.Stop();
         }
     }
 }
