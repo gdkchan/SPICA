@@ -25,7 +25,7 @@ namespace SPICA.WinForms.Formats
                 Output = H3D.Open(MS);
             }
 
-            //Animations
+            //Skeletal Animations
             Input.Seek(Header.Entries[1].Address, SeekOrigin.Begin);
 
             GFMotionPack MotPack = new GFMotionPack(Input);
@@ -37,6 +37,20 @@ namespace SPICA.WinForms.Formats
                 SklAnim.Name = $"Motion_{Mot.Index}";
 
                 Output.SkeletalAnimations.Add(SklAnim);
+            }
+
+            //Material Animations
+            if (Header.Entries[2].Length > 0)
+            {
+                Input.Seek(Header.Entries[2].Address, SeekOrigin.Begin);
+
+                byte[] Data = new byte[Header.Entries[2].Length];
+
+                Input.Read(Data, 0, Data.Length);
+
+                H3D MatAnims = H3D.Open(Data);
+
+                Output.Merge(MatAnims);
             }
 
             return Output;

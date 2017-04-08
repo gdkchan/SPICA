@@ -17,13 +17,6 @@ using System.Windows.Forms;
 
 namespace SPICA.WinForms.Formats
 {
-    enum OpenResponse
-    {
-        Unsupported,
-        NeedsSkeleton,
-        Success
-    }
-
     static class FormatIdentifier
     {
         public static H3D IdentifyAndOpen(string FileName, PatriciaList<H3DBone> Skeleton = null)

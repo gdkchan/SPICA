@@ -11,15 +11,9 @@ namespace SPICA.WinForms.Formats
     {
         public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header)
         {
-            H3D Output = new H3D
-            {
-                ConverterVersion      = 42607,
-                BackwardCompatibility = 0x21,
-                ForwardCompatibility  = 0x21,
-                Flags                 = H3DFlags.IsFromNewConverter
-            };
+            H3D Output = new H3D();
 
-            //Animations
+            //Skeletal Animations
             Input.Seek(Header.Entries[0].Address, SeekOrigin.Begin);
 
             GFMotionPack MotPack = new GFMotionPack(Input);
@@ -31,6 +25,29 @@ namespace SPICA.WinForms.Formats
                 SklAnim.Name = $"Motion_{Mot.Index}";
 
                 Output.SkeletalAnimations.Add(SklAnim);
+            }
+
+            //Material Animations
+            Input.Seek(Header.Entries[1].Address, SeekOrigin.Begin);
+
+            GFPackage.Header PackHeader = GFPackage.GetPackageHeader(Input);
+
+            foreach (GFPackage.Entry Entry in PackHeader.Entries)
+            {
+                Input.Seek(Entry.Address, SeekOrigin.Begin);
+
+                System.Diagnostics.Debug.WriteLine(Input.Position.ToString("x8"));
+
+                if (Entry.Length > 0)
+                {
+                    byte[] Data = new byte[Entry.Length];
+
+                    Input.Read(Data, 0, Data.Length);
+
+                    H3D MatAnims = H3D.Open(Data);
+
+                    Output.Merge(MatAnims);
+                }
             }
 
             return Output;

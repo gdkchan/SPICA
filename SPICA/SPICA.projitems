@@ -160,7 +160,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\FNVHash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\IOUtils.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\StringUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\SceneContent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\SceneState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Interpolation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Math3D\Matrix3x3.cs" />

@@ -100,7 +100,7 @@ namespace SPICA.Formats.CtrH3D
             return SceneData;
         }
 
-        public static void Save(string FileName, H3D Scene, SceneContent Content = SceneContent.All)
+        public static void Save(string FileName, H3D Scene)
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
