@@ -26,17 +26,20 @@ namespace SPICA.WinForms.Formats
             }
 
             //Skeletal Animations
-            Input.Seek(Header.Entries[1].Address, SeekOrigin.Begin);
-
-            GFMotionPack MotPack = new GFMotionPack(Input);
-
-            foreach (GFMotion Mot in MotPack)
+            if (Header.Entries.Length > 1)
             {
-                H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation();
+                Input.Seek(Header.Entries[1].Address, SeekOrigin.Begin);
 
-                SklAnim.Name = $"Motion_{Mot.Index}";
+                GFMotionPack MotPack = new GFMotionPack(Input);
 
-                Output.SkeletalAnimations.Add(SklAnim);
+                foreach (GFMotion Mot in MotPack)
+                {
+                    H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation();
+
+                    SklAnim.Name = $"Motion_{Mot.Index}";
+
+                    Output.SkeletalAnimations.Add(SklAnim);
+                }
             }
 
             //Material Animations
