@@ -10,6 +10,7 @@ using SPICA.Serialization.Serializer;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Mesh
@@ -53,7 +54,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         private uint[] DisableCommands;
 
-        public Vector3D MeshCenter;
+        public Vector3 MeshCenter;
 
         [XmlIgnore] public H3DModel Parent;
 
@@ -65,7 +66,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         [Ignore] public int VertexStride;
         [Ignore] public PICAAttribute[] Attributes;
         [Ignore] public PICAFixedAttribute[] FixedAttributes;
-        [Ignore] public Vector4D PositionOffset;
+        [Ignore] public Vector4 PositionOffset;
 
         public H3DMesh()
         {
@@ -147,13 +148,13 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             int UniformIndex = 0;
             int FixedIndex = 0;
 
-            Vector4D[] Uniform = new Vector4D[96];
+            Vector4[] Uniform = new Vector4[96];
 
             PICAVectorFloat24[] Fixed = new PICAVectorFloat24[12];
 
-            Uniform[6] = new Vector4D(0, 0, 0, 0);
-            Uniform[7] = new Vector4D(1, 1, 1, 1);
-            Uniform[8] = new Vector4D(1, 1, 1, 1);
+            Uniform[6] = Vector4.Zero;
+            Uniform[7] = Vector4.One;
+            Uniform[8] = Vector4.One;
 
             while (Reader.HasCommand)
             {
@@ -190,10 +191,18 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
                         for (int i = 0; i < Cmd.Parameters.Length; i++)
                         {
-                            int j = UniformIndex >> 2;
-                            int k = (UniformIndex++ & 3) ^ 3;
+                            float Value = IOUtils.ToSingle(Cmd.Parameters[i]);
 
-                            Uniform[j][k] = IOUtils.ToSingle(Cmd.Parameters[i]);
+                            int j = UniformIndex  >> 2;
+                            int k = UniformIndex++ & 3;
+
+                            switch (k)
+                            {
+                                case 0: Uniform[j].W = Value; break;
+                                case 1: Uniform[j].Z = Value; break;
+                                case 2: Uniform[j].Y = Value; break;
+                                case 3: Uniform[j].X = Value; break;
+                            }
                         }
                         break;
                 }

@@ -1,23 +1,18 @@
-﻿using SPICA.Math3D;
-
-using System;
+﻿using System;
 using System.Linq;
+using System.Numerics;
 
 namespace SPICA.PICA.Converters
 {
     public class PICAVertex : ICloneable
     {
-        public Vector3D Position;
-
-        public Vector3D Normal;
-
-        public Vector3D Tangent;
-
-        public RGBAFloat Color;
-
-        public Vector2D TexCoord0;
-        public Vector2D TexCoord1;
-        public Vector2D TexCoord2;
+        public Vector4 Position;
+        public Vector4 Normal;
+        public Vector4 Tangent;
+        public Vector4 Color;
+        public Vector4 TexCoord0;
+        public Vector4 TexCoord1;
+        public Vector4 TexCoord2;
 
         public int[] Indices;
         public float[] Weights;

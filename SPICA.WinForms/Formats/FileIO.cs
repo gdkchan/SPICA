@@ -5,7 +5,7 @@ using SPICA.Formats.Generic.COLLADA;
 using SPICA.Formats.Generic.StudioMdl;
 using SPICA.Formats.Generic.XML;
 using SPICA.Renderer;
-
+using System.IO;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms.Formats
@@ -81,6 +81,40 @@ namespace SPICA.WinForms.Formats
                         case 1: new DAE(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
                         case 2: new SMD(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
                         case 3: new H3DXML(Scene).Save(SaveDlg.FileName); break;
+                    }
+                }
+            }
+        }
+
+        public static void Export(H3D Scene, int Index = -1)
+        {
+            if (Index != -1)
+            {
+                //Export one
+                using (SaveFileDialog SaveDlg = new SaveFileDialog())
+                {
+                    SaveDlg.Filter = "Portable Network Graphics|*.png";
+                    SaveDlg.FileName = $"{Scene.Textures[Index].Name}.png";
+
+                    if (SaveDlg.ShowDialog() == DialogResult.OK)
+                    {
+                        TextureManager.GetTexture(Index).Save(SaveDlg.FileName);
+                    }
+                }
+            }
+            else
+            {
+                //Export all (or don't export if format can only export a single item)
+                using (FolderBrowserDialog FolderDlg = new FolderBrowserDialog())
+                {
+                    if (FolderDlg.ShowDialog() == DialogResult.OK)
+                    {
+                        for (int i = 0; i < Scene.Textures.Count; i++)
+                        {
+                            string FileName = Path.Combine(FolderDlg.SelectedPath, $"{Scene.Textures[i].Name}.png");
+
+                            TextureManager.GetTexture(i).Save(FileName);
+                        }
                     }
                 }
             }

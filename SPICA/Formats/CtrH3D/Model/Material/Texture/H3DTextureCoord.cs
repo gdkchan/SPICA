@@ -1,5 +1,7 @@
 ﻿using SPICA.Math3D;
+
 using System;
+using System.Numerics;
 
 namespace SPICA.Formats.CtrH3D.Model.Material.Texture
 {
@@ -11,15 +13,15 @@ namespace SPICA.Formats.CtrH3D.Model.Material.Texture
 
         public sbyte ReferenceCameraIndex;
 
-        public Vector2D Scale;
+        public Vector2 Scale;
         public float Rotation;
-        public Vector2D Translation;
+        public Vector2 Translation;
 
         public Matrix3x4 Transform
         {
             get
             {
-                Matrix3x4 Transform = new Matrix3x4();
+                Matrix3x4 Transform = Matrix3x4.Identity;
 
                 float SX = Scale.X;
                 float SY = Scale.Y;
@@ -31,27 +33,27 @@ namespace SPICA.Formats.CtrH3D.Model.Material.Texture
                 float SA = (float)Math.Sin(Rotation);
 
                 Transform.M11 = SX *  CA;
-                Transform.M12 = SX * -SA;
-                Transform.M21 = SY *  SA;
+                Transform.M12 = SY *  SA;
+                Transform.M21 = SX * -SA;
                 Transform.M22 = SY *  CA;
 
                 switch (TransformType)
                 {
                     case H3DTextureTransformType.DccMaya:
-                        Transform.M14 = SX * ((0.5f *  SA - 0.5f * CA) + 0.5f - TX);
-                        Transform.M24 = SY * ((0.5f * -SA - 0.5f * CA) + 0.5f - TY);
+                        Transform.M41 = SX * ((0.5f *  SA - 0.5f * CA) + 0.5f - TX);
+                        Transform.M42 = SY * ((0.5f * -SA - 0.5f * CA) + 0.5f - TY);
                         break;
 
                     case H3DTextureTransformType.DccSoftImage:
-                        Transform.M14 = SX * (-CA * TX - SA * TY);
-                        Transform.M24 = SY * ( SA * TX - CA * TY);
+                        Transform.M41 = SX * (-CA * TX - SA * TY);
+                        Transform.M42 = SY * ( SA * TX - CA * TY);
                         break;
 
                     case H3DTextureTransformType.Dcc3dsMax:
-                        Transform.M14 =
+                        Transform.M41 =
                             SX * CA * (-TX - 0.5f) -
                             SX * SA * ( TY - 0.5f) + 0.5f;
-                        Transform.M24 =
+                        Transform.M42 =
                             SY * SA * (-TX - 0.5f) +
                             SY * CA * ( TY - 0.5f) + 0.5f;
                         break;

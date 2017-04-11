@@ -7,6 +7,7 @@ using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System;
+using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
@@ -131,13 +132,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [Ignore] public float[] TextureSources;
 
-        [Ignore, XmlIgnore] internal H3DMaterial Parent;
-
         [XmlIgnore]
         public string Name
         {
-            get { return Parent?.Name; }
-            set { if (Parent != null) Parent.Name = value; }
+            get { return ModelReference; }
+            set { ModelReference = value; }
         }
 
         public H3DMaterialParams()
@@ -263,7 +262,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             int UniformIndex = 0;
 
-            Vector4D[] Uniform = new Vector4D[96];
+            Vector4[] Uniform = new Vector4[96];
 
             while (Reader.HasCommand)
             {
@@ -372,10 +371,18 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
                         for (int i = 0; i < Cmd.Parameters.Length; i++)
                         {
-                            int j = UniformIndex >> 2;
-                            int k = (UniformIndex++ & 3) ^ 3;
+                            float Value = IOUtils.ToSingle(Cmd.Parameters[i]);
 
-                            Uniform[j][k] = IOUtils.ToSingle(Cmd.Parameters[i]);
+                            int j = UniformIndex >> 2;
+                            int k = UniformIndex++ & 3;
+
+                            switch (k)
+                            {
+                                case 0: Uniform[j].W = Value; break;
+                                case 1: Uniform[j].Z = Value; break;
+                                case 2: Uniform[j].Y = Value; break;
+                                case 3: Uniform[j].X = Value; break;
+                            }
                         }
                         break;
                 }
@@ -456,23 +463,23 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             for (int Unit = 0; Unit < 3; Unit++)
             {
-                if (Parent.EnabledTextures[Unit])
+                if (TextureCoords[Unit].Scale != Vector2.Zero)
                     TexMtx[Unit] = TextureCoords[Unit].Transform;
                 else
-                    TexMtx[Unit] = Matrix3x4.Empty;
+                    TexMtx[Unit] = new Matrix3x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, 0x8000000bu);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0, false,
-                TexMtx[0].M14, TexMtx[0].M13, TexMtx[0].M12, TexMtx[0].M11,
-                TexMtx[0].M24, TexMtx[0].M23, TexMtx[0].M22, TexMtx[0].M21,
-                TexMtx[0].M34, TexMtx[0].M33, TexMtx[0].M32, TexMtx[0].M31,
-                TexMtx[1].M14, TexMtx[1].M13, TexMtx[1].M12, TexMtx[1].M11,
-                TexMtx[1].M24, TexMtx[1].M23, TexMtx[1].M22, TexMtx[1].M21,
-                TexMtx[1].M34, TexMtx[1].M33, TexMtx[1].M32, TexMtx[1].M31,
-                TexMtx[2].M14, TexMtx[2].M13, TexMtx[2].M12, TexMtx[2].M11,
-                TexMtx[2].M24, TexMtx[2].M23, TexMtx[2].M22, TexMtx[2].M21);
+                TexMtx[0].M41, TexMtx[0].M31, TexMtx[0].M21, TexMtx[0].M11,
+                TexMtx[0].M42, TexMtx[0].M32, TexMtx[0].M22, TexMtx[0].M12,
+                TexMtx[0].M43, TexMtx[0].M33, TexMtx[0].M23, TexMtx[0].M13,
+                TexMtx[1].M41, TexMtx[1].M31, TexMtx[1].M21, TexMtx[1].M11,
+                TexMtx[1].M42, TexMtx[1].M32, TexMtx[1].M22, TexMtx[1].M12,
+                TexMtx[1].M43, TexMtx[1].M33, TexMtx[1].M23, TexMtx[1].M13,
+                TexMtx[2].M41, TexMtx[2].M31, TexMtx[2].M21, TexMtx[2].M11,
+                TexMtx[2].M42, TexMtx[2].M32, TexMtx[2].M22, TexMtx[2].M12);
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000013u, 0, 0, 0, 0);
 

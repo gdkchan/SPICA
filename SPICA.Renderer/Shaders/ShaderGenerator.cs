@@ -187,7 +187,8 @@ namespace SPICA.Renderer.Shaders
 
             string ClampHighLight = string.Empty;
 
-            string SpecularColor = GetVec4(Params.Specular0Color);
+            string Specular0Color = GetVec4(Params.Specular0Color);
+            string Specular1Color = GetVec4(Params.Specular1Color);
 
             if ((Params.FragmentFlags & H3DFragmentFlags.IsClampHighLightEnabled) != 0)
             {
@@ -198,48 +199,48 @@ namespace SPICA.Renderer.Shaders
 
             if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTDist0Enabled) != 0)
             {
-                SpecularColor += " * d0";
+                Specular0Color += " * d0";
 
                 SB.AppendLine($"\t\tfloat d0 = {Dist0};");
             }
 
             if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactor0Enabled) != 0)
             {
-                SpecularColor += " * g0";
+                Specular0Color += " * g0";
 
                 SB.AppendLine("\t\tfloat g0 = (2 * CosNormalHalf * CosNormalView) / CosViewHalf;");
             }
 
             if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTReflectionEnabled) != 0)
             {
-                SpecularColor += " + r";
+                Specular1Color = "r";
 
                 SB.AppendLine("\t\tvec4 r = vec4(");
                 SB.AppendLine($"\t\t\t{ReflecR},");
                 SB.AppendLine($"\t\t\t{ReflecG},");
                 SB.AppendLine($"\t\t\t{ReflecB}, 1);");
+            }
 
-                if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTDist1Enabled) != 0)
-                {
-                    SpecularColor += " * d1";
+            if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTDist1Enabled) != 0)
+            {
+                Specular1Color += " * d1";
 
-                    SB.AppendLine($"\t\tfloat d1 = {Dist1};");
-                }
+                SB.AppendLine($"\t\tfloat d1 = {Dist1};");
+            }
 
-                if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactor1Enabled) != 0)
-                {
-                    SpecularColor += " * g1";
+            if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactor1Enabled) != 0)
+            {
+                Specular1Color += " * g1";
 
-                    SB.AppendLine("\t\tfloat g1 = (2 * CosNormalHalf * CosLightNormal) / CosViewHalf;");
-                }
+                SB.AppendLine("\t\tfloat g1 = (2 * CosNormalHalf * CosLightNormal) / CosViewHalf;");
             }
 
             SB.AppendLine("\t\tvec4 Diffuse =");
             SB.AppendLine($"\t\t\t{GetVec4(Params.AmbientColor)} * Lights[i].Ambient +");
             SB.AppendLine($"\t\t\t{GetVec4(Params.DiffuseColor)} * Lights[i].Diffuse * CosLightNormal;");
-            SB.AppendLine($"\t\tvec4 Specular = ({SpecularColor}) * Lights[i].Specular;");
-            SB.AppendLine($"\t\tFragPriColor.rgb = min(FragPriColor + {ClampHighLight}Diffuse, 1).rgb;");
-            SB.AppendLine($"\t\tFragSecColor.rgb = min(FragSecColor + {ClampHighLight}Specular, 1).rgb;");
+            SB.AppendLine($"\t\tvec4 Specular = ({Specular0Color} + {Specular1Color}) * Lights[i].Specular;");
+            SB.AppendLine($"\t\tFragPriColor.rgb += {ClampHighLight}Diffuse.rgb;");
+            SB.AppendLine($"\t\tFragSecColor.rgb += {ClampHighLight}Specular.rgb;");
 
             if ((Params.FresnelSelector & H3DFresnelSelector.Pri) != 0)
                 SB.AppendLine($"\t\tFragPriColor.a = min(FragPriColor.a * {Fresnel}, 1);");
@@ -249,6 +250,8 @@ namespace SPICA.Renderer.Shaders
 
             //Lights loop end
             SB.AppendLine("\t}");
+            SB.AppendLine("\tFragPriColor = clamp(FragPriColor, 0, 1);");
+            SB.AppendLine("\tFragSecColor = clamp(FragSecColor, 0, 1);");
             SB.AppendLine();
         }
 

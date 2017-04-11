@@ -9,6 +9,8 @@ namespace SPICA.PICA.Converters
 {
     static class TextureConverter
     {
+        private static int[] FmtBPP = new int[] { 32, 24, 16, 16, 16, 16, 16, 8, 8, 8, 4, 4, 4, 8 };
+
         private static int[] SwizzleLUT =
         {
              0,  1,  8,  9,  2,  3, 10, 11,
@@ -21,18 +23,18 @@ namespace SPICA.PICA.Converters
             52, 53, 60, 61, 54, 55, 62, 63
         };
 
-        public static byte[] Decode(byte[] Input, int Width, int Height, PICATextureFormat Format, bool IsGL)
+        public static byte[] DecodeBuffer(byte[] Input, int Width, int Height, PICATextureFormat Format)
         {
-            //Note: OpenGL reads texture from bottom to top, so we need to invert Y (see YMask variable)
-            bool ETCAlpha = Format == PICATextureFormat.ETC1A4;
-
-            if (Format == PICATextureFormat.ETC1 || ETCAlpha)
+            if (Format == PICATextureFormat.ETC1 ||
+                Format == PICATextureFormat.ETC1A4)
             {
-                return TextureCompression.ETC1Decompress(Input, Width, Height, ETCAlpha, IsGL);
+                return TextureCompression.ETC1Decompress(Input, Width, Height, Format == PICATextureFormat.ETC1A4);
             }
             else
             {
-                int YMask = IsGL ? Height - 1 : 0;
+                int Increment = FmtBPP[(int)Format] / 8;
+
+                if (Increment == 0) Increment = 1;
 
                 byte[] Output = new byte[Width * Height * 4];
 
@@ -44,86 +46,41 @@ namespace SPICA.PICA.Converters
                     {
                         for (int Px = 0; Px < 64; Px++)
                         {
-                            int X = SwizzleLUT[Px] & 7;
+                            int X =  SwizzleLUT[Px] & 7;
                             int Y = (SwizzleLUT[Px] - X) >> 3;
-                            int OOffs = (TX + X + (((TY + Y) ^ YMask) * Width)) * 4;
 
-                            int Value;
-                            byte R, G, B, A;
+                            int OOffs = (TX + X + ((Height - 1 - (TY + Y)) * Width)) * 4;
 
                             switch (Format)
                             {
                                 case PICATextureFormat.RGBA8:
-                                    Output[OOffs + 0] = Input[IOffs + 1];
+                                    Output[OOffs + 0] = Input[IOffs + 3];
                                     Output[OOffs + 1] = Input[IOffs + 2];
-                                    Output[OOffs + 2] = Input[IOffs + 3];
+                                    Output[OOffs + 2] = Input[IOffs + 1];
                                     Output[OOffs + 3] = Input[IOffs + 0];
-
-                                    IOffs += 4;
 
                                     break;
 
                                 case PICATextureFormat.RGB8:
-                                    Output[OOffs + 0] = Input[IOffs + 0];
+                                    Output[OOffs + 0] = Input[IOffs + 2];
                                     Output[OOffs + 1] = Input[IOffs + 1];
-                                    Output[OOffs + 2] = Input[IOffs + 2];
+                                    Output[OOffs + 2] = Input[IOffs + 0];
                                     Output[OOffs + 3] = 0xff;
-
-                                    IOffs += 3;
 
                                     break;
 
                                 case PICATextureFormat.RGBA5551:
-                                    Value  = Input[IOffs + 0] << 0;
-                                    Value |= Input[IOffs + 1] << 8;
-
-                                    R = (byte)(((Value >>  1) & 0x1f) << 3);
-                                    G = (byte)(((Value >>  6) & 0x1f) << 3);
-                                    B = (byte)(((Value >> 11) & 0x1f) << 3);
-                                    A = (byte)((Value & 1) * 0xff);
-
-                                    Output[OOffs + 0] = (byte)(R | (R >> 5));
-                                    Output[OOffs + 1] = (byte)(G | (G >> 5));
-                                    Output[OOffs + 2] = (byte)(B | (B >> 5));
-                                    Output[OOffs + 3] = A;
-
-                                    IOffs += 2;
+                                    DecodeRGBA5551(Output, OOffs, GetUShort(Input, IOffs));
 
                                     break;
 
                                 case PICATextureFormat.RGB565:
-                                    Value  = Input[IOffs + 0] << 0;
-                                    Value |= Input[IOffs + 1] << 8;
-
-                                    R = (byte)(((Value >>  0) & 0x1f) << 3);
-                                    G = (byte)(((Value >>  5) & 0x3f) << 2);
-                                    B = (byte)(((Value >> 11) & 0x1f) << 3);
-                                    A = 0xff;
-
-                                    Output[OOffs + 0] = (byte)(R | (R >> 5));
-                                    Output[OOffs + 1] = (byte)(G | (G >> 5));
-                                    Output[OOffs + 2] = (byte)(B | (B >> 5));
-                                    Output[OOffs + 3] = A;
-
-                                    IOffs += 2;
+                                    DecodeRGB565(Output, OOffs, GetUShort(Input, IOffs));
 
                                     break;
 
                                 case PICATextureFormat.RGBA4:
-                                    Value  = Input[IOffs + 0] << 0;
-                                    Value |= Input[IOffs + 1] << 8;
-
-                                    R = (byte)((Value >>  4) & 0xf);
-                                    G = (byte)((Value >>  8) & 0xf);
-                                    B = (byte)((Value >> 12) & 0xf);
-                                    A = (byte)((Value >>  0) & 0xf);
-
-                                    Output[OOffs + 0] = (byte)(R | (R << 4));
-                                    Output[OOffs + 1] = (byte)(G | (G << 4));
-                                    Output[OOffs + 2] = (byte)(B | (B << 4));
-                                    Output[OOffs + 3] = (byte)(A | (A << 4));
-
-                                    IOffs += 2;
+                                    DecodeRGBA4(Output, OOffs, GetUShort(Input, IOffs));
 
                                     break;
 
@@ -133,17 +90,13 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 2] = Input[IOffs + 1];
                                     Output[OOffs + 3] = Input[IOffs + 0];
 
-                                    IOffs += 2;
-
                                     break;
 
                                 case PICATextureFormat.HiLo8:
-                                    Output[OOffs + 0] = 0;
+                                    Output[OOffs + 0] = Input[IOffs + 1];
                                     Output[OOffs + 1] = Input[IOffs + 0];
-                                    Output[OOffs + 2] = Input[IOffs + 1];
+                                    Output[OOffs + 2] = 0;
                                     Output[OOffs + 3] = 0xff;
-
-                                    IOffs += 2;
 
                                     break;
 
@@ -153,8 +106,6 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 2] = Input[IOffs];
                                     Output[OOffs + 3] = 0xff;
 
-                                    IOffs++;
-
                                     break;
 
                                 case PICATextureFormat.A8:
@@ -163,58 +114,38 @@ namespace SPICA.PICA.Converters
                                     Output[OOffs + 2] = 0xff;
                                     Output[OOffs + 3] = Input[IOffs];
 
-                                    IOffs++;
-
                                     break;
 
                                 case PICATextureFormat.LA4:
-                                    Value = Input[IOffs] >> 4;
-
-                                    int Alpha = Input[IOffs] & 0xf;
-
-                                    Output[OOffs + 0] = (byte)((Value << 4) | Value);
-                                    Output[OOffs + 1] = (byte)((Value << 4) | Value);
-                                    Output[OOffs + 2] = (byte)((Value << 4) | Value);
-                                    Output[OOffs + 3] = (byte)((Alpha << 4) | Alpha);
-
-                                    IOffs++;
+                                    Output[OOffs + 0] = (byte)((Input[IOffs] >> 4) | (Input[IOffs] & 0xf0));
+                                    Output[OOffs + 1] = (byte)((Input[IOffs] >> 4) | (Input[IOffs] & 0xf0));
+                                    Output[OOffs + 2] = (byte)((Input[IOffs] >> 4) | (Input[IOffs] & 0xf0));
+                                    Output[OOffs + 3] = (byte)((Input[IOffs] << 4) | (Input[IOffs] & 0x0f));
 
                                     break;
 
                                 case PICATextureFormat.L4:
-                                    Value = (Input[IOffs >> 1] >> ((IOffs & 1) << 2)) & 0xf;
+                                    int L = (Input[IOffs >> 1] >> ((IOffs & 1) << 2)) & 0xf;
 
-                                    Output[OOffs + 0] = (byte)((Value << 4) | Value);
-                                    Output[OOffs + 1] = (byte)((Value << 4) | Value);
-                                    Output[OOffs + 2] = (byte)((Value << 4) | Value);
+                                    Output[OOffs + 0] = (byte)((L << 4) | L);
+                                    Output[OOffs + 1] = (byte)((L << 4) | L);
+                                    Output[OOffs + 2] = (byte)((L << 4) | L);
                                     Output[OOffs + 3] = 0xff;
-
-                                    IOffs++;
 
                                     break;
 
                                 case PICATextureFormat.A4:
-                                    Value = (Input[IOffs >> 1] >> ((IOffs & 1) << 2)) & 0xf;
+                                    int A = (Input[IOffs >> 1] >> ((IOffs & 1) << 2)) & 0xf;
 
                                     Output[OOffs + 0] = 0xff;
                                     Output[OOffs + 1] = 0xff;
                                     Output[OOffs + 2] = 0xff;
-                                    Output[OOffs + 3] = (byte)((Value << 4) | Value);
-
-                                    IOffs++;
+                                    Output[OOffs + 3] = (byte)((A << 4) | A);
 
                                     break;
-
-                                default: throw new ArgumentException("Invalid Texture format!");
                             }
 
-                            if (IsGL)
-                            {
-                                byte Temp = Output[OOffs + 0];
-
-                                Output[OOffs + 0] = Output[OOffs + 2];
-                                Output[OOffs + 2] = Temp;
-                            }
+                            IOffs += Increment;
                         }
                     }
                 }
@@ -223,21 +154,95 @@ namespace SPICA.PICA.Converters
             }
         }
 
-        public static Bitmap Decode(byte[] Input, int Width, int Height, PICATextureFormat Format)
+        private static void DecodeRGBA5551(byte[] Buffer, int Address, ushort Value)
         {
-            return GetBitmap(Decode(Input, Width, Height, Format, false), Width, Height);
+            int R = ((Value >>  1) & 0x1f) << 3;
+            int G = ((Value >>  6) & 0x1f) << 3;
+            int B = ((Value >> 11) & 0x1f) << 3;
+
+            SetColor(Buffer, Address, (Value & 1) * 0xff,
+                B | (B >> 5),
+                G | (G >> 5),
+                R | (R >> 5));
+        }
+
+        private static void DecodeRGB565(byte[] Buffer, int Address, ushort Value)
+        {
+            int R = ((Value >>  0) & 0x1f) << 3;
+            int G = ((Value >>  5) & 0x3f) << 2;
+            int B = ((Value >> 11) & 0x1f) << 3;
+
+            SetColor(Buffer, Address, 0xff,
+                B | (B >> 5),
+                G | (G >> 6),
+                R | (R >> 5));
+        }
+
+        private static void DecodeRGBA4(byte[] Buffer, int Address, ushort Value)
+        {
+            int R = (Value >>  4) & 0xf;
+            int G = (Value >>  8) & 0xf;
+            int B = (Value >> 12) & 0xf;
+
+            SetColor(Buffer, Address, (Value & 0xf) | (Value << 4),
+                B | (B << 4),
+                G | (G << 4),
+                R | (R << 4));
+        }
+
+        private static void SetColor(byte[] Buffer, int Address, int A, int B, int G, int R)
+        {
+            Buffer[Address + 0] = (byte)B;
+            Buffer[Address + 1] = (byte)G;
+            Buffer[Address + 2] = (byte)R;
+            Buffer[Address + 3] = (byte)A;
+        }
+
+        private static ushort GetUShort(byte[] Buffer, int Address)
+        {
+            return (ushort)(
+                Buffer[Address + 0] << 0 |
+                Buffer[Address + 1] << 8);
+        }
+
+        public static Bitmap DecodeBitmap(byte[] Input, int Width, int Height, PICATextureFormat Format)
+        {
+            byte[] Buffer = DecodeBuffer(Input, Width, Height, Format);
+
+            byte[] Output = new byte[Buffer.Length];
+
+            int Stride = Width * 4;
+
+            for (int Y = 0; Y < Height; Y++)
+            {
+                int IOffs = Stride * Y;
+                int OOffs = Stride * (Height - 1 - Y);
+
+                for (int X = 0; X < Width; X++)
+                {
+                    Output[OOffs + 0] = Buffer[IOffs + 2];
+                    Output[OOffs + 1] = Buffer[IOffs + 1];
+                    Output[OOffs + 2] = Buffer[IOffs + 0];
+                    Output[OOffs + 3] = Buffer[IOffs + 3];
+
+                    IOffs += 4;
+                    OOffs += 4;
+                }
+            }
+
+            return GetBitmap(Output, Width, Height);
         }
 
         public static byte[] Encode(Bitmap Img, PICATextureFormat Format)
         {
             byte[] Input = GetBuffer(Img);
-            byte[] Output = new byte[CalculateLength(Img.Width, Img.Height, Format)];
 
-            int BytesPerPixel = Image.GetPixelFormatSize(Img.PixelFormat) >> 3;
+            byte[] Output = new byte[CalculateLength(Img.Width, Img.Height, Format)];
 
             int OOffs = 0;
 
-            if (Format == PICATextureFormat.ETC1 || Format == PICATextureFormat.ETC1A4)
+            if (Format == PICATextureFormat.ETC1 ||
+                Format == PICATextureFormat.ETC1A4)
             {
                 throw new NotImplementedException();
             }
@@ -249,18 +254,15 @@ namespace SPICA.PICA.Converters
                     {
                         for (int Px = 0; Px < 64; Px++)
                         {
-                            int X = SwizzleLUT[Px] & 7;
+                            int X =  SwizzleLUT[Px] & 7;
                             int Y = (SwizzleLUT[Px] - X) >> 3;
-                            int IOffs = (TX + X + ((TY + Y) * Img.Width)) * BytesPerPixel;
+
+                            int IOffs = (TX + X + ((TY + Y) * Img.Width)) * 4;
 
                             switch (Format)
                             {
                                 case PICATextureFormat.RGBA8:
-                                    if (BytesPerPixel == 4)
-                                        Output[OOffs + 0] = Input[IOffs + 3];
-                                    else
-                                        Output[OOffs + 0] = byte.MaxValue;
-
+                                    Output[OOffs + 0] = Input[IOffs + 3];
                                     Output[OOffs + 1] = Input[IOffs + 0];
                                     Output[OOffs + 2] = Input[IOffs + 1];
                                     Output[OOffs + 3] = Input[IOffs + 2];
@@ -279,29 +281,16 @@ namespace SPICA.PICA.Converters
             return Output;
         }
 
+        
+
         public static int CalculateLength(int Width, int Height, PICATextureFormat Format)
         {
-            int Length = Width * Height;
+            int Length = (Width * Height * FmtBPP[(int)Format]) / 8;
 
-            switch (Format)
+            if ((Length & 0x7f) != 0)
             {
-                case PICATextureFormat.RGBA8: Length *= 4; break;
-                case PICATextureFormat.RGB8: Length *= 3; break;
-                case PICATextureFormat.RGBA5551:
-                case PICATextureFormat.RGB565:
-                case PICATextureFormat.RGBA4:
-                case PICATextureFormat.LA8:
-                case PICATextureFormat.HiLo8:
-                    Length *= 2;
-                    break;
-                case PICATextureFormat.L4:
-                case PICATextureFormat.A4:
-                case PICATextureFormat.ETC1:
-                    Length /= 2;
-                    break;
+                Length = (Length & ~0x7f) + 0x80;
             }
-
-            if ((Length & 0x7f) != 0) Length = (Length & ~0x7f) + 0x80;
 
             return Length;
         }

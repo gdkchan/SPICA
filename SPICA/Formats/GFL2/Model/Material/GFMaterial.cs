@@ -3,8 +3,8 @@ using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 
-using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model.Material
 {
@@ -211,7 +211,7 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             int UniformIndex = 0;
 
-            Vector4D[] Uniform = new Vector4D[96];
+            Vector4[] Uniform = new Vector4[96];
 
             while (CmdReader.HasCommand)
             {
@@ -269,10 +269,18 @@ namespace SPICA.Formats.GFL2.Model.Material
                     case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
                         for (int i = 0; i < Cmd.Parameters.Length; i++)
                         {
-                            int j = UniformIndex >> 2;
-                            int k = (UniformIndex++ & 3) ^ 3;
+                            float Value = IOUtils.ToSingle(Cmd.Parameters[i]);
 
-                            Uniform[j][k] = IOUtils.ToSingle(Cmd.Parameters[i]);
+                            int j = UniformIndex >> 2;
+                            int k = UniformIndex++ & 3;
+
+                            switch (k)
+                            {
+                                case 0: Uniform[j].W = Value; break;
+                                case 1: Uniform[j].Z = Value; break;
+                                case 2: Uniform[j].Y = Value; break;
+                                case 3: Uniform[j].X = Value; break;
+                            }
                         }
                         break;
                 }

@@ -1,4 +1,4 @@
-﻿using SPICA.Math3D;
+﻿using System.Numerics;
 
 namespace SPICA.Formats.MTFramework.Model
 {
@@ -10,7 +10,7 @@ namespace SPICA.Formats.MTFramework.Model
         public float ChildDistance;
         public float ParentDistance;
 
-        public Vector3D Position;
+        public Vector3 Position;
 
         public Matrix4x4 WorldTransform;
         public Matrix4x4 LocalTransform;

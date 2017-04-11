@@ -6,9 +6,11 @@ using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.MTFramework.Shader;
 using SPICA.Math3D;
 using SPICA.PICA.Converters;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace SPICA.Formats.MTFramework.Model
 {
@@ -18,9 +20,9 @@ namespace SPICA.Formats.MTFramework.Model
         public readonly List<MTMesh>        Meshes;
         public readonly List<MTBone>        Skeleton;
 
-        public Vector4D BoundingSphere;
-        public Vector4D BoundingBoxMin;
-        public Vector4D BoundingBoxMax;
+        public Vector4 BoundingSphere;
+        public Vector4 BoundingBoxMin;
+        public Vector4 BoundingBoxMax;
 
         public byte[][] BoneIndicesGroups;
 
@@ -54,9 +56,9 @@ namespace SPICA.Formats.MTFramework.Model
             uint   IndicesBufferAddress  = Reader.ReadUInt32();
             uint   ModelFileLength       = Reader.ReadUInt32();
 
-            BoundingSphere = new Vector4D(Reader);
-            BoundingBoxMin = new Vector4D(Reader);
-            BoundingBoxMax = new Vector4D(Reader);
+            BoundingSphere = Reader.ReadVector4();
+            BoundingBoxMin = Reader.ReadVector4();
+            BoundingBoxMax = Reader.ReadVector4();
 
             string[] MaterialNames = new string[MaterialsCount];
 
@@ -118,7 +120,7 @@ namespace SPICA.Formats.MTFramework.Model
                 float ChildDistance  = Reader.ReadSingle();
                 float ParentDistance = Reader.ReadSingle();
 
-                Vector3D Position = new Vector3D(Reader);
+                Vector3 Position = Reader.ReadVector3();
 
                 Skeleton.Add(new MTBone
                 {
@@ -132,12 +134,12 @@ namespace SPICA.Formats.MTFramework.Model
 
             for (int Index = 0; Index < BonesCount; Index++)
             {
-                Skeleton[Index].LocalTransform = new Matrix4x4(Reader);
+                Skeleton[Index].LocalTransform = Reader.ReadMatrix4x4RH();
             }
 
             for (int Index = 0; Index < BonesCount; Index++)
             {
-                Skeleton[Index].WorldTransform = new Matrix4x4(Reader);
+                Skeleton[Index].WorldTransform = Reader.ReadMatrix4x4RH();
             }
 
             Reader.BaseStream.Seek(0x100, SeekOrigin.Current);
@@ -225,7 +227,7 @@ namespace SPICA.Formats.MTFramework.Model
 
                     foreach (PICAVertex Vtx in Vertices)
                     {
-                        Vector3D Position = new Vector3D(0);
+                        Vector4 Position = Vector4.Zero;
 
                         float WeightSum = 0;
 
@@ -235,27 +237,23 @@ namespace SPICA.Formats.MTFramework.Model
 
                             WeightSum += Vtx.Weights[i];
 
-                            int BI = SM.BoneIndices[Vtx.Indices[i]];
+                            int bi = SM.BoneIndices[Vtx.Indices[i]];
 
-                            Vector3D Trans = new Vector3D(0);
+                            Vector4 Trans = Vector4.Zero;
 
-                            for (int b = BI; b != -1; b = Skeleton[b].ParentIndex)
+                            for (int b = bi; b != -1; b = Skeleton[b].ParentIndex)
                             {
-                                Trans += new Vector3D(
+                                Trans += new Vector4(
                                     Skeleton[b].LocalTransform.M41,
                                     Skeleton[b].LocalTransform.M42,
-                                    Skeleton[b].LocalTransform.M43);
+                                    Skeleton[b].LocalTransform.M43, 0);
                             }
 
-                            Matrix4x4 WT = Skeleton[BI].WorldTransform;
+                            Matrix4x4 WT = Skeleton[bi].WorldTransform;
 
-                            Vector3D P = Vtx.Position;
+                            Vector3 P = new Vector3(Vtx.Position.X, Vtx.Position.Y, Vtx.Position.Z);
 
-                            Vector3D TP = new Vector3D(0);
-
-                            TP.X = P.X * WT.M11 + P.Y * WT.M21 + P.Z * WT.M31 + WT.M41;
-                            TP.Y = P.X * WT.M12 + P.Y * WT.M22 + P.Z * WT.M32 + WT.M42;
-                            TP.Z = P.X * WT.M13 + P.Y * WT.M23 + P.Z * WT.M33 + WT.M43;
+                            Vector4 TP = Vector4.Transform(P, WT);
 
                             Position += (TP + Trans) * Vtx.Weights[i];
                         }
@@ -287,16 +285,16 @@ namespace SPICA.Formats.MTFramework.Model
             {
                 Model.Skeleton.Add(new H3DBone
                 {
-                    Name             = $"Bone_{BoneIndex++}",
-                    ParentIndex      = Bone.ParentIndex,
-                    Translation      = Bone.Position,
-                    Scale            = new Vector3D(1)
+                    Name        = $"Bone_{BoneIndex++}",
+                    ParentIndex = Bone.ParentIndex,
+                    Translation = Bone.Position,
+                    Scale       = Vector3.One
                 });
             }
 
-            foreach (var b in Model.Skeleton)
+            foreach (H3DBone Bone in Model.Skeleton)
             {
-                b.CalculateTransform(Model.Skeleton);
+                Bone.CalculateTransform(Model.Skeleton);
             }
 
             if (Model.Materials.Count == 0)

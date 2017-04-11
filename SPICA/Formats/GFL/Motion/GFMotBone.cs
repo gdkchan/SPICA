@@ -3,6 +3,7 @@ using SPICA.Math3D;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL.Motion
 {
@@ -10,10 +11,10 @@ namespace SPICA.Formats.GFL.Motion
     {
         public string Name;
 
-        public byte UnkIndex;
+        public byte   UnkIndex;
         public ushort ParentIndex;
         
-        public Vector3D Translation;
+        public Vector3    Translation;
         public Quaternion QuatRotation;
 
         public static List<GFMotBone> ReadSkeleton(BinaryReader Reader)
@@ -45,8 +46,8 @@ namespace SPICA.Formats.GFL.Motion
 
             for (int Index = 0; Index < BonesCount; Index++)
             {
-                Output[Index].Translation  = new Vector3D(Reader);
-                Output[Index].QuatRotation = new Quaternion(Reader);
+                Output[Index].Translation  = Reader.ReadVector3();
+                Output[Index].QuatRotation = Reader.ReadQuaternion();
             }
 
             return Output;

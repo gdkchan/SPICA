@@ -7,6 +7,7 @@ using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
+using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
@@ -94,7 +95,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 Output.TextureMappers[0].MinFilter = H3DTextureMinFilter.Linear;
                 Output.TextureMappers[0].MagFilter = H3DTextureMagFilter.Linear;
 
-                Output.MaterialParams.TextureCoords[0].Scale = new Vector2D(1);
+                Output.MaterialParams.TextureCoords[0].Scale = Vector2.One;
 
                 Output.EnabledTextures[0] = true;
 
@@ -106,7 +107,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public H3DMaterial()
         {
-            MaterialParams = new H3DMaterialParams { Parent = this };
+            MaterialParams = new H3DMaterialParams();
             TextureMappers = new H3DTextureMapper[3];
 
             EnabledTextures = new bool[4];
@@ -115,8 +116,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            MaterialParams.Parent = this;
-
             PICACommandReader Reader = new PICACommandReader(TextureCommands);
 
             while (Reader.HasCommand)

@@ -36,6 +36,8 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         [XmlIgnore] public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 
+        [XmlIgnore] public byte[] RawBuffer { get { return RawBufferXPos; } }
+
         [Ignore] public byte[] RawBufferXPos;
         [Ignore] public byte[] RawBufferXNeg;
         [Ignore] public byte[] RawBufferYPos;
@@ -52,11 +54,15 @@ namespace SPICA.Formats.CtrH3D.Texture
         {
             Bitmap Img = new Bitmap(FileName);
 
-            if (Img.PixelFormat != PixelFormat.Format32bppArgb) Img = new Bitmap(Img);
+            if (Img.PixelFormat != PixelFormat.Format32bppArgb)
+            {
+                Img = new Bitmap(Img);
+            }
 
             using (Img)
             {
                 Name = Path.GetFileNameWithoutExtension(FileName);
+
                 Format = PICATextureFormat.RGBA8;
 
                 H3DTextureImpl(Img);
@@ -81,8 +87,8 @@ namespace SPICA.Formats.CtrH3D.Texture
             if (Img.Width != Width || Img.Height != Height)
             {
                 /*
-                 * 3DS GPU only accepts textures with power of 2 sizes
-                 * If the texture doesn't have a power of 2 size, we need to resize it then
+                 * 3DS GPU only accepts textures with power of 2 sizes.
+                 * If the texture doesn't have a power of 2 size, we need to resize it then.
                  */
                 using (Bitmap NewImg = new Bitmap(Img, (int)Width, (int)Height))
                 {
@@ -95,14 +101,14 @@ namespace SPICA.Formats.CtrH3D.Texture
             }
         }
 
-        public Bitmap ToBitmap(int Face = 0)
-        {
-            return TextureConverter.Decode(BufferFromFace(Face), (int)Width, (int)Height, Format);
-        }
-
         public byte[] ToRGBA(int Face = 0)
         {
-            return TextureConverter.Decode(BufferFromFace(Face), (int)Width, (int)Height, Format, true);
+            return TextureConverter.DecodeBuffer(BufferFromFace(Face), (int)Width, (int)Height, Format);
+        }
+
+        public Bitmap ToBitmap(int Face = 0)
+        {
+            return TextureConverter.DecodeBitmap(BufferFromFace(Face), (int)Width, (int)Height, Format);
         }
 
         private byte[] BufferFromFace(int Face)

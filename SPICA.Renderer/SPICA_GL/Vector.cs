@@ -1,35 +1,34 @@
 ﻿using OpenTK;
 
-using SPICA.Math3D;
 using SPICA.PICA.Commands;
 
 namespace SPICA.Renderer.SPICA_GL
 {
     static class VectorExtensions
     {
-        public static Vector2 ToVector2(this Vector2D Vector)
+        public static Vector2 ToVector2(this System.Numerics.Vector2 v)
         {
-            return new Vector2(Vector.X, Vector.Y);
+            return new Vector2(v.X, v.Y);
         }
 
-        public static Vector3 ToVector3(this Vector3D Vector)
+        public static Vector3 ToVector3(this System.Numerics.Vector3 v)
         {
-            return new Vector3(Vector.X, Vector.Y, Vector.Z);
+            return new Vector3(v.X, v.Y, v.Z);
         }
 
-        public static Vector4 ToVector4(this Vector4D Vector)
+        public static Vector4 ToVector4(this System.Numerics.Vector4 v)
         {
-            return new Vector4(Vector.X, Vector.Y, Vector.Z, Vector.W);
+            return new Vector4(v.X, v.Y, v.Z, v.W);
         }
 
-        public static Vector4 ToVector4(this PICAVectorFloat24 Vector)
+        public static Vector4 ToVector4(this PICAVectorFloat24 v)
         {
-            return new Vector4(Vector.X, Vector.Y, Vector.Z, Vector.W);
+            return new Vector4(v.X, v.Y, v.Z, v.W);
         }
 
-        public static OpenTK.Quaternion ToQuaternion(this Math3D.Quaternion Quat)
+        public static Quaternion ToQuaternion(this System.Numerics.Quaternion q)
         {
-            return new OpenTK.Quaternion(Quat.X, Quat.Y, Quat.Z, Quat.W);
+            return new Quaternion(q.X, q.Y, q.Z, q.W);
         }
     }
 }

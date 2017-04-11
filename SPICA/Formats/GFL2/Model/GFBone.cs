@@ -1,8 +1,8 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Math3D;
 
-using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model
 {
@@ -12,9 +12,9 @@ namespace SPICA.Formats.GFL2.Model
         public string Parent;
         public byte   Flags;
 
-        public Vector3D Scale;
-        public Vector3D Rotation;
-        public Vector3D Translation;
+        public Vector3 Scale;
+        public Vector3 Rotation;
+        public Vector3 Translation;
 
         public GFBone(BinaryReader Reader)
         {
@@ -22,9 +22,9 @@ namespace SPICA.Formats.GFL2.Model
             Parent = Reader.ReadByteLengthString();
             Flags  = Reader.ReadByte();
 
-            Scale       = new Vector3D(Reader);
-            Rotation    = new Vector3D(Reader);
-            Translation = new Vector3D(Reader);
+            Scale       = Reader.ReadVector3();
+            Rotation    = Reader.ReadVector3();
+            Translation = Reader.ReadVector3();
         }
     }
 }

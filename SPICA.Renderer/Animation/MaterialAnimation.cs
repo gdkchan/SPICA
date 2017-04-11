@@ -4,7 +4,6 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Material.Texture;
-using SPICA.Math3D;
 
 using System.Linq;
 
@@ -81,11 +80,11 @@ namespace SPICA.Renderer.Animation
                 Matrix3 Transform = Matrix3.Identity;
 
                 Transform.Row0.X = Trans.M11;
-                Transform.Row0.Y = Trans.M21;
-                Transform.Row1.X = Trans.M12;
+                Transform.Row0.Y = Trans.M12;
+                Transform.Row1.X = Trans.M21;
                 Transform.Row1.Y = Trans.M22;
-                Transform.Row2.X = Trans.M14;
-                Transform.Row2.Y = Trans.M24;
+                Transform.Row2.X = Trans.M41;
+                Transform.Row2.Y = Trans.M42;
 
                 Transforms[Index] = Transform;
             }
@@ -93,7 +92,7 @@ namespace SPICA.Renderer.Animation
             return Transforms;
         }
 
-        private void SetVector2(H3DAnimVector2D Vector, ref Vector2D Target)
+        private void SetVector2(H3DAnimVector2D Vector, ref System.Numerics.Vector2 Target)
         {
             if (Vector.X.HasData) Target.X = Vector.X.GetFrameValue(Frame);
             if (Vector.Y.HasData) Target.Y = Vector.Y.GetFrameValue(Frame);

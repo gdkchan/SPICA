@@ -211,11 +211,11 @@ void main() {
 
 			if (PowerScale.y != 0) {
 				//This is needed by Pokémon only (their custom shader calculates Rim light)
-				Color.a = min(pow(Rim, PowerScale.x) * PowerScale.y, 1);
+				Color.a = clamp(pow(Rim, PowerScale.x) * PowerScale.y, 0, 1);
 			}
 		}
 
-		Color.rgb = min(Color.rgb + HemiCol * MDiffuse.rgb, 1);
+		Color.rgb = clamp(Color.rgb + HemiCol * MDiffuse.rgb, 0, 1);
 	}
 
 	World = vec3(ModelMatrix * Position);

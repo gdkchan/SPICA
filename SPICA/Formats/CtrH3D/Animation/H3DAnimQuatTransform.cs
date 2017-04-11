@@ -1,11 +1,11 @@
-﻿using SPICA.Math3D;
-using SPICA.Serialization;
+﻿using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
@@ -13,19 +13,19 @@ namespace SPICA.Formats.CtrH3D.Animation
     {
         private uint Flags;
 
-        [Ignore] public List<Vector3D> Scales;
+        [Ignore] public List<Vector3>    Scales;
         [Ignore] public List<Quaternion> Rotations;
-        [Ignore] public List<Vector3D> Translations;
+        [Ignore] public List<Vector3>    Translations;
 
-        public bool HasScale { get { return Scales.Count > 0; } }
-        public bool HasRotation { get { return Rotations.Count > 0; } }
+        public bool HasScale       { get { return Scales.Count       > 0; } }
+        public bool HasRotation    { get { return Rotations.Count    > 0; } }
         public bool HasTranslation { get { return Translations.Count > 0; } }
 
         public H3DAnimQuatTransform()
         {
-            Scales = new List<Vector3D>();
-            Rotations = new List<Quaternion>();
-            Translations = new List<Vector3D>();
+            Scales       = new List<Vector3>();
+            Rotations    = new List<Quaternion>();
+            Translations = new List<Vector3>();
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -43,8 +43,8 @@ namespace SPICA.Formats.CtrH3D.Animation
                     Deserializer.BaseStream.Seek(Addresses[Elem], SeekOrigin.Begin);
 
                     uint ElemFlags = 0;
-                    uint Address = Addresses[Elem];
-                    uint Count = 1;
+                    uint Address   = Addresses[Elem];
+                    uint Count     = 1;
 
                     if ((Flags & (4 >> Elem)) == 0)
                     {
@@ -54,11 +54,11 @@ namespace SPICA.Formats.CtrH3D.Animation
                          * This may or may not change on future versions (probably not), so we can safely ignore it.
                          */
                         float StartFrame = Deserializer.Reader.ReadSingle();
-                        float EndFrame = Deserializer.Reader.ReadSingle();
+                        float EndFrame   = Deserializer.Reader.ReadSingle();
 
                         ElemFlags = Deserializer.Reader.ReadUInt32();
-                        Address = Deserializer.Reader.ReadUInt32();
-                        Count = Deserializer.Reader.ReadUInt32();
+                        Address   = Deserializer.Reader.ReadUInt32();
+                        Count     = Deserializer.Reader.ReadUInt32();
                     }
 
                     Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
@@ -67,9 +67,9 @@ namespace SPICA.Formats.CtrH3D.Animation
                     {
                         switch (Elem)
                         {
-                            case 0: Scales.Add(Deserializer.Deserialize<Vector3D>()); break;
+                            case 0: Scales.Add(Deserializer.Deserialize<Vector3>()); break;
                             case 1: Rotations.Add(Deserializer.Deserialize<Quaternion>()); break;
-                            case 2: Translations.Add(Deserializer.Deserialize<Vector3D>()); break;
+                            case 2: Translations.Add(Deserializer.Deserialize<Vector3>()); break;
                         }
                     }
                 }
@@ -98,7 +98,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             }
         }
 
-        public Vector3D GetScaleValue(int Frame)
+        public Vector3 GetScaleValue(int Frame)
         {
             return GetFrameValue(Scales, Frame);
         }
@@ -108,7 +108,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             return GetFrameValue(Rotations, Frame);
         }
 
-        public Vector3D GetTranslationValue(int Frame)
+        public Vector3 GetTranslationValue(int Frame)
         {
             return GetFrameValue(Translations, Frame);
         }

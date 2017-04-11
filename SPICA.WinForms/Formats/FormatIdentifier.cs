@@ -99,8 +99,8 @@ namespace SPICA.WinForms.Formats
                                         H3DAnimation VisAnim = Motion.ToH3DVisibilityAnimation();
 
                                         if (SklAnim != null) Output.SkeletalAnimations.Add(SklAnim);
-                                        if (MatAnim != null) Output.SkeletalAnimations.Add(MatAnim);
-                                        if (VisAnim != null) Output.SkeletalAnimations.Add(VisAnim);
+                                        if (MatAnim != null) Output.MaterialAnimations.Add(MatAnim);
+                                        if (VisAnim != null) Output.VisibilityAnimations.Add(VisAnim);
                                     }
 
                                     break;

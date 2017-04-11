@@ -1,9 +1,11 @@
-﻿using SPICA.Serialization.Attributes;
+﻿using SPICA.Math3D;
+using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -91,6 +93,34 @@ namespace SPICA.Serialization
             else if (Type == typeof(string))
             {
                 return ReadString();
+            }
+            else if (Type == typeof(Vector2))
+            {
+                return Reader.ReadVector2();
+            }
+            else if (Type == typeof(Vector3))
+            {
+                return Reader.ReadVector3();
+            }
+            else if (Type == typeof(Vector4))
+            {
+                return Reader.ReadVector4();
+            }
+            else if (Type == typeof(Quaternion))
+            {
+                return Reader.ReadQuaternion();
+            }
+            else if (Type == typeof(Matrix3x3))
+            {
+                return Reader.ReadMatrix3x3();
+            }
+            else if (Type == typeof(Matrix3x4))
+            {
+                return Reader.ReadMatrix3x4();
+            }
+            else if (Type == typeof(Matrix4x4))
+            {
+                return Reader.ReadMatrix4x4();
             }
             else
             {

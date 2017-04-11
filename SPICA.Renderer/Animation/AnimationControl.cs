@@ -37,6 +37,15 @@ namespace SPICA.Renderer.Animation
             Step = 1;
         }
 
+        public void CopyState(AnimationControl Control)
+        {
+            BaseAnimation = Control.BaseAnimation;
+            State         = Control.State;
+            _Frame        = Control.Frame;
+            IsLooping     = Control.IsLooping;
+            Step          = Control.Step;
+        }
+
         public void SetAnimation(H3DAnimation BaseAnimation)
         {
             this.BaseAnimation = BaseAnimation;
@@ -53,9 +62,9 @@ namespace SPICA.Renderer.Animation
             if (State == AnimationState.Playing)
             {
                 if (Step < 0)
-                    Frame = BaseAnimation.FramesCount;
+                    _Frame = BaseAnimation.FramesCount;
                 else
-                    Frame = 0;
+                    _Frame = 0;
             }
             else
             {
@@ -69,15 +78,15 @@ namespace SPICA.Renderer.Animation
                 BaseAnimation.FramesCount >= Math.Abs(Step) &&
                 State == AnimationState.Playing)
             {
-                Frame += Step;
+                _Frame += Step;
 
-                if (Frame < 0)
+                if (_Frame < 0)
                 {
-                    Frame += BaseAnimation.FramesCount;
+                    _Frame += BaseAnimation.FramesCount;
                 }
-                else if (Frame >= BaseAnimation.FramesCount)
+                else if (_Frame >= BaseAnimation.FramesCount)
                 {
-                    Frame -= BaseAnimation.FramesCount;
+                    _Frame -= BaseAnimation.FramesCount;
                 }
             }
         }
@@ -108,7 +117,7 @@ namespace SPICA.Renderer.Animation
         {
             State = AnimationState.Stopped;
 
-            Frame = 0;
+            _Frame = 0;
         }
     }
 }

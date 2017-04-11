@@ -11,10 +11,8 @@ namespace SPICA.PICA.Converters
         private static byte[] XT = { 0, 4, 0, 4 };
         private static byte[] YT = { 0, 0, 4, 4 };
 
-        public static byte[] ETC1Decompress(byte[] Input, int Width, int Height, bool Alpha, bool IsGL)
+        public static byte[] ETC1Decompress(byte[] Input, int Width, int Height, bool Alpha)
         {
-            int YMask = IsGL ? Height - 1 : 0;
-
             byte[] Output = new byte[Width * Height * 4];
 
             using (MemoryStream MS = new MemoryStream(Input))
@@ -41,7 +39,7 @@ namespace SPICA.PICA.Converters
                             {
                                 for (int PX = XT[T]; PX < 4 + XT[T]; PX++)
                                 {
-                                    int OOffs = (((TY + PY) ^ YMask) * Width + TX + PX) * 4;
+                                    int OOffs = ((Height - 1 - (TY + PY)) * Width + TX + PX) * 4;
 
                                     Buffer.BlockCopy(Tile, TileOffset, Output, OOffs, 3);
 
@@ -50,14 +48,6 @@ namespace SPICA.PICA.Converters
                                     byte A = (byte)((AlphaBlock >> AlphaShift) & 0xf);
 
                                     Output[OOffs + 3] = (byte)((A << 4) | A);
-
-                                    if (IsGL)
-                                    {
-                                        byte Temp = Output[OOffs + 0];
-
-                                        Output[OOffs + 0] = Output[OOffs + 2];
-                                        Output[OOffs + 2] = Temp;
-                                    }
 
                                     TileOffset += 4;
                                 }
@@ -83,39 +73,39 @@ namespace SPICA.PICA.Converters
 
             if (Diff)
             {
-                R1 = (BlockHigh & 0x0000f8) >> 0;
+                B1 = (BlockHigh & 0x0000f8) >> 0;
                 G1 = (BlockHigh & 0x00f800) >> 8;
-                B1 = (BlockHigh & 0xf80000) >> 16;
+                R1 = (BlockHigh & 0xf80000) >> 16;
 
-                R2 = (uint)((sbyte)(R1 >> 3) + ((sbyte)((BlockHigh & 0x000007) <<  5) >> 5));
+                B2 = (uint)((sbyte)(B1 >> 3) + ((sbyte)((BlockHigh & 0x000007) <<  5) >> 5));
                 G2 = (uint)((sbyte)(G1 >> 3) + ((sbyte)((BlockHigh & 0x000700) >>  3) >> 5));
-                B2 = (uint)((sbyte)(B1 >> 3) + ((sbyte)((BlockHigh & 0x070000) >> 11) >> 5));
+                R2 = (uint)((sbyte)(R1 >> 3) + ((sbyte)((BlockHigh & 0x070000) >> 11) >> 5));
 
-                R1 |= R1 >> 5;
-                G1 |= G1 >> 5;
                 B1 |= B1 >> 5;
+                G1 |= G1 >> 5;
+                R1 |= R1 >> 5;
 
-                R2 = (R2 << 3) | (R2 >> 2);
-                G2 = (G2 << 3) | (G2 >> 2);
                 B2 = (B2 << 3) | (B2 >> 2);
+                G2 = (G2 << 3) | (G2 >> 2);
+                R2 = (R2 << 3) | (R2 >> 2);
             }
             else
             {
-                R1 = (BlockHigh & 0x0000f0) >> 0;
+                B1 = (BlockHigh & 0x0000f0) >> 0;
                 G1 = (BlockHigh & 0x00f000) >> 8;
-                B1 = (BlockHigh & 0xf00000) >> 16;
+                R1 = (BlockHigh & 0xf00000) >> 16;
 
-                R2 = (BlockHigh & 0x00000f) << 4;
+                B2 = (BlockHigh & 0x00000f) << 4;
                 G2 = (BlockHigh & 0x000f00) >> 4;
-                B2 = (BlockHigh & 0x0f0000) >> 12;
+                R2 = (BlockHigh & 0x0f0000) >> 12;
 
-                R1 |= R1 >> 4;
-                G1 |= G1 >> 4;
                 B1 |= B1 >> 4;
+                G1 |= G1 >> 4;
+                R1 |= R1 >> 4;
 
-                R2 |= R2 >> 4;
-                G2 |= G2 >> 4;
                 B2 |= B2 >> 4;
+                G2 |= G2 >> 4;
+                R2 |= R2 >> 4;
             }
 
             uint Table1 = (BlockHigh >> 29) & 7;

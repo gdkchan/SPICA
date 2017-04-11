@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D;
+using SPICA.Math3D;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
@@ -6,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -126,6 +128,7 @@ namespace SPICA.Serialization
         public void WriteValue(object Value, bool IsElem = false)
         {
             Type Type = Value.GetType();
+
             long Position = BaseStream.Position;
 
             if (Type.IsPrimitive || Type.IsEnum)
@@ -161,6 +164,34 @@ namespace SPICA.Serialization
             else if (Value is string)
             {
                 Writer.Write(Encoding.ASCII.GetBytes((string)Value + '\0'));
+            }
+            else if (Value is Vector2)
+            {
+                Writer.Write((Vector2)Value);
+            }
+            else if (Value is Vector3)
+            {
+                Writer.Write((Vector3)Value);
+            }
+            else if (Value is Vector4)
+            {
+                Writer.Write((Vector4)Value);
+            }
+            else if (Value is Quaternion)
+            {
+                Writer.Write((Quaternion)Value);
+            }
+            else if (Value is Matrix3x3)
+            {
+                Writer.Write((Matrix3x3)Value);
+            }
+            else if (Value is Matrix3x4)
+            {
+                Writer.Write((Matrix3x4)Value);
+            }
+            else if (Value is Matrix4x4)
+            {
+                Writer.Write((Matrix4x4)Value);
             }
             else
             {

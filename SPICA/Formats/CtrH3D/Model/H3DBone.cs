@@ -2,6 +2,7 @@
 using SPICA.Math3D;
 using SPICA.Serialization.Attributes;
 
+using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model
@@ -21,9 +22,9 @@ namespace SPICA.Formats.CtrH3D.Model
 
         private ushort Padding;
 
-        public Vector3D Scale;
-        public Vector3D Rotation;
-        public Vector3D Translation;
+        public Vector3   Scale;
+        public Vector3   Rotation;
+        public Vector3   Translation;
         public Matrix3x4 InverseTransform;
 
         private string _Name;
@@ -37,17 +38,17 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public H3DMetaData MetaData;
 
-        public Matrix3x4 Transform
+        public Matrix4x4 Transform
         {
             get
             {
-                Matrix3x4 Transform;
+                Matrix4x4 Transform;
 
-                Transform = Matrix3x4.Scale(Scale);
-                Transform *= Matrix3x4.RotateX(Rotation.X);
-                Transform *= Matrix3x4.RotateY(Rotation.Y);
-                Transform *= Matrix3x4.RotateZ(Rotation.Z);
-                Transform *= Matrix3x4.Translate(Translation);
+                Transform  = Matrix4x4.CreateScale(Scale);
+                Transform *= Matrix4x4.CreateRotationX(Rotation.X);
+                Transform *= Matrix4x4.CreateRotationY(Rotation.Y);
+                Transform *= Matrix4x4.CreateRotationZ(Rotation.Z);
+                Transform *= Matrix4x4.CreateTranslation(Translation);
 
                 return Transform;
             }
@@ -60,7 +61,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public void CalculateTransform(PatriciaList<H3DBone> Skeleton)
         {
-            Matrix3x4 Transform = new Matrix3x4();
+            Matrix4x4 Transform = Matrix4x4.Identity;
 
             H3DBone Bone = this;
 
@@ -70,22 +71,24 @@ namespace SPICA.Formats.CtrH3D.Model
             {
                 Transform *= Bone.Transform;
 
-                if (!Bone.Scale.IsOne) UniformScale = false;
+                if (Bone.Scale != Vector3.One) UniformScale = false;
 
                 if (Bone.ParentIndex == -1) break;
 
                 Bone = Skeleton[Bone.ParentIndex];
             }
 
-            Flags = ParentIndex != -1 ? H3DBoneFlags.IsSegmentScaleCompensate : 0;
+            Flags = 0;
 
-            if (UniformScale)       Flags |= H3DBoneFlags.IsScaleUniform;
-            if (Scale.IsOne)        Flags |= H3DBoneFlags.IsScaleVolumeOne;
-            if (Rotation.IsZero)    Flags |= H3DBoneFlags.IsRotationZero;
-            if (Translation.IsZero) Flags |= H3DBoneFlags.IsTranslationZero;
+            if (UniformScale)                Flags  = H3DBoneFlags.IsScaleUniform;
+            if (Scale       == Vector3.One)  Flags |= H3DBoneFlags.IsScaleVolumeOne;
+            if (Rotation    == Vector3.Zero) Flags |= H3DBoneFlags.IsRotationZero;
+            if (Translation == Vector3.Zero) Flags |= H3DBoneFlags.IsTranslationZero;
 
-            InverseTransform = Transform;
-            InverseTransform.Invert();
+            Matrix4x4 Inverse;
+            Matrix4x4.Invert(Transform, out Inverse);
+
+            InverseTransform = new Matrix3x4(Inverse);
         }
     }
 }

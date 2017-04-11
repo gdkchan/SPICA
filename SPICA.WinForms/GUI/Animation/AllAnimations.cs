@@ -7,25 +7,49 @@ namespace SPICA.WinForms.GUI.Animation
 {
     class AllAnimations : IAnimationControl
     {
-        public H3D SceneData;
-        public Model Model;
+        public AnimationType Type { get; set; }
 
-        public AnimationType Type;
+        public H3D Scene { get; set; }
 
-        private AnimationControl MasterAnim;
+        private Model _Model;
+
+        public Model Model
+        {
+            get
+            {
+                return _Model;
+            }
+            set
+            {
+                Model OldModel = _Model;
+
+                _Model = value;
+
+                if (OldModel != null)
+                {
+                    _Model.SkeletalAnim.CopyState(OldModel.SkeletalAnim);
+                    _Model.MaterialAnim.CopyState(OldModel.MaterialAnim);
+
+                    switch (Type)
+                    {
+
+                    }
+                }
+            }
+        }
 
         public float Frame
         {
             get
             {
-                return MasterAnim?.Frame ?? 0;
+                return GetMasterAnimation()?.Frame ?? 0;
             }
             set
             {
-                if (Model != null)
+                if (_Model != null)
                 {
-                    Model.SkeletalAnim.Frame = value;
-                    Model.MaterialAnim.Frame = value;
+                    _Model.SkeletalAnim.Frame = value;
+                    _Model.MaterialAnim.Frame = value;
 
                     UpdateFrame();
                 }
@@ -36,14 +60,14 @@ namespace SPICA.WinForms.GUI.Animation
         {
             get
             {
-                return MasterAnim?.Step ?? 1;
+                return GetMasterAnimation()?.Step ?? 1;
             }
             set
             {
-                if (Model != null)
+                if (_Model != null)
                 {
-                    Model.SkeletalAnim.Step = value;
-                    Model.MaterialAnim.Step = value;
+                    _Model.SkeletalAnim.Step = value;
+                    _Model.MaterialAnim.Step = value;
                 }
             }
         }
@@ -52,80 +76,89 @@ namespace SPICA.WinForms.GUI.Animation
         {
             get
             {
-                return MasterAnim?.IsLooping ?? false;
+                return GetMasterAnimation()?.IsLooping ?? false;
             }
             set
             {
-                if (Model != null)
+                if (_Model != null)
                 {
-                    Model.SkeletalAnim.IsLooping = value;
-                    Model.MaterialAnim.IsLooping = value;
+                    _Model.SkeletalAnim.IsLooping = value;
+                    _Model.MaterialAnim.IsLooping = value;
                 }
             }
         }
 
-        public float FramesCount { get { return MasterAnim?.FramesCount ?? 0; } }
+        public float FramesCount { get { return GetMasterAnimation()?.FramesCount ?? 0; } }
 
         public void SetAnimation(int Index, AnimationType Type)
         {
             this.Type = Type;
 
-            if (SceneData != null && Model != null)
+            if (Scene != null && _Model != null)
             {
                 H3DAnimation Animation = null;
 
                 switch (Type)
                 {
                     case AnimationType.Skeletal:
-                        Animation = SceneData.SkeletalAnimations[Index];
-                        MasterAnim = Model.SkeletalAnim;
+                        Animation = Scene.SkeletalAnimations[Index];
+                        _Model.SkeletalAnim.SetAnimation(Animation);
                         break;
 
                     case AnimationType.Material:
-                        Animation = SceneData.MaterialAnimations[Index];
-                        MasterAnim = Model.MaterialAnim;
+                        Animation = Scene.MaterialAnimations[Index];
+                        _Model.MaterialAnim.SetAnimation(Animation);
                         break;
                 }
 
-                MasterAnim.SetAnimation(Animation);
-
                 if (Type != AnimationType.Skeletal &&
-                    (Index = SceneData.SkeletalAnimations.FindIndex(Animation.Name)) != -1)
+                    (Index = Scene.SkeletalAnimations.FindIndex(Animation.Name)) != -1)
                 {
-                    Model.SkeletalAnim.SetAnimation(SceneData.SkeletalAnimations[Index]);
+                    _Model.SkeletalAnim.SetAnimation(Scene.SkeletalAnimations[Index]);
                 }
 
                 if (Type != AnimationType.Material &&
-                    (Index = SceneData.MaterialAnimations.FindIndex(Animation.Name)) != -1)
+                    (Index = Scene.MaterialAnimations.FindIndex(Animation.Name)) != -1)
                 {
-                    Model.MaterialAnim.SetAnimation(SceneData.MaterialAnimations[Index]);
+                    _Model.MaterialAnim.SetAnimation(Scene.MaterialAnimations[Index]);
                 }
             }
         }
 
         public void Reset()
         {
-            if (Model != null)
+            if (_Model != null)
             {
                 Stop();
 
-                Model.SkeletalAnim.SetAnimation(null);
-                Model.MaterialAnim.SetAnimation(null);
+                _Model.SkeletalAnim.SetAnimation(null);
+                _Model.MaterialAnim.SetAnimation(null);
             }
         }
 
         //Needs immediate frame updates
         private void UpdateFrame()
         {
-            Model.UpdateAnimationTransforms();
+            _Model.UpdateAnimationTransforms();
+        }
+
+        private AnimationControl GetMasterAnimation()
+        {
+            switch (Type)
+            {
+                case AnimationType.Skeletal: return _Model?.SkeletalAnim;
+                case AnimationType.Material: return _Model?.MaterialAnim;
+            }
+
+            return null;
         }
         
         public void AdvanceFrame()
         {
-            if (Model != null)
+            if (_Model != null)
             {
-                Model.SkeletalAnim.AdvanceFrame();
-                Model.MaterialAnim.AdvanceFrame();
+                _Model.SkeletalAnim.AdvanceFrame();
+                _Model.MaterialAnim.AdvanceFrame();
 
                 UpdateFrame();
             }
@@ -133,10 +166,10 @@ namespace SPICA.WinForms.GUI.Animation
 
         public void Play(float Step = 1)
         {
-            if (Model != null)
+            if (_Model != null)
             {
-                Model.SkeletalAnim.Play(Step);
-                Model.MaterialAnim.Play(Step);
+                _Model.SkeletalAnim.Play(Step);
+                _Model.MaterialAnim.Play(Step);
 
                 UpdateFrame();
             }
@@ -144,10 +177,10 @@ namespace SPICA.WinForms.GUI.Animation
 
         public void Stop()
         {
-            if (Model != null)
+            if (_Model != null)
             {
-                Model.SkeletalAnim.Stop();
-                Model.MaterialAnim.Stop();
+                _Model.SkeletalAnim.Stop();
+                _Model.MaterialAnim.Stop();
 
                 UpdateFrame();
             }
@@ -156,20 +189,20 @@ namespace SPICA.WinForms.GUI.Animation
         //No need for immediate frame updates
         public void Pause()
         {
-            Model?.SkeletalAnim.Pause();
-            Model?.MaterialAnim.Pause();
+            _Model?.SkeletalAnim.Pause();
+            _Model?.MaterialAnim.Pause();
         }
 
         public void SlowDown()
         {
-            Model?.SkeletalAnim.SlowDown();
-            Model?.MaterialAnim.SlowDown();
+            _Model?.SkeletalAnim.SlowDown();
+            _Model?.MaterialAnim.SlowDown();
         }
 
         public void SpeedUp()
         {
-            Model?.SkeletalAnim.SpeedUp();
-            Model?.MaterialAnim.SpeedUp();
+            _Model?.SkeletalAnim.SpeedUp();
+            _Model?.MaterialAnim.SpeedUp();
         }
     }
 }

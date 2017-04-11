@@ -11,6 +11,7 @@ using SPICA.Math3D;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model
 {
@@ -20,8 +21,8 @@ namespace SPICA.Formats.GFL2.Model
 
         public string Name;
 
-        public Vector4D BBoxMinVector;
-        public Vector4D BBoxMaxVector;
+        public Vector4   BBoxMinVector;
+        public Vector4   BBoxMaxVector;
         public Matrix4x4 Transform;
 
         public List<GFBone>     Skeleton;
@@ -53,9 +54,9 @@ namespace SPICA.Formats.GFL2.Model
             GFHashName[] MaterialNames = ReadHashTable(Reader);
             GFHashName[] MeshNames     = ReadHashTable(Reader);
 
-            BBoxMinVector = new Vector4D(Reader);
-            BBoxMaxVector = new Vector4D(Reader);
-            Transform     = new Matrix4x4(Reader);
+            BBoxMinVector = Reader.ReadVector4();
+            BBoxMaxVector = Reader.ReadVector4();
+            Transform     = Reader.ReadMatrix4x4();
 
             //TODO: Investigate what is this (maybe Tile permissions?)
             uint UnknownDataLength = Reader.ReadUInt32();
@@ -134,6 +135,8 @@ namespace SPICA.Formats.GFL2.Model
             foreach (H3DBone Bone in Output.Skeleton)
             {
                 Bone.CalculateTransform(Output.Skeleton);
+
+                Bone.Flags |= H3DBoneFlags.IsSegmentScaleCompensate;
             }
 
             //Materials

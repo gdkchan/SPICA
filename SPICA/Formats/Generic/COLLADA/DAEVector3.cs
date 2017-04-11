@@ -1,5 +1,6 @@
 ﻿using SPICA.Math3D;
 
+using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.Generic.COLLADA
@@ -18,9 +19,9 @@ namespace SPICA.Formats.Generic.COLLADA
             }
         }
 
-        public void Set(Vector3D Vector)
+        public void Set(Vector3 Vector)
         {
-            data = Vector.ToSerializableString();
+            data = DAEUtils.VectorStr(Vector);
         }
     }
 }

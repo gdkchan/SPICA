@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.Generic.WavefrontOBJ
 {
@@ -38,9 +39,9 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
         {
             Meshes = new List<OBJMesh>();
 
-            List<Vector3D> Positions = new List<Vector3D>();
-            List<Vector3D> Normals   = new List<Vector3D>();
-            List<Vector2D> TexCoords = new List<Vector2D>();
+            List<Vector4> Positions = new List<Vector4>();
+            List<Vector4> Normals   = new List<Vector4>();
+            List<Vector4> TexCoords = new List<Vector4>();
 
             OBJMesh Mesh = new OBJMesh();
 
@@ -62,7 +63,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                             (Params[0] == "v"
                                 ? Positions
                                 : Normals)
-                                .Add(new Vector3D
+                                .Add(new Vector4
                                 {
                                     X = float.Parse(Params[1], CultureInfo.InvariantCulture),
                                     Y = float.Parse(Params[2], CultureInfo.InvariantCulture),
@@ -74,7 +75,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                     case "vt":
                         if (Params.Length >= 3)
                         {
-                            TexCoords.Add(new Vector2D
+                            TexCoords.Add(new Vector4
                             {
                                 X = float.Parse(Params[1], CultureInfo.InvariantCulture),
                                 Y = float.Parse(Params[2], CultureInfo.InvariantCulture)
@@ -167,9 +168,9 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
         private struct OBJMaterial
         {
-            public RGBAFloat Ambient;
-            public RGBAFloat Diffuse;
-            public RGBAFloat Specular;
+            public Vector4 Ambient;
+            public Vector4 Diffuse;
+            public Vector4 Specular;
 
             public string DiffuseTexture; 
         }
@@ -237,13 +238,10 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                             case "Ks":
                                 if (Params.Length >= 4)
                                 {
-                                    RGBAFloat Color = new RGBAFloat
-                                    {
-                                        R = float.Parse(Params[1], CultureInfo.InvariantCulture),
-                                        G = float.Parse(Params[2], CultureInfo.InvariantCulture),
-                                        B = float.Parse(Params[3], CultureInfo.InvariantCulture),
-                                        A = 1
-                                    };
+                                    Vector4 Color = new Vector4(
+                                        float.Parse(Params[1], CultureInfo.InvariantCulture),
+                                        float.Parse(Params[2], CultureInfo.InvariantCulture),
+                                        float.Parse(Params[3], CultureInfo.InvariantCulture), 1);
 
                                     switch (Params[0])
                                     {
@@ -276,8 +274,8 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
             foreach (OBJMesh Mesh in Meshes)
             {
-                Vector3D MinVector = new Vector3D();
-                Vector3D MaxVector = new Vector3D();
+                Vector3 MinVector = new Vector3();
+                Vector3 MaxVector = new Vector3();
 
                 Dictionary<PICAVertex, int> Vertices = new Dictionary<PICAVertex, int>();
 

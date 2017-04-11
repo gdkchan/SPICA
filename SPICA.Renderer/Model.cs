@@ -195,7 +195,7 @@ namespace SPICA.Renderer
 
                 if (IsFirst)
                 {
-                    Min = Max = Vertices[0].Position.ToVector3();
+                    Min = Max = Vertices[0].Position.ToVector4().Xyz;
 
                     IsFirst = false;
                 }

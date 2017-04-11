@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.Generic.COLLADA
@@ -24,7 +25,7 @@ namespace SPICA.Formats.Generic.COLLADA
         public DAENodeInstance instance_geometry;
         public DAENodeInstance instance_controller;
 
-        public void SetBoneEuler(Vector3D T, Vector3D R, Vector3D S)
+        public void SetBoneEuler(Vector3 T, Vector3 R, Vector3 S)
         {
             Rotation = new DAEVector4[3];
 
@@ -35,15 +36,10 @@ namespace SPICA.Formats.Generic.COLLADA
             Scale       = new DAEVector3 { sid = "scale" };
 
             Translation.Set(T);
-            Rotation[0].Set(new Vector4D(0, 0, 1, ToAngle(R.Z)));
-            Rotation[1].Set(new Vector4D(0, 1, 0, ToAngle(R.Y)));
-            Rotation[2].Set(new Vector4D(1, 0, 0, ToAngle(R.X)));
+            Rotation[0].Set(new Vector4(0, 0, 1, DAEUtils.RadToDeg(R.Z)));
+            Rotation[1].Set(new Vector4(0, 1, 0, DAEUtils.RadToDeg(R.Y)));
+            Rotation[2].Set(new Vector4(1, 0, 0, DAEUtils.RadToDeg(R.X)));
             Scale.Set(S);
-        }
-
-        private float ToAngle(float Radians)
-        {
-            return (float)((Radians / Math.PI) * 180);
         }
     }
 

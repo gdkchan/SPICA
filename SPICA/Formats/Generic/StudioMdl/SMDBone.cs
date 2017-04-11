@@ -1,4 +1,4 @@
-﻿using SPICA.Math3D;
+﻿using System.Numerics;
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
@@ -6,7 +6,7 @@ namespace SPICA.Formats.Generic.StudioMdl
     {
         public int NodeIndex;
 
-        public Vector3D Translation;
-        public Vector3D Rotation;
+        public Vector3 Translation;
+        public Vector3 Rotation;
     }
 }

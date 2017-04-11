@@ -1,59 +1,57 @@
-﻿using SPICA.Serialization.Attributes;
-
-using System;
-using System.Text;
+﻿using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Math3D
 {
-    [Inline]
-    public class Matrix3x3
+    public struct Matrix3x3
     {
-        [FixedLength(3 * 3), Inline]
-        private float[] Elems;
+        private Matrix4x4 m;
 
-        public Matrix3x3()
+        private static readonly Matrix3x3 _identity = new Matrix3x3(Matrix4x4.Identity);
+
+        public static Matrix4x4 Identity { get { return _identity; } }
+
+        [XmlAttribute] public float M11 { get { return m.M11; } set { m.M11 = value; } }
+        [XmlAttribute] public float M12 { get { return m.M12; } set { m.M12 = value; } }
+        [XmlAttribute] public float M13 { get { return m.M13; } set { m.M13 = value; } }
+
+        [XmlAttribute] public float M21 { get { return m.M21; } set { m.M21 = value; } }
+        [XmlAttribute] public float M22 { get { return m.M22; } set { m.M22 = value; } }
+        [XmlAttribute] public float M23 { get { return m.M23; } set { m.M23 = value; } }
+
+        [XmlAttribute] public float M31 { get { return m.M31; } set { m.M31 = value; } }
+        [XmlAttribute] public float M32 { get { return m.M32; } set { m.M32 = value; } }
+        [XmlAttribute] public float M33 { get { return m.M33; } set { m.M33 = value; } }
+
+        public Matrix3x3(Matrix4x4 Matrix)
         {
-            Elems = new float[3 * 3];
-
-            this[0, 0] = 1;
-            this[1, 1] = 1;
-            this[2, 2] = 1;
+            m = Matrix;
         }
 
-        [XmlAttribute] public float M11 { get { return this[0, 0]; } set { this[0, 0] = value; } }
-        [XmlAttribute] public float M12 { get { return this[0, 1]; } set { this[0, 1] = value; } }
-        [XmlAttribute] public float M13 { get { return this[0, 2]; } set { this[0, 2] = value; } }
-
-        [XmlAttribute] public float M21 { get { return this[1, 0]; } set { this[1, 0] = value; } }
-        [XmlAttribute] public float M22 { get { return this[1, 1]; } set { this[1, 1] = value; } }
-        [XmlAttribute] public float M23 { get { return this[1, 2]; } set { this[1, 2] = value; } }
-
-        [XmlAttribute] public float M31 { get { return this[2, 0]; } set { this[2, 0] = value; } }
-        [XmlAttribute] public float M32 { get { return this[2, 1]; } set { this[2, 1] = value; } }
-        [XmlAttribute] public float M33 { get { return this[2, 2]; } set { this[2, 2] = value; } }
-
-        public float this[int Row, int Col]
+        public Matrix3x3(float m11, float m12, float m13,
+                         float m21, float m22, float m23,
+                         float m31, float m32, float m33)
         {
-            get { return Elems[(Row * 3) + Col]; }
-            set { Elems[(Row * 3) + Col] = value; }
+            m = new Matrix4x4(
+                m11, m12, m13, 0f,
+                m21, m22, m23, 0f,
+                m31, m32, m33, 0f,
+                 0f,  0f,  0f, 1f);
+        }
+
+        public Matrix4x4 ToMatrix4x4()
+        {
+            return m;
+        }
+
+        public static implicit operator Matrix4x4(Matrix3x3 m)
+        {
+            return m.ToMatrix4x4();
         }
 
         public override string ToString()
         {
-            StringBuilder SB = new StringBuilder();
-
-            for (int Row = 0; Row < 3; Row++)
-            {
-                for (int Col = 0; Col < 3; Col++)
-                {
-                    SB.Append(string.Format("M{0}{1}: {2,-16}", Row + 1, Col + 1, this[Row, Col]));
-                }
-
-                SB.Append(Environment.NewLine);
-            }
-
-            return SB.ToString();
+            return m.ToString();
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Math3D;
-using SPICA.PICA.Commands;
 
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model.Material
 {
@@ -13,9 +13,9 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public GFTextureMappingType MappingType;
 
-        public Vector2D Scale;
+        public Vector2 Scale;
         public float Rotation;
-        public Vector2D Translation;
+        public Vector2 Translation;
 
         public GFTextureWrap WrapU;
         public GFTextureWrap WrapV;
@@ -34,9 +34,9 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             MappingType = (GFTextureMappingType)Reader.ReadByte();
 
-            Scale = new Vector2D(Reader);
-            Rotation = Reader.ReadSingle();
-            Translation = new Vector2D(Reader);
+            Scale       = Reader.ReadVector2();
+            Rotation    = Reader.ReadSingle();
+            Translation = Reader.ReadVector2();
 
             WrapU = (GFTextureWrap)Reader.ReadUInt32();
             WrapV = (GFTextureWrap)Reader.ReadUInt32();

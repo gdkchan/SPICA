@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -48,7 +49,7 @@ namespace SPICA.Formats.Generic.COLLADA
                 DAEVisualScene VN = new DAEVisualScene();
 
                 VN.name = $"{Mdl.Name}_{MdlIndex.ToString("D2")}";
-                VN.id = $"{VN.name}_id";
+                VN.id   = $"{VN.name}_id";
 
                 //Materials
                 if (Mdl.Materials.Count > 0)
@@ -122,9 +123,9 @@ namespace SPICA.Formats.Generic.COLLADA
 
                         H3DBone Bone = Bone_Node.Item1;
 
-                        Bone_Node.Item2.id = $"{Bone.Name}_bone_id";
+                        Bone_Node.Item2.id   = $"{Bone.Name}_bone_id";
                         Bone_Node.Item2.name = Bone.Name;
-                        Bone_Node.Item2.sid = Bone.Name;
+                        Bone_Node.Item2.sid  = Bone.Name;
                         Bone_Node.Item2.type = DAENodeType.JOINT;
                         Bone_Node.Item2.SetBoneEuler(Bone.Translation, Bone.Rotation, Bone.Scale);
 
@@ -159,6 +160,8 @@ namespace SPICA.Formats.Generic.COLLADA
                 for (int MeshIndex = 0; MeshIndex < Mdl.Meshes.Count; MeshIndex++)
                 {
                     H3DMesh Mesh = Mdl.Meshes[MeshIndex];
+
+                    if (Mesh.Type == H3DMeshType.Silhouette) continue;
 
                     string MtlName = $"Mdl_{MdlIndex}_Mtl_{Mdl.Materials[Mesh.MaterialIndex].Name}";
                     string MtlTgt = library_materials[Mesh.MaterialIndex].id;
@@ -197,17 +200,17 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             for (int Index = 0; Index < Vertices.Length; Index++)
                             {
-                                PICAVertex V = Vertices[Index];
+                                PICAVertex v = Vertices[Index];
 
                                 switch (Attr.Name)
                                 {
-                                    case PICAAttributeName.Position:  Values[Index] = V.Position.ToSerializableString();  break;
-                                    case PICAAttributeName.Normal:    Values[Index] = V.Normal.ToSerializableString();    break;
-                                    case PICAAttributeName.Tangent:   Values[Index] = V.Tangent.ToSerializableString();   break;
-                                    case PICAAttributeName.Color:     Values[Index] = V.Color.ToSerializableString();     break;
-                                    case PICAAttributeName.TexCoord0: Values[Index] = V.TexCoord0.ToSerializableString(); break;
-                                    case PICAAttributeName.TexCoord1: Values[Index] = V.TexCoord1.ToSerializableString(); break;
-                                    case PICAAttributeName.TexCoord2: Values[Index] = V.TexCoord2.ToSerializableString(); break;
+                                    case PICAAttributeName.Position:  Values[Index] = DAEUtils.Vector3Str(v.Position);  break;
+                                    case PICAAttributeName.Normal:    Values[Index] = DAEUtils.Vector3Str(v.Normal);    break;
+                                    case PICAAttributeName.Tangent:   Values[Index] = DAEUtils.Vector3Str(v.Tangent);   break;
+                                    case PICAAttributeName.Color:     Values[Index] = DAEUtils.Vector4Str(v.Color);     break;
+                                    case PICAAttributeName.TexCoord0: Values[Index] = DAEUtils.Vector2Str(v.TexCoord0); break;
+                                    case PICAAttributeName.TexCoord1: Values[Index] = DAEUtils.Vector2Str(v.TexCoord1); break;
+                                    case PICAAttributeName.TexCoord2: Values[Index] = DAEUtils.Vector2Str(v.TexCoord2); break;
                                 }
                             }
 
@@ -241,7 +244,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             Geometry.mesh.source.Add(Source);
 
-                            if (Attr.Name < PICAAttributeName.TexCoord0)
+                            if (Attr.Name < PICAAttributeName.Color)
                             {
                                 string Semantic = string.Empty;
 
@@ -250,10 +253,13 @@ namespace SPICA.Formats.Generic.COLLADA
                                     case PICAAttributeName.Position: Semantic = "POSITION"; break;
                                     case PICAAttributeName.Normal:   Semantic = "NORMAL";   break;
                                     case PICAAttributeName.Tangent:  Semantic = "TANGENT";  break;
-                                    case PICAAttributeName.Color:    Semantic = "COLOR";    break;
                                 }
 
                                 Geometry.mesh.vertices.AddInput(Semantic, $"#{Source.id}");
+                            }
+                            else if (Attr.Name == PICAAttributeName.Color)
+                            {
+                                Geometry.mesh.triangles.AddInput("COLOR", $"#{Source.id}", 0);
                             }
                             else
                             {
@@ -289,13 +295,16 @@ namespace SPICA.Formats.Generic.COLLADA
                                 if (SM.BoneIndices[Index] >= Mdl.Skeleton.Count) break;
 
                                 BoneNames[Index] = Mdl.Skeleton[SM.BoneIndices[Index]].Name;
-                                BindPoses[Index] = $"{Mdl.Skeleton[SM.BoneIndices[Index]].InverseTransform.ToSerializableString()} 0 0 0 1";
+                                BindPoses[Index] = DAEUtils.MatrixStr(Mdl.Skeleton[SM.BoneIndices[Index]].InverseTransform);
                             }
 
-                            StringBuilder v = new StringBuilder();
-                            StringBuilder vcount = new StringBuilder();
+                            //4 is the max number of bones per vertex
+                            int[] v      = new int[Vertices.Length * 4 * 2];
+                            int[] vcount = new int[Vertices.Length];
 
                             Dictionary<string, int> Weights = new Dictionary<string, int>();
+
+                            int vi = 0, vci = 0;
 
                             if (SM.Skinning == H3DSubMeshSkinning.Smooth)
                             {
@@ -305,22 +314,22 @@ namespace SPICA.Formats.Generic.COLLADA
 
                                     for (int Index = 0; Index < 4; Index++)
                                     {
-                                        float BIndex = Vertex.Indices[Index];
+                                        int   BIndex = Vertex.Indices[Index];
                                         float Weight = Vertex.Weights[Index];
 
                                         if (Weight == 0) break;
 
                                         string WStr = Weight.ToString(CultureInfo.InvariantCulture);
 
-                                        v.Append($"{BIndex} ");
+                                        v[vi++] = BIndex;
 
                                         if (Weights.ContainsKey(WStr))
                                         {
-                                            v.Append($"{Weights[WStr]} ");
+                                            v[vi++] = Weights[WStr];
                                         }
                                         else
                                         {
-                                            v.Append($"{Weights.Count} ");
+                                            v[vi++] = Weights.Count;
 
                                             Weights.Add(WStr, Weights.Count);
                                         }
@@ -328,16 +337,17 @@ namespace SPICA.Formats.Generic.COLLADA
                                         Count++;
                                     }
 
-                                    vcount.Append($"{Count} ");
+                                    vcount[vci++] = Count;
                                 }
                             }
                             else
                             {
                                 foreach (PICAVertex Vertex in Vertices)
                                 {
-                                    v.Append($"{Vertex.Indices[0]} 1 ");
+                                    v[vi++] = Vertex.Indices[0];
+                                    v[vi++] = 0;
 
-                                    vcount.Append("1 ");
+                                    vcount[vci++] = 1;
                                 }
 
                                 Weights.Add("1", 0);
@@ -353,13 +363,8 @@ namespace SPICA.Formats.Generic.COLLADA
                             Controller.skin.vertex_weights.AddInput("JOINT", $"#{Controller.skin.src[0].id}", 0);
                             Controller.skin.vertex_weights.AddInput("WEIGHT", $"#{Controller.skin.src[2].id}", 1);
 
-                            Controller.skin.vertex_weights.vcount = vcount
-                                .ToString()
-                                .TrimEnd();
-
-                            Controller.skin.vertex_weights.v = v
-                                .ToString()
-                                .TrimEnd();
+                            Controller.skin.vertex_weights.vcount = string.Join(" ", vcount);
+                            Controller.skin.vertex_weights.v      = string.Join(" ", v);
 
                             library_controllers.Add(Controller);
                         }
@@ -466,7 +471,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             H3DAnimationElement PElem = SklAnim.Elements.FirstOrDefault(x => x.Name == Parent?.Name);
 
-                            Vector3D InvScale = new Vector3D(1);
+                            Vector3 InvScale = Vector3.One;
 
                             switch (Elem.PrimitiveType)
                             {
@@ -480,10 +485,10 @@ namespace SPICA.Formats.Generic.COLLADA
                                         {
                                             H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
 
-                                            InvScale /= new Vector3D(
-                                                PTrans.ScaleX.GetFrameValue(Frame),
-                                                PTrans.ScaleY.GetFrameValue(Frame),
-                                                PTrans.ScaleZ.GetFrameValue(Frame));
+                                            InvScale /= new Vector3(
+                                                PTrans.ScaleX.HasData ? PTrans.ScaleX.GetFrameValue(Frame) : Parent.Scale.X,
+                                                PTrans.ScaleY.HasData ? PTrans.ScaleY.GetFrameValue(Frame) : Parent.Scale.Y,
+                                                PTrans.ScaleZ.HasData ? PTrans.ScaleZ.GetFrameValue(Frame) : Parent.Scale.Z);
                                         }
                                         else
                                         {
@@ -495,50 +500,37 @@ namespace SPICA.Formats.Generic.COLLADA
                                     {
                                         //Translation
                                         case 0:
-                                            StrTrans = new Vector3D(
+                                            StrTrans = DAEUtils.VectorStr(new Vector3(
                                                 Transform.TranslationX.HasData //X
                                                 ? Transform.TranslationX.GetFrameValue(Frame) : SklBone.Translation.X,
                                                 Transform.TranslationY.HasData //Y
                                                 ? Transform.TranslationY.GetFrameValue(Frame) : SklBone.Translation.Y,
                                                 Transform.TranslationZ.HasData //Z
-                                                ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z)
-                                                .ToSerializableString();
+                                                ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z));
                                             break;
 
                                         //Scale
                                         case 4:
-                                            StrTrans = (InvScale * new Vector3D(
+                                            StrTrans = DAEUtils.VectorStr(InvScale * new Vector3(
                                                 Transform.ScaleX.HasData //X
                                                 ? Transform.ScaleX.GetFrameValue(Frame) : SklBone.Scale.X,
                                                 Transform.ScaleY.HasData //Y
                                                 ? Transform.ScaleY.GetFrameValue(Frame) : SklBone.Scale.Y,
                                                 Transform.ScaleZ.HasData //Z
-                                                ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z))
-                                                .ToSerializableString();
+                                                ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z));
                                             break;
 
                                         //Rotation
-                                        case 1:
-                                            StrTrans = ToAngle(Transform.RotationX.GetFrameValue(Frame))
-                                                .ToString(CultureInfo.InvariantCulture);
-                                            break;
-
-                                        case 2:
-                                            StrTrans = ToAngle(Transform.RotationY.GetFrameValue(Frame))
-                                                .ToString(CultureInfo.InvariantCulture);
-                                            break;
-
-                                        case 3:
-                                            StrTrans = ToAngle(Transform.RotationZ.GetFrameValue(Frame))
-                                                .ToString(CultureInfo.InvariantCulture);
-                                            break;
+                                        case 1: StrTrans = DAEUtils.RadToDegStr(Transform.RotationX.GetFrameValue(Frame)); break;
+                                        case 2: StrTrans = DAEUtils.RadToDegStr(Transform.RotationY.GetFrameValue(Frame)); break;
+                                        case 3: StrTrans = DAEUtils.RadToDegStr(Transform.RotationZ.GetFrameValue(Frame)); break;
                                     }
                                     break;
 
                                 case H3DAnimPrimitiveType.QuatTransform:
                                     H3DAnimQuatTransform QuatTransform = (H3DAnimQuatTransform)Elem.Content;
 
-                                    Vector3D Rotation = Vector3D.Empty;
+                                    Vector3 Rotation = Vector3.Zero;
 
                                     //TODO: ToEuler is expensive, ideally call it only once per bone
                                     if (IsRotation) Rotation = QuatTransform.GetRotationValue(Frame).ToEuler();
@@ -554,11 +546,11 @@ namespace SPICA.Formats.Generic.COLLADA
 
                                     switch (i)
                                     {
-                                        case 0: StrTrans = QuatTransform.GetTranslationValue(Frame).ToSerializableString(); break;
-                                        case 1: StrTrans = ToAngle(Rotation.X).ToString(CultureInfo.InvariantCulture); break;
-                                        case 2: StrTrans = ToAngle(Rotation.Y).ToString(CultureInfo.InvariantCulture); break;
-                                        case 3: StrTrans = ToAngle(Rotation.Z).ToString(CultureInfo.InvariantCulture); break;
-                                        case 4: StrTrans = (InvScale * QuatTransform.GetScaleValue(Frame)).ToSerializableString(); break;
+                                        case 0: StrTrans = DAEUtils.VectorStr(QuatTransform.GetTranslationValue(Frame)); break;
+                                        case 1: StrTrans = DAEUtils.RadToDegStr(Rotation.X); break;
+                                        case 2: StrTrans = DAEUtils.RadToDegStr(Rotation.Y); break;
+                                        case 3: StrTrans = DAEUtils.RadToDegStr(Rotation.Z); break;
+                                        case 4: StrTrans = DAEUtils.VectorStr(InvScale * QuatTransform.GetScaleValue(Frame)); break;
                                     }
                                     break;
                             }
@@ -572,7 +564,7 @@ namespace SPICA.Formats.Generic.COLLADA
                         DAEAnimation Anim = new DAEAnimation();
 
                         Anim.name = $"{SklAnim.Name}_{Elem.Name}_{AnimElemNames[i]}";
-                        Anim.id = $"{Anim.name}_id";
+                        Anim.id   = $"{Anim.name}_id";
 
                         Anim.src.Add(new DAESource($"{Anim.name}_frame", 1, AnimTimes, "TIME", "float"));
                         Anim.src.Add(new DAESource($"{Anim.name}_interp", 1, AnimLerps, "INTERPOLATION", "Name"));
@@ -588,7 +580,7 @@ namespace SPICA.Formats.Generic.COLLADA
                         Anim.sampler.AddInput("INTERPOLATION", $"#{Anim.src[1].id}");
                         Anim.sampler.AddInput("OUTPUT",        $"#{Anim.src[2].id}");
 
-                        Anim.sampler.id = $"{Anim.name}_samp_id";
+                        Anim.sampler.id     = $"{Anim.name}_samp_id";
                         Anim.channel.source = $"#{Anim.sampler.id}";
                         Anim.channel.target = $"{Elem.Name}_bone_id/{AnimElemNames[i]}";
 
@@ -598,11 +590,6 @@ namespace SPICA.Formats.Generic.COLLADA
                     } //Axis 0-5
                 } //SklAnim.Elements
             } //AnimIndex != -1
-        }
-
-        private float ToAngle(float Radians)
-        {
-            return (float)((Radians / Math.PI) * 180);
         }
 
         public void Save(string FileName)

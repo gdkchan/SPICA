@@ -23,14 +23,11 @@ namespace SPICA.WinForms.GUI
 
         private Action UnsubscribeBinding;
 
-        [Browsable(false)]
-        public string this[int Index] { get { return Items[Index]; } }
+        [Browsable(false)] public string this[int Index] { get { return Items[Index]; } }
 
-        [Browsable(false)]
-        public int Count { get { return Items.Count; } }
+        [Browsable(false)] public int Count { get { return Items.Count; } }
 
-        [Browsable(false)]
-        public bool IsBound { get; private set; }
+        [Browsable(false)] public bool IsBound { get; private set; }
 
         [Browsable(false)]
         public int SelectedIndex
@@ -103,6 +100,7 @@ namespace SPICA.WinForms.GUI
             }
         }
 
+        public event EventHandler Selected;
         public event EventHandler SelectedIndexChanged;
 
         public SUIList()
@@ -111,8 +109,7 @@ namespace SPICA.WinForms.GUI
 
             Items = new List<string>();
 
-            _SelectedIndex = -1;
-            OldIndex = -1;
+            OldIndex = _SelectedIndex = -1;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -120,6 +117,7 @@ namespace SPICA.WinForms.GUI
             int ScrollY = ListScroll.Visible ? -ListScroll.Value : 0;
 
             int StartIndex = -ScrollY / ItemHeight;
+
             int EndIndex = Math.Min(StartIndex + Height / ItemHeight + 2, Items.Count);
 
             for (int Index = StartIndex; Index < EndIndex; Index++)
@@ -172,8 +170,9 @@ namespace SPICA.WinForms.GUI
         {
             switch (keyData)
             {
-                case Keys.Up: SelectUp(); break;
-                case Keys.Down: SelectDown(); break;
+                case Keys.Up:     SelectUp();   break;
+                case Keys.Down:   SelectDown(); break;
+                case Keys.Escape: Select(-1);   break;
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
@@ -220,6 +219,8 @@ namespace SPICA.WinForms.GUI
 
                 Invalidate();
             }
+
+            Selected?.Invoke(this, EventArgs.Empty);
         }
 
         public void AddItem(string Item)
@@ -284,10 +285,10 @@ namespace SPICA.WinForms.GUI
 
                 switch (e.Action)
                 {
-                    case NotifyCollectionChangedAction.Add:     Items.Add(Item); break;
-                    case NotifyCollectionChangedAction.Remove:  Items.Remove(Item); break;
+                    case NotifyCollectionChangedAction.Add:     Items.Add(Item);           break;
+                    case NotifyCollectionChangedAction.Remove:  Items.Remove(Item);        break;
                     case NotifyCollectionChangedAction.Replace: Items.Insert(Index, Item); break;
-                    case NotifyCollectionChangedAction.Reset:   Items.Clear(); break;
+                    case NotifyCollectionChangedAction.Reset:   Items.Clear();             break;
                 }
 
                 if (e.Action == NotifyCollectionChangedAction.Remove ||

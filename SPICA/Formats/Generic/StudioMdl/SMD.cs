@@ -1,9 +1,9 @@
 ﻿using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
-using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 
@@ -12,7 +12,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.Text;
-using SPICA.Formats.CtrH3D.LUT;
+
+using System.Numerics;
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
@@ -140,13 +141,13 @@ namespace SPICA.Formats.Generic.StudioMdl
                                     Skeleton.Add(new SMDBone
                                     {
                                         NodeIndex = int.Parse(Params[0]),
-                                        Translation = new Vector3D
+                                        Translation = new Vector3
                                         {
                                             X = ParseFloat(Params[1]),
                                             Y = ParseFloat(Params[2]),
                                             Z = ParseFloat(Params[3])
                                         },
-                                        Rotation = new Vector3D
+                                        Rotation = new Vector3
                                         {
                                             X = ParseFloat(Params[4]),
                                             Y = ParseFloat(Params[5]),
@@ -300,8 +301,8 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             foreach (SMDMesh Mesh in Meshes)
             {
-                Vector3D MinVector = new Vector3D();
-                Vector3D MaxVector = new Vector3D();
+                Vector3 MinVector = new Vector3();
+                Vector3 MaxVector = new Vector3();
 
                 Dictionary<PICAVertex, int> Vertices = new Dictionary<PICAVertex, int>();
 
@@ -458,7 +459,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                     ParentIndex = (short)Node.ParentIndex,
                     Translation = Bone.Translation,
                     Rotation    = Bone.Rotation,
-                    Scale       = new Vector3D(1)
+                    Scale       = Vector3.One
                 });
             }
 

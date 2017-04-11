@@ -6,6 +6,7 @@ using SPICA.Math3D;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Motion
 {
@@ -32,11 +33,11 @@ namespace SPICA.Formats.GFL2.Motion
         public bool IsLooping;
         public bool IsBlended;
 
-        public Vector3D AnimRegionMin;
-        public Vector3D AnimRegionMax;
+        public Vector3 AnimRegionMin;
+        public Vector3 AnimRegionMax;
 
-        public GFSkeletonMot SkeletalAnimation;
-        public GFMaterialMot MaterialAnimation;
+        public GFSkeletonMot   SkeletalAnimation;
+        public GFMaterialMot   MaterialAnimation;
         public GFVisibilityMot VisibilityAnimation;
 
         public int Index;
@@ -49,7 +50,7 @@ namespace SPICA.Formats.GFL2.Motion
 
             long Position = Reader.BaseStream.Position;
 
-            uint MagicNumber = Reader.ReadUInt32();
+            uint MagicNumber  = Reader.ReadUInt32();
             uint SectionCount = Reader.ReadUInt32();
 
             Section[] AnimSections = new Section[SectionCount];
@@ -60,7 +61,7 @@ namespace SPICA.Formats.GFL2.Motion
                 {
                     SectName = (Sect)Reader.ReadUInt32(),
 
-                    Length = Reader.ReadUInt32(),
+                    Length  = Reader.ReadUInt32(),
                     Address = Reader.ReadUInt32()
                 };
             }
@@ -73,8 +74,8 @@ namespace SPICA.Formats.GFL2.Motion
             IsLooping = (Reader.ReadUInt16() & 1) != 0;
             IsBlended = (Reader.ReadUInt16() & 1) != 0; //Not sure
 
-            AnimRegionMin = new Vector3D(Reader);
-            AnimRegionMax = new Vector3D(Reader);
+            AnimRegionMin = Reader.ReadVector3();
+            AnimRegionMax = Reader.ReadVector3();
 
             uint AnimHash = Reader.ReadUInt32();
 

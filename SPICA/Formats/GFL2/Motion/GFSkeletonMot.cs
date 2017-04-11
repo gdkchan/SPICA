@@ -5,6 +5,7 @@ using SPICA.Math3D;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Motion
 {
@@ -53,9 +54,9 @@ namespace SPICA.Formats.GFL2.Motion
 
                 for (float Frame = 0; Frame < Motion.FramesCount; Frame++)
                 {
-                    Vector3D Scale       = Skeleton[BoneIndex].Scale;
-                    Vector3D Rotation    = Skeleton[BoneIndex].Rotation;
-                    Vector3D Translation = Skeleton[BoneIndex].Translation;
+                    Vector3 Scale       = Skeleton[BoneIndex].Scale;
+                    Vector3 Rotation    = Skeleton[BoneIndex].Rotation;
+                    Vector3 Translation = Skeleton[BoneIndex].Translation;
 
                     GFMotBoneTransform.SetFrameValue(Bone.ScaleX,       Frame, ref Scale.X);
                     GFMotBoneTransform.SetFrameValue(Bone.ScaleY,       Frame, ref Scale.Y);
@@ -75,13 +76,17 @@ namespace SPICA.Formats.GFL2.Motion
                      * I believe that the original Euler rotation can be ignored,
                      * because otherwise we would need to either convert Euler to Axis Angle or Axis to Euler,
                      * and both conversions are pretty expensive.
+                     * The vector is already halved as a optimization (needs * 2).
                      */
                     Quaternion QuatRotation;
 
                     if (Bone.IsAxisAngle)
-                        QuatRotation = Quaternion.FromAxisHalvedAngle(Rotation.Normalized(), Rotation.Length);
+                        QuatRotation = Quaternion.CreateFromAxisAngle(Vector3.Normalize(Rotation), Rotation.Length() * 2);
                     else
-                        QuatRotation = Quaternion.FromEuler(Rotation);
+                        QuatRotation =
+                            Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Rotation.Z) *
+                            Quaternion.CreateFromAxisAngle(Vector3.UnitY, Rotation.Y) *
+                            Quaternion.CreateFromAxisAngle(Vector3.UnitX, Rotation.X);
 
                     QuatTransform.Scales.Add(Scale);
                     QuatTransform.Rotations.Add(QuatRotation);

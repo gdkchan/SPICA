@@ -5,6 +5,7 @@ using SPICA.PICA.Commands;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model.Mesh
 {
@@ -21,8 +22,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
         public uint Hash;
         public string Name;
 
-        public Vector4D BBoxMinVector;
-        public Vector4D BBoxMaxVector;
+        public Vector4 BBoxMinVector;
+        public Vector4 BBoxMaxVector;
 
         public int BoneIndicesPerVertex;
 
@@ -44,8 +45,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
             Reader.ReadUInt32();
 
-            BBoxMinVector = new Vector4D(Reader); //Not sure
-            BBoxMaxVector = new Vector4D(Reader); //Not sure
+            BBoxMinVector = Reader.ReadVector4();
+            BBoxMaxVector = Reader.ReadVector4();
 
             uint SubMeshesCount = Reader.ReadUInt32();
 

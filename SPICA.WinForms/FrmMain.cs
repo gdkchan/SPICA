@@ -2,10 +2,6 @@
 using OpenTK.Graphics;
 
 using SPICA.Formats.CtrH3D;
-using SPICA.Formats.CtrH3D.Model;
-using SPICA.Formats.Generic.XML;
-using SPICA.Formats.Generic.COLLADA;
-using SPICA.Formats.Generic.StudioMdl;
 using SPICA.Renderer;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
@@ -14,9 +10,7 @@ using SPICA.WinForms.GUI.Viewport;
 using SPICA.WinForms.Properties;
 
 using System;
-using System.Collections.Specialized;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using SPICA.Formats;
 
@@ -25,18 +19,15 @@ namespace SPICA.WinForms
     public partial class FrmMain : Form
     {
         #region Declarations
-        private RenderEngine Renderer;
-        private GLControl    Viewport;
-        private GridLines    UIGrid;
-        private AxisLines    UIAxis;
-        private Vector2      InitialMov;
-        private Matrix4      MdlCenter;
-        private Matrix4      MdlTrans;
-        private H3D          Scene;
-
         private AllAnimations Animations;
-
-        private Bitmap[] CachedTextures;
+        private Vector2       InitialMov;
+        private Matrix4       MdlCenter;
+        private Matrix4       MdlTrans;
+        private RenderEngine  Renderer;
+        private H3D           Scene;
+        private GridLines     UIGrid;
+        private AxisLines     UIAxis;
+        private GLControl     Viewport;
 
         private float Dimension;
 
@@ -71,9 +62,9 @@ namespace SPICA.WinForms
 
             Animations = new AllAnimations();
 
-            TopMenu.Renderer      = new ToolsRenderer(TopMenu.BackColor);
-            TopIcons.Renderer     = new ToolsRenderer(TopIcons.BackColor);
-            TexturesMenu.Renderer = new ToolsRenderer(TexturesMenu.BackColor);
+            TopMenu.Renderer   = new ToolsRenderer(TopMenu.BackColor);
+            TopIcons.Renderer  = new ToolsRenderer(TopIcons.BackColor);
+            SideIcons.Renderer = new ToolsRenderer(SideIcons.BackColor);
         }
 
         private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -171,7 +162,7 @@ namespace SPICA.WinForms
 
             UIGrid.Render(Renderer.Set3DColorShader());
 
-            if (ModelsList.SelectedIndex != -1)
+            if (ModelsList.SelectedIndex != -1 && ModelsList.SelectedIndex < Renderer.Models.Count)
             {
                 Renderer.Render(ModelsList.SelectedIndex);
             }
@@ -203,42 +194,6 @@ namespace SPICA.WinForms
         private void MenuBatchExport_Click(object sender, EventArgs e)
         {
             new FrmExport().Show();
-        }
-
-        private void MenuTexExport_Click(object sender, EventArgs e)
-        {
-            if (TexturesList.SelectedIndex != -1)
-            {
-                using (SaveFileDialog SaveDlg = new SaveFileDialog())
-                {
-                    SaveDlg.Filter = "Portable Network Graphics|*.png";
-                    SaveDlg.FileName = $"{TexturesList[TexturesList.SelectedIndex]}.png";
-
-                    if (SaveDlg.ShowDialog() == DialogResult.OK)
-                    {
-                        CachedTextures[TexturesList.SelectedIndex].Save(SaveDlg.FileName);
-                    }
-                }
-            }
-        }
-
-        private void MenuTexExportAll_Click(object sender, EventArgs e)
-        {
-            if (TexturesList.Count > 0)
-            {
-                using (FolderBrowserDialog FolderDlg = new FolderBrowserDialog())
-                {
-                    if (FolderDlg.ShowDialog() == DialogResult.OK)
-                    {
-                        int Index = 0;
-
-                        foreach (Bitmap Img in CachedTextures)
-                        {
-                            Img.Save(Path.Combine(FolderDlg.SelectedPath, $"{TexturesList[Index++]}.png"));
-                        }
-                    }
-                }
-            }
         }
         #endregion
 
@@ -273,6 +228,11 @@ namespace SPICA.WinForms
             MainContainer.Panel2Collapsed = !ToolButtonShowSide.Checked;
         }
 
+        private void ToolButtonExport_Click(object sender, EventArgs e)
+        {
+            FileIO.Export(Scene, TexturesList.SelectedIndex);
+        }
+
         private void Open(bool MergeMode)
         {
             IgnoreClicks = true;
@@ -290,9 +250,11 @@ namespace SPICA.WinForms
 
                     if (!MergeMode)
                     {
-                        Animations.SceneData = Scene;
+                        TextureManager.Textures = Scene.Textures;
 
-                        Scene.Textures.CollectionChanged += TexturesList_CollectionChanged;
+                        MdlCenter = Matrix4.Identity;
+
+                        Animations.Scene = Scene;
 
                         ModelsList.Bind(Scene.Models);
                         TexturesList.Bind(Scene.Textures);
@@ -309,8 +271,6 @@ namespace SPICA.WinForms
                         AnimSeekBar.Maximum  = 0;
                         LblAnimSpeed.Text    = string.Empty;
                         LblAnimLoopMode.Text = string.Empty;
-
-                        CacheTextures();
 
                         InitialMov = Vector2.Zero;
 
@@ -341,23 +301,6 @@ namespace SPICA.WinForms
                 SklAnimIndex = SklAnimsList.SelectedIndex,
                 MatAnimIndex = MatAnimsList.SelectedIndex
             });
-        }
-
-        private void CacheTextures()
-        {
-            if (CachedTextures != null)
-            {
-                foreach (Bitmap Img in CachedTextures) Img.Dispose();
-            }
-
-            //Cache the textures converted to bitmap to avoid making the conversion over and over again
-            //The cache needs to be updated when the original collection changes
-            CachedTextures = new Bitmap[Scene.Textures.Count];
-
-            for (int Index = 0; Index < CachedTextures.Length; Index++)
-            {
-                CachedTextures[Index] = Scene.Textures[Index].ToBitmap();
-            }
         }
 
         private void UpdateTransforms()
@@ -406,23 +349,14 @@ namespace SPICA.WinForms
             }
         }
 
-        private void TexturesList_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right) TexturesMenu.Show(Cursor.Position);
-        }
-
-        private void TexturesList_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            CacheTextures();
-        }
-
         private void TexturesList_SelectedIndexChanged(object sender, EventArgs e)
         {
             int Index = TexturesList.SelectedIndex;
 
             if (Index != -1)
             {
-                TexturePreview.Image = CachedTextures[Index];
+                TexturePreview.Image = TextureManager.GetTexture(Index);
+
                 TextureInfo.Text = string.Format("{0} {1}x{2} {3}",
                     Scene.Textures[Index].MipmapSize,
                     Scene.Textures[Index].Width,
@@ -432,6 +366,7 @@ namespace SPICA.WinForms
             else
             {
                 TexturePreview.Image = null;
+
                 TextureInfo.Text = string.Empty;
             }
         }
@@ -487,12 +422,12 @@ namespace SPICA.WinForms
             if (!Animator.Enabled) Viewport.Invalidate();
         }
 
-        private void SklAnimsList_Click(object sender, EventArgs e)
+        private void SklAnimsList_Selected(object sender, EventArgs e)
         {
             SetAnimation(SklAnimsList.SelectedIndex, AnimationType.Skeletal);
         }
 
-        private void MatAnimsList_Click(object sender, EventArgs e)
+        private void MatAnimsList_Selected(object sender, EventArgs e)
         {
             SetAnimation(MatAnimsList.SelectedIndex, AnimationType.Material);
         }
