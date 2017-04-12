@@ -72,7 +72,8 @@ namespace SPICA.WinForms.GUI
 
         public event EventHandler Seek;
 
-        private const int MarginX = 4;
+        private const int BarMarginX = 4;
+        private const int RulerMarginX = 6;
         private const int RulerMinDist = 64;
 
         private const string MaxTooLowEx = "Invalid maximum value! Expected a value >= 0!";
@@ -95,79 +96,86 @@ namespace SPICA.WinForms.GUI
             e.Graphics.Clear(Parent.BackColor);
 
             Brush TxtBrush = new SolidBrush(ForeColor);
-            Rectangle Rect = new Rectangle(MarginX, 3, Width - MarginX * 2, Height - 6);
+            Rectangle Rect = new Rectangle(BarMarginX, 3, Width - BarMarginX * 2, Height - 6);
 
             e.Graphics.FillRectangle(new SolidBrush(BackColor), Rect);
 
             int HalfH = Rect.Height >> 1;
 
-            //"Ruler"
+            int RulerW = Rect.Width - RulerMarginX * 2;
+            int RulerSX = Rect.X + RulerMarginX;
+
             if (_Maximum > 0)
             {
-                int Index = 1;
+                float PartStep  = Rect.Width / _Maximum;
+                float FrameStep = RulerMinDist / PartStep;
 
-                float PartStep = Rect.Width / _Maximum;
-                float FrameStep = Math.Max(RulerMinDist / PartStep, 1);
-
+                if (FrameStep < 1) FrameStep = 1;
                 if (FrameStep > 1) PartStep = RulerMinDist;
 
-                int HalfStep = (int)PartStep >> 1;
+                float RulerX   = PartStep;
+                float HalfStep = PartStep * 0.5f;
 
-                for (float Frame = FrameStep; Frame <= _Maximum; Frame += FrameStep, Index++)
+                for (float
+                    Frame = FrameStep;
+                    RulerX - HalfStep < RulerW;
+                    Frame += FrameStep, RulerX += PartStep)
                 {
-                    int RulerX = (int)(Index * PartStep) + Rect.X - 1;
+                    int RX  = (int)(RulerX + RulerSX);
+                    int HRX = (int)(RulerX + RulerSX - HalfStep);
 
                     //Short line
                     e.Graphics.DrawLine(
                         new Pen(ForeColor),
-                        new Point(RulerX - HalfStep, Rect.Y + 1),
-                        new Point(RulerX - HalfStep, Rect.Y + 1 + HalfH >> 1));
+                        new Point(HRX, Rect.Y + 1),
+                        new Point(HRX, Rect.Y + 1 + HalfH >> 1));
 
                     //Longer line
-                    e.Graphics.DrawLine(
-                        new Pen(ForeColor), 
-                        new Point(RulerX, Rect.Y + 1), 
-                        new Point(RulerX, Rect.Y + 1 + HalfH));
+                    if (RulerX < RulerW)
+                    {
+                        e.Graphics.DrawLine(
+                            new Pen(ForeColor),
+                            new Point(RX, Rect.Y + 1),
+                            new Point(RX, Rect.Y + 1 + HalfH));
 
-                    //Frame number
-                    string Text = Frame.ToString("0.0");
-                    int TextWidth = (int)e.Graphics.MeasureString(Text, Font).Width;
+                        //Frame number
+                        string Text = Frame.ToString("0.0");
 
-                    Point TextPt = new Point(RulerX - TextWidth, Rect.Y);
+                        int TextWidth = (int)e.Graphics.MeasureString(Text, Font).Width;
 
-                    e.Graphics.DrawString(Text, Font, TxtBrush, TextPt);
+                        Point TextPt = new Point(RX - TextWidth, Rect.Y);
+
+                        e.Graphics.DrawString(Text, Font, TxtBrush, TextPt);
+                    }
                 }
             }
 
             //Draw inset box shade effect
-            int L = Rect.X + 1;
-            int T = Rect.Y + 1;
+            int L = Rect.X + 1; //Left
+            int T = Rect.Y + 1; //Top
 
-            int R = L + Rect.Width - 2;
-            int B = T + Rect.Height - 2;
+            int R = L + Rect.Width  - 2; //Right
+            int B = T + Rect.Height - 2; //Bottom
 
-            Pen DarkShade = new Pen(Color.FromArgb(0x3f, Color.Black), 2);
-            Pen BrighShade = new Pen(Color.FromArgb(0x3f, Color.White), 2);
+            Pen BlackShade = new Pen(Color.FromArgb(0x3f, Color.Black), 2);
+            Pen WhiteShade = new Pen(Color.FromArgb(0x3f, Color.White), 2);
 
-            e.Graphics.DrawLine(DarkShade, new Point(L, T), new Point(R, T));
-            e.Graphics.DrawLine(DarkShade, new Point(L, T), new Point(L, B));
-            e.Graphics.DrawLine(BrighShade, new Point(R, B), new Point(R, T));
-            e.Graphics.DrawLine(BrighShade, new Point(R, B), new Point(L, B));
-
-            e.Graphics.DrawRectangle(new Pen(Parent.BackColor), Rect);
+            e.Graphics.DrawLine(BlackShade, new Point(L, T), new Point(R, T));
+            e.Graphics.DrawLine(BlackShade, new Point(L, T), new Point(L, B));
+            e.Graphics.DrawLine(WhiteShade, new Point(R, B), new Point(R, T));
+            e.Graphics.DrawLine(WhiteShade, new Point(R, B), new Point(L, B));
 
             //Frame number text
-            int CurX = (int)(_Maximum > 0 ? ((_Value / _Maximum) * Rect.Width) : 0) + Rect.X - 1;
+            int CurX = (int)(_Maximum > 0 ? ((_Value / _Maximum) * RulerW) : 0) + RulerSX;
 
             string FrmTxt = _Value.ToString("0.0");
 
             SizeF FrmTxtSz = e.Graphics.MeasureString(FrmTxt, Font);
+
             Rectangle FrmTxtRect = new Rectangle(
-                Math.Max(CurX - (int)FrmTxtSz.Width, Rect.X),
-                Rect.Y,
+                Math.Max(CurX - (int)FrmTxtSz.Width, RulerSX), Rect.Y + 1,
                 (int)FrmTxtSz.Width,
-                (int)FrmTxtSz.Height
-                );
+                (int)FrmTxtSz.Height);
 
             e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(0xbf, Color.Black)), FrmTxtRect);
             e.Graphics.DrawString(FrmTxt, Font, TxtBrush, FrmTxtRect.Location);
@@ -176,13 +184,13 @@ namespace SPICA.WinForms.GUI
             e.Graphics.DrawLine(
                 new Pen(CursorColor),
                 new Point(CurX, Rect.Y + 1),
-                new Point(CurX, Rect.Y + 1 + Rect.Height - 2));
+                new Point(CurX, Rect.Y + 4 + HalfH));
 
             //Draw a triangle on the bottom side of the cursor
             Point[] Points = new Point[3];
 
-            Points[0] = new Point(CurX - 4, Rect.Y + 1 + Rect.Height - 2); //Left
-            Points[1] = new Point(CurX + 4, Rect.Y + 1 + Rect.Height - 2); //Right
+            Points[0] = new Point(CurX - 4, Rect.Y - 2 + Rect.Height); //Left
+            Points[1] = new Point(CurX + 4, Rect.Y - 2 + Rect.Height); //Right
             Points[2] = new Point(CurX,     Rect.Y + 1 + HalfH); //Middle
 
             e.Graphics.FillPolygon(new SolidBrush(CursorColor), Points);
@@ -204,7 +212,9 @@ namespace SPICA.WinForms.GUI
 
         private void MoveTo(int X)
         {
-            _Value = Math.Max(Math.Min(((float)(X - MarginX) / (Width - MarginX * 2)) * _Maximum, _Maximum), 0);
+            int MX = BarMarginX + RulerMarginX;
+
+            _Value = Math.Max(Math.Min(((float)(X - MX) / (Width - MX * 2)) * _Maximum, _Maximum), 0);
 
             Seek?.Invoke(this, EventArgs.Empty);
 
