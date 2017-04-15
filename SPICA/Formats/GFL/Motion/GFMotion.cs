@@ -1,6 +1,6 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Formats.CtrH3D.Animation;
-
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -95,59 +95,60 @@ namespace SPICA.Formats.GFL.Motion
                         OldIndex = NameIndex;
                     }
                 }
-                
-                switch (CurrentOctal)
+
+                if (CurrentOctal != 1)
                 {
-                    case 0: break; //Skip Axis
-
-                    case 1: ElemIndex += 3; break; //Skip S/R/T Vector
-
                     //Actual Key Frame format
-                    case 5:
-                    case 6:
-                    case 7:
-                        List<GFMotKeyFrame> KFs = new List<GFMotKeyFrame>();
+                    List<GFMotKeyFrame> KFs = new List<GFMotKeyFrame>();
 
-                        switch (CurrentOctal)
-                        {
-                            case 5: KFs.Add(new GFMotKeyFrame(0, Reader.ReadSingle())); break; //Constant
+                    switch (CurrentOctal)
+                    {
+                        case 0: KFs.Add(new GFMotKeyFrame(0, 0)); break; //Constant Zero (0 deg)
+                        case 2: KFs.Add(new GFMotKeyFrame(0, (float)Math.PI *  0.5f)); break; //Constant +Half PI (90 deg)
+                        case 3: KFs.Add(new GFMotKeyFrame(0, (float)Math.PI *  1.0f)); break; //Constant +PI (180 deg)
+                        case 4: KFs.Add(new GFMotKeyFrame(0, (float)Math.PI * -0.5f)); break; //Constant -Half PI (-90/270 deg)
+                        case 5: KFs.Add(new GFMotKeyFrame(0, Reader.ReadSingle())); break; //Constant value (stored as Float)
 
-                            case 6: //Linear Key Frames list
-                                foreach (int Frame in KeyFrames[CurrentKFL++])
-                                {
-                                    KFs.Add(new GFMotKeyFrame(Frame, Reader.ReadSingle()));
-                                }
-                                break;
+                        case 6: //Linear Key Frames list
+                            foreach (int Frame in KeyFrames[CurrentKFL++])
+                            {
+                                KFs.Add(new GFMotKeyFrame(Frame, Reader.ReadSingle()));
+                            }
+                            break;
 
-                            case 7: //Spline(?) Key Frames list
-                                foreach (int Frame in KeyFrames[CurrentKFL++])
-                                {
-                                    KFs.Add(new GFMotKeyFrame(
-                                        Frame,
-                                        Reader.ReadSingle(),
-                                        Reader.ReadSingle()));
-                                }
-                                break;
-                        }
+                        case 7: //Hermite Key Frames list
+                            foreach (int Frame in KeyFrames[CurrentKFL++])
+                            {
+                                KFs.Add(new GFMotKeyFrame(
+                                    Frame,
+                                    Reader.ReadSingle(),
+                                    Reader.ReadSingle()));
+                            }
+                            break;
+                    }
 
-                        switch (ElemIndex % 9)
-                        {
-                            case 0: CurrentBone.TranslationX = KFs; break;
-                            case 1: CurrentBone.TranslationY = KFs; break;
-                            case 2: CurrentBone.TranslationZ = KFs; break;
+                    switch (ElemIndex % 9)
+                    {
+                        case 0: CurrentBone.TranslationX = KFs; break;
+                        case 1: CurrentBone.TranslationY = KFs; break;
+                        case 2: CurrentBone.TranslationZ = KFs; break;
 
-                            case 3: CurrentBone.RotationX    = KFs; break;
-                            case 4: CurrentBone.RotationY    = KFs; break;
-                            case 5: CurrentBone.RotationZ    = KFs; break;
+                        case 3: CurrentBone.RotationX    = KFs; break;
+                        case 4: CurrentBone.RotationY    = KFs; break;
+                        case 5: CurrentBone.RotationZ    = KFs; break;
 
-                            case 6: CurrentBone.ScaleX       = KFs; break;
-                            case 7: CurrentBone.ScaleY       = KFs; break;
-                            case 8: CurrentBone.ScaleZ       = KFs; break;
-                        }
-                        break;
+                        case 6: CurrentBone.ScaleX       = KFs; break;
+                        case 7: CurrentBone.ScaleY       = KFs; break;
+                        case 8: CurrentBone.ScaleZ       = KFs; break;
+                    }
+
+                    ElemIndex++;
                 }
-
-                if (CurrentOctal != 1) ElemIndex++;
+                else
+                {
+                    //Skip S/R/T Vector
+                    ElemIndex += 3;
+                }
             }
         }
 

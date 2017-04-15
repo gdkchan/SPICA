@@ -31,15 +31,15 @@ namespace SPICA.Formats.Generic.StudioMdl
             Triangles
         }
 
-        public SMD(H3D SceneData, int MdlIndex, int AnimIndex = -1)
+        public SMD(H3D Scene, int MdlIndex, int AnimIndex = -1)
         {
             int Index = 0;
 
-            if (SceneData == null || SceneData.Models.Count == 0) return;
+            if (Scene == null || Scene.Models.Count == 0) return;
 
             if (MdlIndex != -1 && AnimIndex == -1)
             {
-                H3DModel Mdl = SceneData.Models[MdlIndex];
+                H3DModel Mdl = Scene.Models[MdlIndex];
 
                 foreach (H3DBone Bone in Mdl.Skeleton)
                 {
@@ -63,7 +63,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                 foreach (H3DMesh Mesh in Mdl.Meshes)
                 {
-                    PICAVertex[] Vertices = Mesh.ToVertices(true);
+                    PICAVertex[] Vertices = Mesh.ToVertices();
 
                     SMDMesh M = new SMDMesh();
 
@@ -71,9 +71,31 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                     foreach (H3DSubMesh SM in Mesh.SubMeshes)
                     {
-                        foreach (ushort I in SM.Indices)
+                        foreach (ushort i in SM.Indices)
                         {
-                            M.Vertices.Add(Vertices[I]);
+                            PICAVertex v = Vertices[i].Clone();
+
+                            if (Mdl.Skeleton != null &&
+                                Mdl.Skeleton.Count > 0 &&
+                                SM.Skinning != H3DSubMeshSkinning.Smooth)
+                            {
+                                int b = SM.BoneIndices[v.Indices[0]];
+
+                                Matrix4x4 Transform = Mdl.Skeleton[b].GetWorldTransform(Mdl.Skeleton);
+
+                                v.Position = Vector4.Transform(new Vector3(
+                                    v.Position.X,
+                                    v.Position.Y,
+                                    v.Position.Z),
+                                    Transform);
+
+                                v.Normal.W = 0;
+
+                                v.Normal = Vector4.Transform(v.Normal, Transform);
+                                v.Normal = Vector4.Normalize(v.Normal);
+                            }
+
+                            M.Vertices.Add(v);
                         }
                     }
 

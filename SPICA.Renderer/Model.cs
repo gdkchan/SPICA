@@ -189,7 +189,7 @@ namespace SPICA.Renderer
 
             foreach (H3DMesh Mesh in BaseModel.Meshes)
             {
-                PICAVertex[] Vertices = Mesh.ToVertices(true);
+                PICAVertex[] Vertices = Mesh.ToVertices();
 
                 if (Vertices.Length == 0) continue;
 

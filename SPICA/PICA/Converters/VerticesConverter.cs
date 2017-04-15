@@ -1,5 +1,6 @@
-﻿using SPICA.Formats.CtrH3D.Model.Mesh;
-using SPICA.Math3D;
+﻿using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Model;
+using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
 
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace SPICA.PICA.Converters
 {
     static class VerticesConverter
     {
-        public static PICAVertex[] GetVertices(H3DMesh Mesh, bool Transform)
+        public static PICAVertex[] GetVertices(H3DMesh Mesh)
         {
             if (Mesh.RawBuffer.Length == 0) return new PICAVertex[0];
 
@@ -47,11 +48,11 @@ namespace SPICA.PICA.Converters
 
                         Vector4 v = new Vector4(Elems[0], Elems[1], Elems[2], Elems[3]);
 
-                        if (Transform)
-                        {
-                            v *= Attrib.Scale;
+                        v *= Attrib.Scale;
 
-                            if (Attrib.Name == PICAAttributeName.Position) v += Mesh.PositionOffset;
+                        if (Attrib.Name == PICAAttributeName.Position)
+                        {
+                            v += Mesh.PositionOffset;
                         }
 
                         switch (Attrib.Name)

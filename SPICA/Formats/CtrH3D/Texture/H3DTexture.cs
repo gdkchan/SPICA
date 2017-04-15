@@ -81,8 +81,8 @@ namespace SPICA.Formats.CtrH3D.Texture
         {
             MipmapSize = 1;
 
-            Width  = IOUtils.Pow2RoundDown((uint)Img.Width);
-            Height = IOUtils.Pow2RoundDown((uint)Img.Height);
+            Width  = BitUtils.Pow2RoundDown((uint)Img.Width);
+            Height = BitUtils.Pow2RoundDown((uint)Img.Height);
 
             if (Img.Width != Width || Img.Height != Height)
             {

@@ -14,7 +14,7 @@ namespace SPICA.PICA.Converters
         public Vector4 TexCoord1;
         public Vector4 TexCoord2;
 
-        public int[] Indices;
+        public int[]   Indices;
         public float[] Weights;
 
         public PICAVertex()

@@ -29,7 +29,7 @@ namespace SPICA.PICA.Converters
 
                             if (Alpha) AlphaBlock = Reader.ReadUInt64();
 
-                            ulong ColorBlock = IOUtils.Swap64(Reader.ReadUInt64());
+                            ulong ColorBlock = BitUtils.Swap64(Reader.ReadUInt64());
 
                             byte[] Tile = ETC1Tile(ColorBlock);
 

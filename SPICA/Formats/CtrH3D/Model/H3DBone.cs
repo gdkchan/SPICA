@@ -59,6 +59,24 @@ namespace SPICA.Formats.CtrH3D.Model
             InverseTransform = new Matrix3x4();
         }
 
+        public Matrix4x4 GetWorldTransform(PatriciaList<H3DBone> Skeleton)
+        {
+            Matrix4x4 Transform = Matrix4x4.Identity;
+
+            H3DBone Bone = this;
+
+            while (true)
+            {
+                Transform *= Bone.Transform;
+
+                if (Bone.ParentIndex == -1) break;
+
+                Bone = Skeleton[Bone.ParentIndex];
+            }
+
+            return Transform;
+        }
+
         public void CalculateTransform(PatriciaList<H3DBone> Skeleton)
         {
             Matrix4x4 Transform = Matrix4x4.Identity;

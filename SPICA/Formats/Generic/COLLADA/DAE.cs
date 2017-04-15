@@ -159,9 +159,11 @@ namespace SPICA.Formats.Generic.COLLADA
 
                 for (int MeshIndex = 0; MeshIndex < Mdl.Meshes.Count; MeshIndex++)
                 {
+                    if (Mdl.Meshes[MeshIndex].Type == H3DMeshType.Silhouette) continue;
+
                     H3DMesh Mesh = Mdl.Meshes[MeshIndex];
 
-                    if (Mesh.Type == H3DMeshType.Silhouette) continue;
+                    PICAVertex[] Vertices = Mesh.ToVertices();
 
                     string MtlName = $"Mdl_{MdlIndex}_Mtl_{Mdl.Materials[Mesh.MaterialIndex].Name}";
                     string MtlTgt = library_materials[Mesh.MaterialIndex].id;
@@ -171,18 +173,12 @@ namespace SPICA.Formats.Generic.COLLADA
                         H3DSubMesh SM = Mesh.SubMeshes[SMIndex];
 
                         string ShortName = Mdl.MeshNodesTree?.Find(Mesh.NodeIndex);
-                        string MeshName = string.Format("{0}_{1:D2}_{2:D2}_{3:D2}",
-                            ShortName,
-                            MdlIndex,
-                            MeshIndex,
-                            SMIndex);
+                        string MeshName = $"{ShortName}_{MeshIndex}_{SMIndex}";
 
                         DAEGeometry Geometry = new DAEGeometry();
 
                         Geometry.name = MeshName;
                         Geometry.id = $"{Geometry.name}_geo_id";
-
-                        PICAVertex[] Vertices = Mesh.ToVertices(true);
 
                         //Geometry
                         string VertsId = $"{MeshName}_vtx_id";
@@ -217,7 +213,7 @@ namespace SPICA.Formats.Generic.COLLADA
                             DAESource Source = new DAESource();
 
                             Source.name = $"{MeshName}_{Attr.Name}";
-                            Source.id = $"{Source.name}_id";
+                            Source.id   = $"{Source.name}_id";
 
                             Source.float_array = new DAEArray
                             {

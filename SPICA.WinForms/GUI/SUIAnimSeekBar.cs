@@ -107,7 +107,7 @@ namespace SPICA.WinForms.GUI
 
             if (_Maximum > 0)
             {
-                float PartStep  = Rect.Width / _Maximum;
+                float PartStep  = RulerW / _Maximum;
                 float FrameStep = RulerMinDist / PartStep;
 
                 if (FrameStep < 1) FrameStep = 1;
@@ -131,7 +131,7 @@ namespace SPICA.WinForms.GUI
                         new Point(HRX, Rect.Y + 1 + HalfH >> 1));
 
                     //Longer line
-                    if (RulerX < RulerW)
+                    if (RulerX <= RulerW)
                     {
                         e.Graphics.DrawLine(
                             new Pen(ForeColor),

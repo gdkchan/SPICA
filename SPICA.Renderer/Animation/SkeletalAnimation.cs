@@ -78,36 +78,36 @@ namespace SPICA.Renderer.Animation
                 FrameSkeleton[Index++] = B;
             }
 
-            for (Index = 0; Index < Skeleton.Count; Index++)
+            for (int i = 0; i < Skeleton.Count; i++)
             {
-                int PIndex, BIndex = Index;
+                int p, b = i;
 
-                if (FrameSkeleton[BIndex].HasMtxTransform) continue;
+                if (FrameSkeleton[b].HasMtxTransform) continue;
 
-                bool ScaleCompensate = (Skeleton[Index].Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
+                bool ScaleCompensate = (Skeleton[i].Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
 
-                Output[Index] = Matrix4.CreateScale(FrameSkeleton[BIndex].Scale);
+                Output[i] = Matrix4.CreateScale(FrameSkeleton[b].Scale);
 
                 do
                 {
-                    if (FrameSkeleton[BIndex].IsQuatRotation)
-                        Output[Index] *= Matrix4.CreateFromQuaternion(FrameSkeleton[BIndex].QuatRotation);
+                    if (FrameSkeleton[b].IsQuatRotation)
+                        Output[i] *= Matrix4.CreateFromQuaternion(FrameSkeleton[b].QuatRotation);
                     else
-                        Output[Index] *= RenderUtils.EulerRotate(FrameSkeleton[BIndex].Rotation);
+                        Output[i] *= RenderUtils.EulerRotate(FrameSkeleton[b].Rotation);
 
-                    PIndex = FrameSkeleton[BIndex].ParentIndex;
+                    p = FrameSkeleton[b].ParentIndex;
 
                     /*
                      * Scale is inherited when Scale Compensate is not specified.
                      * Otherwise Scale only applies to the bone where it is set and child bones doesn't inherit it.
                      */
-                    Vector3 Scale = PIndex != -1 && ScaleCompensate ? FrameSkeleton[PIndex].Scale : Vector3.One;
+                    Vector3 Scale = p != -1 && ScaleCompensate ? FrameSkeleton[p].Scale : Vector3.One;
 
-                    Output[Index] *= Matrix4.CreateTranslation(Scale * FrameSkeleton[BIndex].Translation);
+                    Output[i] *= Matrix4.CreateTranslation(Scale * FrameSkeleton[b].Translation);
 
-                    if (PIndex != -1 && !ScaleCompensate) Output[Index] *= Matrix4.CreateScale(FrameSkeleton[PIndex].Scale);
+                    if (p != -1 && !ScaleCompensate) Output[i] *= Matrix4.CreateScale(FrameSkeleton[p].Scale);
                 }
-                while ((BIndex = PIndex) != -1);
+                while ((b = p) != -1);
             }
 
             return Output;

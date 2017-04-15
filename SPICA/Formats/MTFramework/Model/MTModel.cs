@@ -223,7 +223,7 @@ namespace SPICA.Formats.MTFramework.Model
                         SM.BoneIndices[i] = BoneIndicesGroups[Mesh.BoneIndicesIndex][i];
                     }
 
-                    PICAVertex[] Vertices = M.ToVertices(true);
+                    PICAVertex[] Vertices = M.ToVertices();
 
                     foreach (PICAVertex Vtx in Vertices)
                     {
