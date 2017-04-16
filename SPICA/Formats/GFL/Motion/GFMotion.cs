@@ -1,5 +1,6 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Formats.CtrH3D.Animation;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -84,15 +85,15 @@ namespace SPICA.Formats.GFL.Motion
 
                 if (CurrentOctal != 1)
                 {
-                    int NameIndex = ElemIndex / 9;
+                    int BoneIndex = ElemIndex / 9;
 
-                    if (NameIndex != OldIndex)
+                    if (BoneIndex != OldIndex)
                     {
-                        CurrentBone = new GFMotBoneTransform { Name = Skeleton[NameIndex].Name };
+                        CurrentBone = new GFMotBoneTransform { Name = Skeleton[BoneIndex].Name };
 
                         Bones.Add(CurrentBone);
 
-                        OldIndex = NameIndex;
+                        OldIndex = BoneIndex;
                     }
                 }
 

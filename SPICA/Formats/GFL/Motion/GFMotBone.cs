@@ -11,9 +11,10 @@ namespace SPICA.Formats.GFL.Motion
     {
         public string Name;
 
-        public byte   UnkIndex;
-        public ushort ParentIndex;
-        
+        public byte UnkIndex0;
+        public byte ParentIndex;
+        public byte UnkIndex1;
+
         public Vector3    Translation;
         public Quaternion QuatRotation;
 
@@ -29,8 +30,9 @@ namespace SPICA.Formats.GFL.Motion
             {
                 Output.Add(new GFMotBone
                 {
-                    UnkIndex    = Reader.ReadByte(),
-                    ParentIndex = Reader.ReadUInt16()
+                    UnkIndex0   = Reader.ReadByte(),
+                    ParentIndex = Reader.ReadByte(),
+                    UnkIndex1   = Reader.ReadByte()
                 });
             }
 

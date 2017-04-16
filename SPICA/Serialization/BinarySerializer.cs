@@ -16,10 +16,9 @@ namespace SPICA.Serialization
 {
     class BinarySerializer
     {
-        public Stream BaseStream;
-        public H3DRelocator Relocator;
-
-        public BinaryWriter Writer;
+        public readonly Stream BaseStream;
+        public readonly BinaryWriter Writer;
+        public readonly H3DRelocator Relocator;
 
         public int PhysicalAddressCount { get; private set; }
 
@@ -45,25 +44,28 @@ namespace SPICA.Serialization
             }
         }
 
-        public Section Contents;
+        public readonly Section Contents;
+        public readonly Section Strings;
+        public readonly Section Commands;
+        public readonly Section RawDataTex;
+        public readonly Section RawDataVtx;
+        public readonly Section RawExtTex;
+        public readonly Section RawExtVtx;
 
-        public Section Strings;
-        public Section Commands;
+        public readonly Dictionary<object, ObjectInfo> ObjPointers;
 
-        public Section RawDataTex;
-        public Section RawDataVtx;
-        public Section RawExtTex;
-        public Section RawExtVtx;
-
-        public Dictionary<object, ObjectInfo> ObjPointers;
-
-        public List<long> Pointers;
+        public readonly List<long> Pointers;
 
         private bool HasBuffered = false;
         private uint BufferedUInt = 0;
         private uint BufferedShift = 0;
 
-        private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        public int FileVersion;
+
+        private const BindingFlags Binding =
+            BindingFlags.Instance |
+            BindingFlags.Public |
+            BindingFlags.NonPublic;
 
         public BinarySerializer(Stream BaseStream, H3DRelocator Relocator = null)
         {
@@ -72,15 +74,13 @@ namespace SPICA.Serialization
 
             Writer = new BinaryWriter(BaseStream);
 
-            Contents = new Section();
-
-            Strings = new Section();
-            Commands = new Section();
-
+            Contents   = new Section();
+            Strings    = new Section();
+            Commands   = new Section();
             RawDataTex = new Section();
             RawDataVtx = new Section();
-            RawExtTex = new Section();
-            RawExtVtx = new Section();
+            RawExtTex  = new Section();
+            RawExtVtx  = new Section();
 
             ObjPointers = new Dictionary<object, ObjectInfo>();
 
@@ -135,15 +135,15 @@ namespace SPICA.Serialization
             {
                 switch (Type.GetTypeCode(Type))
                 {
-                    case TypeCode.UInt64: Writer.Write((ulong)Value); break;
-                    case TypeCode.UInt32: Writer.Write((uint)Value); break;
+                    case TypeCode.UInt64: Writer.Write((ulong)Value);  break;
+                    case TypeCode.UInt32: Writer.Write((uint)Value);   break;
                     case TypeCode.UInt16: Writer.Write((ushort)Value); break;
-                    case TypeCode.Byte: Writer.Write((byte)Value); break;
-                    case TypeCode.Int64: Writer.Write((long)Value); break;
-                    case TypeCode.Int32: Writer.Write((int)Value); break;
-                    case TypeCode.Int16: Writer.Write((short)Value); break;
-                    case TypeCode.SByte: Writer.Write((sbyte)Value); break;
-                    case TypeCode.Single: Writer.Write((float)Value); break;
+                    case TypeCode.Byte:   Writer.Write((byte)Value);   break;
+                    case TypeCode.Int64:  Writer.Write((long)Value);   break;
+                    case TypeCode.Int32:  Writer.Write((int)Value);    break;
+                    case TypeCode.Int16:  Writer.Write((short)Value);  break;
+                    case TypeCode.SByte:  Writer.Write((sbyte)Value);  break;
+                    case TypeCode.Single: Writer.Write((float)Value);  break;
                     case TypeCode.Double: Writer.Write((double)Value); break;
                     case TypeCode.Boolean:
                         HasBuffered = true;
@@ -209,7 +209,7 @@ namespace SPICA.Serialization
                 ObjPointers.Add(Value, new ObjectInfo
                 {
                     Position = (uint)Position,
-                    Length = (int)(BaseStream.Position - Position)
+                    Length   = (int)(BaseStream.Position - Position)
                 });
             }
         }
@@ -239,7 +239,7 @@ namespace SPICA.Serialization
                 {
                     AddReference(Type, new RefValue
                     {
-                        Value = Value,
+                        Value    = Value,
                         Position = BaseStream.Position
                     });
 
@@ -338,7 +338,7 @@ namespace SPICA.Serialization
                 if (Matches > 0 && Matches == ((IList)Value).Count)
                 {
                     Output.Position = StartPos;
-                    Output.Length = EndPos;
+                    Output.Length   = EndPos;
                 }
             }
 
@@ -358,6 +358,14 @@ namespace SPICA.Serialization
 
             foreach (FieldInfo Info in ValueType.GetFields(Binding))
             {
+                if (Info.IsDefined(typeof(IfVersionGEAttribute)) && FileVersion <
+                    Info.GetCustomAttribute<IfVersionGEAttribute>().Version)
+                    continue;
+
+                if (Info.IsDefined(typeof(IfVersionLAttribute)) && FileVersion >=
+                    Info.GetCustomAttribute<IfVersionLAttribute>().Version)
+                    continue;
+
                 if (!(
                     Info.IsDefined(typeof(IgnoreAttribute)) ||
                     Info.IsDefined(typeof(CompilerGeneratedAttribute))))
@@ -371,7 +379,14 @@ namespace SPICA.Serialization
 
                     if (Type.IsValueType || Type.IsEnum || Inline)
                     {
-                        WriteValue(Info.GetValue(Value));
+                        object FieldValue = Info.GetValue(Value);
+
+                        if (Info.IsDefined(typeof(VersionAttribute)) && Type.IsPrimitive)
+                        {
+                            FileVersion = Convert.ToInt32(FieldValue);
+                        }
+
+                        WriteValue(FieldValue);
                     }
                     else
                     {
@@ -381,9 +396,9 @@ namespace SPICA.Serialization
 
                         RefValue Ref = new RefValue
                         {
-                            Info = Info,
-                            Value = Info.GetValue(Value),
-                            Position = BaseStream.Position,
+                            Info      = Info,
+                            Value     = Info.GetValue(Value),
+                            Position  = BaseStream.Position,
                             HasLength = HasLength,
                             HasTwoPtr = HasTwoPtr
                         };

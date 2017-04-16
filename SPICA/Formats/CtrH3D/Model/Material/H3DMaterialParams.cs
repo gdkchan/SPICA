@@ -102,7 +102,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public string ShaderReference;
         public string ModelReference;
 
-        public H3DMetaData MetaData;
+        [IfVersionGE(7)] public H3DMetaData MetaData;
 
         //LookUp Table
         [Ignore] public PICALUTInAbs   LUTInAbs;

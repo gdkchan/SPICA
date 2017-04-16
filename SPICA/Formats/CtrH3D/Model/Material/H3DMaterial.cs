@@ -23,7 +23,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private uint[] TextureCommands;
 
-        [FixedLength(3)] public H3DTextureMapper[] TextureMappers;
+        [FixedLength(3), IfVersionGE(0x21)] public H3DTextureMapper[] TextureMappers;
+
+        /*
+         * Older BCH versions had the Texture Mappers stored directly within the Material data.
+         * Newer versions (see above) uses a pointer and stores it somewhere else instead.
+         */
+        [FixedLength(3), IfVersionL(0x21), Inline] private H3DTextureMapper[] TextureMappersCompat;
 
         public string Texture0Name;
         public string Texture1Name;
@@ -136,6 +142,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         break;
                 }
             }
+
+            if (TextureMappersCompat != null)
+            {
+                TextureMappers = TextureMappersCompat;
+            }
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
@@ -144,7 +155,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Serializer.Strings.Values.Add(new RefValue
             {
                 Position = -1,
-                Value = $"{Name}-silhouette"
+                Value    = $"{Name}-silhouette"
             });
 
             PICACommandWriter Writer = new PICACommandWriter();
@@ -197,6 +208,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Writer.WriteEnd();
 
             TextureCommands = Writer.GetBuffer();
+
+            if (TextureMappers != null)
+            {
+                TextureMappersCompat = TextureMappers;
+            }
 
             return false;
         }

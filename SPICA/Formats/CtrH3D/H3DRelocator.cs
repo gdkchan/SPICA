@@ -8,11 +8,10 @@ namespace SPICA.Formats.CtrH3D
 {
     class H3DRelocator
     {
-        private H3DHeader Header;
         private Stream BaseStream;
-
         private BinaryReader Reader;
         private BinaryWriter Writer;
+        private H3DHeader Header;
 
         public Dictionary<long, H3DRelocationType> RelocTypes;
 
@@ -20,8 +19,8 @@ namespace SPICA.Formats.CtrH3D
 
         public H3DRelocator(Stream BaseStream, H3DHeader Header)
         {
-            this.Header = Header;
             this.BaseStream = BaseStream;
+            this.Header     = Header;
 
             Reader = new BinaryReader(BaseStream);
             Writer = new BinaryWriter(BaseStream);
@@ -40,12 +39,17 @@ namespace SPICA.Formats.CtrH3D
                 uint Value = Reader.ReadUInt32();
                 uint PtrAddress = Value & 0x1ffffff;
 
-                H3DRelocationType TargetSect = (H3DRelocationType)((Value >> 25) & 0xf);
-                H3DRelocationType PointerSect = (H3DRelocationType)(Value >> 29);
+                H3DRelocationType Target = (H3DRelocationType)((Value >> 25) & 0xf);
+                H3DRelocationType Source = (H3DRelocationType)(Value >> 29);
 
-                if (TargetSect != H3DRelocationType.Strings) PtrAddress <<= 2;
+                //Take into account sections that didn't existed in older BCH versions
+                if (Header.BackwardCompatibility < 7 &&
+                    Target >= H3DRelocationType.CommandsSrc)
+                    Target++;
 
-                Accumulate32(GetAddress(PointerSect) + PtrAddress, GetAddress(TargetSect));
+                if (Target != H3DRelocationType.Strings) PtrAddress <<= 2;
+
+                Accumulate32(GetAddress(Source) + PtrAddress, GetAddress(Target));
             }
 
             BaseStream.Seek(Position, SeekOrigin.Begin);
@@ -77,6 +81,7 @@ namespace SPICA.Formats.CtrH3D
         private void Accumulate32(uint Address, uint Value)
         {
             BaseStream.Seek(Address, SeekOrigin.Begin);
+
             Value += Peek32();
 
             Writer.Write(Value);
@@ -85,6 +90,7 @@ namespace SPICA.Formats.CtrH3D
         private uint Peek32()
         {
             uint Value = Reader.ReadUInt32();
+
             BaseStream.Seek(-4, SeekOrigin.Current);
 
             return Value;
@@ -107,16 +113,21 @@ namespace SPICA.Formats.CtrH3D
 
                 uint PointerAddress = ToRelative(Pointer, Source);
 
+                if (Target != H3DRelocationType.Strings) PointerAddress >>= 2;
+
+                //Take into account sections that didn't existed in older BCH versions
+                if (Header.BackwardCompatibility < 7 &&
+                    Target >= H3DRelocationType.CommandsSrc)
+                    Target--;
+
                 Writer.Write(ToRelative(TargetAddress, Target));
 
                 if (RelocTypes.ContainsKey(Pointer)) Target = RelocTypes[Pointer];
 
                 uint Flags;
 
-                Flags = (uint)Target;
+                Flags  = (uint)Target;
                 Flags |= (uint)Source << 4;
-
-                if (Target != H3DRelocationType.Strings) PointerAddress >>= 2;
 
                 if (PointerAddress > 0x1ffffff)
                 {

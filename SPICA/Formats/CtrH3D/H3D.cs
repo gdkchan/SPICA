@@ -112,6 +112,8 @@ namespace SPICA.Formats.CtrH3D
 
                 BinarySerializer Serializer = new BinarySerializer(FS, Relocator);
 
+                Serializer.FileVersion = Scene.BackwardCompatibility;
+
                 Serializer.Serialize(Scene);
 
                 Header.Magic = "BCH";
@@ -212,7 +214,7 @@ namespace SPICA.Formats.CtrH3D
             Serializer.Strings.Values.Add(new RefValue
             {
                 Position = -1,
-                Value = string.Empty
+                Value    = string.Empty
             });
 
             return false;

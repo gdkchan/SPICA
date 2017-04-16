@@ -14,9 +14,8 @@ namespace SPICA.Serialization
 {
     class BinaryDeserializer
     {
-        public Stream BaseStream;
-
-        public BinaryReader Reader;
+        public readonly Stream BaseStream;
+        public readonly BinaryReader Reader;
 
         private struct ObjectInfo
         {
@@ -36,7 +35,12 @@ namespace SPICA.Serialization
         private uint BufferedUInt = 0;
         private uint BufferedShift = 0;
 
-        private const BindingFlags Binding = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        public int FileVersion;
+
+        private const BindingFlags Binding =
+            BindingFlags.Instance |
+            BindingFlags.Public |
+            BindingFlags.NonPublic;
 
         public BinaryDeserializer(Stream BaseStream)
         {
@@ -61,11 +65,11 @@ namespace SPICA.Serialization
                     case TypeCode.UInt64: return Reader.ReadUInt64();
                     case TypeCode.UInt32: return Reader.ReadUInt32();
                     case TypeCode.UInt16: return Reader.ReadUInt16();
-                    case TypeCode.Byte: return Reader.ReadByte();
-                    case TypeCode.Int64: return Reader.ReadInt64();
-                    case TypeCode.Int32: return Reader.ReadInt32();
-                    case TypeCode.Int16: return Reader.ReadInt16();
-                    case TypeCode.SByte: return Reader.ReadSByte();
+                    case TypeCode.Byte:   return Reader.ReadByte();
+                    case TypeCode.Int64:  return Reader.ReadInt64();
+                    case TypeCode.Int32:  return Reader.ReadInt32();
+                    case TypeCode.Int16:  return Reader.ReadInt16();
+                    case TypeCode.SByte:  return Reader.ReadSByte();
                     case TypeCode.Single: return Reader.ReadSingle();
                     case TypeCode.Double: return Reader.ReadDouble();
                     case TypeCode.Boolean:
@@ -177,8 +181,7 @@ namespace SPICA.Serialization
         {
             StringBuilder SB = new StringBuilder();
 
-            char Chr;
-            while ((Chr = Reader.ReadChar()) != '\0')
+            for (char Chr; (Chr = Reader.ReadChar()) != '\0';)
             {
                 SB.Append(Chr);
             }
@@ -193,7 +196,7 @@ namespace SPICA.Serialization
 
             ObjectInfo OInfo = new ObjectInfo
             {
-                Position = BaseStream.Position,
+                Position   = BaseStream.Position,
                 ObjectType = ObjectType
             };
 
@@ -213,6 +216,14 @@ namespace SPICA.Serialization
 
                 foreach (FieldInfo Info in ObjectType.GetFields(Binding))
                 {
+                    if (Info.IsDefined(typeof(IfVersionGEAttribute)) && FileVersion <
+                        Info.GetCustomAttribute<IfVersionGEAttribute>().Version)
+                        continue;
+
+                    if (Info.IsDefined(typeof(IfVersionLAttribute)) && FileVersion >=
+                        Info.GetCustomAttribute<IfVersionLAttribute>().Version)
+                        continue;
+
                     if (!(
                         Info.IsDefined(typeof(IgnoreAttribute)) || 
                         Info.IsDefined(typeof(CompilerGeneratedAttribute))))
@@ -226,14 +237,16 @@ namespace SPICA.Serialization
 
                         if (Type.IsValueType || Type.IsEnum || Inline)
                         {
-                            int LLen = 0;
+                            object FieldValue = ReadValue(Type, Info, Info.IsDefined(typeof(FixedLengthAttribute))
+                                ? Info.GetCustomAttribute<FixedLengthAttribute>().Length
+                                : 0);
 
-                            if (Info.IsDefined(typeof(FixedLengthAttribute)))
+                            if (Info.IsDefined(typeof(VersionAttribute)) && Type.IsPrimitive)
                             {
-                                LLen = Info.GetCustomAttribute<FixedLengthAttribute>().Length;
+                                FileVersion = Convert.ToInt32(FieldValue);
                             }
 
-                            Info.SetValue(Value, ReadValue(Type, Info, LLen));
+                            Info.SetValue(Value, FieldValue);
                         }
                         else
                         {

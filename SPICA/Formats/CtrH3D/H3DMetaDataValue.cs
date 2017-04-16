@@ -1,12 +1,11 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.Formats.Common;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
@@ -79,38 +78,32 @@ namespace SPICA.Formats.CtrH3D
                         Deserializer.BaseStream.Seek(Address + Index * 4, SeekOrigin.Begin);
                         Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
 
-                        using (MemoryStream MS = new MemoryStream())
-                        {
-                            byte Chr;
-                            while ((Chr = Deserializer.Reader.ReadByte()) != 0)
-                            {
-                                MS.WriteByte(Chr);
-                            }
+                        Values.Add(Deserializer.Reader.ReadNullTerminatedString());
 
-                            Values.Add(Encoding.ASCII.GetString(MS.ToArray()));
-                        }
                         break;
+
                     case H3DMetaDataType.UnicodeString:
                         Deserializer.BaseStream.Seek(Address + Index * 4, SeekOrigin.Begin);
                         Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
 
                         using (MemoryStream MS = new MemoryStream())
                         {
-                            ushort Chr;
-                            while ((Chr = Deserializer.Reader.ReadUInt16()) != 0)
+                            for (ushort Chr; (Chr = Deserializer.Reader.ReadUInt16()) != 0;)
                             {
-                                MS.WriteByte((byte)Chr);
+                                MS.WriteByte((byte)(Chr >> 0));
                                 MS.WriteByte((byte)(Chr >> 8));
                             }
 
                             Values.Add(Encoding.Unicode.GetString(MS.ToArray()));
                         }
+
                         break;
 
                     case H3DMetaDataType.BoundingBox:
                         Deserializer.BaseStream.Seek(Address + Index * 0x3c, SeekOrigin.Begin);
 
                         Values.Add(Deserializer.Deserialize<H3DBoundingBox>());
+
                         break;
 
                     default: throw new NotImplementedException();
@@ -122,7 +115,22 @@ namespace SPICA.Formats.CtrH3D
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //FIXME: Unicode Strings will serialize as ASCII too
+            List<object> NewVals;
+
+            if (Type == H3DMetaDataType.UnicodeString)
+            {
+                NewVals = new List<object>();
+
+                foreach (object Str in Values)
+                {
+                    NewVals.Add(Encoding.Unicode.GetBytes((string)Str + '\0'));
+                }
+            }
+            else
+            {
+                NewVals = Values;
+            }
+
             Serializer.Strings.Values.Add(new RefValue
             {
                 Value    = Name,
@@ -131,7 +139,7 @@ namespace SPICA.Formats.CtrH3D
 
             Serializer.Contents.Values.Add(new RefValue
             {
-                Value    = Values,
+                Value    = NewVals,
                 Position = Serializer.BaseStream.Position + 8
             });
 
