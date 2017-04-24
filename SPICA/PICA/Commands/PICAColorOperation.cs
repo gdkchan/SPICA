@@ -5,12 +5,12 @@ namespace SPICA.PICA.Commands
     public struct PICAColorOperation
     {
         [XmlAttribute] public PICAFragOpMode FragOpMode;
-        [XmlAttribute] public PICABlendMode BlendMode;
+        [XmlAttribute] public PICABlendMode  BlendMode;
 
         public PICAColorOperation(uint Param)
         {
             FragOpMode = (PICAFragOpMode)((Param >> 0) & 3);
-            BlendMode = (PICABlendMode)((Param >> 8) & 1);
+            BlendMode  = (PICABlendMode)((Param >> 8) & 1);
         }
 
         public uint ToUInt32()

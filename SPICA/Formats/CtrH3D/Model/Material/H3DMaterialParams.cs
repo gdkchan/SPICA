@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.Common;
-using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
@@ -8,7 +7,6 @@ using SPICA.Serialization.Attributes;
 
 using System;
 using System.Numerics;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
 {
@@ -23,7 +21,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public H3DMaterialShader MaterialShader;
 
-        [Inline, FixedLength(3)] public H3DTextureCoord[] TextureCoords;
+        [Inline, FixedLength(3)] public readonly H3DTextureCoord[] TextureCoords;
 
         public ushort LightSetIndex;
         public ushort FogIndex;
@@ -50,18 +48,30 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMaterialLUT ReflecGLUT;
         public H3DMaterialLUT ReflecBLUT;
 
-        private byte LayerCfg;
+        private byte _LayerConfig;
 
         public H3DLayerConfig LayerConfig
         {
-            get { return (H3DLayerConfig)BitUtils.GetBits(LayerCfg, 0, 4); }
-            set { LayerCfg = BitUtils.SetBits(LayerCfg, (uint)value, 0, 4); }
+            get
+            {
+                return (H3DLayerConfig)BitUtils.GetBits(_LayerConfig, 0, 4);
+            }
+            set
+            {
+                _LayerConfig = BitUtils.SetBits(_LayerConfig, (uint)value, 0, 4);
+            }
         }
 
         public H3DTexCoordConfig TexCoordConfig
         {
-            get { return (H3DTexCoordConfig)BitUtils.GetBits(LayerCfg, 4, 4); }
-            set { LayerCfg = BitUtils.SetBits(LayerCfg, (uint)value, 4, 4); }
+            get
+            {
+                return (H3DTexCoordConfig)BitUtils.GetBits(_LayerConfig, 4, 4);
+            }
+            set
+            {
+                _LayerConfig = BitUtils.SetBits(_LayerConfig, (uint)value, 4, 4);
+            }
         }
 
         public H3DFresnelSelector FresnelSelector;
@@ -74,12 +84,77 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private uint ConstantColors;
 
-        [Ignore] public uint Constant0Assignment;
-        [Ignore] public uint Constant1Assignment;
-        [Ignore] public uint Constant2Assignment;
-        [Ignore] public uint Constant3Assignment;
-        [Ignore] public uint Constant4Assignment;
-        [Ignore] public uint Constant5Assignment;
+        public uint Constant0Assignment
+        {
+            get
+            {
+                return BitUtils.GetBits(ConstantColors, 0, 4);
+            }
+            set
+            {
+                ConstantColors = BitUtils.SetBits(ConstantColors, value, 0, 4);
+            }
+        }
+
+        public uint Constant1Assignment
+        {
+            get
+            {
+                return BitUtils.GetBits(ConstantColors, 4, 4);
+            }
+            set
+            {
+                ConstantColors = BitUtils.SetBits(ConstantColors, value, 4, 4);
+            }
+        }
+
+        public uint Constant2Assignment
+        {
+            get
+            {
+                return BitUtils.GetBits(ConstantColors, 8, 4);
+            }
+            set
+            {
+                ConstantColors = BitUtils.SetBits(ConstantColors, value, 8, 4);
+            }
+        }
+
+        public uint Constant3Assignment
+        {
+            get
+            {
+                return BitUtils.GetBits(ConstantColors, 12, 4);
+            }
+            set
+            {
+                ConstantColors = BitUtils.SetBits(ConstantColors, value, 12, 4);
+            }
+        }
+
+        public uint Constant4Assignment
+        {
+            get
+            {
+                return BitUtils.GetBits(ConstantColors, 16, 4);
+            }
+            set
+            {
+                ConstantColors = BitUtils.SetBits(ConstantColors, value, 16, 4);
+            }
+        }
+
+        public uint Constant5Assignment
+        {
+            get
+            {
+                return BitUtils.GetBits(ConstantColors, 20, 4);
+            }
+            set
+            {
+                ConstantColors = BitUtils.SetBits(ConstantColors, value, 20, 4);
+            }
+        }
 
         public float PolygonOffsetUnit;
 
@@ -102,24 +177,31 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public string ShaderReference;
         public string ModelReference;
 
-        [IfVersionGE(7)] public H3DMetaData MetaData;
+        [IfVersion(CmpOp.Gequal, 7)] public H3DMetaData MetaData;
 
-        //LookUp Table
         [Ignore] public PICALUTInAbs   LUTInAbs;
         [Ignore] public PICALUTInSel   LUTInSel;
         [Ignore] public PICALUTInScale LUTInScale;
 
-        //Fragment Lighting
-        [Ignore] public PICATexEnvStage[]    TexEnvStages;
-        [Ignore] public PICATexEnvColor      TexEnvBufferColor;
-        [Ignore] public PICAColorOperation   ColorOperation;
-        [Ignore] public PICABlendFunction    BlendFunction;
-        [Ignore] public PICALogicalOp        LogicalOperation;
-        [Ignore] public PICAAlphaTest        AlphaTest;
-        [Ignore] public PICAStencilTest      StencilTest;
+        [Ignore] public readonly PICATexEnvStage[] TexEnvStages;
+
+        [Ignore] public PICATexEnvColor TexEnvBufferColor;
+
+        [Ignore] public PICAColorOperation ColorOperation;
+
+        [Ignore] public PICABlendFunction BlendFunction;
+
+        [Ignore] public PICALogicalOp LogicalOperation;
+
+        [Ignore] public PICAAlphaTest AlphaTest;
+
+        [Ignore] public PICAStencilTest StencilTest;
+
         [Ignore] public PICAStencilOperation StencilOperation;
-        [Ignore] public PICADepthColorMask   DepthColorMask;
-        [Ignore] public PICAFaceCulling      FaceCulling;
+
+        [Ignore] public PICADepthColorMask DepthColorMask;
+
+        [Ignore] public PICAFaceCulling FaceCulling;
 
         [Ignore] public bool ColorBufferRead;
         [Ignore] public bool ColorBufferWrite;
@@ -130,13 +212,18 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         [Ignore] public bool DepthBufferRead;
         [Ignore] public bool DepthBufferWrite;
 
-        [Ignore] public float[] TextureSources;
+        [Ignore] public readonly float[] TextureSources;
 
-        [XmlIgnore]
         public string Name
         {
-            get { return ModelReference; }
-            set { ModelReference = value; }
+            get
+            {
+                return ModelReference;
+            }
+            set
+            {
+                ModelReference = value;
+            }
         }
 
         public H3DMaterialParams()
@@ -187,7 +274,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             HashGen.Hash(Constant5Color.ToUInt32());
             HashGen.Hash(BlendColor.ToUInt32());
             HashGen.Hash(ColorScale);
-            HashGen.Hash(LayerCfg);
+            HashGen.Hash(_LayerConfig);
             HashGen.Hash((byte)FresnelSelector);
             HashGen.Hash((byte)BumpMode);
             HashGen.Hash(BumpTexture);
@@ -219,8 +306,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             if (Stage >= 0 && Stage < 6)
             {
-                PackConstantAssignments();
-
                 switch ((ConstantColors >> Stage * 4) & 0xf)
                 {
                     default:
@@ -284,6 +369,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     case PICARegister.GPUREG_TEXENV5_SOURCE:
                         TexEnvStages[Stage].Source = new PICATexEnvSource(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_OPERAND:
                     case PICARegister.GPUREG_TEXENV1_OPERAND:
                     case PICARegister.GPUREG_TEXENV2_OPERAND:
@@ -292,6 +378,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     case PICARegister.GPUREG_TEXENV5_OPERAND:
                         TexEnvStages[Stage].Operand = new PICATexEnvOperand(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_COMBINER:
                     case PICARegister.GPUREG_TEXENV1_COMBINER:
                     case PICARegister.GPUREG_TEXENV2_COMBINER:
@@ -300,6 +387,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     case PICARegister.GPUREG_TEXENV5_COMBINER:
                         TexEnvStages[Stage].Combiner = new PICATexEnvCombiner(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_COLOR:
                     case PICARegister.GPUREG_TEXENV1_COLOR:
                     case PICARegister.GPUREG_TEXENV2_COLOR:
@@ -308,6 +396,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     case PICARegister.GPUREG_TEXENV5_COLOR:
                         TexEnvStages[Stage].Color = new PICATexEnvColor(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_SCALE:
                     case PICARegister.GPUREG_TEXENV1_SCALE:
                     case PICARegister.GPUREG_TEXENV2_SCALE:
@@ -317,17 +406,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         TexEnvStages[Stage].Scale = new PICATexEnvScale(Param);
                         break;
 
-                    case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER:
-                        TexEnvStages[1].UpdateColorBuffer = (Param & 0x100)  != 0;
-                        TexEnvStages[2].UpdateColorBuffer = (Param & 0x200)  != 0;
-                        TexEnvStages[3].UpdateColorBuffer = (Param & 0x400)  != 0;
-                        TexEnvStages[4].UpdateColorBuffer = (Param & 0x800)  != 0;
-
-                        TexEnvStages[1].UpdateAlphaBuffer = (Param & 0x1000) != 0;
-                        TexEnvStages[2].UpdateAlphaBuffer = (Param & 0x2000) != 0;
-                        TexEnvStages[3].UpdateAlphaBuffer = (Param & 0x4000) != 0;
-                        TexEnvStages[4].UpdateAlphaBuffer = (Param & 0x8000) != 0;
-                        break;
+                    case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER:  PICATexEnvStage.SetUpdateBuffer(TexEnvStages, Param); break;
 
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
 
@@ -354,6 +433,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         StencilBufferRead = (Param & 1) != 0;
                         DepthBufferRead   = (Param & 2) != 0;
                         break;
+
                     case PICARegister.GPUREG_DEPTHBUFFER_WRITE:
                         StencilBufferWrite = (Param & 1) != 0;
                         DepthBufferWrite   = (Param & 2) != 0;
@@ -400,8 +480,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureSources[1] = Uniform[10].Y;
             TextureSources[2] = Uniform[10].Z;
             TextureSources[3] = Uniform[10].W;
-
-            UnpackConstantAssignments();
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
@@ -440,7 +518,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     TexEnvStages[Stage].Scale.ToUInt32());
             }
 
-            Writer.SetCommand(PICARegister.GPUREG_TEXENV_UPDATE_BUFFER, false, 2);
+            uint UpdateBuffer = PICATexEnvStage.GetUpdateBuffer(TexEnvStages);
+
+            Writer.SetCommand(PICARegister.GPUREG_TEXENV_UPDATE_BUFFER, UpdateBuffer, 2);
             Writer.SetCommand(PICARegister.GPUREG_TEXENV_BUFFER_COLOR, TexEnvBufferColor.ToUInt32());
             Writer.SetCommand(PICARegister.GPUREG_COLOR_OPERATION, ColorOperation.ToUInt32(), 3);
             Writer.SetCommand(PICARegister.GPUREG_BLEND_FUNC, BlendFunction.ToUInt32());
@@ -454,9 +534,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             FrameAccessOffset = (byte)Writer.Index;
 
-            Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_READ, ColorBufferRead ? 0xfu : 0u, 1);
+            Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_READ,  ColorBufferRead  ? 0xfu : 0u, 1);
             Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_WRITE, ColorBufferWrite ? 0xfu : 0u, 1);
-            Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_READ, StencilBufferRead, DepthBufferRead);
+            Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_READ,  StencilBufferRead,  DepthBufferRead);
             Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_WRITE, StencilBufferWrite, DepthBufferWrite);
 
             Matrix3x4[] TexMtx = new Matrix3x4[3];
@@ -511,32 +591,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             FragmentShaderCommands = Writer.GetBuffer();
 
-            PackConstantAssignments();
-
             GenerateUniqueId();
 
             return false;
-        }
-
-        private void UnpackConstantAssignments()
-        {
-            Constant0Assignment = (ConstantColors >>  0) & 0xf;
-            Constant1Assignment = (ConstantColors >>  4) & 0xf;
-            Constant2Assignment = (ConstantColors >>  8) & 0xf;
-            Constant3Assignment = (ConstantColors >> 12) & 0xf;
-            Constant4Assignment = (ConstantColors >> 16) & 0xf;
-            Constant5Assignment = (ConstantColors >> 20) & 0xf;
-        }
-
-        private void PackConstantAssignments()
-        {
-            ConstantColors =
-                (Constant0Assignment <<  0) |
-                (Constant1Assignment <<  4) |
-                (Constant2Assignment <<  8) |
-                (Constant3Assignment << 12) |
-                (Constant4Assignment << 16) |
-                (Constant5Assignment << 20);
         }
     }
 }

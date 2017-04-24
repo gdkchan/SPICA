@@ -2,12 +2,12 @@
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
-using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.GFL2.Model.Material;
 using SPICA.Formats.GFL2.Model.Mesh;
 using SPICA.Math3D;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,10 +25,10 @@ namespace SPICA.Formats.GFL2.Model
         public Vector4   BBoxMaxVector;
         public Matrix4x4 Transform;
 
-        public List<GFBone>     Skeleton;
-        public List<GFLUT>      LUTs;
-        public List<GFMaterial> Materials;
-        public List<GFMesh>     Meshes;
+        public readonly List<GFBone>     Skeleton;
+        public readonly List<GFLUT>      LUTs;
+        public readonly List<GFMaterial> Materials;
+        public readonly List<GFMesh>     Meshes;
 
         public GFModel()
         {
@@ -135,8 +135,7 @@ namespace SPICA.Formats.GFL2.Model
             foreach (H3DBone Bone in Output.Skeleton)
             {
                 Bone.CalculateTransform(Output.Skeleton);
-
-                Bone.Flags |= H3DBoneFlags.IsSegmentScaleCompensate;
+                Bone.IsSegmentScaleCompensate = true;
             }
 
             //Materials
@@ -149,7 +148,8 @@ namespace SPICA.Formats.GFL2.Model
                 Mat.Name = Material.MaterialName.Name;
 
                 Params.FragmentFlags = H3DFragmentFlags.IsLUTReflectionEnabled;
-                Params.TextureSources = Material.TextureSources;
+
+                Array.Copy(Material.TextureSources, Params.TextureSources, 4);
 
                 for (int Unit = 0; Unit < Material.TextureCoords.Length; Unit++)
                 {

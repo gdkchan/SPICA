@@ -1,5 +1,7 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.Formats.Common;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+using SPICA.Serialization.Serializer;
 
 using System;
 
@@ -7,12 +9,58 @@ namespace SPICA.Formats.CtrH3D.Animation
 {
     public class H3DAnimationElement : ICustomSerialization
     {
-        public string Name;
+        private string _Name;
 
-        public H3DAnimTargetType TargetType;
+        public string Name
+        {
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Name");
+                }
+
+                _Name = value;
+            }
+        }
+
+        public H3DAnimTargetType    TargetType;
         public H3DAnimPrimitiveType PrimitiveType;
 
-        [Ignore] public object Content;
+        [Ignore]
+        private object _Content;
+
+        public object Content
+        {
+            get
+            {
+                return _Content;
+            }
+            set
+            {
+                Type ValueType = value.GetType();
+
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Content");
+                }
+
+                if (ValueType != typeof(H3DAnimVector2D)      &&
+                    ValueType != typeof(H3DAnimTransform)     &&
+                    ValueType != typeof(H3DAnimQuatTransform) &&
+                    ValueType != typeof(H3DAnimBoolean)       &&
+                    ValueType != typeof(H3DAnimMtxTransform))
+                {
+                    throw Exceptions.GetTypeException("Content", ValueType.ToString());
+                }
+
+                _Content = value;
+            }
+        }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
@@ -28,7 +76,18 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            throw new NotImplementedException();
+            Serializer.Strings.Values.Add(new RefValue
+            {
+                Position = Serializer.BaseStream.Position,
+                Value    = _Name
+            });
+
+            Serializer.Writer.Write(0u);
+            Serializer.Writer.Write((ushort)TargetType);
+            Serializer.Writer.Write((ushort)PrimitiveType);
+            Serializer.WriteValue(Content);
+
+            return true;
         }
     }
 }

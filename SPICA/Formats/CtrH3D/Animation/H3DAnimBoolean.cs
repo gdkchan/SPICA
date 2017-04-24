@@ -1,24 +1,24 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    class H3DAnimBoolean
+    public class H3DAnimBoolean
     {
-        public float StartFrame;
-        public float EndFrame;
+        public H3DAnimCurve Curve;
 
-        public H3DLoopType PreRepeat;
-        public H3DLoopType PostRepeat;
+        public readonly List<bool> Values;
 
-        public ushort CurveIndex;
-
-        public bool[] Values;
+        public H3DAnimBoolean()
+        {
+            Values = new List<bool>();
+        }
 
         public bool GetFrameValue(int Frame)
         {
             if (Frame < 0)
                 return Values.First();
-            else if (Frame >= Values.Length)
+            else if (Frame >= Values.Count)
                 return Values.Last();
             else
                 return Values[Frame];

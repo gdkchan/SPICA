@@ -19,7 +19,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             1
         };
 
-        public uint Hash;
+        public uint   Hash;
         public string Name;
 
         public Vector4 BBoxMinVector;

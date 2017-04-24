@@ -1,24 +1,49 @@
-﻿using SPICA.PICA;
+﻿using SPICA.Formats.Common;
+using SPICA.PICA;
 using SPICA.PICA.Commands;
 
-using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.Formats.GFL2.Model
 {
-    public struct GFLUT
+    public class GFLUT
     {
         public PICALUTType Type;
 
-        public float[] Table;
+        private float[] _Table;
 
-        public uint Hash;
+        public float[] Table
+        {
+            get
+            {
+                return _Table;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Table");
+                }
+
+                if (value.Length != 256)
+                {
+                    throw Exceptions.GetLengthNotEqualException("Table", 256);
+                }
+
+                _Table = value;
+            }
+        }
+
+        public uint   Hash;
         public string Name;
 
-        public GFLUT(BinaryReader Reader, string SamplerName, int Length)
+        public GFLUT()
         {
-            Type = default(PICALUTType);
+            _Table = new float[256];
+        }
 
+        public GFLUT(BinaryReader Reader, string SamplerName, int Length) : this()
+        {
             Hash = Reader.ReadUInt32();
             Name = SamplerName;
 
@@ -33,8 +58,6 @@ namespace SPICA.Formats.GFL2.Model
 
             int Index = 0;
 
-            Table = new float[256];
-
             PICACommandReader CmdReader = new PICACommandReader(Commands);
 
             while (CmdReader.HasCommand)
@@ -45,10 +68,8 @@ namespace SPICA.Formats.GFL2.Model
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_LIGHTING_LUT_INDEX:
-                        Index = (int)(Param & 0xff);
-                        Type = (PICALUTType)(Param >> 8);
-                        break;
+                    case PICARegister.GPUREG_LIGHTING_LUT_INDEX: Index = (int)(Param & 0xff); break;
+
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA0:
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA1:
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA2:
@@ -59,7 +80,7 @@ namespace SPICA.Formats.GFL2.Model
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA7:
                         foreach (uint Value in Cmd.Parameters)
                         {
-                            Table[Index++] = (Value & 0xfff) / (float)0xfff;
+                            _Table[Index++] = (Value & 0xfff) / (float)0xfff;
                         }
                         break;
                 }

@@ -1,28 +1,64 @@
-﻿using SPICA.PICA;
+﻿using SPICA.Formats.Common;
+using SPICA.PICA;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
-
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.LUT
 {
     [Inline]
-    public class H3DLUTSampler : ICustomSerialization
+    public class H3DLUTSampler : ICustomSerialization, INamed
     {
-        [XmlAttribute] public H3DLUTFlags Flags;
-
-        private byte Padding0;
-        private ushort Padding1;
+        [Padding(4)] public H3DLUTFlags Flags;
 
         private uint[] Commands;
 
-        [XmlAttribute] public string Name;
+        private string _Name;
 
-        [Ignore, XmlAttribute] public float[] Table;
+        public string Name
+        {
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Name");
+                }
+
+                _Name = value;
+            }
+        }
+
+        [Ignore]
+        private float[] _Table;
+
+        public float[] Table
+        {
+            get
+            {
+                return _Table;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Table");
+                }
+
+                if (value.Length != 256)
+                {
+                    throw Exceptions.GetLengthNotEqualException("Table", 256);
+                }
+
+                _Table = value;
+            }
+        }
 
         public H3DLUTSampler()
         {
-            Table = new float[256];
+            _Table = new float[256];
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -49,7 +85,7 @@ namespace SPICA.Formats.CtrH3D.LUT
                     case PICARegister.GPUREG_LIGHTING_LUT_DATA7:
                         foreach (uint Value in Cmd.Parameters)
                         {
-                            Table[Index++] = (Value & 0xfff) / (float)0xfff;
+                            _Table[Index++] = (Value & 0xfff) / (float)0xfff;
                         }
                         break;
                 }
@@ -60,19 +96,19 @@ namespace SPICA.Formats.CtrH3D.LUT
         {
             uint[] QuantizedValues = new uint[256];
 
-            for (int Index = 0; Index < Table.Length; Index++)
+            for (int Index = 0; Index < _Table.Length; Index++)
             {
-                float Diff = 0;
+                float Difference = 0;
 
-                if (Index < Table.Length - 1)
+                if (Index < _Table.Length - 1)
                 {
-                    Diff = Table[Index + 1] - Table[Index];
+                    Difference = _Table[Index + 1] - _Table[Index];
                 }
 
-                int QVal = (int)(Table[Index] * 0xfff);
-                int QDiff = (int)(Diff * 0x7ff);
+                int Value = (int)(_Table[Index] * 0xfff);
+                int Diff  = (int)(Difference    * 0x7ff);
 
-                QuantizedValues[Index] = (uint)(QVal | (QDiff << 12)) & 0xffffff;
+                QuantizedValues[Index] = (uint)(Value | (Diff << 12)) & 0xffffff;
             }
 
             PICACommandWriter Writer = new PICACommandWriter();

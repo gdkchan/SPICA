@@ -10,7 +10,6 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Texture
 {
@@ -22,21 +21,30 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public PICATextureFormat Format;
 
-        public byte MipmapSize;
-        private ushort Padding;
+        [Padding(4)] public byte MipmapSize;
 
         private string _Name;
 
-        [XmlAttribute]
         public string Name
         {
-            get { return _Name; }
-            set { _Name = value; }
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Name");
+                }
+
+                _Name = value;
+            }
         }
 
-        [XmlIgnore] public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
+        public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 
-        [XmlIgnore] public byte[] RawBuffer { get { return RawBufferXPos; } }
+        public byte[] RawBuffer { get { return RawBufferXPos; } }
 
         [Ignore] public byte[] RawBufferXPos;
         [Ignore] public byte[] RawBufferXNeg;
@@ -245,7 +253,7 @@ namespace SPICA.Formats.CtrH3D.Texture
 
             Serializer.RawDataTex.Values.Add(new RefValue
             {
-                Value = RawBufferXPos,
+                Value    = RawBufferXPos,
                 Position = Position
             });
 

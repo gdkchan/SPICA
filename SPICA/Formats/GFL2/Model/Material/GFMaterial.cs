@@ -69,17 +69,22 @@ namespace SPICA.Formats.GFL2.Model.Material
         public int RenderPriority;
         public int RenderLayer;
 
-        //Fragment Lighting
-        public PICAColorOperation   ColorOperation;
-        public PICABlendFunction    BlendFunction;
-        public PICALogicalOp        LogicalOperation;
-        public PICAAlphaTest        AlphaTest;
-        public PICAStencilTest      StencilTest;
-        public PICAStencilOperation StencilOperation;
-        public PICADepthColorMask   DepthColorMask;
-        public PICAFaceCulling      FaceCulling;
+        public PICAColorOperation ColorOperation;
 
-        //LookUp Table
+        public PICABlendFunction BlendFunction;
+
+        public PICALogicalOp LogicalOperation;
+
+        public PICAAlphaTest AlphaTest;
+
+        public PICAStencilTest StencilTest;
+
+        public PICAStencilOperation StencilOperation;
+
+        public PICADepthColorMask DepthColorMask;
+
+        public PICAFaceCulling FaceCulling;
+
         public PICALUTInAbs   LUTInAbs;
         public PICALUTInSel   LUTInSel;
         public PICALUTInScale LUTInScale;
@@ -93,11 +98,11 @@ namespace SPICA.Formats.GFL2.Model.Material
         public bool DepthBufferRead;
         public bool DepthBufferWrite;
 
-        public GFTextureCoord[] TextureCoords;
+        public readonly GFTextureCoord[] TextureCoords;
 
-        public PICATexEnvColor[] BorderColor;
+        public readonly PICATexEnvColor[] BorderColor;
 
-        public float[] TextureSources;
+        public readonly float[] TextureSources;
 
         public GFMaterial()
         {
@@ -248,6 +253,7 @@ namespace SPICA.Formats.GFL2.Model.Material
                         StencilBufferRead = (Param & 1) != 0;
                         DepthBufferRead   = (Param & 2) != 0;
                         break;
+
                     case PICARegister.GPUREG_DEPTHBUFFER_WRITE:
                         StencilBufferWrite = (Param & 1) != 0;
                         DepthBufferWrite   = (Param & 2) != 0;

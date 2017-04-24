@@ -13,29 +13,26 @@ using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System.IO;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D
 {
     public class H3D : ICustomSerialization
     {
-        public PatriciaList<H3DModel>     Models;
-
-        [XmlIgnore] public PatriciaList<H3DMaterialParams> Materials;
-
-        public PatriciaList<H3DShader>    Shaders;
-        public PatriciaList<H3DTexture>   Textures;
-        public PatriciaList<H3DLUT>       LUTs;
-        public PatriciaList<H3DLight>     Lights;
-        public PatriciaList<H3DCamera>    Cameras;
-        public PatriciaList<H3DFog>       Fogs;
-        public PatriciaList<H3DAnimation> SkeletalAnimations;
-        public PatriciaList<H3DAnimation> MaterialAnimations;
-        public PatriciaList<H3DAnimation> VisibilityAnimations;
-        public PatriciaList<H3DAnimation> LightAnimations;
-        public PatriciaList<H3DAnimation> CameraAnimations;
-        public PatriciaList<H3DAnimation> FogAnimations;
-        public PatriciaList<H3DScene>     Scenes;
+        public readonly PatriciaList<H3DModel>          Models;
+        public readonly PatriciaList<H3DMaterialParams> Materials;
+        public readonly PatriciaList<H3DShader>         Shaders;
+        public readonly PatriciaList<H3DTexture>        Textures;
+        public readonly PatriciaList<H3DLUT>            LUTs;
+        public readonly PatriciaList<H3DLight>          Lights;
+        public readonly PatriciaList<H3DCamera>         Cameras;
+        public readonly PatriciaList<H3DFog>            Fogs;
+        public readonly PatriciaList<H3DAnimation>      SkeletalAnimations;
+        public readonly PatriciaList<H3DAnimation>      MaterialAnimations;
+        public readonly PatriciaList<H3DAnimation>      VisibilityAnimations;
+        public readonly PatriciaList<H3DAnimation>      LightAnimations;
+        public readonly PatriciaList<H3DAnimation>      CameraAnimations;
+        public readonly PatriciaList<H3DAnimation>      FogAnimations;
+        public readonly PatriciaList<H3DScene>          Scenes;
 
         [Ignore] public byte BackwardCompatibility;
         [Ignore] public byte ForwardCompatibility;
@@ -104,7 +101,12 @@ namespace SPICA.Formats.CtrH3D
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
-                FS.Seek(0x44, SeekOrigin.Begin);
+                uint ContentPosition = 0x44;
+
+                if (Scene.BackwardCompatibility < 0x21) ContentPosition -= 8;
+                if (Scene.BackwardCompatibility < 0x20) ContentPosition -= 4;
+
+                FS.Seek(ContentPosition, SeekOrigin.Begin);
 
                 H3DHeader Header = new H3DHeader();
 
@@ -138,16 +140,16 @@ namespace SPICA.Formats.CtrH3D
                 Header.RawDataLength += Serializer.RawDataVtx.Info.Length;
                 Header.RawExtLength  += Serializer.RawExtVtx.Info.Length;
 
-                Header.UnInitDataLength = Serializer.PhysicalAddressCount * 4;
-                Header.AddressCount     = (ushort)Serializer.PhysicalAddressCount;
-
-                Header.Flags = Scene.Flags;
+                Header.UnInitDataLength     = Serializer.PhysicalAddressCount * 4;
+                Header.UnInitCommandsLength = 0; //TODO: Investigate when this length is used
+                Header.AddressCount         = (ushort)Serializer.PhysicalAddressCount;
+                Header.Flags                = Scene.Flags;
 
                 Relocator.ToRelative(Serializer);
 
                 FS.Seek(0, SeekOrigin.Begin);
 
-                Serializer.WriteObject(Header);
+                Serializer.WriteValue(Header);
             }
         }
 

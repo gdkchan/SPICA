@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.CtrH3D.Model.Material;
-using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 

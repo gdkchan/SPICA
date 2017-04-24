@@ -6,8 +6,8 @@ namespace SPICA.Formats.Generic.COLLADA
     {
         [XmlAttribute] public string semantic;
         [XmlAttribute] public string source;
-        [XmlAttribute] public uint offset;
-        [XmlAttribute] public uint set;
+        [XmlAttribute] public uint   offset;
+        [XmlAttribute] public uint   set;
 
         public bool ShouldSerializeset() { return semantic == "TEXCOORD" || set != 0; }
     }

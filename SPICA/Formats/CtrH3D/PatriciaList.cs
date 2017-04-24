@@ -9,19 +9,31 @@ namespace SPICA.Formats.CtrH3D
     [Inline]
     public class PatriciaList<T> : INotifyCollectionChanged, IEnumerable<T> where T : INamed
     {
-        private List<T> Contents;
+        private List<T>      Contents;
         private PatriciaTree NameTree;
 
         public T this[int Index]
         {
-            get { return Contents[Index]; }
-            set { Contents[Index] = value; }
+            get
+            {
+                return Contents[Index];
+            }
+            set
+            {
+                Contents[Index] = value;
+            }
         }
 
         public T this[string Name]
         {
-            get { return Contents[FindIndex(Name)]; }
-            set { Contents[FindIndex(Name)] = value; }
+            get
+            {
+                return Contents[FindIndex(Name)];
+            }
+            set
+            {
+                Contents[FindIndex(Name)] = value;
+            }
         }
 
         public int Count { get { return Contents.Count; } }

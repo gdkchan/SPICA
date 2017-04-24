@@ -475,7 +475,7 @@ namespace SPICA.Formats.Generic.COLLADA
                                     H3DAnimTransform Transform = (H3DAnimTransform)Elem.Content;
 
                                     //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                    if (Parent != null && SklBone.IsSegmentScaleCompensate)
                                     {
                                         if (PElem != null)
                                         {
@@ -532,7 +532,7 @@ namespace SPICA.Formats.Generic.COLLADA
                                     if (IsRotation) Rotation = QuatTransform.GetRotationValue(Frame).ToEuler();
 
                                     //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                    if (Parent != null && SklBone.IsSegmentScaleCompensate)
                                     {
                                         if (PElem != null)
                                             InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);

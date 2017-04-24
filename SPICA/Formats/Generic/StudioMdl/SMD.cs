@@ -452,8 +452,6 @@ namespace SPICA.Formats.Generic.StudioMdl
                 Material.Texture0Name = MatName;
                 Material.MaterialParams.ShaderReference = "0@DefaultShader";
                 Material.MaterialParams.ModelReference = $"{Material.Name}@{Model.Name}";
-                Material.MaterialParams.LUTDist0TableName = "SpecTable";
-                Material.MaterialParams.LUTDist0SamplerName = "SpecSampler";
 
                 Model.Materials.Add(Material);
 
@@ -467,8 +465,6 @@ namespace SPICA.Formats.Generic.StudioMdl
                     }
                 }
             }
-
-            Output.LUTs.Add(H3DLUT.CelShading);
 
             //Build Skeleton
             foreach (SMDBone Bone in Skeleton)

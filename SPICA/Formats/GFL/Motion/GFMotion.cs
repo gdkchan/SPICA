@@ -11,7 +11,7 @@ namespace SPICA.Formats.GFL.Motion
     {
         public ushort FramesCount;
 
-        public List<GFMotBoneTransform> Bones;
+        public readonly List<GFMotBoneTransform> Bones;
 
         public int Index;
 
@@ -30,12 +30,12 @@ namespace SPICA.Formats.GFL.Motion
 
             uint[] Octals = new uint[OctalsCount];
 
-            int KeyFramesCount = 0;
-            uint CurrentOctal = 0;
+            int  KeyFramesCount = 0;
+            uint CurrentOctal   = 0;
 
             for (int i = 0; i < OctalsCount; i++)
             {
-                if ((i & 7) == 0) CurrentOctal = IOUtils.ReadUInt24(Reader);
+                if ((i & 7) == 0) CurrentOctal = Reader.ReadUInt24();
 
                 Octals[i] = CurrentOctal & 7;
 
@@ -44,7 +44,9 @@ namespace SPICA.Formats.GFL.Motion
                 if (Octals[i] > 5) KeyFramesCount++;
             }
 
-            if (FramesCount > byte.MaxValue && (Reader.BaseStream.Position & 1) != 0) Reader.ReadByte();
+            bool Frame16 = FramesCount > 0xff;
+
+            if (Frame16 && (Reader.BaseStream.Position & 1) != 0) Reader.ReadByte();
 
             int[][] KeyFrames = new int[KeyFramesCount][];
 
@@ -52,10 +54,9 @@ namespace SPICA.Formats.GFL.Motion
             {
                 int Count;
 
-                if (FramesCount > byte.MaxValue)
-                    Count = Reader.ReadUInt16();
-                else
-                    Count = Reader.ReadByte();
+                Count = Frame16
+                    ? Reader.ReadUInt16()
+                    : Reader.ReadByte();
 
                 KeyFrames[i] = new int[Count + 2];
 
@@ -63,10 +64,9 @@ namespace SPICA.Formats.GFL.Motion
 
                 for (int j = 1; j <= Count; j++)
                 {
-                    if (FramesCount > byte.MaxValue)
-                        KeyFrames[i][j] = Reader.ReadUInt16();
-                    else
-                        KeyFrames[i][j] = Reader.ReadByte();
+                    KeyFrames[i][j] = Frame16
+                        ? Reader.ReadUInt16()
+                        : Reader.ReadByte();
                 }
             }
 
@@ -100,7 +100,22 @@ namespace SPICA.Formats.GFL.Motion
                 if (CurrentOctal != 1)
                 {
                     //Actual Key Frame format
-                    List<GFMotKeyFrame> KFs = new List<GFMotKeyFrame>();
+                    List<GFMotKeyFrame> KFs = null;
+
+                    switch (ElemIndex % 9)
+                    {
+                        case 0: KFs = CurrentBone.TranslationX; break;
+                        case 1: KFs = CurrentBone.TranslationY; break;
+                        case 2: KFs = CurrentBone.TranslationZ; break;
+
+                        case 3: KFs = CurrentBone.RotationX;    break;
+                        case 4: KFs = CurrentBone.RotationY;    break;
+                        case 5: KFs = CurrentBone.RotationZ;    break;
+
+                        case 6: KFs = CurrentBone.ScaleX;       break;
+                        case 7: KFs = CurrentBone.ScaleY;       break;
+                        case 8: KFs = CurrentBone.ScaleZ;       break;
+                    }
 
                     switch (CurrentOctal)
                     {
@@ -128,21 +143,6 @@ namespace SPICA.Formats.GFL.Motion
                             break;
                     }
 
-                    switch (ElemIndex % 9)
-                    {
-                        case 0: CurrentBone.TranslationX = KFs; break;
-                        case 1: CurrentBone.TranslationY = KFs; break;
-                        case 2: CurrentBone.TranslationZ = KFs; break;
-
-                        case 3: CurrentBone.RotationX    = KFs; break;
-                        case 4: CurrentBone.RotationY    = KFs; break;
-                        case 5: CurrentBone.RotationZ    = KFs; break;
-
-                        case 6: CurrentBone.ScaleX       = KFs; break;
-                        case 7: CurrentBone.ScaleY       = KFs; break;
-                        case 8: CurrentBone.ScaleZ       = KFs; break;
-                    }
-
                     ElemIndex++;
                 }
                 else
@@ -164,17 +164,17 @@ namespace SPICA.Formats.GFL.Motion
             {
                 H3DAnimTransform Transform = new H3DAnimTransform();
 
-                Transform.TranslationX = GetKeyFrameGroup(Bone.TranslationX, 0);
-                Transform.TranslationY = GetKeyFrameGroup(Bone.TranslationY, 1);
-                Transform.TranslationZ = GetKeyFrameGroup(Bone.TranslationZ, 2);
+                SetKeyFrameGroup(Bone.TranslationX, Transform.TranslationX, 0);
+                SetKeyFrameGroup(Bone.TranslationY, Transform.TranslationY, 1);
+                SetKeyFrameGroup(Bone.TranslationZ, Transform.TranslationZ, 2);
 
-                Transform.RotationX    = GetKeyFrameGroup(Bone.RotationX,    3);
-                Transform.RotationY    = GetKeyFrameGroup(Bone.RotationY,    4);
-                Transform.RotationZ    = GetKeyFrameGroup(Bone.RotationZ,    5);
+                SetKeyFrameGroup(Bone.RotationX,    Transform.RotationX,    3);
+                SetKeyFrameGroup(Bone.RotationY,    Transform.RotationY,    4);
+                SetKeyFrameGroup(Bone.RotationZ,    Transform.RotationZ,    5);
 
-                Transform.ScaleX       = GetKeyFrameGroup(Bone.ScaleX,       6);
-                Transform.ScaleY       = GetKeyFrameGroup(Bone.ScaleY,       7);
-                Transform.ScaleZ       = GetKeyFrameGroup(Bone.ScaleZ,       8);
+                SetKeyFrameGroup(Bone.ScaleX,       Transform.ScaleX,       6);
+                SetKeyFrameGroup(Bone.ScaleY,       Transform.ScaleY,       7);
+                SetKeyFrameGroup(Bone.ScaleZ,       Transform.ScaleZ,       8);
 
                 Output.Elements.Add(new H3DAnimationElement
                 {
@@ -192,26 +192,20 @@ namespace SPICA.Formats.GFL.Motion
         //This was discovered pretty much by trial and error, and may be wrong too
         private const float SlopeScale = 1 / 30f;
 
-        private H3DFloatKeyFrameGroup GetKeyFrameGroup(List<GFMotKeyFrame> KFs, int CurveIndex)
+        private void SetKeyFrameGroup(List<GFMotKeyFrame> Source, H3DFloatKeyFrameGroup Target, int CurveIndex)
         {
-            H3DFloatKeyFrameGroup Output = new H3DFloatKeyFrameGroup
-            {
-                StartFrame        = 0,
-                EndFrame          = FramesCount,
-                CurveIndex        = (ushort)CurveIndex,
-                InterpolationType = H3DInterpolationType.Hermite
-            };
+            Target.Curve.StartFrame  = 0;
+            Target.Curve.EndFrame    = FramesCount;
+            Target.Curve.CurveIndex  = (ushort)CurveIndex;
+            Target.InterpolationType = H3DInterpolationType.Hermite;
 
-            foreach (GFMotKeyFrame KF in KFs)
+            foreach (GFMotKeyFrame KF in Source)
             {
-                Output.KeyFrames.Add(new H3DFloatKeyFrame(
+                Target.KeyFrames.Add(new KeyFrame(
                     KF.Frame,
                     KF.Value,
-                    KF.Slope * SlopeScale,
                     KF.Slope * SlopeScale));
             }
-
-            return Output;
         }
     }
 }

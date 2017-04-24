@@ -8,13 +8,13 @@ namespace SPICA.Formats.GFL2.Model.Material
 {
     public struct GFTextureCoord
     {
-        public uint Hash;
+        public uint   Hash;
         public string Name;
 
         public GFTextureMappingType MappingType;
 
         public Vector2 Scale;
-        public float Rotation;
+        public float   Rotation;
         public Vector2 Translation;
 
         public GFTextureWrap WrapU;

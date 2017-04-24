@@ -8,13 +8,13 @@ namespace SPICA.Formats.GFL2.Motion
         public string Name;
         public uint UnitIndex;
 
-        public List<GFMotKeyFrame> ScaleX;
-        public List<GFMotKeyFrame> ScaleY;
+        public readonly List<GFMotKeyFrame> ScaleX;
+        public readonly List<GFMotKeyFrame> ScaleY;
 
-        public List<GFMotKeyFrame> Rotation;
+        public readonly List<GFMotKeyFrame> Rotation;
 
-        public List<GFMotKeyFrame> TranslationX;
-        public List<GFMotKeyFrame> TranslationY;
+        public readonly List<GFMotKeyFrame> TranslationX;
+        public readonly List<GFMotKeyFrame> TranslationY;
 
         public GFMotUVTransform()
         {
@@ -33,22 +33,20 @@ namespace SPICA.Formats.GFL2.Motion
 
             UnitIndex = Reader.ReadUInt32();
 
-            uint Flags = Reader.ReadUInt32();
+            uint Flags  = Reader.ReadUInt32();
             uint Length = Reader.ReadUInt32();
 
-            for (int Elem = 0; Elem < 5; Elem++)
+            for (int ElemIndex = 0; ElemIndex < 5; ElemIndex++)
             {
-                List<GFMotKeyFrame> KeyFrames = GFMotKeyFrame.ReadList(Reader, Flags, FramesCount);
-
-                switch (Elem)
+                switch (ElemIndex)
                 {
-                    case 0: ScaleX       = KeyFrames; break;
-                    case 1: ScaleY       = KeyFrames; break;
+                    case 0: GFMotKeyFrame.SetList(ScaleX,       Reader, Flags, FramesCount); break;
+                    case 1: GFMotKeyFrame.SetList(ScaleY,       Reader, Flags, FramesCount); break;
 
-                    case 2: Rotation     = KeyFrames; break;
+                    case 2: GFMotKeyFrame.SetList(Rotation,     Reader, Flags, FramesCount); break;
 
-                    case 3: TranslationX = KeyFrames; break;
-                    case 4: TranslationY = KeyFrames; break;
+                    case 3: GFMotKeyFrame.SetList(TranslationX, Reader, Flags, FramesCount); break;
+                    case 4: GFMotKeyFrame.SetList(TranslationY, Reader, Flags, FramesCount); break;
                 }
 
                 Flags >>= 3;

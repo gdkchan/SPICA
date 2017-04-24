@@ -1,7 +1,9 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.Math3D;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+using SPICA.Serialization.Serializer;
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,11 +13,11 @@ namespace SPICA.Formats.CtrH3D.Animation
 {
     public class H3DAnimQuatTransform : ICustomSerialization
     {
-        private uint Flags;
+        private H3DAnimQuatTransformFlags Flags;
 
-        [Ignore] public List<Vector3>    Scales;
-        [Ignore] public List<Quaternion> Rotations;
-        [Ignore] public List<Vector3>    Translations;
+        [Ignore] public readonly List<Vector3>    Scales;
+        [Ignore] public readonly List<Quaternion> Rotations;
+        [Ignore] public readonly List<Vector3>    Translations;
 
         public bool HasScale       { get { return Scales.Count       > 0; } }
         public bool HasRotation    { get { return Rotations.Count    > 0; } }
@@ -32,21 +34,27 @@ namespace SPICA.Formats.CtrH3D.Animation
         {
             uint[] Addresses = new uint[3];
 
+            uint ConstantMask = (uint)H3DAnimQuatTransformFlags.IsScaleConstant;
+            uint NotExistMask = (uint)H3DAnimQuatTransformFlags.IsScaleInexistent;
+
             Addresses[0] = Deserializer.Reader.ReadUInt32();
             Addresses[1] = Deserializer.Reader.ReadUInt32();
             Addresses[2] = Deserializer.Reader.ReadUInt32();
 
-            for (int Elem = 0; Elem < 3; Elem++)
+            for (int ElemIndex = 0; ElemIndex < 3; ElemIndex++)
             {
-                if ((Flags & (0x20 >> Elem)) == 0)
+                bool Constant = ((uint)Flags & ConstantMask) != 0;
+                bool Exists   = ((uint)Flags & NotExistMask) == 0;
+
+                if (Exists)
                 {
-                    Deserializer.BaseStream.Seek(Addresses[Elem], SeekOrigin.Begin);
+                    Deserializer.BaseStream.Seek(Addresses[ElemIndex], SeekOrigin.Begin);
 
                     uint ElemFlags = 0;
-                    uint Address   = Addresses[Elem];
+                    uint Address   = Addresses[ElemIndex];
                     uint Count     = 1;
 
-                    if ((Flags & (4 >> Elem)) == 0)
+                    if (!Constant)
                     {
                         /* 
                          * gdkchan Note:
@@ -65,32 +73,101 @@ namespace SPICA.Formats.CtrH3D.Animation
 
                     for (int Index = 0; Index < Count; Index++)
                     {
-                        switch (Elem)
+                        switch (ElemIndex)
                         {
-                            case 0: Scales.Add(Deserializer.Deserialize<Vector3>()); break;
-                            case 1: Rotations.Add(Deserializer.Deserialize<Quaternion>()); break;
-                            case 2: Translations.Add(Deserializer.Deserialize<Vector3>()); break;
+                            case 0: Scales.Add(Deserializer.Reader.ReadVector3());       break;
+                            case 1: Rotations.Add(Deserializer.Reader.ReadQuaternion()); break;
+                            case 2: Translations.Add(Deserializer.Reader.ReadVector3()); break;
                         }
                     }
                 }
+
+                ConstantMask >>= 1;
+                NotExistMask >>= 1;
             }
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            throw new NotImplementedException();
+            Flags = 0;
+
+            uint ConstantMask = (uint)H3DAnimQuatTransformFlags.IsScaleConstant;
+            uint NotExistMask = (uint)H3DAnimQuatTransformFlags.IsScaleInexistent;
+
+            long DescPosition = Serializer.BaseStream.Position;
+            long DataPosition = DescPosition + 0x10;
+
+            for (int ElemIndex = 0; ElemIndex < 3; ElemIndex++)
+            {
+                IList Elem = null;
+
+                switch (ElemIndex)
+                {
+                    case 0: Elem = Scales;       break;
+                    case 1: Elem = Rotations;    break;
+                    case 2: Elem = Translations; break;
+                }
+
+                if (Elem.Count > 0)
+                {
+                    Serializer.BaseStream.Seek(DescPosition + 4 + ElemIndex * 4, SeekOrigin.Begin);
+
+                    Serializer.WritePointer((uint)DataPosition);
+
+                    Serializer.BaseStream.Seek(DataPosition, SeekOrigin.Begin);
+
+                    if (Elem.Count > 1)
+                    {
+                        Serializer.Writer.Write(0f); //Start Frame
+                        Serializer.Writer.Write((float)Elem.Count); //End Frame
+                        Serializer.Writer.Write(0u); //Flags?
+                        Serializer.Writer.Write(0u); //KeyFrames Ptr (Place Holder)
+                        Serializer.Writer.Write(0u); //KeyFrames Count (Place Holder)
+
+                        Serializer.Contents.Values.Add(new RefValue
+                        {
+                            Value     = Elem,
+                            Position  = Serializer.BaseStream.Position - 8,
+                            HasLength = true
+                        });
+                    }
+                    else
+                    {
+                        Flags |= (H3DAnimQuatTransformFlags)ConstantMask;
+
+                        Serializer.WriteValue(Elem[0]);
+                    }
+
+                    DataPosition = Serializer.BaseStream.Position;
+                }
+                else
+                {
+                    Flags |= (H3DAnimQuatTransformFlags)NotExistMask;
+                }
+
+                ConstantMask >>= 1;
+                NotExistMask >>= 1;
+            }
+
+            Serializer.BaseStream.Seek(DescPosition, SeekOrigin.Begin);
+
+            Serializer.Writer.Write((uint)Flags);
+
+            Serializer.BaseStream.Seek(DataPosition, SeekOrigin.Begin);
+
+            return true;
         }
 
-        private T GetFrameValue<T>(List<T> Elements, int Frame)
+        private T GetFrameValue<T>(List<T> Vector, int Frame)
         {
-            if (Elements.Count > 0)
+            if (Vector.Count > 0)
             {
                 if (Frame < 0)
-                    return Elements.First();
-                else if (Frame >= Elements.Count)
-                    return Elements.Last();
+                    return Vector.First();
+                else if (Frame >= Vector.Count)
+                    return Vector.Last();
                 else
-                    return Elements[Frame];
+                    return Vector[Frame];
             }
             else
             {

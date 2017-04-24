@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D
 {
@@ -15,26 +14,37 @@ namespace SPICA.Formats.CtrH3D
     {
         private string _Name;
 
-        [XmlAttribute]
         public string Name
         {
-            get { return _Name; }
-            set { _Name = value; }
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Name");
+                }
+
+                _Name = value;
+            }
         }
 
-        [XmlAttribute] public H3DMetaDataType Type;
+        public H3DMetaDataType Type;
 
-        [Ignore]
-        [XmlElement(Type = typeof(int))]
-        [XmlElement(Type = typeof(float))]
-        [XmlElement(Type = typeof(string))]
-        [XmlElement(Type = typeof(H3DBoundingBox))]
-        public List<object> Values;
+        [Ignore] public List<object> Values;
 
         public object this[int Index]
         {
-            get { return Values[Index]; }
-            set { Values[Index] = value; }
+            get
+            {
+                return Values[Index];
+            }
+            set
+            {
+                Values[Index] = value;
+            }
         }
 
         public H3DMetaDataValue(string Name, object Value)

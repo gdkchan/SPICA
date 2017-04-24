@@ -10,7 +10,8 @@ namespace SPICA.Formats.GFL2.Shader
     {
         public string Name;
 
-        public PICATexEnvStage[] TexEnvStages;
+        public readonly PICATexEnvStage[] TexEnvStages;
+
         public PICATexEnvColor TexEnvBufferColor;
 
         public GFFragShader()
@@ -74,6 +75,7 @@ namespace SPICA.Formats.GFL2.Shader
                     case PICARegister.GPUREG_TEXENV5_SOURCE:
                         TexEnvStages[Stage].Source = new PICATexEnvSource(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_OPERAND:
                     case PICARegister.GPUREG_TEXENV1_OPERAND:
                     case PICARegister.GPUREG_TEXENV2_OPERAND:
@@ -82,6 +84,7 @@ namespace SPICA.Formats.GFL2.Shader
                     case PICARegister.GPUREG_TEXENV5_OPERAND:
                         TexEnvStages[Stage].Operand = new PICATexEnvOperand(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_COMBINER:
                     case PICARegister.GPUREG_TEXENV1_COMBINER:
                     case PICARegister.GPUREG_TEXENV2_COMBINER:
@@ -90,6 +93,7 @@ namespace SPICA.Formats.GFL2.Shader
                     case PICARegister.GPUREG_TEXENV5_COMBINER:
                         TexEnvStages[Stage].Combiner = new PICATexEnvCombiner(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_COLOR:
                     case PICARegister.GPUREG_TEXENV1_COLOR:
                     case PICARegister.GPUREG_TEXENV2_COLOR:
@@ -98,6 +102,7 @@ namespace SPICA.Formats.GFL2.Shader
                     case PICARegister.GPUREG_TEXENV5_COLOR:
                         TexEnvStages[Stage].Color = new PICATexEnvColor(Param);
                         break;
+
                     case PICARegister.GPUREG_TEXENV0_SCALE:
                     case PICARegister.GPUREG_TEXENV1_SCALE:
                     case PICARegister.GPUREG_TEXENV2_SCALE:
@@ -107,17 +112,7 @@ namespace SPICA.Formats.GFL2.Shader
                         TexEnvStages[Stage].Scale = new PICATexEnvScale(Param);
                         break;
 
-                    case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER:
-                        TexEnvStages[1].UpdateColorBuffer = (Param & 0x100)  != 0;
-                        TexEnvStages[2].UpdateColorBuffer = (Param & 0x200)  != 0;
-                        TexEnvStages[3].UpdateColorBuffer = (Param & 0x400)  != 0;
-                        TexEnvStages[4].UpdateColorBuffer = (Param & 0x800)  != 0;
-
-                        TexEnvStages[1].UpdateAlphaBuffer = (Param & 0x1000) != 0;
-                        TexEnvStages[2].UpdateAlphaBuffer = (Param & 0x2000) != 0;
-                        TexEnvStages[3].UpdateAlphaBuffer = (Param & 0x4000) != 0;
-                        TexEnvStages[4].UpdateAlphaBuffer = (Param & 0x8000) != 0;
-                        break;
+                    case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER: PICATexEnvStage.SetUpdateBuffer(TexEnvStages, Param); break;
 
                     case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
                 }

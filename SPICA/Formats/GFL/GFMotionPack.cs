@@ -12,8 +12,14 @@ namespace SPICA.Formats.GFL
 
         public GFMotion this[int Index]
         {
-            get { return Animations[Index]; }
-            set { Animations[Index] = value; }
+            get
+            {
+                return Animations[Index];
+            }
+            set
+            {
+                Animations[Index] = value;
+            }
         }
 
         public int Count { get { return Animations.Count; } }

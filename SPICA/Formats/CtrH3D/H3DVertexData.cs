@@ -1,4 +1,5 @@
 ﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 using System;
 
@@ -6,8 +7,8 @@ namespace SPICA.Formats.CtrH3D
 {
     public struct H3DVertexData : ICustomSerialization
     {
-        public byte AttributesCount;
-        private byte Padding;
+        [Padding(2)] public byte AttributesCount;
+
         public ushort IndicesCount;
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)

@@ -1,4 +1,5 @@
-﻿using SPICA.Math3D;
+﻿using SPICA.Formats.Common;
+using SPICA.Math3D;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
@@ -11,122 +12,193 @@ namespace SPICA.Formats.CtrH3D.Animation
 {
     public class H3DFloatKeyFrameGroup : ICustomSerialization
     {
-        public float StartFrame;
-        public float EndFrame;
+        public H3DAnimCurve Curve;
 
-        public H3DLoopType PreRepeat;
-        public H3DLoopType PostRepeat;
+        [IfVersion(CmpOp.Gequal, 0x20)] public H3DInterpolationType   InterpolationType;
+        [IfVersion(CmpOp.Gequal, 0x20)] public H3DSegmentQuantization SegmentQuantization;
 
-        public ushort CurveIndex;
+        [IfVersion(CmpOp.Gequal, 0x20)] private ushort Count;
 
-        public H3DInterpolationType InterpolationType;
-        private H3DSegmentQuantization SegmentQuantization;
+        [IfVersion(CmpOp.Gequal, 0x20)] private float ValueScale;
+        [IfVersion(CmpOp.Gequal, 0x20)] private float ValueOffset;
+        [IfVersion(CmpOp.Gequal, 0x20)] private float FrameScale;
+        [IfVersion(CmpOp.Gequal, 0x20)] private float InvDuration;
 
-        private ushort Count;
-
-        private float ValueScale;
-        private float ValueOffset;
-        private float FrameScale;
-        private float InvDuration;
-
-        [Ignore] public List<H3DFloatKeyFrame> KeyFrames;
+        [Ignore] public readonly List<KeyFrame> KeyFrames;
 
         public bool HasData { get { return KeyFrames.Count > 0; } }
 
         public H3DFloatKeyFrameGroup()
         {
-            KeyFrames = new List<H3DFloatKeyFrame>();
+            KeyFrames = new List<KeyFrame>();
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
+            if (Deserializer.FileVersion < 0x20)
+            {
+                /*
+                 * Older version have a pointer within the curve data,
+                 * instead of storing it directly. So we read it below...
+                 */
+                Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
+
+                //We don't need this since it's already stored on Curve
+                float StartFrame = Deserializer.Reader.ReadSingle();
+                float EndFrame   = Deserializer.Reader.ReadSingle();
+
+                InterpolationType   = (H3DInterpolationType)Deserializer.Reader.ReadByte();
+                SegmentQuantization = (H3DSegmentQuantization)Deserializer.Reader.ReadByte();
+
+                Count = Deserializer.Reader.ReadUInt16();
+
+                InvDuration = Deserializer.Reader.ReadSingle();
+                ValueScale  = Deserializer.Reader.ReadSingle();
+                ValueOffset = Deserializer.Reader.ReadSingle();
+                FrameScale  = Deserializer.Reader.ReadSingle();
+            }
+
             Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
 
             for (int Index = 0; Index < Count; Index++)
             {
-                H3DFloatKeyFrame KeyFrame = new H3DFloatKeyFrame();
+                KeyFrame KF;
 
                 switch (SegmentQuantization)
                 {
-                    //Hermite
-                    case  H3DSegmentQuantization.Hermite128:
-                        KeyFrame.Frame = Deserializer.Reader.ReadSingle();
-                        KeyFrame.Value = Deserializer.Reader.ReadSingle();
-                        KeyFrame.InSlope = Deserializer.Reader.ReadSingle();
-                        KeyFrame.OutSlope = Deserializer.Reader.ReadSingle();
-                        break;
+                    case H3DSegmentQuantization.Hermite128:       KF = Deserializer.Reader.ReadHermite128();       break;
+                    case H3DSegmentQuantization.Hermite64:        KF = Deserializer.Reader.ReadHermite64();        break;
+                    case H3DSegmentQuantization.Hermite48:        KF = Deserializer.Reader.ReadHermite48();        break;
+                    case H3DSegmentQuantization.UnifiedHermite96: KF = Deserializer.Reader.ReadUnifiedHermite96(); break;
+                    case H3DSegmentQuantization.UnifiedHermite48: KF = Deserializer.Reader.ReadUnifiedHermite48(); break;
+                    case H3DSegmentQuantization.UnifiedHermite32: KF = Deserializer.Reader.ReadUnifiedHermite32(); break;
+                    case H3DSegmentQuantization.StepLinear64:     KF = Deserializer.Reader.ReadStepLinear64();     break;
+                    case H3DSegmentQuantization.StepLinear32:     KF = Deserializer.Reader.ReadStepLinear32();     break;
 
-                    case H3DSegmentQuantization.Hermite64:
-                        uint H64Value = Deserializer.Reader.ReadUInt32();
-
-                        KeyFrame.Frame = H64Value & 0xfff;
-                        KeyFrame.Value = H64Value >> 12;
-                        KeyFrame.InSlope = Deserializer.Reader.ReadInt16() / 256f;
-                        KeyFrame.OutSlope = Deserializer.Reader.ReadInt16() / 256f;
-                        break;
-
-                    case H3DSegmentQuantization.Hermite48:
-                        KeyFrame.Frame = Deserializer.Reader.ReadByte();
-                        KeyFrame.Value = Deserializer.Reader.ReadUInt16();
-
-                        int Slope0 = Deserializer.Reader.ReadByte();
-                        int Slope1 = Deserializer.Reader.ReadByte();
-                        int Slope2 = Deserializer.Reader.ReadByte();
-
-                        KeyFrame.InSlope = (((Slope0 | ((Slope1 & 0xf) << 8)) << 20) >> 20) / 32f;
-                        KeyFrame.OutSlope = ((((Slope1 >> 4) | (Slope2 << 4)) << 20) >> 20) / 32f;
-                        break;
-
-                    //Hermite (unified Slope)
-                    case H3DSegmentQuantization.UnifiedHermite96:
-                        KeyFrame.Frame = Deserializer.Reader.ReadSingle();
-                        KeyFrame.Value = Deserializer.Reader.ReadSingle();
-                        KeyFrame.InSlope = Deserializer.Reader.ReadSingle();
-                        KeyFrame.OutSlope = KeyFrame.InSlope;
-                        break;
-
-                    case H3DSegmentQuantization.UnifiedHermite48:
-                        KeyFrame.Frame = Deserializer.Reader.ReadUInt16() / 32f;
-                        KeyFrame.Value = Deserializer.Reader.ReadUInt16();
-                        KeyFrame.InSlope = Deserializer.Reader.ReadInt16() / 256f;
-                        KeyFrame.OutSlope = KeyFrame.InSlope;
-                        break;
-
-                    case H3DSegmentQuantization.UnifiedHermite32:
-                        KeyFrame.Frame = Deserializer.Reader.ReadByte();
-
-                        ushort UH32Value = Deserializer.Reader.ReadUInt16();
-                        byte HighSlope = Deserializer.Reader.ReadByte();
-
-                        KeyFrame.Value = UH32Value & 0xfff;
-                        KeyFrame.InSlope = ((((UH32Value >> 12) | (HighSlope << 4)) << 20) >> 20) / 32f;
-                        KeyFrame.OutSlope = KeyFrame.InSlope;
-                        break;
-
-                    //Step/Linear
-                    case H3DSegmentQuantization.StepLinear64:
-                        KeyFrame.Frame = Deserializer.Reader.ReadSingle();
-                        KeyFrame.Value = Deserializer.Reader.ReadSingle();
-                        break;
-
-                    case H3DSegmentQuantization.StepLinear32:
-                        uint SL32Value = Deserializer.Reader.ReadUInt32();
-
-                        KeyFrame.Frame = SL32Value & 0xfff;
-                        KeyFrame.Value = SL32Value >> 12;
-                        break;
+                    default: throw new InvalidOperationException($"Invalid Segment quantization {SegmentQuantization}!");
                 }
 
-                KeyFrame.Frame = (KeyFrame.Frame * FrameScale);
-                KeyFrame.Value = (KeyFrame.Value * ValueScale) + ValueOffset;
+                float OldVal = KF.Value;
 
-                KeyFrames.Add(KeyFrame);
+                KF.Frame = KF.Frame * FrameScale;
+                KF.Value = KF.Value * ValueScale + ValueOffset;
+
+                KeyFrames.Add(KF);
             }
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            throw new NotImplementedException();
+            if (HasData)
+            {
+                Count = (ushort)KeyFrames.Count;
+
+                float MinFrame = KeyFrames[0].Frame;
+                float MaxFrame = KeyFrames[0].Frame;
+                float MinValue = KeyFrames[0].Value;
+                float MaxValue = KeyFrames[0].Value;
+
+                for (int Index = 1; Index < Count; Index++)
+                {
+                    KeyFrame KF = KeyFrames[Index];
+
+                    if (KF.Frame < MinFrame) MinFrame = KF.Frame;
+                    if (KF.Frame > MaxFrame) MaxFrame = KF.Frame;
+                    if (KF.Value < MinValue) MinValue = KF.Value;
+                    if (KF.Value > MaxValue) MaxValue = KF.Value;
+                }
+
+                ValueScale  = MaxValue - MinValue;
+                ValueOffset = MinValue;
+                FrameScale  = MaxFrame - MinFrame;
+                InvDuration = 1f / Curve.EndFrame;
+
+                /*
+                 * Frame and Value quantization scales based on Segment quantization.
+                 * Different encoding modes have different amount of bits available for each field.
+                 */
+                const float q8  = 1f / 0xff;
+                const float q12 = 1f / 0xfff;
+                const float q16 = 1f / 0xffff;
+                const float q20 = 1f / 0xfffff;
+
+                switch (SegmentQuantization)
+                {
+                    case H3DSegmentQuantization.Hermite128:       FrameScale  = 1f;  ValueScale  = 1f;  break;
+                    case H3DSegmentQuantization.Hermite64:        FrameScale *= q12; ValueScale *= q20; break;
+                    case H3DSegmentQuantization.Hermite48:        FrameScale *= q8;  ValueScale *= q16; break;
+                    case H3DSegmentQuantization.UnifiedHermite96: FrameScale  = 1f;  ValueScale  = 1f;  break;
+                    case H3DSegmentQuantization.UnifiedHermite48: FrameScale  = 1f;  ValueScale *= q16; break;
+                    case H3DSegmentQuantization.UnifiedHermite32: FrameScale *= q8;  ValueScale *= q12; break;
+                    case H3DSegmentQuantization.StepLinear64:     FrameScale  = 1f;  ValueScale  = 1f;  break;
+                    case H3DSegmentQuantization.StepLinear32:     FrameScale *= q12; ValueScale *= q20; break;
+
+                    default: throw new InvalidOperationException($"Invalid Segment quantization {SegmentQuantization}!");
+                }
+
+                if (ValueScale == 1)
+                {
+                    /*
+                     * Quantizations were the value scale is not needed (like the ones that already stores the value
+                     * as float) will ignore the offset aswell, so we need to set to to zero.
+                     */
+                    ValueOffset = 0;
+                }
+
+                Serializer.WriteValue(Curve);
+
+                if (Serializer.FileVersion < 0x20)
+                {
+                    Serializer.WritePointer((uint)Serializer.BaseStream.Position + 4);
+
+                    Serializer.Writer.Write(Curve.StartFrame);
+                    Serializer.Writer.Write(Curve.EndFrame);
+                }
+
+                Serializer.Writer.Write((byte)InterpolationType);
+                Serializer.Writer.Write((byte)SegmentQuantization);
+                Serializer.Writer.Write(Count);
+
+                if (Serializer.FileVersion < 0x20)
+                {
+                    Serializer.Writer.Write(InvDuration);
+                }
+
+                Serializer.Writer.Write(ValueScale);
+                Serializer.Writer.Write(ValueOffset);
+                Serializer.Writer.Write(FrameScale);
+
+                if (Serializer.FileVersion >= 0x20)
+                {
+                    Serializer.Writer.Write(InvDuration);
+                }
+
+                Serializer.WritePointer((uint)Serializer.BaseStream.Position + 4);
+
+                foreach (KeyFrame Key in KeyFrames)
+                {
+                    KeyFrame KF = Key;
+
+                    KF.Frame = (KF.Frame / FrameScale);
+                    KF.Value = (KF.Value - ValueOffset) / ValueScale;                   
+
+                    switch (SegmentQuantization)
+                    {
+                        case H3DSegmentQuantization.Hermite128:       Serializer.Writer.WriteHermite128(KF);       break;
+                        case H3DSegmentQuantization.Hermite64:        Serializer.Writer.WriteHermite64(KF);        break;
+                        case H3DSegmentQuantization.Hermite48:        Serializer.Writer.WriteHermite48(KF);        break;
+                        case H3DSegmentQuantization.UnifiedHermite96: Serializer.Writer.WriteUnifiedHermite96(KF); break;
+                        case H3DSegmentQuantization.UnifiedHermite48: Serializer.Writer.WriteUnifiedHermite48(KF); break;
+                        case H3DSegmentQuantization.UnifiedHermite32: Serializer.Writer.WriteUnifiedHermite32(KF); break;
+                        case H3DSegmentQuantization.StepLinear64:     Serializer.Writer.WriteStepLinear64(KF);     break;
+                        case H3DSegmentQuantization.StepLinear32:     Serializer.Writer.WriteStepLinear32(KF);     break;
+                    }
+                }
+
+                while ((Serializer.BaseStream.Position & 3) != 0) Serializer.BaseStream.WriteByte(0);
+            }
+
+            return true;
         }
 
         internal static H3DFloatKeyFrameGroup ReadGroup(BinaryDeserializer Deserializer, bool Constant)
@@ -135,11 +207,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 
             if (Constant)
             {
-                FrameGrp.KeyFrames.Add(new H3DFloatKeyFrame
-                {
-                    Frame = 0,
-                    Value = Deserializer.Reader.ReadSingle()
-                });
+                FrameGrp.KeyFrames.Add(new KeyFrame(0, Deserializer.Reader.ReadSingle()));
             }
             else
             {
@@ -158,39 +226,37 @@ namespace SPICA.Formats.CtrH3D.Animation
             if (KeyFrames.Count == 0) return 0;
             if (KeyFrames.Count == 1) return KeyFrames[0].Value;
 
-            H3DFloatKeyFrame Left = KeyFrames.First();
-            H3DFloatKeyFrame Right = KeyFrames.Last();
+            KeyFrame LHS = KeyFrames.First();
+            KeyFrame RHS = KeyFrames.Last();
 
-            foreach (H3DFloatKeyFrame KF in KeyFrames)
+            foreach (KeyFrame KF in KeyFrames)
             {
-                if (KF.Frame <= Frame) Left = KF;
-                if (KF.Frame >= Frame && KF.Frame < Right.Frame) Right = KF;
+                if (KF.Frame <= Frame) LHS = KF;
+                if (KF.Frame >= Frame && KF.Frame < RHS.Frame) RHS = KF;
             }
 
-            if (Left.Frame != Right.Frame)
+            if (LHS.Frame != RHS.Frame)
             {
-                float FrameDiff = Frame - Left.Frame;
-                float Weight = FrameDiff / (Right.Frame - Left.Frame);
+                float FrameDiff = Frame - LHS.Frame;
+                float Weight = FrameDiff / (RHS.Frame - LHS.Frame);
 
                 switch (InterpolationType)
                 {
-                    case H3DInterpolationType.Step: return Left.Value;
-                    case H3DInterpolationType.Linear: return Interpolation.Lerp(Left.Value, Right.Value, Weight);
+                    case H3DInterpolationType.Step: return LHS.Value;
+                    case H3DInterpolationType.Linear: return Interpolation.Lerp(LHS.Value, RHS.Value, Weight);
                     case H3DInterpolationType.Hermite:
                         return Interpolation.Herp(
-                            Left.Value,
-                            Right.Value,
-                            Left.OutSlope,
-                            Right.InSlope,
+                            LHS.Value,    RHS.Value,
+                            LHS.OutSlope, RHS.InSlope,
                             FrameDiff,
                             Weight);
 
-                    default: throw new ArgumentException("Invalid Interpolation type!");
+                    default: throw new InvalidOperationException($"Invalid Interpolation type {InterpolationType}!");
                 }
             }
             else
             {
-                return Left.Value;
+                return LHS.Value;
             }
         }
     }

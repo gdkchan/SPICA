@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
 namespace SPICA.Formats.GFL2.Motion
 {
@@ -6,15 +7,16 @@ namespace SPICA.Formats.GFL2.Motion
     {
         public string Name;
 
-        public bool[] Values;
+        public readonly List<bool> Values;
 
-        public GFMotBoolean() { }
+        public GFMotBoolean()
+        {
+            Values = new List<bool>();
+        }
 
-        public GFMotBoolean(BinaryReader Reader, string Name, int Count)
+        public GFMotBoolean(BinaryReader Reader, string Name, int Count) : this()
         {
             this.Name = Name;
-
-            Values = new bool[Count];
 
             byte Value = 0;
 
@@ -24,7 +26,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                 if (Bit == 0) Value = Reader.ReadByte();
 
-                Values[Index] = (Value & (1 << Bit)) != 0;
+                Values.Add((Value & (1 << Bit)) != 0);
             }
         }
     }

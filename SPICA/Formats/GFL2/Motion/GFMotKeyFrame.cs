@@ -5,7 +5,7 @@ namespace SPICA.Formats.GFL2.Motion
 {
     public struct GFMotKeyFrame
     {
-        public int Frame;
+        public int   Frame;
         public float Value;
         public float Slope;
 
@@ -16,15 +16,14 @@ namespace SPICA.Formats.GFL2.Motion
             this.Slope = Slope;
         }
 
-        public static List<GFMotKeyFrame> ReadList(BinaryReader Reader, uint Flags, uint FramesCount)
+        public static void SetList(List<GFMotKeyFrame> KeyFrames, BinaryReader Reader, uint Flags, uint FramesCount)
         {
-            List<GFMotKeyFrame> KeyFrames = new List<GFMotKeyFrame>();
-
             switch (Flags & 7)
             {
                 case 3: KeyFrames.Add(new GFMotKeyFrame(0, Reader.ReadSingle(), 0)); break; //Constant
 
-                case 4: //Key Frame list
+                //Key Frame list
+                case 4: 
                 case 5:
                     uint KeyFramesCount = Reader.ReadUInt32();
 
@@ -32,7 +31,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                     for (int Index = 0; Index < KeyFramesCount; Index++)
                     {
-                        if (FramesCount > byte.MaxValue)
+                        if (FramesCount > 0xff)
                             Frames[Index] = Reader.ReadUInt16();
                         else
                             Frames[Index] = Reader.ReadByte();
@@ -66,16 +65,14 @@ namespace SPICA.Formats.GFL2.Motion
                             KeyFrames.Add(new GFMotKeyFrame
                             {
                                 Frame = Frames[Index],
-                                Value = (Reader.ReadUInt16() / (float)ushort.MaxValue) * ValueScale + ValueOffset,
-                                Slope = (Reader.ReadUInt16() / (float)ushort.MaxValue) * SlopeScale + SlopeOffset
+                                Value = (Reader.ReadUInt16() / (float)0xffff) * ValueScale + ValueOffset,
+                                Slope = (Reader.ReadUInt16() / (float)0xffff) * SlopeScale + SlopeOffset
                             });
                         }
                     }
 
                     break;
             }
-
-            return KeyFrames;
         }
     }
 }

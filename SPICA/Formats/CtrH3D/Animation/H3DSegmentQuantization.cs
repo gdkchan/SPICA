@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.CtrH3D.Animation
 {
-    enum H3DSegmentQuantization : byte
+    public enum H3DSegmentQuantization : byte
     {
         Hermite128,
         Hermite64,

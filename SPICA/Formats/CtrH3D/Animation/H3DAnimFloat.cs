@@ -1,35 +1,29 @@
 ﻿using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
-using System;
-
 namespace SPICA.Formats.CtrH3D.Animation
 {
     public class H3DAnimFloat : ICustomSerialization
     {
-        private uint Flags;
+        [Ignore] private H3DFloatKeyFrameGroup _Value;
 
-        [Ignore] public H3DFloatKeyFrameGroup Value;
+        public H3DFloatKeyFrameGroup Value { get { return _Value; } }
 
         public H3DAnimFloat()
         {
-            Value = new H3DFloatKeyFrameGroup();
+            _Value = new H3DFloatKeyFrameGroup();
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            bool Constant = (Flags & 0x1) != 0;
-            bool Exists = (Flags & 0x100) == 0;
-
-            if (Exists)
-            {
-                Value = H3DFloatKeyFrameGroup.ReadGroup(Deserializer, Constant);
-            }
+            H3DAnimVector.SetVector(Deserializer, _Value);
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            throw new NotImplementedException();
+            H3DAnimVector.WriteVector(Serializer, _Value);
+
+            return true;
         }
     }
 }

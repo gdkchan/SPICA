@@ -24,7 +24,7 @@ namespace SPICA.Formats.Generic.COLLADA
             input.Add(new DAEInput
             {
                 semantic = semantic,
-                source = source
+                source   = source
             });
         }
     }
@@ -44,9 +44,9 @@ namespace SPICA.Formats.Generic.COLLADA
             input.Add(new DAEInputOffset
             {
                 semantic = semantic,
-                source = source,
-                offset = offset,
-                set = set
+                source   = source,
+                offset   = offset,
+                set      = set
             });
         }
 

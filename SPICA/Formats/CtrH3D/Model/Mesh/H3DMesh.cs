@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.Common;
-using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
@@ -19,33 +18,59 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
     public class H3DMesh : ICustomSerialization, ICustomSerializeCmd
     {
         public ushort MaterialIndex;
-        private byte Flags;
-        private byte Padding;
+
+        [Padding(2)] private byte Flags;
+
         public ushort NodeIndex;
+
         private ushort Key;
 
         public H3DMeshType Type
         {
-            get { return (H3DMeshType)BitUtils.GetBits(Flags, 0, 2); }
-            set { Flags = BitUtils.SetBits(Flags, (uint)value, 0, 2); }
+            get
+            {
+                return (H3DMeshType)BitUtils.GetBits(Flags, 0, 2);
+            }
+            set
+            {
+                Flags = BitUtils.SetBits(Flags, (uint)value, 0, 2);
+            }
         }
 
         public H3DMeshSkinning Skinning
         {
-            get { return (H3DMeshSkinning)BitUtils.GetBits(Flags, 2, 2); }
-            set { Flags = BitUtils.SetBits(Flags, (uint)value, 2, 2); }
+            get
+            {
+                return (H3DMeshSkinning)BitUtils.GetBits(Flags, 2, 2);
+            }
+            set
+            {
+                Flags = BitUtils.SetBits(Flags, (uint)value, 2, 2);
+            }
         }
 
         public uint Priority
         {
-            get { return BitUtils.GetBits(Key, 0, 8); }
-            set { Key = BitUtils.SetBits(Key, value, 0, 8); }
+            get
+            {
+                return BitUtils.GetBits(Key, 0, 8);
+            }
+            set
+            {
+                Key = BitUtils.SetBits(Key, value, 0, 8);
+            }
         }
 
         public uint Layer
         {
-            get { return BitUtils.GetBits(Key, 8, 2); }
-            set { Key = BitUtils.SetBits(Key, value, 8, 2); }
+            get
+            {
+                return BitUtils.GetBits(Key, 8, 2);
+            }
+            set
+            {
+                Key = BitUtils.SetBits(Key, value, 8, 2);
+            }
         }
 
         private uint[] EnableCommands;
@@ -71,6 +96,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         public H3DMesh()
         {
             SubMeshes = new List<H3DSubMesh>();
+
+            UserDefinedAddress = 0; //SBZ, set by program on 3DS
         }
 
         public H3DMesh(IEnumerable<PICAVertex> Vertices, PICAAttribute[] Attributes, ushort[] Indices)
@@ -138,15 +165,15 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         {
             PICACommandReader Reader = new PICACommandReader(EnableCommands);
 
-            uint BufferAddress = 0;
-            ulong BufferFormats = 0;
-            ulong BufferAttributes = 0;
+            uint  BufferAddress     = 0;
+            ulong BufferFormats     = 0;
+            ulong BufferAttributes  = 0;
             ulong BufferPermutation = 0;
-            int AttributesCount = 0;
-            int AttributesTotal = 0;
+            int   AttributesCount   = 0;
+            int   AttributesTotal   = 0;
 
             int UniformIndex = 0;
-            int FixedIndex = 0;
+            int FixedIndex   = 0;
 
             Vector4[] Uniform = new Vector4[96];
 
@@ -218,22 +245,22 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                 {
                     FixedAttributes[Index - AttributesCount] = new PICAFixedAttribute
                     {
-                        Name = (PICAAttributeName)((BufferPermutation >> Index * 4) & 0xf),
+                        Name  = (PICAAttributeName)((BufferPermutation >> Index * 4) & 0xf),
                         Value = Fixed[Index]
                     };
                 }
                 else
                 {
                     int PermutationIdx = (int)((BufferAttributes >> Index * 4) & 0xf);
-                    int AttributeName = (int)((BufferPermutation >> PermutationIdx * 4) & 0xf);
-                    int AttributeFmt = (int)((BufferFormats >> PermutationIdx * 4) & 0xf);
+                    int AttributeName  = (int)((BufferPermutation >> PermutationIdx * 4) & 0xf);
+                    int AttributeFmt   = (int)((BufferFormats >> PermutationIdx * 4) & 0xf);
 
                     PICAAttribute Attrib = new PICAAttribute
                     {
-                        Name = (PICAAttributeName)AttributeName,
-                        Format = (PICAAttributeFormat)(AttributeFmt & 3),
+                        Name     = (PICAAttributeName)AttributeName,
+                        Format   = (PICAAttributeFormat)(AttributeFmt & 3),
                         Elements = (AttributeFmt >> 2) + 1,
-                        Scale = 1
+                        Scale    = 1
                     };
 
                     switch (Attrib.Name)
@@ -263,6 +290,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
 
             BufferCount++;
+
             PositionOffset = Uniform[6];
 
             Deserializer.BaseStream.Seek(BufferAddress, SeekOrigin.Begin);
@@ -397,7 +425,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                 Serializer.RawDataVtx.Values.Add(new RefValue
                 {
-                    Value = RawBuffer,
+                    Value    = RawBuffer,
                     Position = Position + 0x30
                 });
 

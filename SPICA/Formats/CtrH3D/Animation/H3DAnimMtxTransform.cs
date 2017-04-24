@@ -5,17 +5,16 @@ using System.Linq;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    class H3DAnimMtxTransform
+    public class H3DAnimMtxTransform
     {
-        public float StartFrame;
-        public float EndFrame;
+        public H3DAnimCurve Curve;
 
-        public H3DLoopType PreRepeat;
-        public H3DLoopType PostRepeat;
+        public readonly List<Matrix3x4> Frames;
 
-        public ushort CurveIndex;
-
-        public List<Matrix3x4> Frames;
+        public H3DAnimMtxTransform()
+        {
+            Frames = new List<Matrix3x4>();
+        }
 
         public Matrix3x4 GetTransform(int Frame)
         {

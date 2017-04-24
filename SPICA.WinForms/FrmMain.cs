@@ -1,6 +1,7 @@
-﻿using OpenTK;
+using OpenTK;
 using OpenTK.Graphics;
 
+using SPICA.Formats;
 using SPICA.Formats.CtrH3D;
 using SPICA.Renderer;
 using SPICA.WinForms.Formats;
@@ -12,7 +13,6 @@ using SPICA.WinForms.Properties;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using SPICA.Formats;
 
 namespace SPICA.WinForms
 {
@@ -205,7 +205,7 @@ namespace SPICA.WinForms
 
         private void ToolButtonMerge_Click(object sender, EventArgs e)
         {
-            Open(true);
+            Open(Scene != null);
         }
 
         private void ToolButtonSave_Click(object sender, EventArgs e)

@@ -25,7 +25,7 @@ namespace SPICA.Serialization
         public struct ObjectInfo
         {
             public uint Position;
-            public int Length;
+            public int  Length;
 
             public void SetEnd(long Position)
             {
@@ -36,7 +36,7 @@ namespace SPICA.Serialization
         public class Section
         {
             public List<RefValue> Values;
-            public ObjectInfo Info;
+            public ObjectInfo     Info;
 
             public Section()
             {
@@ -256,9 +256,9 @@ namespace SPICA.Serialization
 
         private void WriteValue(RefValue Reference)
         {
-            FieldInfo Info = Reference.Info;
-            object Value = Reference.Value;
-            bool Range = Info?.IsDefined(typeof(RangeAttribute)) ?? false;
+            FieldInfo Info  = Reference.Info;
+            object    Value = Reference.Value;
+            bool      Range = Info?.IsDefined(typeof(RangeAttribute)) ?? false;
 
             if (Value != null && (!(Value is IList) || ((IList)Value).Count > 0 || Range))
             {
@@ -297,7 +297,7 @@ namespace SPICA.Serialization
             }
         }
 
-        private void WritePointer(uint Pointer)
+        public void WritePointer(uint Pointer)
         {
             Pointers.Add(BaseStream.Position);
             Writer.Write(Pointer);
@@ -308,7 +308,7 @@ namespace SPICA.Serialization
             ObjectInfo Output = new ObjectInfo
             {
                 Position = (uint)BaseStream.Position,
-                Length = 0
+                Length   = 0
             };
 
             if (ObjPointers.ContainsKey(Value))
@@ -318,8 +318,8 @@ namespace SPICA.Serialization
             else if (Value is IList)
             {
                 uint StartPos = 0;
-                int EndPos = 0;
-                int Matches = 0;
+                int  EndPos   = 0;
+                int  Matches  = 0;
 
                 foreach (object Elem in ((IList)Value))
                 {
@@ -345,7 +345,7 @@ namespace SPICA.Serialization
             return Output;
         }
 
-        public void WriteObject(object Value)
+        private void WriteObject(object Value)
         {
             Type ValueType = Value.GetType();
 
@@ -358,13 +358,7 @@ namespace SPICA.Serialization
 
             foreach (FieldInfo Info in ValueType.GetFields(Binding))
             {
-                if (Info.IsDefined(typeof(IfVersionGEAttribute)) && FileVersion <
-                    Info.GetCustomAttribute<IfVersionGEAttribute>().Version)
-                    continue;
-
-                if (Info.IsDefined(typeof(IfVersionLAttribute)) && FileVersion >=
-                    Info.GetCustomAttribute<IfVersionLAttribute>().Version)
-                    continue;
+                if (!Info.GetCustomAttribute<IfVersionAttribute>()?.Compare(FileVersion) ?? false) continue;
 
                 if (!(
                     Info.IsDefined(typeof(IgnoreAttribute)) ||
@@ -374,7 +368,7 @@ namespace SPICA.Serialization
 
                     bool Inline;
 
-                    Inline = Info.IsDefined(typeof(InlineAttribute));
+                    Inline  = Info.IsDefined(typeof(InlineAttribute));
                     Inline |= Type.IsDefined(typeof(InlineAttribute));
 
                     if (Type.IsValueType || Type.IsEnum || Inline)
@@ -411,6 +405,13 @@ namespace SPICA.Serialization
                         AddReference(Type, Ref);
 
                         Skip((HasLength ? 8 : 4) + (HasTwoPtr ? 4 : 0));
+                    }
+
+                    if (Info.IsDefined(typeof(PaddingAttribute)))
+                    {
+                        int Size = Info.GetCustomAttribute<PaddingAttribute>().Size;
+
+                        while ((BaseStream.Position % Size) != 0) BaseStream.WriteByte(0);
                     }
                 }
             }

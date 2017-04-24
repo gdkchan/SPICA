@@ -29,11 +29,6 @@ namespace SPICA.WinForms.GUI.Animation
                 {
                     _Model.SkeletalAnim.CopyState(OldModel.SkeletalAnim);
                     _Model.MaterialAnim.CopyState(OldModel.MaterialAnim);
-
-                    switch (Type)
-                    {
-
-                    }
                 }
             }
         }

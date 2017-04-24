@@ -16,9 +16,9 @@ namespace SPICA.Formats.MTFramework.Model
 {
     class MTModel
     {
-        public readonly List<MTMaterial>    Materials;
-        public readonly List<MTMesh>        Meshes;
-        public readonly List<MTBone>        Skeleton;
+        public readonly List<MTMaterial> Materials;
+        public readonly List<MTMesh>     Meshes;
+        public readonly List<MTBone>     Skeleton;
 
         public Vector4 BoundingSphere;
         public Vector4 BoundingBoxMin;
@@ -168,6 +168,7 @@ namespace SPICA.Formats.MTFramework.Model
             H3DModel Model = new H3DModel();
 
             Model.MeshNodesTree = new PatriciaTree();
+
             Model.Flags = BoneIndicesGroups.Length > 0 ? H3DModelFlags.HasSkeleton : 0;
             Model.Name = "Model";
 
@@ -207,21 +208,11 @@ namespace SPICA.Formats.MTFramework.Model
                     Attributes    = Mesh.Attributes
                 };
 
-                H3DSubMesh SM = new H3DSubMesh();
+                byte[] BoneIndices = BoneIndicesGroups[Mesh.BoneIndicesIndex];
 
-                if ((Model.Flags & H3DModelFlags.HasSkeleton) != 0)
+                if ((Model.Flags & H3DModelFlags.HasSkeleton) != 0 && BoneIndices.Length > 0)
                 {
-                    SM.Skinning = H3DSubMeshSkinning.Smooth;
                     M.Skinning  = H3DMeshSkinning.Smooth;
-
-                    SM.BoneIndicesCount = (ushort)BoneIndicesGroups[Mesh.BoneIndicesIndex].Length;
-
-                    SM.BoneIndices = new ushort[SM.BoneIndicesCount];
-
-                    for (int i = 0; i < SM.BoneIndicesCount; i++)
-                    {
-                        SM.BoneIndices[i] = BoneIndicesGroups[Mesh.BoneIndicesIndex][i];
-                    }
 
                     PICAVertex[] Vertices = M.ToVertices();
 
@@ -237,7 +228,7 @@ namespace SPICA.Formats.MTFramework.Model
 
                             WeightSum += Vtx.Weights[i];
 
-                            int bi = SM.BoneIndices[Vtx.Indices[i]];
+                            int bi = BoneIndicesGroups[Mesh.BoneIndicesIndex][Vtx.Indices[i]];
 
                             Vector4 Trans = Vector4.Zero;
 
@@ -263,12 +254,89 @@ namespace SPICA.Formats.MTFramework.Model
                         Vtx.Position = Position;
                     }
 
+                    /*
+                     * Removes unused bone from bone indices list, also splits sub meshes on exceeding bones if
+                     * current Mesh uses more than 20 (BCH only supports up to 20).
+                     */
+                    Queue<ushort> IndicesQueue = new Queue<ushort>(Mesh.Indices);
+
+                    while (IndicesQueue.Count > 0)
+                    {
+                        int Count = IndicesQueue.Count / 3;
+
+                        List<ushort> Indices = new List<ushort>();
+                        List<int>    Bones   = new List<int>();
+
+                        while (Count-- > 0)
+                        {
+                            ushort i0 = IndicesQueue.Dequeue();
+                            ushort i1 = IndicesQueue.Dequeue();
+                            ushort i2 = IndicesQueue.Dequeue();
+
+                            List<int> TempBones = new List<int>(12);
+
+                            for (int j = 0; j < 4; j++)
+                            {
+                                int b0 = Vertices[i0].Indices[j];
+                                int b1 = Vertices[i1].Indices[j];
+                                int b2 = Vertices[i2].Indices[j];
+
+                                if (!(Bones.Contains(b0) || TempBones.Contains(b0))) TempBones.Add(b0);
+                                if (!(Bones.Contains(b1) || TempBones.Contains(b1))) TempBones.Add(b1);
+                                if (!(Bones.Contains(b2) || TempBones.Contains(b2))) TempBones.Add(b2);
+                            }
+
+                            if (Bones.Count + TempBones.Count > 20)
+                            {
+                                IndicesQueue.Enqueue(i0);
+                                IndicesQueue.Enqueue(i1);
+                                IndicesQueue.Enqueue(i2);
+                            }
+                            else
+                            {
+                                Indices.Add(i0);
+                                Indices.Add(i1);
+                                Indices.Add(i2);
+
+                                Bones.AddRange(TempBones);
+                            }
+                        }
+
+                        H3DSubMesh SM = new H3DSubMesh();
+
+                        SM.Skinning = H3DSubMeshSkinning.Smooth;
+                        SM.Indices  = Indices.ToArray();
+                        SM.BoneIndicesCount = (ushort)Bones.Count;
+
+                        for (int i = 0; i < Bones.Count; i++)
+                        {
+                            SM.BoneIndices[i] = BoneIndices[Bones[i]];
+                        }
+
+                        bool[] Visited = new bool[Vertices.Length];
+
+                        foreach (ushort i in Indices)
+                        {
+                            if (!Visited[i])
+                            {
+                                Visited[i] = true;
+
+                                Vertices[i].Indices[0] = Bones.IndexOf(Vertices[i].Indices[0]);
+                                Vertices[i].Indices[1] = Bones.IndexOf(Vertices[i].Indices[1]);
+                                Vertices[i].Indices[2] = Bones.IndexOf(Vertices[i].Indices[2]);
+                                Vertices[i].Indices[3] = Bones.IndexOf(Vertices[i].Indices[3]); 
+                            }
+                        }
+
+                        M.SubMeshes.Add(SM);
+                    }
+
                     M.RawBuffer = VerticesConverter.GetBuffer(Vertices, M.Attributes);
                 }
-
-                SM.Indices = Mesh.Indices;
-
-                M.SubMeshes.Add(SM);
+                else
+                {
+                    M.SubMeshes.Add(new H3DSubMesh { Indices = Mesh.Indices });
+                }
 
                 Model.AddMesh(M, 0, Mesh.RenderPriority);
 
@@ -276,8 +344,6 @@ namespace SPICA.Formats.MTFramework.Model
 
                 Model.MeshNodesVisibility.Add(true);
             }
-
-            Model.Skeleton = new PatriciaList<H3DBone>();
 
             int BoneIndex = 0;
 

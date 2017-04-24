@@ -84,7 +84,7 @@ namespace SPICA.Renderer.Animation
 
                 if (FrameSkeleton[b].HasMtxTransform) continue;
 
-                bool ScaleCompensate = (Skeleton[i].Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
+                bool ScaleCompensate = Skeleton[i].IsSegmentScaleCompensate;
 
                 Output[i] = Matrix4.CreateScale(FrameSkeleton[b].Scale);
 

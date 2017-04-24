@@ -1,104 +1,170 @@
 ﻿using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+using SPICA.Serialization.Serializer;
 
-using System;
 using System.IO;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
     public class H3DAnimTransform : ICustomSerialization
     {
-        private uint Flags;
+        private H3DAnimTransformFlags Flags;
 
-        [Ignore] public H3DFloatKeyFrameGroup ScaleX;
-        [Ignore] public H3DFloatKeyFrameGroup ScaleY;
-        [Ignore] public H3DFloatKeyFrameGroup ScaleZ;
+        [Ignore] private H3DFloatKeyFrameGroup _ScaleX;
+        [Ignore] private H3DFloatKeyFrameGroup _ScaleY;
+        [Ignore] private H3DFloatKeyFrameGroup _ScaleZ;
 
-        [Ignore] public H3DFloatKeyFrameGroup RotationX;
-        [Ignore] public H3DFloatKeyFrameGroup RotationY;
-        [Ignore] public H3DFloatKeyFrameGroup RotationZ;
+        [Ignore] private H3DFloatKeyFrameGroup _RotationX;
+        [Ignore] private H3DFloatKeyFrameGroup _RotationY;
+        [Ignore] private H3DFloatKeyFrameGroup _RotationZ;
 
-        [Ignore] public H3DFloatKeyFrameGroup TranslationX;
-        [Ignore] public H3DFloatKeyFrameGroup TranslationY;
-        [Ignore] public H3DFloatKeyFrameGroup TranslationZ;
+        [Ignore] private H3DFloatKeyFrameGroup _TranslationX;
+        [Ignore] private H3DFloatKeyFrameGroup _TranslationY;
+        [Ignore] private H3DFloatKeyFrameGroup _TranslationZ;
+
+        public H3DFloatKeyFrameGroup ScaleX       { get { return _ScaleX;       } }
+        public H3DFloatKeyFrameGroup ScaleY       { get { return _ScaleY;       } }
+        public H3DFloatKeyFrameGroup ScaleZ       { get { return _ScaleZ;       } }
+
+        public H3DFloatKeyFrameGroup RotationX    { get { return _RotationX;    } }
+        public H3DFloatKeyFrameGroup RotationY    { get { return _RotationY;    } }
+        public H3DFloatKeyFrameGroup RotationZ    { get { return _RotationZ;    } }
+
+        public H3DFloatKeyFrameGroup TranslationX { get { return _TranslationX; } }
+        public H3DFloatKeyFrameGroup TranslationY { get { return _TranslationY; } }
+        public H3DFloatKeyFrameGroup TranslationZ { get { return _TranslationZ; } }
 
         public H3DAnimTransform()
         {
-            ScaleX       = new H3DFloatKeyFrameGroup();
-            ScaleY       = new H3DFloatKeyFrameGroup();
-            ScaleZ       = new H3DFloatKeyFrameGroup();
+            _ScaleX       = new H3DFloatKeyFrameGroup();
+            _ScaleY       = new H3DFloatKeyFrameGroup();
+            _ScaleZ       = new H3DFloatKeyFrameGroup();
 
-            RotationX    = new H3DFloatKeyFrameGroup();
-            RotationY    = new H3DFloatKeyFrameGroup();
-            RotationZ    = new H3DFloatKeyFrameGroup();
+            _RotationX    = new H3DFloatKeyFrameGroup();
+            _RotationY    = new H3DFloatKeyFrameGroup();
+            _RotationZ    = new H3DFloatKeyFrameGroup();
 
-            TranslationX = new H3DFloatKeyFrameGroup();
-            TranslationY = new H3DFloatKeyFrameGroup();
-            TranslationZ = new H3DFloatKeyFrameGroup();
+            _TranslationX = new H3DFloatKeyFrameGroup();
+            _TranslationY = new H3DFloatKeyFrameGroup();
+            _TranslationZ = new H3DFloatKeyFrameGroup();
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             long Position = Deserializer.BaseStream.Position;
 
-            uint NotExistMask = 0x10000;
-            uint ConstantMask = 0x40;
+            uint ConstantMask = (uint)H3DAnimTransformFlags.IsScaleXConstant;
+            uint NotExistMask = (uint)H3DAnimTransformFlags.IsScaleXInexistent;
 
-            for (int Elem = 0; Elem < 3; Elem++)
+            for (int ElemIndex = 0; ElemIndex < 9; ElemIndex++)
             {
-                for (int Axis = 0; Axis < 3; Axis++)
+                Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
+
+                Position += 4;
+
+                bool Constant = ((uint)Flags & ConstantMask) != 0;
+                bool Exists   = ((uint)Flags & NotExistMask) == 0;
+
+                if (Exists)
                 {
-                    Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
+                    H3DFloatKeyFrameGroup FrameGrp = H3DFloatKeyFrameGroup.ReadGroup(Deserializer, Constant);
 
-                    Position += 4;
-
-                    bool Constant = (Flags & ConstantMask) != 0;
-                    bool Exists = (Flags & NotExistMask) == 0;
-
-                    if (Exists)
+                    switch (ElemIndex)
                     {
-                        H3DFloatKeyFrameGroup FrameGrp = H3DFloatKeyFrameGroup.ReadGroup(Deserializer, Constant);
+                        case 0: _ScaleX       = FrameGrp; break;
+                        case 1: _ScaleY       = FrameGrp; break;
+                        case 2: _ScaleZ       = FrameGrp; break;
 
-                        switch (Elem)
-                        {
-                            case 0:
-                                switch (Axis)
-                                {
-                                    case 0: ScaleX = FrameGrp; break;
-                                    case 1: ScaleY = FrameGrp; break;
-                                    case 2: ScaleZ = FrameGrp; break;
-                                }
-                                break;
-                            case 1:
-                                switch (Axis)
-                                {
-                                    case 0: RotationX = FrameGrp; break;
-                                    case 1: RotationY = FrameGrp; break;
-                                    case 2: RotationZ = FrameGrp; break;
-                                }
-                                break;
-                            case 2:
-                                switch (Axis)
-                                {
-                                    case 0: TranslationX = FrameGrp; break;
-                                    case 1: TranslationY = FrameGrp; break;
-                                    case 2: TranslationZ = FrameGrp; break;
-                                }
-                                break;
-                        }
+                        case 3: _RotationX    = FrameGrp; break;
+                        case 4: _RotationY    = FrameGrp; break;
+                        case 5: _RotationZ    = FrameGrp; break;
+
+                        case 6: _TranslationX = FrameGrp; break;
+                        case 7: _TranslationY = FrameGrp; break;
+                        case 8: _TranslationZ = FrameGrp; break;
                     }
-
-                    NotExistMask <<= 1;
-                    ConstantMask <<= 1;
                 }
 
-                if (Elem == 1) ConstantMask <<= 1; //Rotation W
+                ConstantMask <<= 1;
+                NotExistMask <<= 1;
+                
+                if (ConstantMask == (uint)H3DAnimTransformFlags.IsRotationWConstant)
+                {
+                    ConstantMask <<= 1;
+                }
             }
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            throw new NotImplementedException();
+            uint ConstantMask = (uint)H3DAnimTransformFlags.IsScaleXConstant;
+            uint NotExistMask = (uint)H3DAnimTransformFlags.IsScaleXInexistent;
+
+            long Position = Serializer.BaseStream.Position;
+
+            Flags = 0;
+
+            Serializer.Writer.Write(0u);
+
+            for (int ElemIndex = 0; ElemIndex < 9; ElemIndex++)
+            {
+                H3DFloatKeyFrameGroup FrameGrp = null;
+
+                switch (ElemIndex)
+                {
+                    case 0: FrameGrp = _ScaleX;       break;
+                    case 1: FrameGrp = _ScaleY;       break;
+                    case 2: FrameGrp = _ScaleZ;       break;
+
+                    case 3: FrameGrp = _RotationX;    break;
+                    case 4: FrameGrp = _RotationY;    break;
+                    case 5: FrameGrp = _RotationZ;    break;
+
+                    case 6: FrameGrp = _TranslationX; break;
+                    case 7: FrameGrp = _TranslationY; break;
+                    case 8: FrameGrp = _TranslationZ; break;
+                }
+
+                if (FrameGrp.KeyFrames.Count == 1)
+                {
+                    Flags |= (H3DAnimTransformFlags)ConstantMask;
+
+                    Serializer.Writer.Write(FrameGrp.KeyFrames[0].Value);
+                }
+                else
+                {
+                    if (FrameGrp.KeyFrames.Count > 1)
+                    {
+                        Serializer.Contents.Values.Add(new RefValue
+                        {
+                            Value    = FrameGrp,
+                            Position = Serializer.BaseStream.Position
+                        });
+                    }
+                    else
+                    {
+                        Flags |= (H3DAnimTransformFlags)NotExistMask;
+                    }
+
+                    Serializer.Writer.Write(0u);
+                }
+
+                ConstantMask <<= 1;
+                NotExistMask <<= 1;
+                
+                if (ConstantMask == (uint)H3DAnimTransformFlags.IsRotationWConstant)
+                {
+                    ConstantMask <<= 1;
+                }
+            }
+
+            Serializer.BaseStream.Seek(Position, SeekOrigin.Begin);
+
+            Serializer.Writer.Write((uint)Flags);
+
+            Serializer.BaseStream.Seek(Position + 4 + 9 * 4, SeekOrigin.Begin);
+
+            return true;
         }
     }
 }

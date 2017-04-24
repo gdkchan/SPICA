@@ -216,13 +216,7 @@ namespace SPICA.Serialization
 
                 foreach (FieldInfo Info in ObjectType.GetFields(Binding))
                 {
-                    if (Info.IsDefined(typeof(IfVersionGEAttribute)) && FileVersion <
-                        Info.GetCustomAttribute<IfVersionGEAttribute>().Version)
-                        continue;
-
-                    if (Info.IsDefined(typeof(IfVersionLAttribute)) && FileVersion >=
-                        Info.GetCustomAttribute<IfVersionLAttribute>().Version)
-                        continue;
+                    if (!Info.GetCustomAttribute<IfVersionAttribute>()?.Compare(FileVersion) ?? false) continue;
 
                     if (!(
                         Info.IsDefined(typeof(IgnoreAttribute)) || 
@@ -251,6 +245,13 @@ namespace SPICA.Serialization
                         else
                         {
                             ReadReference(Value, Info);
+                        }
+
+                        if (Info.IsDefined(typeof(PaddingAttribute)))
+                        {
+                            int Size = Info.GetCustomAttribute<PaddingAttribute>().Size;
+
+                            while ((BaseStream.Position % Size) != 0) BaseStream.WriteByte(0);
                         }
                     }
                 }

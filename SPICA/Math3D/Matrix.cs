@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Numerics;
 
 namespace SPICA.Math3D
@@ -121,30 +120,10 @@ namespace SPICA.Math3D
             return Matrix4x4.Transpose(Reader.ReadMatrix4x4());
         }
 
-        public static Matrix3x4 ReadMatrix3x4RH(this BinaryReader Reader)
-        {
-            return new Matrix3x4(Matrix4x4.Transpose(Reader.ReadMatrix3x4()));
-        }
-
-        public static Matrix3x3 ReadMatrix3x3RH(this BinaryReader Reader)
-        {
-            return new Matrix3x3(Matrix4x4.Transpose(Reader.ReadMatrix3x3()));
-        }
-
         //Right-Handed Write
         public static void WriteRH(this BinaryWriter Writer, Matrix4x4 m)
         {
             Writer.Write(Matrix4x4.Transpose(m));
-        }
-
-        public static void WriteRH(this BinaryWriter Writer, Matrix3x4 m)
-        {
-            Writer.Write(new Matrix3x4(Matrix4x4.Transpose(m)));
-        }
-
-        public static void WriteRH(this BinaryWriter Writer, Matrix3x3 m)
-        {
-            Writer.Write(new Matrix3x3(Matrix4x4.Transpose(m)));
         }
     }
 }

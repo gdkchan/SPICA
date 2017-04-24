@@ -389,8 +389,6 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                 Model.Materials.Add(Material);
             }
 
-            Output.LUTs.Add(H3DLUT.CelShading);
-
             Output.Models.Add(Model);
 
             Output.CopyMaterials();

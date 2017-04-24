@@ -6,17 +6,17 @@ namespace SPICA.Formats.GFL.Motion
     {
         public string Name;
 
-        public List<GFMotKeyFrame> ScaleX;
-        public List<GFMotKeyFrame> ScaleY;
-        public List<GFMotKeyFrame> ScaleZ;
+        public readonly List<GFMotKeyFrame> ScaleX;
+        public readonly List<GFMotKeyFrame> ScaleY;
+        public readonly List<GFMotKeyFrame> ScaleZ;
 
-        public List<GFMotKeyFrame> RotationX;
-        public List<GFMotKeyFrame> RotationY;
-        public List<GFMotKeyFrame> RotationZ;
+        public readonly List<GFMotKeyFrame> RotationX;
+        public readonly List<GFMotKeyFrame> RotationY;
+        public readonly List<GFMotKeyFrame> RotationZ;
 
-        public List<GFMotKeyFrame> TranslationX;
-        public List<GFMotKeyFrame> TranslationY;
-        public List<GFMotKeyFrame> TranslationZ;
+        public readonly List<GFMotKeyFrame> TranslationX;
+        public readonly List<GFMotKeyFrame> TranslationY;
+        public readonly List<GFMotKeyFrame> TranslationZ;
 
         public GFMotBoneTransform()
         {

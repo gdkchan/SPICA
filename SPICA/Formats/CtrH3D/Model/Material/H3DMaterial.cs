@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.CtrH3D.Model.Material.Texture;
+﻿using SPICA.Formats.Common;
 using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Math3D;
 using SPICA.PICA;
@@ -6,16 +6,15 @@ using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
-
+using System;
 using System.Numerics;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
 {
     [Inline]
     public class H3DMaterial : ICustomSerialization, INamed
     {
-        public H3DMaterialParams MaterialParams;
+        public readonly H3DMaterialParams MaterialParams;
 
         public H3DTexture Texture0;
         public H3DTexture Texture1;
@@ -23,13 +22,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private uint[] TextureCommands;
 
-        [FixedLength(3), IfVersionGE(0x21)] public H3DTextureMapper[] TextureMappers;
+        [FixedLength(3), IfVersion(CmpOp.Gequal, 0x21)] public readonly H3DTextureMapper[] TextureMappers;
 
         /*
          * Older BCH versions had the Texture Mappers stored directly within the Material data.
          * Newer versions (see above) uses a pointer and stores it somewhere else instead.
          */
-        [FixedLength(3), IfVersionL(0x21), Inline] private H3DTextureMapper[] TextureMappersCompat;
+        [FixedLength(3), IfVersion(CmpOp.Less, 0x21), Inline] private H3DTextureMapper[] TextureMappersCompat;
 
         public string Texture0Name;
         public string Texture1Name;
@@ -37,16 +36,24 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private string _Name;
 
-        [XmlAttribute]
         public string Name
         {
-            get { return _Name; }
-            set { _Name = value; }
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Name");
+                }
+
+                _Name = value;
+            }
         }
 
-        [Ignore] public bool[] EnabledTextures;
-
-        [Ignore] public int[] TexCoords23Sources;
+        [Ignore] public readonly bool[] EnabledTextures;
 
         //This is a default material with 1 texture and default settings
         public static H3DMaterial Default
@@ -115,9 +122,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             MaterialParams = new H3DMaterialParams();
             TextureMappers = new H3DTextureMapper[3];
+            TextureMappersCompat = null;
 
             EnabledTextures = new bool[4];
-            TexCoords23Sources = new int[4];
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -133,19 +140,17 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 switch (Cmd.Register)
                 {
                     case PICARegister.GPUREG_TEXUNIT_CONFIG:
-                        EnabledTextures[0] = (Param & 0x1) != 0;
-                        EnabledTextures[1] = (Param & 0x2) != 0;
-                        EnabledTextures[2] = (Param & 0x4) != 0;
-                        TexCoords23Sources[3] = (int)((Param >> 8) & 3);
+                        EnabledTextures[0] = (Param & 0x001) != 0;
+                        EnabledTextures[1] = (Param & 0x002) != 0;
+                        EnabledTextures[2] = (Param & 0x004) != 0;
                         EnabledTextures[3] = (Param & 0x400) != 0;
-                        TexCoords23Sources[2] = (int)((Param >> 13) & 1);
                         break;
                 }
             }
 
             if (TextureMappersCompat != null)
             {
-                TextureMappers = TextureMappersCompat;
+                Array.Copy(TextureMappersCompat, TextureMappers, 3);
             }
         }
 
@@ -165,9 +170,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TexUnitConfig |= (EnabledTextures[0] ? 1u : 0u) << 0;
             TexUnitConfig |= (EnabledTextures[1] ? 1u : 0u) << 1;
             TexUnitConfig |= (EnabledTextures[2] ? 1u : 0u) << 2;
-            TexUnitConfig |= ((uint)TexCoords23Sources[3] & 3) << 8;
             TexUnitConfig |= (EnabledTextures[3] ? 1u : 0u) << 10;
-            TexUnitConfig |= ((uint)TexCoords23Sources[2] & 1) << 13;
 
             Writer.SetCommands(PICARegister.GPUREG_TEXUNIT_CONFIG, false, 0, 0, 0, 0);
             Writer.SetCommand(PICARegister.GPUREG_TEXUNIT_CONFIG, TexUnitConfig);
@@ -209,9 +212,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             TextureCommands = Writer.GetBuffer();
 
-            if (TextureMappers != null)
+            if (TextureMappersCompat != null)
             {
-                TextureMappersCompat = TextureMappers;
+                Array.Copy(TextureMappers, TextureMappersCompat, 3);
             }
 
             return false;

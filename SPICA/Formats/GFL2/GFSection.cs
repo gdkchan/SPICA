@@ -6,9 +6,9 @@ namespace SPICA.Formats.GFL2
 {
     class GFSection
     {
-        public string Magic;
-        public uint Length;
-        private uint Padding;
+        public  string Magic;
+        public  uint   Length;
+        private uint   Padding;
 
         public GFSection() { }
 
@@ -19,8 +19,8 @@ namespace SPICA.Formats.GFL2
 
         public GFSection(BinaryReader Reader)
         {
-            Magic = Reader.ReadPaddedString(8);
-            Length = Reader.ReadUInt32();
+            Magic   = Reader.ReadPaddedString(8);
+            Length  = Reader.ReadUInt32();
             Padding = Reader.ReadUInt32();
         }
 

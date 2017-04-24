@@ -8,7 +8,7 @@ namespace SPICA.Formats.GFL2.Motion
 {
     public class GFVisibilityMot
     {
-        public List<GFMotBoolean> Visibilities;
+        public readonly List<GFMotBoolean> Visibilities;
 
         public GFVisibilityMot()
         {
@@ -17,7 +17,7 @@ namespace SPICA.Formats.GFL2.Motion
 
         public GFVisibilityMot(BinaryReader Reader, uint FramesCount) : this()
         {
-            int MeshNamesCount = Reader.ReadInt32();
+            int  MeshNamesCount  = Reader.ReadInt32();
             uint MeshNamesLength = Reader.ReadUInt32();
 
             long Position = Reader.BaseStream.Position;
@@ -45,23 +45,24 @@ namespace SPICA.Formats.GFL2.Motion
 
             foreach (GFMotBoolean Vis in Visibilities)
             {
-                H3DAnimationElement Elem = new H3DAnimationElement
-                {
-                    Name = Vis.Name,
+                H3DAnimBoolean Anim = new H3DAnimBoolean();
 
+                Anim.Curve.StartFrame = 0;
+                Anim.Curve.EndFrame   = Motion.FramesCount;
+                Anim.Curve.CurveIndex = Index++;
+
+                foreach (bool Visibility in Vis.Values)
+                {
+                    Anim.Values.Add(Visibility);
+                }
+
+                Output.Elements.Add(new H3DAnimationElement
+                {
+                    Name          = Vis.Name,
                     PrimitiveType = H3DAnimPrimitiveType.Boolean,
                     TargetType    = H3DAnimTargetType.MeshNodeVisibility,
-
-                    Content = new H3DAnimBoolean
-                    {
-                        StartFrame = 0,
-                        EndFrame   = Motion.FramesCount,
-                        CurveIndex = Index++,
-                        Values     = Vis.Values
-                    }
-                };
-
-                Output.Elements.Add(Elem);
+                    Content       = Anim
+                });
             }
 
             return Output;

@@ -1,6 +1,7 @@
 ﻿using SPICA.Math3D;
+using SPICA.Serialization.Attributes;
 
-namespace SPICA.Formats.CtrH3D.Model.Material.Texture
+namespace SPICA.Formats.CtrH3D.Model.Material
 {
     public struct H3DTextureMapper
     {
@@ -12,8 +13,8 @@ namespace SPICA.Formats.CtrH3D.Model.Material.Texture
         public H3DTextureMagFilter MagFilter;
         public H3DTextureMinFilter MinFilter;
 
-        public byte MinLOD;
-        private ushort Padding;
+        [Padding(4)] public byte MinLOD;
+
         public float LODBias;
 
         public RGBA BorderColor;

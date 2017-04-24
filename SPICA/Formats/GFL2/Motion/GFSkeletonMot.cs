@@ -1,7 +1,6 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.GFL2.Model;
-using SPICA.Math3D;
 
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +10,7 @@ namespace SPICA.Formats.GFL2.Motion
 {
     public class GFSkeletonMot
     {
-        public List<GFMotBoneTransform> Bones;
+        public readonly List<GFMotBoneTransform> Bones;
 
         public GFSkeletonMot()
         {
@@ -20,7 +19,7 @@ namespace SPICA.Formats.GFL2.Motion
 
         public GFSkeletonMot(BinaryReader Reader, uint FramesCount) : this()
         {
-            int BoneNamesCount = Reader.ReadInt32();
+            int  BoneNamesCount  = Reader.ReadInt32();
             uint BoneNamesLength = Reader.ReadUInt32();
 
             long Position = Reader.BaseStream.Position;

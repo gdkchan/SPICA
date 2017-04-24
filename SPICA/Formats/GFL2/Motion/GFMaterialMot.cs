@@ -17,7 +17,7 @@ namespace SPICA.Formats.GFL2.Motion
 
         public GFMaterialMot(BinaryReader Reader, uint FramesCount) : this()
         {
-            int MaterialNamesCount = Reader.ReadInt32();
+            int  MaterialNamesCount  = Reader.ReadInt32();
             uint MaterialNamesLength = Reader.ReadUInt32();
 
             uint[] Units = new uint[MaterialNamesCount];
@@ -71,7 +71,7 @@ namespace SPICA.Formats.GFL2.Motion
                     Output.Elements.Add(new H3DAnimationElement
                     {
                         Name          = Mat.Name,
-                        Content       = new H3DAnimFloat { Value = GetKeyFrames(Mat.Rotation, Motion.FramesCount) },
+                        Content       = GetAnimFloat(Mat.Rotation, Motion.FramesCount),
                         TargetType    = H3DAnimTargetType.MaterialTexCoord0Rot + Unit,
                         PrimitiveType = H3DAnimPrimitiveType.Float
                     });
@@ -92,35 +92,38 @@ namespace SPICA.Formats.GFL2.Motion
             return Output;
         }
 
-        private H3DAnimVector2D GetAnimVector2D(List<GFMotKeyFrame> X, List<GFMotKeyFrame> Y, uint FramesCount)
+        private H3DAnimFloat GetAnimFloat(List<GFMotKeyFrame> Value, uint FramesCount)
         {
-            return new H3DAnimVector2D
-            {
-                X = GetKeyFrames(X, FramesCount),
-                Y = GetKeyFrames(Y, FramesCount)
-            };
-        }
+            H3DAnimFloat Output = new H3DAnimFloat();
 
-        private H3DFloatKeyFrameGroup GetKeyFrames(List<GFMotKeyFrame> KeyFrames, uint FramesCount)
-        {
-            H3DFloatKeyFrameGroup Output = new H3DFloatKeyFrameGroup();
-
-            Output.InterpolationType = H3DInterpolationType.Hermite;
-
-            Output.EndFrame = FramesCount;
-
-            foreach (GFMotKeyFrame KeyFrame in KeyFrames)
-            {
-                Output.KeyFrames.Add(new H3DFloatKeyFrame
-                {
-                    Frame    = KeyFrame.Frame,
-                    Value    = KeyFrame.Value,
-                    InSlope  = KeyFrame.Slope,
-                    OutSlope = KeyFrame.Slope
-                });
-            }
+            SetKeyFrames(Value, Output.Value, FramesCount);
 
             return Output;
+        }
+
+        private H3DAnimVector2D GetAnimVector2D(List<GFMotKeyFrame> X, List<GFMotKeyFrame> Y, uint FramesCount)
+        {
+            H3DAnimVector2D Output = new H3DAnimVector2D();
+
+            SetKeyFrames(X, Output.X, FramesCount);
+            SetKeyFrames(Y, Output.Y, FramesCount);
+
+            return Output;
+        }
+
+        private void SetKeyFrames(List<GFMotKeyFrame> Source, H3DFloatKeyFrameGroup Target, uint FramesCount)
+        {
+            Target.InterpolationType = H3DInterpolationType.Hermite;
+
+            Target.Curve.EndFrame = FramesCount;
+
+            foreach (GFMotKeyFrame KF in Source)
+            {
+                Target.KeyFrames.Add(new KeyFrame(
+                    KF.Frame,
+                    KF.Value,
+                    KF.Slope));
+            }
         }
     }
 }

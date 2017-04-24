@@ -1,28 +1,56 @@
-﻿using SPICA.PICA;
+﻿using SPICA.Formats.Common;
+using SPICA.PICA;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System;
 using System.IO;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Mesh
 {
     [Inline]
     public class H3DSubMesh : ICustomSerialization, ICustomSerializeCmd
     {
-        [XmlAttribute] public H3DSubMeshSkinning Skinning;
+        [Padding(2)] public H3DSubMeshSkinning Skinning;
 
-        private byte Padding;
+        public ushort BoneIndicesCount;
 
-        [XmlAttribute] public ushort BoneIndicesCount;
+        [FixedLength(20), Inline] private ushort[] _BoneIndices;
 
-        [FixedLength(20), Inline, XmlAttribute] public ushort[] BoneIndices;
+        public ushort[] BoneIndices
+        {
+            get
+            {
+                return _BoneIndices;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("BoneIndices");
+                }
+
+                if (value.Length > 20)
+                {
+                    throw Exceptions.GetGreaterThanException("BoneIndices", 20);
+                }
+
+                if (value.Length < 20)
+                {
+                    Array.Copy(value, _BoneIndices, value.Length);
+                }
+                else
+                {
+                    _BoneIndices = value;
+                }
+
+                BoneIndicesCount = (ushort)value.Length;
+            }
+        }
 
         private uint[] Commands;
 
-        [XmlIgnore]
         public int MaxIndex
         {
             get
@@ -40,11 +68,11 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         [Ignore] internal ushort BoolUniforms;
 
-        [Ignore, XmlAttribute] public ushort[] Indices;
+        [Ignore] public ushort[] Indices;
 
         public H3DSubMesh()
         {
-            BoneIndices = new ushort[20];
+            _BoneIndices = new ushort[20];
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -52,7 +80,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             PICACommandReader Reader = new PICACommandReader(Commands);
 
             uint BufferAddress = 0;
-            uint BufferCount = 0;
+            uint BufferCount   = 0;
 
             while (Reader.HasCommand)
             {
@@ -105,8 +133,6 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             Commands = Writer.GetBuffer();
 
-            Array.Resize(ref BoneIndices, 20);
-
             return false;
         }
 
@@ -138,7 +164,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             Serializer.RawDataVtx.Values.Add(new RefValue
             {
-                Value = Data,
+                Value    = Data,
                 Position = Position
             });
 

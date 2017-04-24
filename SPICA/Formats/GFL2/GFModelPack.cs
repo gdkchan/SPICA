@@ -7,6 +7,7 @@ using SPICA.Formats.GFL2.Model;
 using SPICA.Formats.GFL2.Shader;
 using SPICA.Formats.GFL2.Texture;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,9 +25,9 @@ namespace SPICA.Formats.GFL2
             FragShader
         }
 
-        public List<GFModel>      Models;
-        public List<GFTexture>    Textures;
-        public List<GFFragShader> FragShaders;
+        public readonly List<GFModel>      Models;
+        public readonly List<GFTexture>    Textures;
+        public readonly List<GFFragShader> FragShaders;
 
         public GFModelPack()
         {
@@ -86,19 +87,22 @@ namespace SPICA.Formats.GFL2
 
             for (int MdlIndex = 0; MdlIndex < Models.Count; MdlIndex++)
             {
-                GFModel Model = Models[MdlIndex];
-                H3DModel Mdl = Model.ToH3DModel();
+                GFModel  Model = Models[MdlIndex];
+                H3DModel Mdl   = Model.ToH3DModel();
 
                 for (int MatIndex = 0; MatIndex < Model.Materials.Count; MatIndex++)
                 {
                     H3DMaterialParams Params = Mdl.Materials[MatIndex].MaterialParams;
+
                     GFHashName FragShaderName = Model.Materials[MatIndex].FragShaderName;
+
                     GFFragShader FragShader = FragShaders.FirstOrDefault(x => x.Name == FragShaderName.Name);
 
                     if (FragShader != null)
                     {
-                        Params.TexEnvStages      = FragShader.TexEnvStages;
                         Params.TexEnvBufferColor = FragShader.TexEnvBufferColor;
+
+                        Array.Copy(FragShader.TexEnvStages, Params.TexEnvStages, 6);
                     }
                 }
 

@@ -1,4 +1,4 @@
-﻿using SPICA.Formats.CtrH3D.Model.Material.Texture;
+﻿using SPICA.Formats.CtrH3D.Model.Material;
 
 using System;
 using System.Collections.Generic;

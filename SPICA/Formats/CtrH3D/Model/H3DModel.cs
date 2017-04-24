@@ -1,50 +1,60 @@
-﻿using SPICA.Formats.CtrH3D.Model.Material;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Math3D;
 using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model
 {
     public class H3DModel : INamed
     {
-        public H3DModelFlags Flags;
+        public H3DModelFlags  Flags;
         public H3DBoneScaling BoneScaling;
 
         public ushort SilhouetteMaterialsCount;
 
         public Matrix3x4 WorldTransform;
 
-        public PatriciaList<H3DMaterial> Materials;
+        public readonly PatriciaList<H3DMaterial> Materials;
 
-        [XmlIgnore] public List<H3DMesh> Meshes;
+        public readonly List<H3DMesh> Meshes;
 
-        [Range] public List<H3DMesh> MeshesLayer0;
-        [Range] public List<H3DMesh> MeshesLayer1;
-        [Range] public List<H3DMesh> MeshesLayer2;
+        [Range] public readonly List<H3DMesh> MeshesLayer0;
+        [Range] public readonly List<H3DMesh> MeshesLayer1;
+        [Range] public readonly List<H3DMesh> MeshesLayer2;
 
         /*
          * Very old versions of the BCH format only supported 3 layers.
          * Newer versions added another layer supporting up to 4.
          */
-        [Range, IfVersionGE(7)] public List<H3DMesh> MeshesLayer3;
+        [Range, IfVersion(CmpOp.Gequal, 7)] public readonly List<H3DMesh> MeshesLayer3;
 
-        public List<H3DSubMeshCulling> SubMeshCullings;
+        public readonly List<H3DSubMeshCulling> SubMeshCullings;
 
-        public PatriciaList<H3DBone> Skeleton;
+        public readonly PatriciaList<H3DBone> Skeleton;
 
-        public List<bool> MeshNodesVisibility;
+        public readonly List<bool> MeshNodesVisibility;
 
         private string _Name;
 
-        [XmlAttribute]
         public string Name
         {
-            get { return _Name; }
-            set { _Name = value; }
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Name");
+                }
+
+                _Name = value;
+            }
         }
 
         public int MeshNodesCount;
@@ -73,6 +83,8 @@ namespace SPICA.Formats.CtrH3D.Model
             Skeleton = new PatriciaList<H3DBone>();
 
             MeshNodesVisibility = new List<bool>();
+
+            UserDefinedAddress = 0; //SBZ, set by program on 3DS
         }
 
         public void AddMesh(H3DMesh Mesh, int Layer = 0, int Priority = 0)

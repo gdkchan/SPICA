@@ -10,6 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\CRC32Hash.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\Exceptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrameQuantization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimCurve.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationElement.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimBoolean.cs" />
@@ -17,14 +22,25 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimMtxTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimPrimitiveType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimQuatTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimQuatTransformFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTargetType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimTransformFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimVector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimVector2D.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DFloatKeyFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimVectorFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DFloatKeyFrameGroup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DInterpolationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DLoopType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DSegmentQuantization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureCoord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureCoordFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureMagFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureMappingType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureMinFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureTransformType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAE.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEAccessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\COLLADA\DAEAnimation.cs" />
@@ -79,14 +95,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DMaterialShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTexCoordConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DLayerConfig.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureCoord.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureCoordFlags.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureMagFilter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureMapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureMappingType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureMinFilter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureTransformType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\Texture\H3DTextureWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\PatriciaList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\PatriciaTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DRelocationType.cs" />
@@ -214,10 +222,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICACommandWriter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\PICARegister.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\FixedLengthAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\IfVersionLAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\IgnoreAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\InlineAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\IfVersionGEAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\IfVersionAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\PaddingAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\RepeatPointerAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\RangeAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\VersionAttribute.cs" />

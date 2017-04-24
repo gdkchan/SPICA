@@ -8,10 +8,10 @@ namespace SPICA.Formats.CtrH3D
 {
     class H3DRelocator
     {
-        private Stream BaseStream;
+        private Stream       BaseStream;
         private BinaryReader Reader;
         private BinaryWriter Writer;
-        private H3DHeader Header;
+        private H3DHeader    Header;
 
         public Dictionary<long, H3DRelocationType> RelocTypes;
 

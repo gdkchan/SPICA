@@ -3,7 +3,6 @@ using OpenTK.Graphics.ES30;
 
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
-using SPICA.Formats.CtrH3D.Model.Material.Texture;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
 using SPICA.Renderer.SPICA_GL;

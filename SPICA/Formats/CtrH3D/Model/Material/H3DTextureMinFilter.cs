@@ -1,4 +1,4 @@
-﻿namespace SPICA.Formats.CtrH3D.Model.Material.Texture
+﻿namespace SPICA.Formats.CtrH3D.Model.Material
 {
     public enum H3DTextureMinFilter : byte
     {

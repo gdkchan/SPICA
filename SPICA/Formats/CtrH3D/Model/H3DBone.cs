@@ -3,24 +3,42 @@ using SPICA.Math3D;
 using SPICA.Serialization.Attributes;
 
 using System.Numerics;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model
 {
     [Inline]
     public class H3DBone : INamed
     {
-        public H3DBoneFlags Flags;
+        private H3DBoneFlags Flags;
+
+        public bool IsSegmentScaleCompensate
+        {
+            get
+            {
+                return (Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
+            }
+            set
+            {
+                if (value)
+                    Flags |= H3DBoneFlags.IsSegmentScaleCompensate;
+                else
+                    Flags &= ~H3DBoneFlags.IsSegmentScaleCompensate;
+            }
+        }
 
         public H3DBillboardMode BillboardMode
         {
-            get { return (H3DBillboardMode)BitUtils.GetBits((uint)Flags, 16, 3); }
-            set { Flags = (H3DBoneFlags)BitUtils.SetBits((uint)Flags, (uint)value, 16, 3); }
+            get
+            {
+                return (H3DBillboardMode)BitUtils.GetBits((uint)Flags, 16, 3);
+            }
+            set
+            {
+                Flags = (H3DBoneFlags)BitUtils.SetBits((uint)Flags, (uint)value, 16, 3);
+            }
         }
 
-        public short ParentIndex;
-
-        private ushort Padding;
+        [Padding(4)] public short ParentIndex;
 
         public Vector3   Scale;
         public Vector3   Rotation;
@@ -29,11 +47,21 @@ namespace SPICA.Formats.CtrH3D.Model
 
         private string _Name;
 
-        [XmlAttribute]
         public string Name
         {
-            get { return _Name; }
-            set { _Name = value; }
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw Exceptions.GetNullException("Name");
+                }
+
+                _Name = value;
+            }
         }
 
         public H3DMetaData MetaData;

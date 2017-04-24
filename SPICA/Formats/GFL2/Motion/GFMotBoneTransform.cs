@@ -12,17 +12,17 @@ namespace SPICA.Formats.GFL2.Motion
 
         public bool IsAxisAngle;
 
-        public List<GFMotKeyFrame> ScaleX;
-        public List<GFMotKeyFrame> ScaleY;
-        public List<GFMotKeyFrame> ScaleZ;
+        public readonly List<GFMotKeyFrame> ScaleX;
+        public readonly List<GFMotKeyFrame> ScaleY;
+        public readonly List<GFMotKeyFrame> ScaleZ;
 
-        public List<GFMotKeyFrame> RotationX;
-        public List<GFMotKeyFrame> RotationY;
-        public List<GFMotKeyFrame> RotationZ;
+        public readonly List<GFMotKeyFrame> RotationX;
+        public readonly List<GFMotKeyFrame> RotationY;
+        public readonly List<GFMotKeyFrame> RotationZ;
 
-        public List<GFMotKeyFrame> TranslationX;
-        public List<GFMotKeyFrame> TranslationY;
-        public List<GFMotKeyFrame> TranslationZ;
+        public readonly List<GFMotKeyFrame> TranslationX;
+        public readonly List<GFMotKeyFrame> TranslationY;
+        public readonly List<GFMotKeyFrame> TranslationZ;
 
         public GFMotBoneTransform()
         {
@@ -43,28 +43,26 @@ namespace SPICA.Formats.GFL2.Motion
         {
             this.Name = Name;
 
-            uint Flags = Reader.ReadUInt32();
+            uint Flags  = Reader.ReadUInt32();
             uint Length = Reader.ReadUInt32();
 
             IsAxisAngle = (Flags >> 31) == 0;
 
-            for (int Elem = 0; Elem < 9; Elem++)
+            for (int ElemIndex = 0; ElemIndex < 9; ElemIndex++)
             {
-                List<GFMotKeyFrame> KeyFrames = GFMotKeyFrame.ReadList(Reader, Flags, FramesCount);
-
-                switch (Elem)
+                switch (ElemIndex)
                 {
-                    case 0: ScaleX       = KeyFrames; break;
-                    case 1: ScaleY       = KeyFrames; break;
-                    case 2: ScaleZ       = KeyFrames; break;
+                    case 0: GFMotKeyFrame.SetList(ScaleX,       Reader, Flags, FramesCount); break;
+                    case 1: GFMotKeyFrame.SetList(ScaleY,       Reader, Flags, FramesCount); break;
+                    case 2: GFMotKeyFrame.SetList(ScaleZ,       Reader, Flags, FramesCount); break;
 
-                    case 3: RotationX    = KeyFrames; break;
-                    case 4: RotationY    = KeyFrames; break;
-                    case 5: RotationZ    = KeyFrames; break;
+                    case 3: GFMotKeyFrame.SetList(RotationX,    Reader, Flags, FramesCount); break;
+                    case 4: GFMotKeyFrame.SetList(RotationY,    Reader, Flags, FramesCount); break;
+                    case 5: GFMotKeyFrame.SetList(RotationZ,    Reader, Flags, FramesCount); break;
 
-                    case 6: TranslationX = KeyFrames; break;
-                    case 7: TranslationY = KeyFrames; break;
-                    case 8: TranslationZ = KeyFrames; break;
+                    case 6: GFMotKeyFrame.SetList(TranslationX, Reader, Flags, FramesCount); break;
+                    case 7: GFMotKeyFrame.SetList(TranslationY, Reader, Flags, FramesCount); break;
+                    case 8: GFMotKeyFrame.SetList(TranslationZ, Reader, Flags, FramesCount); break;
                 }
 
                 Flags >>= 3;
@@ -76,23 +74,23 @@ namespace SPICA.Formats.GFL2.Motion
             if (KeyFrames.Count == 1) Value = KeyFrames[0].Value;
             if (KeyFrames.Count < 2) return;
 
-            GFMotKeyFrame Left = KeyFrames.Last(x => x.Frame <= Frame);
-            GFMotKeyFrame Right = KeyFrames.First(x => x.Frame >= Frame);
+            GFMotKeyFrame LHS = KeyFrames.Last(x => x.Frame <= Frame);
+            GFMotKeyFrame RHS = KeyFrames.First(x => x.Frame >= Frame);
 
-            if (Left.Frame != Right.Frame)
+            if (LHS.Frame != RHS.Frame)
             {
-                float FrameDiff = Frame - Left.Frame;
-                float Weight = FrameDiff / (Right.Frame - Left.Frame);
+                float FrameDiff = Frame - LHS.Frame;
+                float Weight = FrameDiff / (RHS.Frame - LHS.Frame);
 
                 Value = Interpolation.Herp(
-                    Left.Value, Right.Value,
-                    Left.Slope, Right.Slope,
+                    LHS.Value, RHS.Value,
+                    LHS.Slope, RHS.Slope,
                     FrameDiff,
                     Weight);
             }
             else
             {
-                Value = Left.Value;
+                Value = LHS.Value;
             }
         }
     }

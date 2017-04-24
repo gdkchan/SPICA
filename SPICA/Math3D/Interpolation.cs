@@ -2,19 +2,17 @@
 {
     static class Interpolation
     {
-        public static float Lerp(float L, float R, float W)
+        public static float Lerp(float LHS, float RHS, float Weight)
         {
-            return L * (1 - W) + R * W;
+            return LHS * (1 - Weight) + RHS * Weight;
         }
 
-        public static float Herp(float L, float R, float LS, float RS, float Diff, float W)
+        public static float Herp(float LHS, float RHS, float LS, float RS, float Diff, float Weight)
         {
-            float W1 = W - 1;
-
             float Result;
 
-            Result = L + (L - R) * (2 * W - 3) * W * W;
-            Result += (Diff * W1) * (LS * W1 + RS * W);
+            Result = LHS + (LHS - RHS) * (2 * Weight - 3) * Weight * Weight;
+            Result += (Diff * (Weight - 1)) * (LS * (Weight - 1) + RS * Weight);
 
             return Result;
         }
