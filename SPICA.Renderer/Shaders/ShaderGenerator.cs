@@ -203,13 +203,6 @@ namespace SPICA.Renderer.Shaders
                 SB.AppendLine($"\t\tfloat d0 = {Dist0};");
             }
 
-            if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactor0Enabled) != 0)
-            {
-                Specular0Color += " * g0";
-
-                SB.AppendLine("\t\tfloat g0 = (2 * CosNormalHalf * CosNormalView) / CosViewHalf;");
-            }
-
             if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTReflectionEnabled) != 0)
             {
                 Specular1Color = "r";
@@ -227,12 +220,14 @@ namespace SPICA.Renderer.Shaders
                 SB.AppendLine($"\t\tfloat d1 = {Dist1};");
             }
 
-            if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactor1Enabled) != 0)
-            {
-                Specular1Color += " * g1";
+            if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactor0Enabled) != 0)
+                Specular0Color += " * g";
 
-                SB.AppendLine("\t\tfloat g1 = (2 * CosNormalHalf * CosLightNormal) / CosViewHalf;");
-            }
+            if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactor1Enabled) != 0)
+                Specular1Color += " * g";
+
+            if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactorEnabled) != 0)
+                SB.AppendLine("\t\tfloat g = CosLightNormal / abs(dot(Half, Half));");
 
             SB.AppendLine("\t\tvec4 Diffuse =");
             SB.AppendLine($"\t\t\t{GetVec4(Params.AmbientColor)} * Lights[i].Ambient +");
@@ -274,7 +269,7 @@ namespace SPICA.Renderer.Shaders
             {
                 string ScaleStr = Scale.ToSingle().ToString(CultureInfo.InvariantCulture);
 
-                Output = $"min({Output} * {ScaleStr}, 1);";
+                Output = $"min({Output} * {ScaleStr}, 1)";
             }
 
             return Output;

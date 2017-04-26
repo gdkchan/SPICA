@@ -521,14 +521,23 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             uint UpdateBuffer = PICATexEnvStage.GetUpdateBuffer(TexEnvStages);
 
             Writer.SetCommand(PICARegister.GPUREG_TEXENV_UPDATE_BUFFER, UpdateBuffer, 2);
+
             Writer.SetCommand(PICARegister.GPUREG_TEXENV_BUFFER_COLOR, TexEnvBufferColor.ToUInt32());
+
             Writer.SetCommand(PICARegister.GPUREG_COLOR_OPERATION, ColorOperation.ToUInt32(), 3);
+
             Writer.SetCommand(PICARegister.GPUREG_BLEND_FUNC, BlendFunction.ToUInt32());
+
             Writer.SetCommand(PICARegister.GPUREG_FRAGOP_ALPHA_TEST, AlphaTest.ToUInt32(), 3);
+
             Writer.SetCommand(PICARegister.GPUREG_STENCIL_TEST, StencilTest.ToUInt32());
+
             Writer.SetCommand(PICARegister.GPUREG_STENCIL_OP, StencilOperation.ToUInt32());
+
             Writer.SetCommand(PICARegister.GPUREG_DEPTH_COLOR_MASK, DepthColorMask.ToUInt32());
+
             Writer.SetCommand(PICARegister.GPUREG_FACECULLING_CONFIG, (uint)FaceCulling);
+
             Writer.SetCommand(PICARegister.GPUREG_FRAMEBUFFER_FLUSH, true);
             Writer.SetCommand(PICARegister.GPUREG_FRAMEBUFFER_INVALIDATE, true);
 
@@ -536,6 +545,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_READ,  ColorBufferRead  ? 0xfu : 0u, 1);
             Writer.SetCommand(PICARegister.GPUREG_COLORBUFFER_WRITE, ColorBufferWrite ? 0xfu : 0u, 1);
+
             Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_READ,  StencilBufferRead,  DepthBufferRead);
             Writer.SetCommand(PICARegister.GPUREG_DEPTHBUFFER_WRITE, StencilBufferWrite, DepthBufferWrite);
 

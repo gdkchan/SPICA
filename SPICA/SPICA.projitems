@@ -149,6 +149,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBoneTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotion.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotKeyFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBn.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBnAttributeFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBnAttributeName.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBnIndicesDesc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBnVerticesDesc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Model\MTBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Model\MTMaterials.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\MTFramework\Model\MTMaterial.cs" />

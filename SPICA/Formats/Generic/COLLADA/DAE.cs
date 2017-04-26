@@ -210,6 +210,19 @@ namespace SPICA.Formats.Generic.COLLADA
                                 }
                             }
 
+                            int Elements = 0;
+
+                            switch (Attr.Name)
+                            {
+                                case PICAAttributeName.Position:  Elements = 3; break;
+                                case PICAAttributeName.Normal:    Elements = 3; break;
+                                case PICAAttributeName.Tangent:   Elements = 3; break;
+                                case PICAAttributeName.Color:     Elements = 4; break;
+                                case PICAAttributeName.TexCoord0: Elements = 2; break;
+                                case PICAAttributeName.TexCoord1: Elements = 2; break;
+                                case PICAAttributeName.TexCoord2: Elements = 2; break;
+                            }
+
                             DAESource Source = new DAESource();
 
                             Source.name = $"{MeshName}_{Attr.Name}";
@@ -218,7 +231,7 @@ namespace SPICA.Formats.Generic.COLLADA
                             Source.float_array = new DAEArray
                             {
                                 id    = $"{Source.name}_array_id",
-                                count = (uint)(Vertices.Length * Attr.Elements),
+                                count = (uint)(Vertices.Length * Elements),
                                 data  = string.Join(" ", Values)
                             };
 
@@ -226,10 +239,10 @@ namespace SPICA.Formats.Generic.COLLADA
                             {
                                 source = $"#{Source.float_array.id}",
                                 count  = (uint)Vertices.Length,
-                                stride = (uint)Attr.Elements
+                                stride = (uint)Elements
                             };
 
-                            switch (Attr.Elements)
+                            switch (Elements)
                             {
                                 case 2: Accessor.AddParams("float", "S", "T");           break;
                                 case 3: Accessor.AddParams("float", "X", "Y", "Z");      break;

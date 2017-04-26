@@ -6,6 +6,7 @@ namespace SPICA.Formats.GFL2.Motion
     public class GFMotUVTransform
     {
         public string Name;
+
         public uint UnitIndex;
 
         public readonly List<GFMotKeyFrame> ScaleX;

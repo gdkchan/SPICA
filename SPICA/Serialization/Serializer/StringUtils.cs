@@ -2,7 +2,7 @@
 
 namespace SPICA.Serialization.Serializer
 {
-    class StringUtils
+    static class StringUtils
     {
         public static int CompareString(RefValue LHS, RefValue RHS)
         {

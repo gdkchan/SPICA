@@ -6,6 +6,7 @@ using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
+
 using System;
 using System.Numerics;
 

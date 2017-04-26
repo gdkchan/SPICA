@@ -226,7 +226,7 @@ namespace SPICA.Serialization
 
                         bool Inline;
 
-                        Inline = Info.IsDefined(typeof(InlineAttribute));
+                        Inline  = Info.IsDefined(typeof(InlineAttribute));
                         Inline |= Type.IsDefined(typeof(InlineAttribute));
 
                         if (Type.IsValueType || Type.IsEnum || Inline)

@@ -13,9 +13,10 @@ namespace SPICA.Renderer
 {
     public class Mesh : IDisposable
     {
-        private int VBOHandle;
-        private int VAOHandle;
-        public  int ShaderHandle;
+        private int  VBOHandle;
+        private int  VAOHandle;
+        public  int  ShaderHandle;
+        public  bool Visible;
 
         private  Model       Parent;
         internal H3DMesh     BaseMesh;
@@ -23,12 +24,13 @@ namespace SPICA.Renderer
         private  Vector4     Scales0;
         private  Vector4     Scales1;
 
-        public Mesh(Model Parent, H3DMesh BaseMesh, int ShaderHandle)
+        public Mesh(Model Parent, H3DMesh BaseMesh, int ShaderHandle, bool Visible = true)
         {
             this.Parent   = Parent;
             this.BaseMesh = BaseMesh;
 
             this.ShaderHandle = ShaderHandle;
+            this.Visible      = Visible;
 
             Material = Parent.BaseModel.Materials[BaseMesh.MaterialIndex];
 

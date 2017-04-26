@@ -37,5 +37,23 @@ namespace SPICA.Formats.Common
             Writer.Write((byte)(Value >>  8));
             Writer.Write((byte)(Value >> 16));
         }
+
+        public static void Align(this BinaryReader Reader, int BlockSize)
+        {
+            long Remainder = Reader.BaseStream.Position % BlockSize;
+
+            if (Remainder != 0)
+            {
+                Reader.BaseStream.Seek(BlockSize - Remainder, SeekOrigin.Current);
+            }
+        }
+
+        public static void Align(this BinaryWriter Writer, int BlockSize, byte FillByte)
+        {
+            while ((Writer.BaseStream.Position % BlockSize) != 0)
+            {
+                Writer.Write(FillByte);
+            }
+        }
     }
 }

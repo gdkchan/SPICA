@@ -42,13 +42,13 @@ namespace SPICA.Renderer.Animation
 
                         switch (Elem.TargetType)
                         {
-                            case H3DAnimTargetType.MaterialTexCoord0Scale: TC[0].Scale = SetVector2(Vector, TC[0].Scale); break;
-                            case H3DAnimTargetType.MaterialTexCoord1Scale: TC[1].Scale = SetVector2(Vector, TC[1].Scale); break;
-                            case H3DAnimTargetType.MaterialTexCoord2Scale: TC[2].Scale = SetVector2(Vector, TC[2].Scale); break;
+                            case H3DAnimTargetType.MaterialTexCoord0Scale: SetVector2(Vector, ref TC[0].Scale);       break;
+                            case H3DAnimTargetType.MaterialTexCoord1Scale: SetVector2(Vector, ref TC[1].Scale);       break;
+                            case H3DAnimTargetType.MaterialTexCoord2Scale: SetVector2(Vector, ref TC[2].Scale);       break;
 
-                            case H3DAnimTargetType.MaterialTexCoord0Trans: TC[0].Translation = SetVector2(Vector, TC[0].Translation); break;
-                            case H3DAnimTargetType.MaterialTexCoord1Trans: TC[1].Translation = SetVector2(Vector, TC[1].Translation); break;
-                            case H3DAnimTargetType.MaterialTexCoord2Trans: TC[2].Translation = SetVector2(Vector, TC[2].Translation); break;
+                            case H3DAnimTargetType.MaterialTexCoord0Trans: SetVector2(Vector, ref TC[0].Translation); break;
+                            case H3DAnimTargetType.MaterialTexCoord1Trans: SetVector2(Vector, ref TC[1].Translation); break;
+                            case H3DAnimTargetType.MaterialTexCoord2Trans: SetVector2(Vector, ref TC[2].Translation); break;
                         }
                     }
                     else if (Elem.PrimitiveType == H3DAnimPrimitiveType.Float)
@@ -90,12 +90,10 @@ namespace SPICA.Renderer.Animation
             return Transforms;
         }
 
-        private Vector2 SetVector2(H3DAnimVector2D Vector, Vector2 Target)
+        private void SetVector2(H3DAnimVector2D Vector, ref Vector2 Target)
         {
             if (Vector.X.HasData) Target.X = Vector.X.GetFrameValue(Frame);
             if (Vector.Y.HasData) Target.Y = Vector.Y.GetFrameValue(Frame);
-
-            return Target;
         }
     }
 }

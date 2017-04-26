@@ -6,6 +6,7 @@ using SPICA.Formats.Generic.StudioMdl;
 using SPICA.Formats.Generic.WavefrontOBJ;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Motion;
+using SPICA.Formats.ModelBinary;
 using SPICA.Formats.MTFramework.Model;
 using SPICA.Formats.MTFramework.Shader;
 using SPICA.Formats.MTFramework.Texture;
@@ -28,6 +29,15 @@ namespace SPICA.WinForms.Formats
             {
                 case ".smd": return new SMD(FileName).ToH3D(FilePath);
                 case ".obj": return new OBJ(FileName).ToH3D(FilePath);
+                case ".mbn":
+                    using (FileStream Input = new FileStream(FileName, FileMode.Open))
+                    {
+                        H3D BaseScene = H3D.Open(File.ReadAllBytes(FileName.Replace(".mbn", ".bch")));
+
+                        MBn ModelBinary = new MBn(new BinaryReader(Input), BaseScene);
+
+                        return ModelBinary.ToH3D();
+                    }
             }
 
             //Formats that can only be indetified by "magic numbers"

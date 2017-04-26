@@ -334,12 +334,14 @@ namespace SPICA.WinForms
 
                 Dimension *= 2;
 
+                Renderer.Lights.Clear();
+
                 Renderer.Lights.Add(new Light
                 {
                     Position = new Vector3(0, CD.Item1.Y, Dimension),
                     Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1.0f),
                     Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
-                    Specular = new Color4(0.5f, 0.5f, 0.5f, 1.0f),
+                    Specular = new Color4(0.2f, 0.2f, 0.2f, 1.0f),
                     Enabled  = true
                 });
 
@@ -347,6 +349,8 @@ namespace SPICA.WinForms
 
                 MdlCenter = Matrix4.CreateTranslation(-CD.Item1);
             }
+
+            UpdateViewport();
         }
 
         private void TexturesList_SelectedIndexChanged(object sender, EventArgs e)
@@ -434,12 +438,12 @@ namespace SPICA.WinForms
 
         private void AnimButtonPlayBackward_Click(object sender, EventArgs e)
         {
-            Animations.Play(-1); EnableAnimator();
+            Animations.Play(-Math.Abs(Animations.Step)); EnableAnimator();
         }
 
         private void AnimButtonPlayForward_Click(object sender, EventArgs e)
         {
-            Animations.Play(1); EnableAnimator();
+            Animations.Play(Math.Abs(Animations.Step)); EnableAnimator();
         }
 
         private void AnimButtonPause_Click(object sender, EventArgs e)

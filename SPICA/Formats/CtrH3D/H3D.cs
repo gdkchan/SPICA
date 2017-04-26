@@ -85,16 +85,16 @@ namespace SPICA.Formats.CtrH3D
 
             new H3DRelocator(MS, Header).ToAbsolute();
 
-            H3D SceneData = Deserializer.Deserialize<H3D>();
+            H3D Scene = Deserializer.Deserialize<H3D>();
 
-            SceneData.BackwardCompatibility = Header.BackwardCompatibility;
-            SceneData.ForwardCompatibility  = Header.ForwardCompatibility;
+            Scene.BackwardCompatibility = Header.BackwardCompatibility;
+            Scene.ForwardCompatibility  = Header.ForwardCompatibility;
 
-            SceneData.ConverterVersion = Header.ConverterVersion;
+            Scene.ConverterVersion = Header.ConverterVersion;
 
-            SceneData.Flags = Header.Flags;
+            Scene.Flags = Header.Flags;
 
-            return SceneData;
+            return Scene;
         }
 
         public static void Save(string FileName, H3D Scene)

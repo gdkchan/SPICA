@@ -11,6 +11,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         IsLUTDist1Enabled        = 1 << 3,
         IsLUTReflectionEnabled   = 1 << 4,
         IsLUTGeoFactor0Enabled   = 1 << 5,
-        IsLUTGeoFactor1Enabled   = 1 << 6
+        IsLUTGeoFactor1Enabled   = 1 << 6,
+
+        //Test if any of the two Geometry Factors are enabled
+        IsLUTGeoFactorEnabled =
+            IsLUTGeoFactor0Enabled |
+            IsLUTGeoFactor1Enabled
     }
 }
