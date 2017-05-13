@@ -67,17 +67,12 @@ namespace SPICA.Formats.ModelBinary
             if (HasSingleVerticesDesc)
             {
                 //This is used when the model only have one vertex buffer at the beggining.
-                if (!HasBuiltInDataBuffer)
-                {
-                    VerticesDesc[0].ReadBuffer(Reader, true);
-                }
-
                 for (int i = 0; i < IndicesDesc.Count; i++)
                 {
-                    if (i > 0)
-                    {
+                    if (i == 0 && !HasBuiltInDataBuffer)
+                        VerticesDesc[0].ReadBuffer(Reader, true);
+                    else if (i > 0)
                         VerticesDesc.Add(VerticesDesc[0]);
-                    }
 
                     if (!HasBuiltInDataBuffer)
                     {

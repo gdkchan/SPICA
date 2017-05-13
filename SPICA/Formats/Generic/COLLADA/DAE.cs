@@ -70,7 +70,7 @@ namespace SPICA.Formats.Generic.COLLADA
                     DAEEffectParam ImgSurface = new DAEEffectParam();
                     DAEEffectParam ImgSampler = new DAEEffectParam();
 
-                    ImgSurface.surface = new DAEEffectParamSurfaceElement();
+                    ImgSurface.surface   = new DAEEffectParamSurfaceElement();
                     ImgSampler.sampler2D = new DAEEffectParamSampler2DElement();
 
                     ImgSurface.sid = $"{Mtl.Name}_surf";

@@ -95,6 +95,11 @@ namespace SPICA.Formats.Generic.StudioMdl
                                 v.Normal = Vector4.Normalize(v.Normal);
                             }
 
+                            for (int b = 0; b < 4 && v.Weights[b] > 0; b++)
+                            {
+                                v.Indices[b] = SM.BoneIndices[v.Indices[b]];
+                            }
+
                             M.Vertices.Add(v);
                         }
                     }
@@ -138,11 +143,11 @@ namespace SPICA.Formats.Generic.StudioMdl
                     switch (Params[0])
                     {
                         case "version": break;
-                        case "nodes": CurrSection = SMDSection.Nodes; break;
-                        case "skeleton": CurrSection = SMDSection.Skeleton; break;
-                        case "time": SkeletalFrame = int.Parse(Params[1]); break;
-                        case "triangles": CurrSection = SMDSection.Triangles; break;
-                        case "end": CurrSection = SMDSection.None; break;
+                        case "nodes":     CurrSection   = SMDSection.Nodes;     break;
+                        case "skeleton":  CurrSection   = SMDSection.Skeleton;  break;
+                        case "time":      SkeletalFrame = int.Parse(Params[1]); break;
+                        case "triangles": CurrSection   = SMDSection.Triangles; break;
+                        case "end":       CurrSection   = SMDSection.None;      break;
 
                         default:
                             switch (CurrSection)
@@ -153,8 +158,8 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                                     Nodes.Add(new SMDNode
                                     {
-                                        Index = int.Parse(Params[0]),
-                                        Name = Line.Substring(NameStart, NameLength),
+                                        Index       = int.Parse(Params[0]),
+                                        Name        = Line.Substring(NameStart, NameLength),
                                         ParentIndex = int.Parse(Params[2])
                                     });
                                     break;
@@ -285,10 +290,8 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             int i = 0;
 
-            for (i = 0; i < 4; i++)
+            for (i = 0; i < 4 && Vtx.Weights[i] > 0; i++)
             {
-                if (Vtx.Weights[i] == 0) break;
-
                 Indices += $" {Vtx.Indices[i]} {Vtx.Weights[i].ToString(CultureInfo.InvariantCulture)}";
             }
 
@@ -416,19 +419,12 @@ namespace SPICA.Formats.Generic.StudioMdl
                         }
                     }
 
-                    ushort[] BI = new ushort[20];
-
-                    for (int Index = 0; Index < BoneIndices.Count; Index++)
-                    {
-                        BI[Index] = BoneIndices[Index];
-                    }
-
                     SubMeshes.Add(new H3DSubMesh
                     {
-                        Skinning = H3DSubMeshSkinning.Smooth,
+                        Skinning         = H3DSubMeshSkinning.Smooth,
                         BoneIndicesCount = (ushort)BoneIndices.Count,
-                        BoneIndices = BI,
-                        Indices = Indices.ToArray()
+                        BoneIndices      = BoneIndices.ToArray(),
+                        Indices          = Indices.ToArray()
                     });
                 }
 
