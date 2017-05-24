@@ -1,5 +1,5 @@
-﻿using SPICA.Formats.CtrH3D;
-using SPICA.Formats.CtrH3D.LUT;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.Text;
-
 using System.Numerics;
+
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
@@ -65,46 +65,11 @@ namespace SPICA.Formats.Generic.StudioMdl
                 {
                     PICAVertex[] Vertices = Mesh.ToVertices();
 
-                    SMDMesh M = new SMDMesh();
-
-                    M.MaterialName = Mdl.Materials[Mesh.MaterialIndex].Texture0Name;
-
-                    foreach (H3DSubMesh SM in Mesh.SubMeshes)
+                    Meshes.Add(new SMDMesh
                     {
-                        foreach (ushort i in SM.Indices)
-                        {
-                            PICAVertex v = Vertices[i].Clone();
-
-                            if (Mdl.Skeleton != null &&
-                                Mdl.Skeleton.Count > 0 &&
-                                SM.Skinning != H3DSubMeshSkinning.Smooth)
-                            {
-                                int b = SM.BoneIndices[v.Indices[0]];
-
-                                Matrix4x4 Transform = Mdl.Skeleton[b].GetWorldTransform(Mdl.Skeleton);
-
-                                v.Position = Vector4.Transform(new Vector3(
-                                    v.Position.X,
-                                    v.Position.Y,
-                                    v.Position.Z),
-                                    Transform);
-
-                                v.Normal.W = 0;
-
-                                v.Normal = Vector4.Transform(v.Normal, Transform);
-                                v.Normal = Vector4.Normalize(v.Normal);
-                            }
-
-                            for (int b = 0; b < 4 && v.Weights[b] > 0; b++)
-                            {
-                                v.Indices[b] = SM.BoneIndices[v.Indices[b]];
-                            }
-
-                            M.Vertices.Add(v);
-                        }
-                    }
-
-                    Meshes.Add(M);
+                        MaterialName = Mdl.Materials[Mesh.MaterialIndex].Texture0Name,
+                        Vertices     = MeshTransform.GetVerticesList(Mdl.Skeleton, Mesh)
+                    });
                 }
             }
         }

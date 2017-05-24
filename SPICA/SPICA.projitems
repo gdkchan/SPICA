@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\Exceptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrameQuantization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\MeshTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimCurve.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DAnimationElement.cs" />

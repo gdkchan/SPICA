@@ -85,7 +85,7 @@ namespace SPICA.WinForms.GUI
 
                 StringFormat TextFmt = new StringFormat
                 {
-                    Alignment = StringAlignment.Center,
+                    Alignment     = StringAlignment.Center,
                     LineAlignment = StringAlignment.Center
                 };
 
@@ -100,8 +100,8 @@ namespace SPICA.WinForms.GUI
             {
                 Y = Input.Y - Top,
                 X = Input.X - Left,
-                Width = Input.Width + Left + Right,
-                Height = Input.Height + Top + Bottom
+                Width  = Input.Width  + Left + Right,
+                Height = Input.Height + Top  + Bottom
             };
         }
     }

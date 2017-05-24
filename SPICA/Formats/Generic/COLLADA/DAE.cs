@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.CtrH3D;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
@@ -163,7 +164,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                     H3DMesh Mesh = Mdl.Meshes[MeshIndex];
 
-                    PICAVertex[] Vertices = Mesh.ToVertices();
+                    PICAVertex[] Vertices = MeshTransform.GetWorldSpaceVertices(Mdl.Skeleton, Mesh);
 
                     string MtlName = $"Mdl_{MdlIndex}_Mtl_{Mdl.Materials[Mesh.MaterialIndex].Name}";
                     string MtlTgt = library_materials[Mesh.MaterialIndex].id;
