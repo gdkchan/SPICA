@@ -280,13 +280,15 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
 
             long Position = Deserializer.BaseStream.Position;
+
             int BufferCount = 0;
 
             //The PICA doesn't need the total number of Attributes on the Buffer, so it is not present on the Commands
             //So we need to get the Max Index used on the Index Buffer to figure out the total number of Attributes
             foreach (H3DSubMesh SM in SubMeshes)
             {
-                if (SM.MaxIndex > BufferCount) BufferCount = SM.MaxIndex;
+                if (BufferCount < SM.MaxIndex)
+                    BufferCount = SM.MaxIndex;
             }
 
             BufferCount++;

@@ -59,7 +59,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                 foreach (ushort Index in Indices)
                 {
-                    if (Index > Max) Max = Index;
+                    if (Max < Index)
+                        Max = Index;
                 }
 
                 return Max;

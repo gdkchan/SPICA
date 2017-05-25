@@ -59,6 +59,8 @@ namespace SPICA.Formats.CtrH3D
                 Type = H3DMetaDataType.ASCIIString;
             else if (ValueType == typeof(H3DBoundingBox))
                 Type = H3DMetaDataType.BoundingBox;
+            else if (ValueType == typeof(H3DVertexData))
+                Type = H3DMetaDataType.VertexData;
             else
                 throw new ArgumentException($"Type {ValueType} is not valid as Meta Data!");
 
@@ -113,6 +115,13 @@ namespace SPICA.Formats.CtrH3D
                         Deserializer.BaseStream.Seek(Address + Index * 0x3c, SeekOrigin.Begin);
 
                         Values.Add(Deserializer.Deserialize<H3DBoundingBox>());
+
+                        break;
+
+                    case H3DMetaDataType.VertexData:
+                        Deserializer.BaseStream.Seek(Address + Index * 0xc, SeekOrigin.Begin);
+
+                        Values.Add(Deserializer.Deserialize<H3DVertexData>());
 
                         break;
 

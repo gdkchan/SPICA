@@ -280,7 +280,7 @@ namespace SPICA.Serialization
 
                     BaseStream.Seek(Reference.Position, SeekOrigin.Begin);
 
-                    WritePointer(OInfo.Position);
+                    WritePointer(OInfo.Position + Reference.PointerOffset);
 
                     if (Reference.HasLength)
                     {
@@ -300,6 +300,7 @@ namespace SPICA.Serialization
         public void WritePointer(uint Pointer)
         {
             Pointers.Add(BaseStream.Position);
+
             Writer.Write(Pointer);
         }
 

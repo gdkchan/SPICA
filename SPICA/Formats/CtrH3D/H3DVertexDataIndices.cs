@@ -1,4 +1,5 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.PICA.Commands;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
@@ -6,11 +7,13 @@ using System.IO;
 
 namespace SPICA.Formats.CtrH3D
 {
-    public class H3DVertexDataIndices : ICustomSerialization
+    public struct H3DVertexDataIndices : ICustomSerialization
     {
-        public byte Type;
-        public byte DrawMode;
-        public ushort Count;
+        private byte Type;
+
+        public PICADrawMode DrawMode;
+
+        private ushort Count;
 
         public int MaxIndex
         {
@@ -31,7 +34,7 @@ namespace SPICA.Formats.CtrH3D
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            bool Format = (Type & 1) != 0;
+            bool Format = Type == 1;
             uint Address = Deserializer.Reader.ReadUInt32();
             long Position = Deserializer.BaseStream.Position;
 
@@ -53,7 +56,7 @@ namespace SPICA.Formats.CtrH3D
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             Serializer.Writer.Write(Type);
-            Serializer.Writer.Write(DrawMode);
+            Serializer.Writer.Write((byte)DrawMode);
             Serializer.Writer.Write((ushort)Indices.Length);
 
             H3DRelocationType RelocType = H3DRelocationType.RawDataIndex16;
@@ -83,7 +86,7 @@ namespace SPICA.Formats.CtrH3D
             Serializer.RawDataVtx.Values.Add(new RefValue
             {
                 Position = Position,
-                Value = Data
+                Value    = Data
             });
 
             Serializer.Skip(4);

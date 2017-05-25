@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICAAttributeName
+    public enum PICAAttributeName : byte
     {
         Position,
         Normal,

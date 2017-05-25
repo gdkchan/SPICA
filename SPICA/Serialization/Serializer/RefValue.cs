@@ -12,5 +12,6 @@ namespace SPICA.Serialization.Serializer
         public long Position;
         public bool HasLength;
         public bool HasTwoPtr;
+        public uint PointerOffset;
     }
 }
