@@ -109,23 +109,9 @@ namespace SPICA.Formats.ModelBinary
             {
                 Mesh.PositionOffset = Vector4.Zero;
 
-                Mesh.Attributes = VerticesDesc[i].Attributes;
-                Mesh.RawBuffer  = VerticesDesc[i].RawBuffer;
-
-                Mesh.VertexStride = 0;
-
-                foreach (PICAAttribute Attr in Mesh.Attributes)
-                {
-                    int Size = Attr.Elements;
-
-                    switch (Attr.Format)
-                    {
-                        case PICAAttributeFormat.Short: Size <<= 1; break;
-                        case PICAAttributeFormat.Float: Size <<= 2; break;
-                    }
-
-                    Mesh.VertexStride += Size;
-                }
+                Mesh.Attributes   = VerticesDesc[i].Attributes.ToArray();
+                Mesh.RawBuffer    = VerticesDesc[i].RawBuffer;
+                Mesh.VertexStride = VerticesDesc[i].VertexStride;
 
                 for (int j = 0; j < Mesh.SubMeshes.Count; j++)
                 {

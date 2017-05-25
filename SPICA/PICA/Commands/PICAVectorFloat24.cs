@@ -1,16 +1,15 @@
 ﻿using SPICA.Formats.Common;
 
 using System;
-using System.Xml.Serialization;
 
 namespace SPICA.PICA.Commands
 {
     public struct PICAVectorFloat24
     {
-        [XmlAttribute] public float X;
-        [XmlAttribute] public float Y;
-        [XmlAttribute] public float Z;
-        [XmlAttribute] public float W;
+        public float X;
+        public float Y;
+        public float Z;
+        public float W;
 
         private uint _Word0;
         private uint _Word1;
@@ -18,20 +17,42 @@ namespace SPICA.PICA.Commands
 
         internal uint Word0
         {
-            get { CalculateWords(); return _Word0; }
-            set { _Word0 = value; }
+            get
+            {
+                CalculateWords();
+
+                return _Word0;
+            }
+            set
+            {
+                _Word0 = value;
+            }
         }
 
         internal uint Word1
         {
-            get { return _Word1; }
-            set { _Word1 = value;  }
+            get
+            {
+                return _Word1;
+            }
+            set
+            {
+                _Word1 = value;
+            }
         }
 
         internal uint Word2
         {
-            get { return _Word2; }
-            set { _Word2 = value; CalculateFloats(); }
+            get
+            {
+                return _Word2;
+            }
+            set
+            {
+                _Word2 = value;
+
+                CalculateFloats();
+            }
         }
 
         public float this[int Index]

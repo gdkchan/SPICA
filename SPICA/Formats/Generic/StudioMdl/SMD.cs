@@ -14,7 +14,6 @@ using System.Globalization;
 using System.Text;
 using System.Numerics;
 
-
 namespace SPICA.Formats.Generic.StudioMdl
 {
     class SMD
