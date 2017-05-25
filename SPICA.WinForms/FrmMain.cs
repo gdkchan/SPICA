@@ -283,8 +283,6 @@ namespace SPICA.WinForms
                 }
             }
 
-            H3D.Save("D:\\recreated.bch", Scene);
-
             //Allow app to process click from the Open dialog that goes into the Viewport
             //This avoid the model from moving after opening a file on the dialog
             //(Note: The problem only happens if the dialog is on top of the Viewport)
