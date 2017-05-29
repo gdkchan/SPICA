@@ -256,9 +256,10 @@ namespace SPICA.Serialization
 
         private void WriteValue(RefValue Reference)
         {
-            FieldInfo Info  = Reference.Info;
-            object    Value = Reference.Value;
-            bool      Range = Info?.IsDefined(typeof(RangeAttribute)) ?? false;
+            FieldInfo Info   = Reference.Info;
+            object    Parent = Reference.Parent;
+            object    Value  = Reference.Value;
+            bool      Range  = Info?.IsDefined(typeof(RangeAttribute)) ?? false;
 
             if (Value != null && (!(Value is IList) || ((IList)Value).Count > 0 || Range))
             {
@@ -268,7 +269,12 @@ namespace SPICA.Serialization
 
                 if (OInfo.Position == Position)
                 {
-                    Reference.Serialize?.Invoke(this, Value);
+                    if (Parent != null &&
+                        Parent is ICustomSerializeCmd &&
+                        Info.FieldType == typeof(uint[]))
+                    {
+                        ((ICustomSerializeCmd)Parent).SerializeCmd(this, Value);
+                    }
 
                     AddObjPointer(Value, Position);
                     WriteValue(Value);
@@ -318,15 +324,22 @@ namespace SPICA.Serialization
             }
             else if (Value is IList)
             {
+                //This is used to find lists with segments of already serialized values.
+                //We can avoid storing then again if the same sequence is repeated.
                 uint StartPos = 0;
                 int  EndPos   = 0;
                 int  Matches  = 0;
 
                 foreach (object Elem in ((IList)Value))
                 {
-                    if (ObjPointers.ContainsKey(Elem) && (ObjPointers[Elem].Position == EndPos || EndPos == 0))
+                    if (ObjPointers.ContainsKey(Elem) && (
+                        EndPos == ObjPointers[Elem].Position ||
+                        EndPos == 0))
                     {
-                        if (Matches++ == 0) EndPos = (int)(StartPos = ObjPointers[Elem].Position);
+                        if (Matches++ == 0)
+                        {
+                            EndPos = (int)(StartPos = ObjPointers[Elem].Position);
+                        }
                     }
                     else
                     {
@@ -391,17 +404,13 @@ namespace SPICA.Serialization
 
                         RefValue Ref = new RefValue
                         {
+                            Parent    = Value,
                             Info      = Info,
                             Value     = Info.GetValue(Value),
                             Position  = BaseStream.Position,
                             HasLength = HasLength,
                             HasTwoPtr = HasTwoPtr
                         };
-
-                        if (Value is ICustomSerializeCmd && Type == typeof(uint[]))
-                        {
-                            Ref.Serialize = ((ICustomSerializeCmd)Value).SerializeCmd;
-                        }
 
                         AddReference(Type, Ref);
 

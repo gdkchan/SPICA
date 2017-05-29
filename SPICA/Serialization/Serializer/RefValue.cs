@@ -4,10 +4,8 @@ namespace SPICA.Serialization.Serializer
 {
     struct RefValue
     {
-        public delegate void OnSerialize(BinarySerializer Serializer, object Value);
-
-        public OnSerialize Serialize;
         public FieldInfo Info;
+        public object Parent;
         public object Value;
         public long Position;
         public bool HasLength;

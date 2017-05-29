@@ -28,13 +28,14 @@ namespace SPICA.Formats.CtrH3D
 
             Deserializer.BaseStream.Seek(AttributesAddress, SeekOrigin.Begin);
 
-            uint BaseAddress = uint.MaxValue;
+            int BaseAddress = int.MaxValue;
 
             for (int Index = 0; Index < Attributes.Length; Index++)
             {
                 Attributes[Index] = Deserializer.Deserialize<H3DVertexDataAttribute>();
                 
-                if (Attributes[Index].Offset < BaseAddress)
+                if (!Attributes[Index].IsFixed &&
+                     Attributes[Index].Offset < BaseAddress)
                 {
                     BaseAddress = Attributes[Index].Offset;
                 }
@@ -44,18 +45,20 @@ namespace SPICA.Formats.CtrH3D
 
             for (int Index = 0; Index < Attributes.Length; Index++)
             {
-                Attributes[Index].Offset -= BaseAddress;
-                Attributes[Index].Parent = this;
-
-                int Size = Attributes[Index].Elements;
-
-                switch (Attributes[Index].Format)
+                if (!Attributes[Index].IsFixed)
                 {
-                    case PICAAttributeFormat.Short: Size <<= 1; break;
-                    case PICAAttributeFormat.Float: Size <<= 2; break;
-                }
+                    Attributes[Index].Offset -= BaseAddress;
 
-                _VertexStride += Size;
+                    int Size = Attributes[Index].Elements;
+
+                    switch (Attributes[Index].Format)
+                    {
+                        case PICAAttributeFormat.Short: Size <<= 1; break;
+                        case PICAAttributeFormat.Float: Size <<= 2; break;
+                    }
+
+                    _VertexStride += Size;
+                }
             }
 
             Deserializer.BaseStream.Seek(IndicesAddress, SeekOrigin.Begin);
@@ -77,11 +80,18 @@ namespace SPICA.Formats.CtrH3D
 
             BufferCount++;
 
+            Deserializer.BaseStream.Seek(BaseAddress, SeekOrigin.Begin);
+
             RawBuffer = Deserializer.Reader.ReadBytes(BufferCount * _VertexStride);
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
+            for (int Index = 0; Index < Attributes.Length; Index++)
+            {
+                Attributes[Index].RawBuffer = RawBuffer;
+            }
+
             Serializer.Writer.Write((ushort)Attributes.Length);
             Serializer.Writer.Write((ushort)Indices.Length);
 

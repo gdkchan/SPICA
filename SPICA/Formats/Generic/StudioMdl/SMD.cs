@@ -62,6 +62,8 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                 foreach (H3DMesh Mesh in Mdl.Meshes)
                 {
+                    if (Mesh.Type == H3DMeshType.Silhouette) continue;
+
                     PICAVertex[] Vertices = Mesh.ToVertices();
 
                     Meshes.Add(new SMDMesh

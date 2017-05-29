@@ -4,9 +4,14 @@ namespace SPICA.Formats.Common
 {
     static class Exceptions
     {
+        public static Exception GetLessThanException(string Name, int Min)
+        {
+            return new ArgumentOutOfRangeException(Name, $"Value on {Name} is less than the minimum value {Min}!");
+        }
+
         public static Exception GetGreaterThanException(string Name, int Max)
         {
-            return new ArgumentOutOfRangeException(Name, $"Value on {Name} is bigger than the maximum value {Max}!");
+            return new ArgumentOutOfRangeException(Name, $"Value on {Name} is greater than the maximum value {Max}!");
         }
 
         public static Exception GetLengthNotEqualException(string Name, int Length)
