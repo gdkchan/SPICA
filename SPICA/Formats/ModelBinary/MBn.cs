@@ -105,7 +105,7 @@ namespace SPICA.Formats.ModelBinary
 
             int IndicesIndex = 0, i = 0;
 
-            foreach (H3DMesh Mesh in Model.Meshes.OrderBy(x => (int)x.MetaData.Values["ShapeId"].Values[0]))
+            foreach (H3DMesh Mesh in Model.Meshes.OrderBy(x => (int)x.MetaData.Values["ShapeId"][0]))
             {
                 Mesh.PositionOffset = Vector4.Zero;
 

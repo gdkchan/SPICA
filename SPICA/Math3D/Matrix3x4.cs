@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Xml.Serialization;
 
 namespace SPICA.Math3D
 {
@@ -11,21 +10,21 @@ namespace SPICA.Math3D
 
         public static Matrix3x4 Identity { get { return _identity; } }
 
-        [XmlAttribute] public float M11 { get { return m.M11; } set { m.M11 = value; } }
-        [XmlAttribute] public float M12 { get { return m.M12; } set { m.M12 = value; } }
-        [XmlAttribute] public float M13 { get { return m.M13; } set { m.M13 = value; } }
+        public float M11 { get { return m.M11; } set { m.M11 = value; } }
+        public float M12 { get { return m.M12; } set { m.M12 = value; } }
+        public float M13 { get { return m.M13; } set { m.M13 = value; } }
 
-        [XmlAttribute] public float M21 { get { return m.M21; } set { m.M21 = value; } }
-        [XmlAttribute] public float M22 { get { return m.M22; } set { m.M22 = value; } }
-        [XmlAttribute] public float M23 { get { return m.M23; } set { m.M23 = value; } }
+        public float M21 { get { return m.M21; } set { m.M21 = value; } }
+        public float M22 { get { return m.M22; } set { m.M22 = value; } }
+        public float M23 { get { return m.M23; } set { m.M23 = value; } }
 
-        [XmlAttribute] public float M31 { get { return m.M31; } set { m.M31 = value; } }
-        [XmlAttribute] public float M32 { get { return m.M32; } set { m.M32 = value; } }
-        [XmlAttribute] public float M33 { get { return m.M33; } set { m.M33 = value; } }
+        public float M31 { get { return m.M31; } set { m.M31 = value; } }
+        public float M32 { get { return m.M32; } set { m.M32 = value; } }
+        public float M33 { get { return m.M33; } set { m.M33 = value; } }
 
-        [XmlAttribute] public float M41 { get { return m.M41; } set { m.M41 = value; } }
-        [XmlAttribute] public float M42 { get { return m.M42; } set { m.M42 = value; } }
-        [XmlAttribute] public float M43 { get { return m.M43; } set { m.M43 = value; } }
+        public float M41 { get { return m.M41; } set { m.M41 = value; } }
+        public float M42 { get { return m.M42; } set { m.M42 = value; } }
+        public float M43 { get { return m.M43; } set { m.M43 = value; } }
 
         public Matrix3x4(Matrix4x4 Matrix)
         {

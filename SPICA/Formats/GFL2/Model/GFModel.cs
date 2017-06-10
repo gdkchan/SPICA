@@ -182,7 +182,7 @@ namespace SPICA.Formats.GFL2.Model
 
                     Mat.TextureMappers[Unit].MinLOD = (byte)Material.TextureCoords[Unit].MinLOD;
 
-                    Mat.TextureMappers[Unit].BorderColor = Material.BorderColor[Unit].ToRGBA();
+                    Mat.TextureMappers[Unit].BorderColor = Material.BorderColor[Unit];
                 }
 
                 Params.EmissionColor  = Material.EmissionColor;

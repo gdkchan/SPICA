@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Xml.Serialization;
 
 namespace SPICA.Formats.CtrH3D.Model.Mesh
 {
@@ -81,7 +80,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         public Vector3 MeshCenter;
 
-        [XmlIgnore] public H3DModel Parent;
+        public H3DModel Parent;
 
         private uint UserDefinedAddress;
 
@@ -172,16 +171,9 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             int   AttributesCount   = 0;
             int   AttributesTotal   = 0;
 
-            int UniformIndex = 0;
             int FixedIndex   = 0;
 
-            Vector4[] Uniform = new Vector4[96];
-
             PICAVectorFloat24[] Fixed = new PICAVectorFloat24[12];
-
-            Uniform[6] = Vector4.Zero;
-            Uniform[7] = Vector4.One;
-            Uniform[8] = Vector4.One;
 
             while (Reader.HasCommand)
             {
@@ -197,8 +189,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                     case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG1: BufferAttributes |= Param; break;
                     case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG2:
                         BufferAttributes |= (Param & 0xffff) << 32;
-                        VertexStride = (byte)(Param >> 16);
-                        AttributesCount = (int)(Param >> 28);
+                        VertexStride    = (byte)(Param >> 16);
+                        AttributesCount =  (int)(Param >> 28);
                         break;
                     case PICARegister.GPUREG_FIXEDATTRIB_INDEX: FixedIndex = (int)Param; break;
                     case PICARegister.GPUREG_FIXEDATTRIB_DATA0: Fixed[FixedIndex].Word0 = (uint)Param; break;
@@ -207,31 +199,6 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                     case PICARegister.GPUREG_VSH_NUM_ATTR: AttributesTotal = (int)(Param + 1); break;
                     case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW:  BufferPermutation |= Param <<  0; break;
                     case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH: BufferPermutation |= Param << 32; break;
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA1:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA2:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA3:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA4:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA5:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA6:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
-                        for (int i = 0; i < Cmd.Parameters.Length; i++)
-                        {
-                            float Value = IOUtils.ToSingle(Cmd.Parameters[i]);
-
-                            int j = UniformIndex  >> 2;
-                            int k = UniformIndex++ & 3;
-
-                            switch (k)
-                            {
-                                case 0: Uniform[j].W = Value; break;
-                                case 1: Uniform[j].Z = Value; break;
-                                case 2: Uniform[j].Y = Value; break;
-                                case 3: Uniform[j].X = Value; break;
-                            }
-                        }
-                        break;
                 }
             }
 
@@ -265,14 +232,14 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                     switch (Attrib.Name)
                     {
-                        case PICAAttributeName.Position:   Attrib.Scale = Uniform[7].X; break;
-                        case PICAAttributeName.Normal:     Attrib.Scale = Uniform[7].Y; break;
-                        case PICAAttributeName.Tangent:    Attrib.Scale = Uniform[7].Z; break;
-                        case PICAAttributeName.Color:      Attrib.Scale = Uniform[7].W; break;
-                        case PICAAttributeName.TexCoord0:  Attrib.Scale = Uniform[8].X; break;
-                        case PICAAttributeName.TexCoord1:  Attrib.Scale = Uniform[8].Y; break;
-                        case PICAAttributeName.TexCoord2:  Attrib.Scale = Uniform[8].Z; break;
-                        case PICAAttributeName.BoneWeight: Attrib.Scale = Uniform[8].W; break;
+                        case PICAAttributeName.Position:   Attrib.Scale = Reader.Uniforms[7].X; break;
+                        case PICAAttributeName.Normal:     Attrib.Scale = Reader.Uniforms[7].Y; break;
+                        case PICAAttributeName.Tangent:    Attrib.Scale = Reader.Uniforms[7].Z; break;
+                        case PICAAttributeName.Color:      Attrib.Scale = Reader.Uniforms[7].W; break;
+                        case PICAAttributeName.TexCoord0:  Attrib.Scale = Reader.Uniforms[8].X; break;
+                        case PICAAttributeName.TexCoord1:  Attrib.Scale = Reader.Uniforms[8].Y; break;
+                        case PICAAttributeName.TexCoord2:  Attrib.Scale = Reader.Uniforms[8].Z; break;
+                        case PICAAttributeName.BoneWeight: Attrib.Scale = Reader.Uniforms[8].W; break;
                     }
 
                     Attributes[Index] = Attrib;
@@ -293,7 +260,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             BufferCount++;
 
-            PositionOffset = Uniform[6];
+            PositionOffset = Reader.Uniforms[6];
 
             Deserializer.BaseStream.Seek(BufferAddress, SeekOrigin.Begin);
 
@@ -307,10 +274,10 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             //Fill Commands
             PICACommandWriter Writer;
 
-            ulong BufferFormats = 0;
-            ulong BufferAttributes = 0;
+            ulong BufferFormats     = 0;
+            ulong BufferAttributes  = 0;
             ulong BufferPermutation = 0;
-            int AttributesTotal = 0;
+            int   AttributesTotal   = 0;
 
             float[] Scales = new float[] { 1, 0, 0, 0, 1, 0, 0, 0 };
 

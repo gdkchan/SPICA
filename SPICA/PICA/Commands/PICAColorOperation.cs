@@ -1,11 +1,9 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICAColorOperation
     {
-        [XmlAttribute] public PICAFragOpMode FragOpMode;
-        [XmlAttribute] public PICABlendMode  BlendMode;
+        public PICAFragOpMode FragOpMode;
+        public PICABlendMode  BlendMode;
 
         public PICAColorOperation(uint Param)
         {

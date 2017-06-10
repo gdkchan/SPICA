@@ -45,78 +45,91 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             }
             set
             {
-                if (value == null)
-                {
-                    throw Exceptions.GetNullException("Name");
-                }
-
-                _Name = value;
+                _Name = value ?? throw Exceptions.GetNullException("Name");
             }
         }
 
         [Ignore] public readonly bool[] EnabledTextures;
 
-        //This is a default material with 1 texture and default settings
-        public static H3DMaterial Default
+        public static H3DMaterial GetSimpleMaterial(
+            string ModelName,
+            string MaterialName,
+            string TextureName,
+            string ShaderName = "DefaultShader",
+            int    ShaderIndex = 0)
         {
-            get
-            {
-                H3DMaterial Output = new H3DMaterial();
+            H3DMaterial Output = new H3DMaterial();
 
-                Output.MaterialParams.Flags = H3DMaterialFlags.IsFragmentLightingEnabled;
-                Output.MaterialParams.FragmentFlags = H3DFragmentFlags.IsLUTDist0Enabled;
+            Output.MaterialParams.EmissionColor  = RGBA.White;
+            Output.MaterialParams.AmbientColor   = RGBA.White;
+            Output.MaterialParams.DiffuseColor   = RGBA.White;
+            Output.MaterialParams.Specular0Color = RGBA.White;
+            Output.MaterialParams.Specular1Color = RGBA.White;
+            Output.MaterialParams.Constant0Color = RGBA.White;
+            Output.MaterialParams.Constant1Color = RGBA.White;
+            Output.MaterialParams.Constant2Color = RGBA.White;
+            Output.MaterialParams.Constant3Color = RGBA.White;
+            Output.MaterialParams.Constant4Color = RGBA.White;
+            Output.MaterialParams.Constant5Color = RGBA.White;
+            Output.MaterialParams.BlendColor     = RGBA.White;
 
-                Output.MaterialParams.AmbientColor = RGBA.White;
-                Output.MaterialParams.DiffuseColor = RGBA.White;
-                Output.MaterialParams.Specular0Color = RGBA.Gray;
+            Output.MaterialParams.ColorScale = 1;
 
-                Output.MaterialParams.ColorScale = 1;
+            Output.MaterialParams.TexEnvBufferColor = RGBA.White;
 
-                Output.MaterialParams.TexEnvBufferColor = new PICATexEnvColor(0xff000000);
+            Output.MaterialParams.ColorOperation.BlendMode   = PICABlendMode.Blend;
+            Output.MaterialParams.BlendFunction.ColorSrcFunc = PICABlendFunc.One;
+            Output.MaterialParams.BlendFunction.ColorDstFunc = PICABlendFunc.Zero;
+            Output.MaterialParams.BlendFunction.AlphaSrcFunc = PICABlendFunc.One;
+            Output.MaterialParams.BlendFunction.AlphaDstFunc = PICABlendFunc.Zero;
 
-                Output.MaterialParams.DepthColorMask.Enabled = true;
+            Output.MaterialParams.DepthColorMask.Enabled = true;
 
-                Output.MaterialParams.DepthColorMask.DepthFunc = PICATestFunc.Less;
+            Output.MaterialParams.DepthColorMask.DepthFunc = PICATestFunc.Lequal;
 
-                Output.MaterialParams.DepthColorMask.RedWrite   = true;
-                Output.MaterialParams.DepthColorMask.GreenWrite = true;
-                Output.MaterialParams.DepthColorMask.BlueWrite  = true;
-                Output.MaterialParams.DepthColorMask.AlphaWrite = true;
-                Output.MaterialParams.DepthColorMask.DepthWrite = true;
+            Output.MaterialParams.DepthColorMask.RedWrite   = true;
+            Output.MaterialParams.DepthColorMask.GreenWrite = true;
+            Output.MaterialParams.DepthColorMask.BlueWrite  = true;
+            Output.MaterialParams.DepthColorMask.AlphaWrite = true;
+            Output.MaterialParams.DepthColorMask.DepthWrite = true;
 
-                Output.MaterialParams.ColorBufferRead  = true;
-                Output.MaterialParams.ColorBufferWrite = true;
+            Output.MaterialParams.ColorBufferRead  = false;
+            Output.MaterialParams.ColorBufferWrite = true;
 
-                Output.MaterialParams.DepthBufferRead  = true;
-                Output.MaterialParams.DepthBufferWrite = true;
+            Output.MaterialParams.StencilBufferRead  = false;
+            Output.MaterialParams.StencilBufferWrite = false;
 
-                Output.MaterialParams.TexEnvStages[0] = PICATexEnvStage.Texture0;
-                Output.MaterialParams.TexEnvStages[1] = PICATexEnvStage.PassThrough;
-                Output.MaterialParams.TexEnvStages[2] = PICATexEnvStage.PassThrough;
-                Output.MaterialParams.TexEnvStages[3] = PICATexEnvStage.PassThrough;
-                Output.MaterialParams.TexEnvStages[4] = PICATexEnvStage.PassThrough;
-                Output.MaterialParams.TexEnvStages[5] = PICATexEnvStage.PassThrough;
+            Output.MaterialParams.DepthBufferRead  = true;
+            Output.MaterialParams.DepthBufferWrite = true;
 
-                Output.MaterialParams.ColorBufferWrite   = true;
-                Output.MaterialParams.StencilBufferRead  = true;
-                Output.MaterialParams.StencilBufferWrite = true;
-                Output.MaterialParams.DepthBufferRead    = true;
-                Output.MaterialParams.DepthBufferWrite   = true;
+            Output.MaterialParams.TexEnvStages[0] = PICATexEnvStage.Texture0;
+            Output.MaterialParams.TexEnvStages[1] = PICATexEnvStage.PassThrough;
+            Output.MaterialParams.TexEnvStages[2] = PICATexEnvStage.PassThrough;
+            Output.MaterialParams.TexEnvStages[3] = PICATexEnvStage.PassThrough;
+            Output.MaterialParams.TexEnvStages[4] = PICATexEnvStage.PassThrough;
+            Output.MaterialParams.TexEnvStages[5] = PICATexEnvStage.PassThrough;
 
-                Output.TextureMappers[0].WrapU = H3DTextureWrap.Repeat;
-                Output.TextureMappers[0].WrapV = H3DTextureWrap.Repeat;
+            Output.TextureMappers[0].WrapU = H3DTextureWrap.Repeat;
+            Output.TextureMappers[0].WrapV = H3DTextureWrap.Repeat;
 
-                Output.TextureMappers[0].MinFilter = H3DTextureMinFilter.Linear;
-                Output.TextureMappers[0].MagFilter = H3DTextureMagFilter.Linear;
+            Output.TextureMappers[0].MinFilter = H3DTextureMinFilter.NearestMipmapLinear;
+            Output.TextureMappers[0].MagFilter = H3DTextureMagFilter.Linear;
 
-                Output.MaterialParams.TextureCoords[0].Scale = Vector2.One;
+            Output.TextureMappers[0].BorderColor = RGBA.White;
 
-                Output.EnabledTextures[0] = true;
+            Output.MaterialParams.TextureCoords[0].Flags = H3DTextureCoordFlags.IsDirty;
+            Output.MaterialParams.TextureCoords[0].ReferenceCameraIndex = -1;
+            Output.MaterialParams.TextureCoords[0].Scale = Vector2.One;
 
-                Output.Name = "SPICA_Material";
+            Output.MaterialParams.ShaderReference = $"{ShaderIndex}@{ShaderName}";
+            Output.MaterialParams.ModelReference = $"{MaterialName}@{ModelName}";
 
-                return Output;
-            }
+            Output.EnabledTextures[0] = true;
+
+            Output.Name         = MaterialName;
+            Output.Texture0Name = TextureName;
+
+            return Output;
         }
 
         public H3DMaterial()

@@ -1,12 +1,10 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICAAlphaTest
     {
-        [XmlAttribute] public bool Enabled;
-        [XmlAttribute] public PICATestFunc Function;
-        [XmlAttribute] public byte Reference;
+        public bool Enabled;
+        public PICATestFunc Function;
+        public byte Reference;
 
         public PICAAlphaTest(uint Param)
         {

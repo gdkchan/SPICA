@@ -4,13 +4,14 @@ using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace SPICA.Formats.CtrH3D
 {
-    public struct H3DMetaDataValue : ICustomSerialization, INamed
+    public struct H3DMetaDataValue : ICustomSerialization, IEnumerable<object>, INamed
     {
         private string _Name;
 
@@ -22,18 +23,15 @@ namespace SPICA.Formats.CtrH3D
             }
             set
             {
-                if (value == null)
-                {
-                    throw Exceptions.GetNullException("Name");
-                }
-
-                _Name = value;
+                _Name = value ?? throw Exceptions.GetNullException("Name");
             }
         }
 
         public H3DMetaDataType Type;
 
-        [Ignore] public List<object> Values;
+        [Ignore] private List<object> Values;
+
+        public int Count { get { return Values.Count; } }
 
         public object this[int Index]
         {
@@ -47,9 +45,16 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
-        public H3DMetaDataValue(string Name, object Value)
+        public H3DMetaDataValue(string Name, params object[] Values)
         {
-            Type ValueType = Value.GetType();
+            if (Values.Length == 0)
+            {
+                throw new ArgumentException($"You must specify at least one value!");
+            }
+
+            _Name = $"${Name}";
+
+            Type ValueType = Values[0].GetType();
 
             if (ValueType == typeof(int))
                 Type = H3DMetaDataType.Integer;
@@ -64,8 +69,38 @@ namespace SPICA.Formats.CtrH3D
             else
                 throw new ArgumentException($"Type {ValueType} is not valid as Meta Data!");
 
-            _Name = $"${Name}";
-            Values = new List<object> { Value };
+            this.Values = new List<object>();
+
+            foreach (object Value in Values)
+            {
+                switch (Type)
+                {
+                    case H3DMetaDataType.Integer:       this.Values.Add((int)Value);            break;
+                    case H3DMetaDataType.Single:        this.Values.Add((float)Value);          break;
+                    case H3DMetaDataType.ASCIIString:   this.Values.Add((string)Value);         break;
+                    case H3DMetaDataType.UnicodeString: this.Values.Add((string)Value);         break;
+                    case H3DMetaDataType.BoundingBox:   this.Values.Add((H3DBoundingBox)Value); break;
+                }
+            }
+        }
+
+        public H3DMetaDataValue(H3DBoundingBox OBB)
+        {
+            _Name = "OBBox";
+
+            Type = H3DMetaDataType.BoundingBox;
+
+            Values = new List<object> { OBB };
+        }
+
+        public IEnumerator<object> GetEnumerator()
+        {
+            return Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)

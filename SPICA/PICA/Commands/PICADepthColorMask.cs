@@ -1,16 +1,14 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICADepthColorMask
     {
-        [XmlAttribute] public bool Enabled;
-        [XmlAttribute] public PICATestFunc DepthFunc;
-        [XmlAttribute] public bool RedWrite;
-        [XmlAttribute] public bool GreenWrite;
-        [XmlAttribute] public bool BlueWrite;
-        [XmlAttribute] public bool AlphaWrite;
-        [XmlAttribute] public bool DepthWrite;
+        public bool Enabled;
+        public PICATestFunc DepthFunc;
+        public bool RedWrite;
+        public bool GreenWrite;
+        public bool BlueWrite;
+        public bool AlphaWrite;
+        public bool DepthWrite;
 
         public PICADepthColorMask(uint Param)
         {

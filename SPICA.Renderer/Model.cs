@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.ES30;
+using OpenTK.Graphics.OpenGL;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
@@ -94,9 +94,9 @@ namespace SPICA.Renderer
                     //Only Pokémon uses this (for custom Rim lighting and Phong shading on the shaders)
                     foreach (H3DMetaDataValue MetaData in Params.MetaData.Values)
                     {
-                        if (MetaData.Type == H3DMetaDataType.Single && MetaData.Values.Count > 0)
+                        if (MetaData.Type == H3DMetaDataType.Single && MetaData.Count > 0)
                         {
-                            float Value = (float)MetaData.Values[0];
+                            float Value = (float)MetaData[0];
 
                             switch (MetaData.Name)
                             {

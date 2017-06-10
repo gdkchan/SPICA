@@ -19,12 +19,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             }
             set
             {
-                if (value == null)
-                {
-                    throw Exceptions.GetNullException("Name");
-                }
-
-                _Name = value;
+                _Name = value ?? throw Exceptions.GetNullException("Name");
             }
         }
 
@@ -44,11 +39,6 @@ namespace SPICA.Formats.CtrH3D.Animation
             {
                 Type ValueType = value.GetType();
 
-                if (value == null)
-                {
-                    throw Exceptions.GetNullException("Content");
-                }
-
                 if (ValueType != typeof(H3DAnimVector2D)      &&
                     ValueType != typeof(H3DAnimTransform)     &&
                     ValueType != typeof(H3DAnimQuatTransform) &&
@@ -58,7 +48,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                     throw Exceptions.GetTypeException("Content", ValueType.ToString());
                 }
 
-                _Content = value;
+                _Content = value ?? throw Exceptions.GetNullException("Content");
             }
         }
 

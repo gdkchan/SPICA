@@ -18,12 +18,7 @@ namespace SPICA.Formats.CtrH3D.LUT
             }
             set
             {
-                if (value == null)
-                {
-                    throw Exceptions.GetNullException("Name");
-                }
-
-                _Name = value;
+                _Name = value ?? throw Exceptions.GetNullException("Name");
             }
         }
 

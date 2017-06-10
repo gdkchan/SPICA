@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\CRC32Hash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\Exceptions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\GameCompatibility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrameQuantization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\MeshTransform.cs" />
@@ -144,12 +145,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Shader\GFFragShader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTexture.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\Texture\GFTextureFormat.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\GFMotionPack.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\GFUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBone.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotBoneTransform.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotion.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GFMotKeyFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\GF1MotionPack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GF1MotBone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GF1MotBoneTransform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GF1Motion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL\Motion\GF1MotKeyFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBn.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBnAttributeFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\ModelBinary\MBnAttributeName.cs" />
@@ -208,7 +208,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATestFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALogicalOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAStencilTest.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvCombiner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvOperand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvScale.cs" />

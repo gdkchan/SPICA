@@ -1,16 +1,14 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICALUTInAbs
     {
-        [XmlAttribute] public bool Dist0;
-        [XmlAttribute] public bool Dist1;
-        [XmlAttribute] public bool Specular;
-        [XmlAttribute] public bool Fresnel;
-        [XmlAttribute] public bool ReflecR;
-        [XmlAttribute] public bool ReflecG;
-        [XmlAttribute] public bool ReflecB;
+        public bool Dist0;
+        public bool Dist1;
+        public bool Specular;
+        public bool Fresnel;
+        public bool ReflecR;
+        public bool ReflecG;
+        public bool ReflecB;
 
         public PICALUTInAbs(uint Param)
         {

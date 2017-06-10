@@ -1,18 +1,15 @@
 ﻿using System.IO;
-using System.Xml.Serialization;
 
 namespace SPICA.Math3D
 {
     public struct RGBA
     {
-        [XmlAttribute] public byte R;
-        [XmlAttribute] public byte G;
-        [XmlAttribute] public byte B;
-        [XmlAttribute] public byte A;
+        public byte R;
+        public byte G;
+        public byte B;
+        public byte A;
 
         public static RGBA Black { get { return new RGBA(0, 0, 0, 255); } }
-
-        public static RGBA Gray { get { return new RGBA(127, 127, 127, 255); } }
 
         public static RGBA White { get { return new RGBA(255, 255, 255, 255); } }
 
@@ -22,6 +19,14 @@ namespace SPICA.Math3D
             this.G = G;
             this.B = B;
             this.A = A;
+        }
+
+        public RGBA(uint Param)
+        {
+            R = (byte)(Param >>  0);
+            G = (byte)(Param >>  8);
+            B = (byte)(Param >> 16);
+            A = (byte)(Param >> 24);
         }
 
         public RGBA(BinaryReader Reader)

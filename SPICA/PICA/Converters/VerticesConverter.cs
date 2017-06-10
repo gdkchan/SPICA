@@ -91,15 +91,15 @@ namespace SPICA.PICA.Converters
                                 switch (Attr.Name)
                                 {
                                     case PICAAttributeName.BoneIndex:
-                                        Out.Indices[0] = (int)Attr.Value[0];
-                                        Out.Indices[1] = (int)Attr.Value[1];
-                                        Out.Indices[2] = (int)Attr.Value[2];
+                                        Out.Indices[0] = (int)Attr.Value.X;
+                                        Out.Indices[1] = (int)Attr.Value.Y;
+                                        Out.Indices[2] = (int)Attr.Value.Z;
                                         break;
 
                                     case PICAAttributeName.BoneWeight:
-                                        Out.Weights[0] =      Attr.Value[0];
-                                        Out.Weights[1] =      Attr.Value[1];
-                                        Out.Weights[2] =      Attr.Value[2];
+                                        Out.Weights[0] =      Attr.Value.X;
+                                        Out.Weights[1] =      Attr.Value.Y;
+                                        Out.Weights[2] =      Attr.Value.Z;
                                         break;
                                 }
                             }

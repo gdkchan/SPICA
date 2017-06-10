@@ -67,7 +67,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
         }
 
-        [Ignore] internal ushort BoolUniforms;
+        [Ignore] public ushort BoolUniforms;
 
         [Ignore] public ushort[] Indices;
 

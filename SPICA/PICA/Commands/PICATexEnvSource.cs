@@ -1,11 +1,9 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public class PICATexEnvSource
     {
-        [XmlAttribute] public PICATextureCombinerSource[] Color;
-        [XmlAttribute] public PICATextureCombinerSource[] Alpha;
+        public PICATextureCombinerSource[] Color;
+        public PICATextureCombinerSource[] Alpha;
 
         public PICATexEnvSource()
         {

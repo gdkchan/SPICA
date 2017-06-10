@@ -174,11 +174,10 @@ namespace SPICA.Formats.MTFramework.Model
 
             foreach (MTMaterial Mat in Materials)
             {
-                H3DMaterial Mtl = H3DMaterial.Default;
-
-                Mtl.Name = Mat.Name;
-
-                Mtl.Texture0Name = Path.GetFileNameWithoutExtension(Mat.Texture0Name);
+                H3DMaterial Mtl = H3DMaterial.GetSimpleMaterial(
+                    Model.Name,
+                    Mat.Name,
+                    Path.GetFileNameWithoutExtension(Mat.Texture0Name));
 
                 Mtl.MaterialParams.ColorOperation.BlendMode  = Mat.AlphaBlend.BlendMode;
                 Mtl.MaterialParams.BlendFunction             = Mat.AlphaBlend.BlendFunction;
@@ -365,7 +364,7 @@ namespace SPICA.Formats.MTFramework.Model
 
             if (Model.Materials.Count == 0)
             {
-                Model.Materials.Add(H3DMaterial.Default);
+                Model.Materials.Add(H3DMaterial.GetSimpleMaterial(Model.Name, "DummyMaterial", null));
             }
 
             Output.Models.Add(Model);

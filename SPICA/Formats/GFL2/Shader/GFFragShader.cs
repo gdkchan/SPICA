@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 
@@ -12,7 +13,7 @@ namespace SPICA.Formats.GFL2.Shader
 
         public readonly PICATexEnvStage[] TexEnvStages;
 
-        public PICATexEnvColor TexEnvBufferColor;
+        public RGBA TexEnvBufferColor;
 
         public GFFragShader()
         {
@@ -100,7 +101,7 @@ namespace SPICA.Formats.GFL2.Shader
                     case PICARegister.GPUREG_TEXENV3_COLOR:
                     case PICARegister.GPUREG_TEXENV4_COLOR:
                     case PICARegister.GPUREG_TEXENV5_COLOR:
-                        TexEnvStages[Stage].Color = new PICATexEnvColor(Param);
+                        TexEnvStages[Stage].Color = new RGBA(Param);
                         break;
 
                     case PICARegister.GPUREG_TEXENV0_SCALE:
@@ -114,7 +115,7 @@ namespace SPICA.Formats.GFL2.Shader
 
                     case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER: PICATexEnvStage.SetUpdateBuffer(TexEnvStages, Param); break;
 
-                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new RGBA(Param); break;
                 }
             }
         }

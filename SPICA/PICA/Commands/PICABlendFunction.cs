@@ -1,17 +1,15 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICABlendFunction
     {
-        [XmlAttribute] public PICABlendEquation ColorEquation;
-        [XmlAttribute] public PICABlendEquation AlphaEquation;
+        public PICABlendEquation ColorEquation;
+        public PICABlendEquation AlphaEquation;
 
-        [XmlAttribute] public PICABlendFunc ColorSrcFunc;
-        [XmlAttribute] public PICABlendFunc ColorDstFunc;
+        public PICABlendFunc ColorSrcFunc;
+        public PICABlendFunc ColorDstFunc;
 
-        [XmlAttribute] public PICABlendFunc AlphaSrcFunc;
-        [XmlAttribute] public PICABlendFunc AlphaDstFunc;
+        public PICABlendFunc AlphaSrcFunc;
+        public PICABlendFunc AlphaDstFunc;
 
         public PICABlendFunction(uint Param)
         {

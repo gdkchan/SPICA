@@ -1,11 +1,13 @@
-﻿namespace SPICA.PICA.Commands
+﻿using SPICA.Math3D;
+
+namespace SPICA.PICA.Commands
 {
     public class PICATexEnvStage
     {
         public PICATexEnvSource   Source;
         public PICATexEnvOperand  Operand;
         public PICATexEnvCombiner Combiner;
-        public PICATexEnvColor    Color;
+        public RGBA              Color;
         public PICATexEnvScale    Scale;
 
         public bool UpdateColorBuffer;
@@ -71,7 +73,7 @@
             Source   = new PICATexEnvSource();
             Operand  = new PICATexEnvOperand();
             Combiner = new PICATexEnvCombiner();
-            Color    = new PICATexEnvColor();
+            Color    = new RGBA();
             Scale    = new PICATexEnvScale();
         }
 

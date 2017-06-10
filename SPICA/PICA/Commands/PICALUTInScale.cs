@@ -1,16 +1,14 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICALUTInScale
     {
-        [XmlAttribute] public PICALUTScale Dist0;
-        [XmlAttribute] public PICALUTScale Dist1;
-        [XmlAttribute] public PICALUTScale Specular;
-        [XmlAttribute] public PICALUTScale Fresnel;
-        [XmlAttribute] public PICALUTScale ReflecR;
-        [XmlAttribute] public PICALUTScale ReflecG;
-        [XmlAttribute] public PICALUTScale ReflecB;
+        public PICALUTScale Dist0;
+        public PICALUTScale Dist1;
+        public PICALUTScale Specular;
+        public PICALUTScale Fresnel;
+        public PICALUTScale ReflecR;
+        public PICALUTScale ReflecG;
+        public PICALUTScale ReflecB;
 
         public PICALUTInScale(uint Param)
         {

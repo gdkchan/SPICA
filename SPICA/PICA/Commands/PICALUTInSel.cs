@@ -1,16 +1,14 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICALUTInSel
     {
-        [XmlAttribute] public PICALUTInput Dist0;
-        [XmlAttribute] public PICALUTInput Dist1;
-        [XmlAttribute] public PICALUTInput Specular;
-        [XmlAttribute] public PICALUTInput Fresnel;
-        [XmlAttribute] public PICALUTInput ReflecR;
-        [XmlAttribute] public PICALUTInput ReflecG;
-        [XmlAttribute] public PICALUTInput ReflecB;
+        public PICALUTInput Dist0;
+        public PICALUTInput Dist1;
+        public PICALUTInput Specular;
+        public PICALUTInput Fresnel;
+        public PICALUTInput ReflecR;
+        public PICALUTInput ReflecG;
+        public PICALUTInput ReflecB;
 
         public PICALUTInSel(uint Param)
         {

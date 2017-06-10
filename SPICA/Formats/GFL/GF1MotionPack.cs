@@ -6,11 +6,11 @@ using System.IO;
 
 namespace SPICA.Formats.GFL
 {
-    class GFMotionPack : IEnumerable<GFMotion>
+    class GF1MotionPack : IEnumerable<GF1Motion>
     {
-        private List<GFMotion> Animations;
+        private List<GF1Motion> Animations;
 
-        public GFMotion this[int Index]
+        public GF1Motion this[int Index]
         {
             get
             {
@@ -24,14 +24,14 @@ namespace SPICA.Formats.GFL
 
         public int Count { get { return Animations.Count; } }
 
-        public GFMotionPack()
+        public GF1MotionPack()
         {
-            Animations = new List<GFMotion>();
+            Animations = new List<GF1Motion>();
         }
 
-        public GFMotionPack(Stream Input) : this(new BinaryReader(Input)) { }
+        public GF1MotionPack(Stream Input) : this(new BinaryReader(Input)) { }
 
-        public GFMotionPack(BinaryReader Reader) : this()
+        public GF1MotionPack(BinaryReader Reader) : this()
         {
             long Position = Reader.BaseStream.Position;
 
@@ -39,7 +39,7 @@ namespace SPICA.Formats.GFL
 
             Reader.BaseStream.Seek(Reader.ReadUInt32() - 8, SeekOrigin.Current);
 
-            List<GFMotBone> Skeleton = GFMotBone.ReadSkeleton(Reader);
+            List<GF1MotBone> Skeleton = GF1MotBone.ReadSkeleton(Reader);
 
             for (int Index = 1; Index < AnimsCount; Index++)
             {
@@ -51,11 +51,11 @@ namespace SPICA.Formats.GFL
 
                 Reader.BaseStream.Seek(Position + Address, SeekOrigin.Begin);
 
-                Animations.Add(new GFMotion(Reader, Skeleton, Index - 1));
+                Animations.Add(new GF1Motion(Reader, Skeleton, Index - 1));
             }
         }
 
-        public IEnumerator<GFMotion> GetEnumerator()
+        public IEnumerator<GF1Motion> GetEnumerator()
         {
             return Animations.GetEnumerator();
         }

@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.GFL.Motion
 {
-    class GFMotBone
+    class GF1MotBone
     {
         public string Name;
 
@@ -18,17 +18,17 @@ namespace SPICA.Formats.GFL.Motion
         public Vector3    Translation;
         public Quaternion QuatRotation;
 
-        public static List<GFMotBone> ReadSkeleton(BinaryReader Reader)
+        public static List<GF1MotBone> ReadSkeleton(BinaryReader Reader)
         {
-            List<GFMotBone> Output = new List<GFMotBone>();
+            List<GF1MotBone> Output = new List<GF1MotBone>();
 
             byte BonesCount = Reader.ReadByte();
 
-            Output.Add(new GFMotBone { Name = "Origin" });
+            Output.Add(new GF1MotBone { Name = "Origin" });
 
             for (int Index = 1; Index < BonesCount; Index++)
             {
-                Output.Add(new GFMotBone
+                Output.Add(new GF1MotBone
                 {
                     UnkIndex0   = Reader.ReadByte(),
                     ParentIndex = Reader.ReadByte(),
@@ -44,7 +44,7 @@ namespace SPICA.Formats.GFL.Motion
                 Output[Index].Name = Reader.ReadNullTerminatedString();
             }
 
-            GFUtils.Align(Reader);
+            Reader.Align(4);
 
             for (int Index = 0; Index < BonesCount; Index++)
             {

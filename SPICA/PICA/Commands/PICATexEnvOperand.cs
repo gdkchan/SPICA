@@ -1,11 +1,9 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public class PICATexEnvOperand
     {
-        [XmlAttribute] public PICATextureCombinerColorOp[] Color;
-        [XmlAttribute] public PICATextureCombinerAlphaOp[] Alpha;
+        public PICATextureCombinerColorOp[] Color;
+        public PICATextureCombinerAlphaOp[] Alpha;
 
         public PICATexEnvOperand()
         {

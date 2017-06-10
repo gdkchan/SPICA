@@ -68,7 +68,12 @@ namespace SPICA.WinForms.Formats
 
             using (SaveFileDialog SaveDlg = new SaveFileDialog())
             {
-                SaveDlg.Filter = "COLLADA 1.4.1|*.dae|Valve StudioMdl|*.smd|H3D as XML|*.xml";
+                SaveDlg.Filter = 
+                    "COLLADA 1.4.1|*.dae|" +
+                    "Valve StudioMdl|*.smd|" +
+                    "H3D as XML|*.xml|" +
+                    "Binary Ctr H3D|*.bch";
+
                 SaveDlg.FileName = "Model";
 
                 if (SaveDlg.ShowDialog() == DialogResult.OK)
@@ -81,6 +86,7 @@ namespace SPICA.WinForms.Formats
                         case 1: new DAE(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
                         case 2: new SMD(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
                         case 3: new H3DXML(Scene).Save(SaveDlg.FileName); break;
+                        case 4: H3D.Save(SaveDlg.FileName, Scene); break;
                     }
                 }
             }

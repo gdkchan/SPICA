@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.ES30;
+﻿using OpenTK.Graphics.OpenGL;
 
 using SPICA.Formats.CtrH3D.Texture;
 
@@ -30,9 +30,9 @@ namespace SPICA.Renderer
 
                 for (int Face = 0; Face < 6; Face++)
                 {
-                    GL.TexImage2D(TextureTarget2d.TextureCubeMapPositiveX + Face,
+                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + Face,
                         0,
-                        TextureComponentCount.Rgba,
+                        PixelInternalFormat.Rgba,
                         (int)Texture.Width,
                         (int)Texture.Height,
                         0,
@@ -45,9 +45,9 @@ namespace SPICA.Renderer
             {
                 GL.BindTexture(TextureTarget.Texture2D, Id);
 
-                GL.TexImage2D(TextureTarget2d.Texture2D,
+                GL.TexImage2D(TextureTarget.Texture2D,
                     0,
-                    TextureComponentCount.Rgba,
+                    PixelInternalFormat.Rgba,
                     (int)Texture.Width,
                     (int)Texture.Height,
                     0,

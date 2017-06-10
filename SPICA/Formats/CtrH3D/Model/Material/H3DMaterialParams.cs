@@ -84,75 +84,75 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private uint ConstantColors;
 
-        public uint Constant0Assignment
+        public int Constant0Assignment
         {
             get
             {
-                return BitUtils.GetBits(ConstantColors, 0, 4);
+                return (int)BitUtils.GetBits(ConstantColors, 0, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, value, 0, 4);
+                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 0, 4);
             }
         }
 
-        public uint Constant1Assignment
+        public int Constant1Assignment
         {
             get
             {
-                return BitUtils.GetBits(ConstantColors, 4, 4);
+                return (int)BitUtils.GetBits(ConstantColors, 4, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, value, 4, 4);
+                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 4, 4);
             }
         }
 
-        public uint Constant2Assignment
+        public int Constant2Assignment
         {
             get
             {
-                return BitUtils.GetBits(ConstantColors, 8, 4);
+                return (int)BitUtils.GetBits(ConstantColors, 8, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, value, 8, 4);
+                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 8, 4);
             }
         }
 
-        public uint Constant3Assignment
+        public int Constant3Assignment
         {
             get
             {
-                return BitUtils.GetBits(ConstantColors, 12, 4);
+                return (int)BitUtils.GetBits(ConstantColors, 12, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, value, 12, 4);
+                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 12, 4);
             }
         }
 
-        public uint Constant4Assignment
+        public int Constant4Assignment
         {
             get
             {
-                return BitUtils.GetBits(ConstantColors, 16, 4);
+                return (int)BitUtils.GetBits(ConstantColors, 16, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, value, 16, 4);
+                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 16, 4);
             }
         }
 
-        public uint Constant5Assignment
+        public int Constant5Assignment
         {
             get
             {
-                return BitUtils.GetBits(ConstantColors, 20, 4);
+                return (int)BitUtils.GetBits(ConstantColors, 20, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, value, 20, 4);
+                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 20, 4);
             }
         }
 
@@ -185,7 +185,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [Ignore] public readonly PICATexEnvStage[] TexEnvStages;
 
-        [Ignore] public PICATexEnvColor TexEnvBufferColor;
+        [Ignore] public RGBA TexEnvBufferColor;
 
         [Ignore] public PICAColorOperation ColorOperation;
 
@@ -345,10 +345,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             Reader = new PICACommandReader(FragmentShaderCommands);
 
-            int UniformIndex = 0;
-
-            Vector4[] Uniform = new Vector4[96];
-
             while (Reader.HasCommand)
             {
                 PICACommand Cmd = Reader.GetCommand();
@@ -394,7 +390,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     case PICARegister.GPUREG_TEXENV3_COLOR:
                     case PICARegister.GPUREG_TEXENV4_COLOR:
                     case PICARegister.GPUREG_TEXENV5_COLOR:
-                        TexEnvStages[Stage].Color = new PICATexEnvColor(Param);
+                        TexEnvStages[Stage].Color = new RGBA(Param);
                         break;
 
                     case PICARegister.GPUREG_TEXENV0_SCALE:
@@ -408,7 +404,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                     case PICARegister.GPUREG_TEXENV_UPDATE_BUFFER:  PICATexEnvStage.SetUpdateBuffer(TexEnvStages, Param); break;
 
-                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXENV_BUFFER_COLOR: TexEnvBufferColor = new RGBA(Param); break;
 
                     case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
 
@@ -438,33 +434,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                         StencilBufferWrite = (Param & 1) != 0;
                         DepthBufferWrite   = (Param & 2) != 0;
                         break;
-
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
-
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA1:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA2:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA3:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA4:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA5:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA6:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
-                        for (int i = 0; i < Cmd.Parameters.Length; i++)
-                        {
-                            float Value = IOUtils.ToSingle(Cmd.Parameters[i]);
-
-                            int j = UniformIndex >> 2;
-                            int k = UniformIndex++ & 3;
-
-                            switch (k)
-                            {
-                                case 0: Uniform[j].W = Value; break;
-                                case 1: Uniform[j].Z = Value; break;
-                                case 2: Uniform[j].Y = Value; break;
-                                case 3: Uniform[j].X = Value; break;
-                            }
-                        }
-                        break;
                 }
             }
 
@@ -476,10 +445,10 @@ namespace SPICA.Formats.CtrH3D.Model.Material
              * 4 = CameraSphereEnvMap aka SkyDome
              * 5 = ProjectionMap?
              */
-            TextureSources[0] = Uniform[10].X;
-            TextureSources[1] = Uniform[10].Y;
-            TextureSources[2] = Uniform[10].Z;
-            TextureSources[3] = Uniform[10].W;
+            TextureSources[0] = Reader.Uniforms[10].X;
+            TextureSources[1] = Reader.Uniforms[10].Y;
+            TextureSources[2] = Reader.Uniforms[10].Z;
+            TextureSources[3] = Reader.Uniforms[10].W;
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)

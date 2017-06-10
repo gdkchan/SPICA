@@ -1,11 +1,9 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICATexEnvScale
     {
-        [XmlAttribute] public PICATextureCombinerScale Color;
-        [XmlAttribute] public PICATextureCombinerScale Alpha;
+        public PICATextureCombinerScale Color;
+        public PICATextureCombinerScale Alpha;
 
         public PICATexEnvScale(uint Param)
         {

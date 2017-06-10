@@ -1,6 +1,4 @@
-﻿using SPICA.Math3D;
-
-using System.Numerics;
+﻿using System.Numerics;
 using System.Xml.Serialization;
 
 namespace SPICA.Formats.Generic.COLLADA

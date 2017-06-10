@@ -42,7 +42,7 @@ namespace SPICA.Formats.CtrH3D
                 H3DRelocationType Target = (H3DRelocationType)((Value >> 25) & 0xf);
                 H3DRelocationType Source = (H3DRelocationType)(Value >> 29);
 
-                //Take into account sections that didn't existed in older BCH versions
+                //Take into account sections that didn't existed in older BCH versions.
                 if (Header.BackwardCompatibility < 7 &&
                     Target >= H3DRelocationType.CommandsSrc)
                     Target++;
@@ -115,7 +115,7 @@ namespace SPICA.Formats.CtrH3D
 
                 if (Target != H3DRelocationType.Strings) PointerAddress >>= 2;
 
-                //Take into account sections that didn't existed in older BCH versions
+                //Take into account sections that didn't existed in older BCH versions.
                 if (Header.BackwardCompatibility < 7 &&
                     Target >= H3DRelocationType.CommandsSrc)
                     Target--;
@@ -131,8 +131,9 @@ namespace SPICA.Formats.CtrH3D
 
                 if (PointerAddress > 0x1ffffff)
                 {
-                    //The limit for a pointer value is 25 bits, that is, 32mb addressing space
-                    //Note: Since most Addresses are actually 4-byte aligned, the actual limit is 27 bits
+                    //The limit for a pointer value is 25 bits, that is, 32mb addressing space.
+                    //Note: Since most Addresses are actually 4-byte aligned (and the lower 2 bits
+                    //are not stored), the actual limit is 27 bits (128 mb).
                     throw new OverflowException(string.Format(PointerTooBigEx, PointerAddress));
                 }
 

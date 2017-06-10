@@ -30,9 +30,9 @@ namespace SPICA.WinForms.Formats
             {
                 Input.Seek(Header.Entries[1].Address, SeekOrigin.Begin);
 
-                GFMotionPack MotPack = new GFMotionPack(Input);
+                GF1MotionPack MotPack = new GF1MotionPack(Input);
 
-                foreach (GFMotion Mot in MotPack)
+                foreach (GF1Motion Mot in MotPack)
                 {
                     H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation();
 

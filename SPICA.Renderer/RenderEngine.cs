@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.ES30;
+using OpenTK.Graphics.OpenGL;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.LUT;

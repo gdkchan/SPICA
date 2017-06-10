@@ -56,7 +56,7 @@ namespace SPICA.Formats.GFL2.Model
                 Commands[i] = Reader.ReadUInt32();
             }
 
-            int Index = 0;
+            uint Index = 0;
 
             PICACommandReader CmdReader = new PICACommandReader(Commands);
 
@@ -64,25 +64,18 @@ namespace SPICA.Formats.GFL2.Model
             {
                 PICACommand Cmd = CmdReader.GetCommand();
 
-                uint Param = Cmd.Parameters[0];
-
-                switch (Cmd.Register)
+                if (Cmd.Register == PICARegister.GPUREG_LIGHTING_LUT_INDEX)
                 {
-                    case PICARegister.GPUREG_LIGHTING_LUT_INDEX: Index = (int)(Param & 0xff); break;
-
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA0:
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA1:
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA2:
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA3:
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA4:
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA5:
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA6:
-                    case PICARegister.GPUREG_LIGHTING_LUT_DATA7:
-                        foreach (uint Value in Cmd.Parameters)
-                        {
-                            _Table[Index++] = (Value & 0xfff) / (float)0xfff;
-                        }
-                        break;
+                    Index = Cmd.Parameters[0] & 0xff;
+                }
+                else if (
+                    Cmd.Register >= PICARegister.GPUREG_LIGHTING_LUT_DATA0 &&
+                    Cmd.Register <= PICARegister.GPUREG_LIGHTING_LUT_DATA7)
+                {
+                    foreach (uint Param in Cmd.Parameters)
+                    {
+                        _Table[Index++] = (Param & 0xfff) / (float)0xfff;
+                    }
                 }
             }
         }

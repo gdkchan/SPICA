@@ -1,100 +1,73 @@
 ﻿using SPICA.Formats.Common;
 
-using System;
+using System.Numerics;
 
 namespace SPICA.PICA.Commands
 {
     public struct PICAVectorFloat24
     {
-        public float X;
-        public float Y;
-        public float Z;
-        public float W;
-
-        private uint _Word0;
-        private uint _Word1;
-        private uint _Word2;
-
-        internal uint Word0
+        public float X
         {
             get
             {
-                CalculateWords();
-
-                return _Word0;
+                return GetFloat24(Word2 & 0xffffff);
             }
             set
             {
-                _Word0 = value;
+                CalculateWords(value, Y, Z, W);
             }
         }
 
-        internal uint Word1
+        public float Y
         {
             get
             {
-                return _Word1;
+                return GetFloat24((Word2 >> 24) | ((Word1 & 0xffff) << 8));
             }
             set
             {
-                _Word1 = value;
+                CalculateWords(X, value, Z, W);
             }
         }
 
-        internal uint Word2
+        public float Z
         {
             get
             {
-                return _Word2;
+                return GetFloat24((Word1 >> 16) | ((Word0 & 0xff) << 16));
             }
             set
             {
-                _Word2 = value;
-
-                CalculateFloats();
+                CalculateWords(X, Y, value, W);
             }
         }
 
-        public float this[int Index]
+        public float W
         {
             get
             {
-                switch (Index)
-                {
-                    case 0: return X;
-                    case 1: return Y;
-                    case 2: return Z;
-                    case 3: return W;
-
-                    default: throw new ArgumentOutOfRangeException("Expected 0-3 (X-W) range!");
-                }
+                return GetFloat24(Word0 >> 8);
             }
             set
             {
-                switch (Index)
-                {
-                    case 0: X = value; break;
-                    case 1: Y = value; break;
-                    case 2: Z = value; break;
-                    case 3: W = value; break;
-
-                    default: throw new ArgumentOutOfRangeException("Expected 0-3 (X-W) range!");
-                }
+                CalculateWords(X, Y, Z, value);
             }
         }
+
+        internal uint Word0;
+        internal uint Word1;
+        internal uint Word2;
 
         public PICAVectorFloat24(float Value) : this(Value, Value, Value, Value) { }
 
         public PICAVectorFloat24(float X, float Y, float Z, float W)
         {
+            Word0 = Word1 = Word2 = 0;
+
             this.X = X;
             this.Y = Y;
             this.Z = Z;
             this.W = W;
-
-            _Word0 = _Word1 = _Word2 = 0;
-
-            CalculateWords();
         }
 
         public override bool Equals(object obj)
@@ -115,6 +88,11 @@ namespace SPICA.PICA.Commands
         public static bool operator !=(PICAVectorFloat24 LHS, PICAVectorFloat24 RHS)
         {
             return !(LHS == RHS);
+        }
+
+        public static implicit operator Vector4(PICAVectorFloat24 Value)
+        {
+            return new Vector4(Value.X, Value.Y, Value.Z, Value.W);
         }
 
         public static PICAVectorFloat24 operator +(PICAVectorFloat24 LHS, PICAVectorFloat24 RHS)
@@ -157,24 +135,16 @@ namespace SPICA.PICA.Commands
             return $"X: {X} Y: {Y} Z: {Z} W: {W}";
         }
 
-        private void CalculateFloats()
-        {
-            X = GetFloat24(_Word2 & 0xffffff);
-            Y = GetFloat24((_Word2 >> 24) | ((_Word1 & 0xffff) << 8));
-            Z = GetFloat24((_Word1 >> 16) | ((_Word0 & 0xff) << 16));
-            W = GetFloat24(_Word0 >> 8);
-        }
-
-        private void CalculateWords()
+        private void CalculateWords(float X, float Y, float Z, float W)
         {
             uint WX = GetWord24(X);
             uint WY = GetWord24(Y);
             uint WZ = GetWord24(Z);
             uint WW = GetWord24(W);
 
-            _Word0 = (WW << 8) | (WZ >> 16);
-            _Word1 = (WZ << 16) | (WY >> 8);
-            _Word2 = (WY << 24) | WX;
+            Word0 = (WW <<  8) | (WZ >> 16);
+            Word1 = (WZ << 16) | (WY >>  8);
+            Word2 = (WY << 24) | (WX >>  0);
         }
 
         private float GetFloat24(uint Value)
@@ -187,7 +157,7 @@ namespace SPICA.PICA.Commands
                 uint Exponent = ((Value >> 16) & 0x7f) + 64;
                 uint SignBit = (Value >> 23) & 1;
 
-                Float = Mantissa << 7;
+                Float  = Mantissa << 7;
                 Float |= Exponent << 23;
                 Float |= SignBit << 31;
             }
@@ -209,7 +179,7 @@ namespace SPICA.PICA.Commands
                 uint Exponent = ((Word >> 23) & 0xff) - 64;
                 uint SignBit = Word >> 31;
 
-                Word = Mantissa >> 7;
+                Word  = Mantissa >> 7;
                 Word |= (Exponent & 0x7f) << 16;
                 Word |= SignBit << 23;
             }

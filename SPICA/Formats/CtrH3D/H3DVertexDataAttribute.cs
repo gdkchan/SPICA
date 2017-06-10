@@ -3,6 +3,7 @@ using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
+
 using System.IO;
 using System.Numerics;
 
@@ -146,6 +147,8 @@ namespace SPICA.Formats.CtrH3D
                         case PICAAttributeFormat.Float: Writer.Write(v[i]);        break;
                     }
                 }
+
+                Writer.Align(4, 0);
 
                 return MS.ToArray();
             }

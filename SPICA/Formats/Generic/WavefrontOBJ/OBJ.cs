@@ -1,10 +1,8 @@
 ﻿using SPICA.Formats.CtrH3D;
-using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
-using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 
@@ -47,8 +45,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
             TextReader Reader = new StreamReader(Stream);
 
-            string Line;
-            while ((Line = Reader.ReadLine()) != null)
+            for (string Line; (Line = Reader.ReadLine()) != null;)
             {
                 string[] Params = Line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -124,6 +121,8 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                                 Vertex.Normal = Normals[GetIndex(Indices[Index][2], TexCoords.Count)];
                             }
 
+                            Vertex.Color = Vector4.One;
+
                             Mesh.Vertices.Add(Vertex);
                         }
                         break;
@@ -193,8 +192,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
                     TextReader Reader = new StreamReader(MaterialFile);
 
-                    string Line;
-                    while ((Line = Reader.ReadLine()) != null)
+                    for (string Line; (Line = Reader.ReadLine()) != null;)
                     {
                         string[] Params = Line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -362,24 +360,29 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                     });
                 }
 
-                H3DMesh M = new H3DMesh(Vertices.Keys, Attributes.ToArray(), SubMeshes);
+                Attributes.Add(new PICAAttribute
+                {
+                    Name     = PICAAttributeName.Color,
+                    Format   = PICAAttributeFormat.Ubyte,
+                    Elements = 4,
+                    Scale    = 1f / 255
+                });
 
-                M.Skinning = H3DMeshSkinning.Smooth;
-                M.MeshCenter = (MinVector + MaxVector) * 0.5f;
-                M.MaterialIndex = MaterialIndex;
+                H3DMesh M = new H3DMesh(Vertices.Keys, Attributes.ToArray(), SubMeshes)
+                {
+                    Skinning      = H3DMeshSkinning.Smooth,
+                    MeshCenter    = (MinVector + MaxVector) * 0.5f,
+                    MaterialIndex = MaterialIndex
+                };
 
                 M.UpdateBoolUniforms();
 
                 Model.AddMesh(M);
 
                 //Material
-                H3DMaterial Material = H3DMaterial.Default;
+                string MatName = $"Mat{MaterialIndex++.ToString("D5")}_{Mesh.MaterialName}";
 
-                Material.Name = $"Mat{MaterialIndex++.ToString("D5")}_{Mesh.MaterialName}";
-                Material.MaterialParams.ShaderReference = "0@DefaultShader";
-                Material.MaterialParams.ModelReference = $"{Material.Name}@{Model.Name}";
-                Material.MaterialParams.LUTDist0TableName = "SpecTable";
-                Material.MaterialParams.LUTDist0SamplerName = "SpecSampler";
+                H3DMaterial Material = H3DMaterial.GetSimpleMaterial(Model.Name, MatName, null);
 
                 if (Materials.ContainsKey(Mesh.MaterialName))
                     Material.Texture0Name = Materials[Mesh.MaterialName].DiffuseTexture;

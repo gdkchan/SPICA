@@ -13,6 +13,7 @@ using System.IO;
 using System.Globalization;
 using System.Text;
 using System.Numerics;
+using SPICA.Math3D;
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
@@ -68,7 +69,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                     Meshes.Add(new SMDMesh
                     {
-                        MaterialName = Mdl.Materials[Mesh.MaterialIndex].Texture0Name,
+                        MaterialName = Mdl.Materials[Mesh.MaterialIndex].Texture0Name + ".png",
                         Vertices     = MeshTransform.GetVerticesList(Mdl.Skeleton, Mesh)
                     });
                 }
@@ -99,8 +100,7 @@ namespace SPICA.Formats.Generic.StudioMdl
             int SkeletalFrame = 0;
             int VerticesLine = 0;
 
-            string Line;
-            while ((Line = Reader.ReadLine()) != null)
+            for (string Line; (Line = Reader.ReadLine()) != null;)
             {
                 string[] Params = Line.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -184,6 +184,8 @@ namespace SPICA.Formats.Generic.StudioMdl
                                                 Vertex.Weights[Node] = ParseFloat(Params[11 + Node * 2]);
                                             }
                                         }
+
+                                        Vertex.Color = Vector4.One;
 
                                         CurrMesh.Vertices.Add(Vertex);
                                     }
@@ -285,7 +287,10 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             ushort MaterialIndex = 0;
 
-            if (Skeleton.Count > 0) Model.Flags = H3DModelFlags.HasSkeleton;
+            if (Skeleton.Count > 0)
+            {
+                Model.Flags = H3DModelFlags.HasSkeleton;
+            }
 
             Model.BoneScaling = H3DBoneScaling.Maya;
             Model.MeshNodesVisibility.Add(true);
@@ -395,29 +400,26 @@ namespace SPICA.Formats.Generic.StudioMdl
                 }
 
                 //Mesh
-                H3DMesh M = new H3DMesh(Vertices.Keys, GetAttributes(), SubMeshes);
-
-                M.Skinning = H3DMeshSkinning.Smooth;
-                M.MeshCenter = (MinVector + MaxVector) * 0.5f;
-                M.MaterialIndex = MaterialIndex;
+                H3DMesh M = new H3DMesh(Vertices.Keys, GetAttributes(), SubMeshes)
+                {
+                    Skinning      = H3DMeshSkinning.Smooth,
+                    MeshCenter    = (MinVector + MaxVector) * 0.5f,
+                    MaterialIndex = MaterialIndex
+                };
 
                 M.UpdateBoolUniforms();
 
                 Model.AddMesh(M);
 
                 //Material
-                string MatName = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
+                string TexName = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
+                string MatName = $"Mat{MaterialIndex++.ToString("D5")}_{TexName}";
 
-                H3DMaterial Material = H3DMaterial.Default;
-
-                Material.Name = $"Mat{MaterialIndex++.ToString("D5")}_{MatName}";
-                Material.Texture0Name = MatName;
-                Material.MaterialParams.ShaderReference = "0@DefaultShader";
-                Material.MaterialParams.ModelReference = $"{Material.Name}@{Model.Name}";
+                H3DMaterial Material = H3DMaterial.GetSimpleMaterial(Model.Name, MatName, TexName);
 
                 Model.Materials.Add(Material);
 
-                if (TextureSearchPath != null && !Output.Textures.Contains(MatName))
+                if (TextureSearchPath != null && !Output.Textures.Contains(TexName))
                 {
                     string TextureFile = Path.Combine(TextureSearchPath, Mesh.MaterialName);
 
@@ -458,7 +460,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
         private PICAAttribute[] GetAttributes()
         {
-            PICAAttribute[] Attributes = new PICAAttribute[5];
+            PICAAttribute[] Attributes = new PICAAttribute[6];
 
             for (int i = 0; i < 3; i++)
             {
@@ -482,13 +484,21 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             Attributes[3] = new PICAAttribute
             {
+                Name     = PICAAttributeName.Color,
+                Format   = PICAAttributeFormat.Ubyte,
+                Elements = 4,
+                Scale    = 1f / 255
+            };
+
+            Attributes[4] = new PICAAttribute
+            {
                 Name     = PICAAttributeName.BoneIndex,
                 Format   = PICAAttributeFormat.Ubyte,
                 Elements = 4,
                 Scale    = 1
             };
 
-            Attributes[4] = new PICAAttribute
+            Attributes[5] = new PICAAttribute
             {
                 Name     = PICAAttributeName.BoneWeight,
                 Format   = PICAAttributeFormat.Ubyte,

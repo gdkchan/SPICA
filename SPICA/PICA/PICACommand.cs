@@ -3,8 +3,7 @@
     struct PICACommand
     {
         public PICARegister Register;
-        public uint[] Parameters;
-        public int ParametersIndex;
-        public uint Mask;
+        public uint[]       Parameters;
+        public uint         Mask;
     }
 }

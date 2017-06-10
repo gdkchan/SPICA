@@ -1,12 +1,10 @@
-﻿using System.Xml.Serialization;
-
-namespace SPICA.PICA.Commands
+﻿namespace SPICA.PICA.Commands
 {
     public struct PICAAttribute
     {
-        [XmlAttribute] public PICAAttributeName Name;
-        [XmlAttribute] public PICAAttributeFormat Format;
-        [XmlAttribute] public int Elements;
-        [XmlAttribute] public float Scale;
+        public PICAAttributeName Name;
+        public PICAAttributeFormat Format;
+        public int Elements;
+        public float Scale;
     }
 }

@@ -395,10 +395,5 @@ namespace SPICA.Renderer.Shaders
                 Color.B / 255f,
                 Color.A / 255f);
         }
-
-        private static string GetVec4(PICATexEnvColor Color)
-        {
-            return GetVec4(new RGBA(Color.R, Color.G, Color.B, Color.A));
-        }
     }
 }

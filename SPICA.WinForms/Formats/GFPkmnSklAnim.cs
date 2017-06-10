@@ -2,12 +2,8 @@
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.GFL;
 using SPICA.Formats.GFL.Motion;
-using System;
-using System.Collections.Generic;
+
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SPICA.WinForms.Formats
 {
@@ -27,9 +23,9 @@ namespace SPICA.WinForms.Formats
 
                 if (Index == 20) break;
   
-                GFMotionPack MotPack = new GFMotionPack(Reader);
+                GF1MotionPack MotPack = new GF1MotionPack(Reader);
 
-                foreach (GFMotion Mot in MotPack)
+                foreach (GF1Motion Mot in MotPack)
                 {
                     H3DAnimation Anim = Mot.ToH3DSkeletalAnimation();
 

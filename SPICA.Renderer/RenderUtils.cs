@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.ES30;
+using OpenTK.Graphics.OpenGL;
 
 using SPICA.Renderer.GUI;
 
@@ -75,9 +75,9 @@ namespace SPICA.Renderer
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
-            GL.TexImage2D(TextureTarget2d.Texture2D,
+            GL.TexImage2D(TextureTarget.Texture2D,
                 0,
-                TextureComponentCount.Rgba,
+                PixelInternalFormat.Rgba,
                 Width,
                 Height,
                 0,

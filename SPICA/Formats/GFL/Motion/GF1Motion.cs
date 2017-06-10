@@ -7,20 +7,20 @@ using System.IO;
 
 namespace SPICA.Formats.GFL.Motion
 {
-    class GFMotion
+    class GF1Motion
     {
         public ushort FramesCount;
 
-        public readonly List<GFMotBoneTransform> Bones;
+        public readonly List<GF1MotBoneTransform> Bones;
 
         public int Index;
 
-        public GFMotion()
+        public GF1Motion()
         {
-            Bones = new List<GFMotBoneTransform>();
+            Bones = new List<GF1MotBoneTransform>();
         }
 
-        public GFMotion(BinaryReader Reader, List<GFMotBone> Skeleton, int Index) : this()
+        public GF1Motion(BinaryReader Reader, List<GF1MotBone> Skeleton, int Index) : this()
         {
             this.Index = Index;
 
@@ -70,9 +70,9 @@ namespace SPICA.Formats.GFL.Motion
                 }
             }
 
-            GFUtils.Align(Reader);
+            Reader.Align(4);
 
-            GFMotBoneTransform CurrentBone = null;
+            GF1MotBoneTransform CurrentBone = null;
 
             int CurrentKFL =  0;
             int OctalIndex =  2;
@@ -89,7 +89,7 @@ namespace SPICA.Formats.GFL.Motion
 
                     if (BoneIndex != OldIndex)
                     {
-                        CurrentBone = new GFMotBoneTransform { Name = Skeleton[BoneIndex].Name };
+                        CurrentBone = new GF1MotBoneTransform { Name = Skeleton[BoneIndex].Name };
 
                         Bones.Add(CurrentBone);
 
@@ -100,7 +100,7 @@ namespace SPICA.Formats.GFL.Motion
                 if (CurrentOctal != 1)
                 {
                     //Actual Key Frame format
-                    List<GFMotKeyFrame> KFs = null;
+                    List<GF1MotKeyFrame> KFs = null;
 
                     switch (ElemIndex % 9)
                     {
@@ -119,23 +119,23 @@ namespace SPICA.Formats.GFL.Motion
 
                     switch (CurrentOctal)
                     {
-                        case 0: KFs.Add(new GFMotKeyFrame(0, 0)); break; //Constant Zero (0 deg)
-                        case 2: KFs.Add(new GFMotKeyFrame(0, (float)Math.PI *  0.5f)); break; //Constant +Half PI (90 deg)
-                        case 3: KFs.Add(new GFMotKeyFrame(0, (float)Math.PI *  1.0f)); break; //Constant +PI (180 deg)
-                        case 4: KFs.Add(new GFMotKeyFrame(0, (float)Math.PI * -0.5f)); break; //Constant -Half PI (-90/270 deg)
-                        case 5: KFs.Add(new GFMotKeyFrame(0, Reader.ReadSingle())); break; //Constant value (stored as Float)
+                        case 0: KFs.Add(new GF1MotKeyFrame(0, 0)); break; //Constant Zero (0 deg)
+                        case 2: KFs.Add(new GF1MotKeyFrame(0, (float)Math.PI *  0.5f)); break; //Constant +Half PI (90 deg)
+                        case 3: KFs.Add(new GF1MotKeyFrame(0, (float)Math.PI *  1.0f)); break; //Constant +PI (180 deg)
+                        case 4: KFs.Add(new GF1MotKeyFrame(0, (float)Math.PI * -0.5f)); break; //Constant -Half PI (-90/270 deg)
+                        case 5: KFs.Add(new GF1MotKeyFrame(0, Reader.ReadSingle())); break; //Constant value (stored as Float)
 
                         case 6: //Linear Key Frames list
                             foreach (int Frame in KeyFrames[CurrentKFL++])
                             {
-                                KFs.Add(new GFMotKeyFrame(Frame, Reader.ReadSingle()));
+                                KFs.Add(new GF1MotKeyFrame(Frame, Reader.ReadSingle()));
                             }
                             break;
 
                         case 7: //Hermite Key Frames list
                             foreach (int Frame in KeyFrames[CurrentKFL++])
                             {
-                                KFs.Add(new GFMotKeyFrame(
+                                KFs.Add(new GF1MotKeyFrame(
                                     Frame,
                                     Reader.ReadSingle(),
                                     Reader.ReadSingle()));
@@ -160,7 +160,7 @@ namespace SPICA.Formats.GFL.Motion
             Output.Name        = "GFMotion";
             Output.FramesCount = FramesCount;
 
-            foreach (GFMotBoneTransform Bone in Bones)
+            foreach (GF1MotBoneTransform Bone in Bones)
             {
                 H3DAnimTransform Transform = new H3DAnimTransform();
 
@@ -192,14 +192,14 @@ namespace SPICA.Formats.GFL.Motion
         //This was discovered pretty much by trial and error, and may be wrong too
         private const float SlopeScale = 1 / 30f;
 
-        private void SetKeyFrameGroup(List<GFMotKeyFrame> Source, H3DFloatKeyFrameGroup Target, int CurveIndex)
+        private void SetKeyFrameGroup(List<GF1MotKeyFrame> Source, H3DFloatKeyFrameGroup Target, int CurveIndex)
         {
             Target.Curve.StartFrame  = 0;
             Target.Curve.EndFrame    = FramesCount;
             Target.Curve.CurveIndex  = (ushort)CurveIndex;
             Target.InterpolationType = H3DInterpolationType.Hermite;
 
-            foreach (GFMotKeyFrame KF in Source)
+            foreach (GF1MotKeyFrame KF in Source)
             {
                 Target.KeyFrames.Add(new KeyFrame(
                     KF.Frame,

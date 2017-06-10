@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.ES30;
+using OpenTK.Graphics.OpenGL;
 
 using System;
 using System.Drawing;

@@ -100,7 +100,7 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public readonly GFTextureCoord[] TextureCoords;
 
-        public readonly PICATexEnvColor[] BorderColor;
+        public readonly RGBA[] BorderColor;
 
         public readonly float[] TextureSources;
 
@@ -108,7 +108,7 @@ namespace SPICA.Formats.GFL2.Model.Material
         {
             TextureCoords  = new GFTextureCoord[3];
 
-            BorderColor = new PICATexEnvColor[3];
+            BorderColor = new RGBA[3];
 
             TextureSources = new float[4];
         }
@@ -214,10 +214,6 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             PICACommandReader CmdReader = new PICACommandReader(Commands);
 
-            int UniformIndex = 0;
-
-            Vector4[] Uniform = new Vector4[96];
-
             while (CmdReader.HasCommand)
             {
                 PICACommand Cmd = CmdReader.GetCommand();
@@ -226,9 +222,9 @@ namespace SPICA.Formats.GFL2.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR: BorderColor[0] = new PICATexEnvColor(Param); break;
-                    case PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR: BorderColor[1] = new PICATexEnvColor(Param); break;
-                    case PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR: BorderColor[2] = new PICATexEnvColor(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR: BorderColor[0] = new RGBA(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR: BorderColor[1] = new RGBA(Param); break;
+                    case PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR: BorderColor[2] = new RGBA(Param); break;
 
                     case PICARegister.GPUREG_COLOR_OPERATION: ColorOperation = new PICAColorOperation(Param); break;
 
@@ -262,42 +258,15 @@ namespace SPICA.Formats.GFL2.Model.Material
                     case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInAbs   = new PICALUTInAbs(Param);   break;
                     case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInSel   = new PICALUTInSel(Param);   break;
                     case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInScale = new PICALUTInScale(Param); break;
-
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX: UniformIndex = (int)((Param & 0xff) << 2); break;
-
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA0:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA1:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA2:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA3:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA4:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA5:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA6:
-                    case PICARegister.GPUREG_VSH_FLOATUNIFORM_DATA7:
-                        for (int i = 0; i < Cmd.Parameters.Length; i++)
-                        {
-                            float Value = IOUtils.ToSingle(Cmd.Parameters[i]);
-
-                            int j = UniformIndex >> 2;
-                            int k = UniformIndex++ & 3;
-
-                            switch (k)
-                            {
-                                case 0: Uniform[j].W = Value; break;
-                                case 1: Uniform[j].Z = Value; break;
-                                case 2: Uniform[j].Y = Value; break;
-                                case 3: Uniform[j].X = Value; break;
-                            }
-                        }
-                        break;
                 }
             }
 
             Reader.BaseStream.Seek(Position + MaterialSection.Length, SeekOrigin.Begin);
 
-            TextureSources[0] = Uniform[0].X;
-            TextureSources[1] = Uniform[0].Y;
-            TextureSources[2] = Uniform[0].Z;
-            TextureSources[3] = Uniform[0].W;
+            TextureSources[0] = CmdReader.Uniforms[0].X;
+            TextureSources[1] = CmdReader.Uniforms[0].Y;
+            TextureSources[2] = CmdReader.Uniforms[0].Z;
+            TextureSources[3] = CmdReader.Uniforms[0].W;
         }
     }
 }
