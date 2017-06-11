@@ -13,7 +13,6 @@ using System.IO;
 using System.Globalization;
 using System.Text;
 using System.Numerics;
-using SPICA.Math3D;
 
 namespace SPICA.Formats.Generic.StudioMdl
 {

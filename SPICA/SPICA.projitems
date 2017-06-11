@@ -11,7 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\CRC32Hash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\Exceptions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\GameCompatibility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\KeyFrameQuantization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\MeshTransform.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMD.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\StudioMdl\SMDNode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\Generic\XML\H3DXML.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFModelPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFMotionPack.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\GFL2\GFSection.cs" />

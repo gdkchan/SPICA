@@ -39,7 +39,8 @@ namespace SPICA.WinForms
         {
             //We need to add the control here cause we need to call the constructor with Graphics Mode
             //This enables the higher precision Depth Buffer and a Stencil Buffer
-            Viewport = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8));
+            Viewport = new GLControl(new GraphicsMode(new ColorFormat(32), 24, 8),
+                3, 3, GraphicsContextFlags.ForwardCompatible);
 
             Viewport.BackColor = Color.Gray;
             Viewport.Dock      = DockStyle.Fill;

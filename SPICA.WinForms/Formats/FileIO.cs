@@ -3,8 +3,8 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.Generic.COLLADA;
 using SPICA.Formats.Generic.StudioMdl;
-using SPICA.Formats.Generic.XML;
 using SPICA.Renderer;
+
 using System.IO;
 using System.Windows.Forms;
 
@@ -71,7 +71,6 @@ namespace SPICA.WinForms.Formats
                 SaveDlg.Filter = 
                     "COLLADA 1.4.1|*.dae|" +
                     "Valve StudioMdl|*.smd|" +
-                    "H3D as XML|*.xml|" +
                     "Binary Ctr H3D|*.bch";
 
                 SaveDlg.FileName = "Model";
@@ -85,8 +84,7 @@ namespace SPICA.WinForms.Formats
                     {
                         case 1: new DAE(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
                         case 2: new SMD(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
-                        case 3: new H3DXML(Scene).Save(SaveDlg.FileName); break;
-                        case 4: H3D.Save(SaveDlg.FileName, Scene); break;
+                        case 3: H3D.Save(SaveDlg.FileName, Scene); break;
                     }
                 }
             }

@@ -7,7 +7,7 @@ namespace SPICA.PICA.Commands
         public PICATexEnvSource   Source;
         public PICATexEnvOperand  Operand;
         public PICATexEnvCombiner Combiner;
-        public RGBA              Color;
+        public RGBA               Color;
         public PICATexEnvScale    Scale;
 
         public bool UpdateColorBuffer;

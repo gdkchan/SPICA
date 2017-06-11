@@ -71,6 +71,9 @@
             this.SklAnimsList = new SPICA.WinForms.GUI.SUIList();
             this.TabPageMatAnims = new System.Windows.Forms.TabPage();
             this.MatAnimsList = new SPICA.WinForms.GUI.SUIList();
+            this.SideIcons = new System.Windows.Forms.ToolStrip();
+            this.ToolButtonExport = new System.Windows.Forms.ToolStripButton();
+            this.ToolButtonImport = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonOpen = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonSave = new System.Windows.Forms.ToolStripButton();
@@ -81,9 +84,6 @@
             this.ToolButtonShowInfo = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonShowSide = new System.Windows.Forms.ToolStripButton();
             this.TopIcons = new System.Windows.Forms.ToolStrip();
-            this.SideIcons = new System.Windows.Forms.ToolStrip();
-            this.ToolButtonExport = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonImport = new System.Windows.Forms.ToolStripButton();
             this.TopMenu.SuspendLayout();
             this.AnimControlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).BeginInit();
@@ -95,8 +95,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).BeginInit();
             this.TabPageSklAnims.SuspendLayout();
             this.TabPageMatAnims.SuspendLayout();
-            this.TopIcons.SuspendLayout();
             this.SideIcons.SuspendLayout();
+            this.TopIcons.SuspendLayout();
             this.SuspendLayout();
             // 
             // TopMenu
@@ -405,13 +405,13 @@
             // 
             // TabPageModels
             // 
-            this.TabPageModels.BackColor = System.Drawing.Color.Transparent;
+            this.TabPageModels.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
             this.TabPageModels.Controls.Add(this.ModelsList);
             this.TabPageModels.ImageKey = "sui_cube.png";
             this.TabPageModels.Location = new System.Drawing.Point(4, 28);
             this.TabPageModels.Name = "TabPageModels";
             this.TabPageModels.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageModels.Size = new System.Drawing.Size(234, 445);
+            this.TabPageModels.Size = new System.Drawing.Size(234, 414);
             this.TabPageModels.TabIndex = 0;
             this.TabPageModels.ToolTipText = "Models";
             // 
@@ -428,13 +428,13 @@
             this.ModelsList.Name = "ModelsList";
             this.ModelsList.SelectedIndex = -1;
             this.ModelsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
-            this.ModelsList.Size = new System.Drawing.Size(228, 439);
+            this.ModelsList.Size = new System.Drawing.Size(228, 408);
             this.ModelsList.TabIndex = 0;
             this.ModelsList.SelectedIndexChanged += new System.EventHandler(this.ModelsList_SelectedIndexChanged);
             // 
             // TabPageTextures
             // 
-            this.TabPageTextures.BackColor = System.Drawing.Color.Transparent;
+            this.TabPageTextures.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
             this.TabPageTextures.Controls.Add(this.TexturesList);
             this.TabPageTextures.Controls.Add(this.TexturePreview);
             this.TabPageTextures.Controls.Add(this.TextureInfo);
@@ -483,13 +483,13 @@
             // 
             // TabPageSklAnims
             // 
-            this.TabPageSklAnims.BackColor = System.Drawing.Color.Transparent;
+            this.TabPageSklAnims.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
             this.TabPageSklAnims.Controls.Add(this.SklAnimsList);
             this.TabPageSklAnims.ImageKey = "sui_bone_film.png";
             this.TabPageSklAnims.Location = new System.Drawing.Point(4, 28);
             this.TabPageSklAnims.Name = "TabPageSklAnims";
             this.TabPageSklAnims.Padding = new System.Windows.Forms.Padding(3);
-            this.TabPageSklAnims.Size = new System.Drawing.Size(234, 445);
+            this.TabPageSklAnims.Size = new System.Drawing.Size(234, 414);
             this.TabPageSklAnims.TabIndex = 2;
             this.TabPageSklAnims.ToolTipText = "Skeletal animations";
             // 
@@ -506,13 +506,13 @@
             this.SklAnimsList.Name = "SklAnimsList";
             this.SklAnimsList.SelectedIndex = -1;
             this.SklAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
-            this.SklAnimsList.Size = new System.Drawing.Size(228, 439);
+            this.SklAnimsList.Size = new System.Drawing.Size(228, 408);
             this.SklAnimsList.TabIndex = 3;
             this.SklAnimsList.Selected += new System.EventHandler(this.SklAnimsList_Selected);
             // 
             // TabPageMatAnims
             // 
-            this.TabPageMatAnims.BackColor = System.Drawing.Color.Transparent;
+            this.TabPageMatAnims.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
             this.TabPageMatAnims.Controls.Add(this.MatAnimsList);
             this.TabPageMatAnims.ImageKey = "sui_rainbow_film.png";
             this.TabPageMatAnims.Location = new System.Drawing.Point(4, 28);
@@ -538,6 +538,38 @@
             this.MatAnimsList.Size = new System.Drawing.Size(228, 408);
             this.MatAnimsList.TabIndex = 4;
             this.MatAnimsList.Selected += new System.EventHandler(this.MatAnimsList_Selected);
+            // 
+            // SideIcons
+            // 
+            this.SideIcons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
+            this.SideIcons.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolButtonExport,
+            this.ToolButtonImport});
+            this.SideIcons.Location = new System.Drawing.Point(0, 0);
+            this.SideIcons.Name = "SideIcons";
+            this.SideIcons.Size = new System.Drawing.Size(242, 31);
+            this.SideIcons.TabIndex = 1;
+            // 
+            // ToolButtonExport
+            // 
+            this.ToolButtonExport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonExport.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonExport.Image")));
+            this.ToolButtonExport.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonExport.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonExport.Name = "ToolButtonExport";
+            this.ToolButtonExport.Size = new System.Drawing.Size(28, 28);
+            this.ToolButtonExport.ToolTipText = "Export...";
+            this.ToolButtonExport.Click += new System.EventHandler(this.ToolButtonExport_Click);
+            // 
+            // ToolButtonImport
+            // 
+            this.ToolButtonImport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ToolButtonImport.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonImport.Image")));
+            this.ToolButtonImport.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.ToolButtonImport.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ToolButtonImport.Name = "ToolButtonImport";
+            this.ToolButtonImport.Size = new System.Drawing.Size(28, 28);
+            this.ToolButtonImport.ToolTipText = "Import...";
             // 
             // ToolButtonOpen
             // 
@@ -655,38 +687,6 @@
             this.TopIcons.Size = new System.Drawing.Size(944, 30);
             this.TopIcons.TabIndex = 3;
             // 
-            // SideIcons
-            // 
-            this.SideIcons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
-            this.SideIcons.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolButtonExport,
-            this.ToolButtonImport});
-            this.SideIcons.Location = new System.Drawing.Point(0, 0);
-            this.SideIcons.Name = "SideIcons";
-            this.SideIcons.Size = new System.Drawing.Size(242, 31);
-            this.SideIcons.TabIndex = 1;
-            // 
-            // ToolButtonExport
-            // 
-            this.ToolButtonExport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonExport.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonExport.Image")));
-            this.ToolButtonExport.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonExport.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonExport.Name = "ToolButtonExport";
-            this.ToolButtonExport.Size = new System.Drawing.Size(28, 28);
-            this.ToolButtonExport.ToolTipText = "Export...";
-            this.ToolButtonExport.Click += new System.EventHandler(this.ToolButtonExport_Click);
-            // 
-            // ToolButtonImport
-            // 
-            this.ToolButtonImport.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonImport.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonImport.Image")));
-            this.ToolButtonImport.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonImport.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonImport.Name = "ToolButtonImport";
-            this.ToolButtonImport.Size = new System.Drawing.Size(28, 28);
-            this.ToolButtonImport.ToolTipText = "Import...";
-            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -716,10 +716,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.TexturePreview)).EndInit();
             this.TabPageSklAnims.ResumeLayout(false);
             this.TabPageMatAnims.ResumeLayout(false);
-            this.TopIcons.ResumeLayout(false);
-            this.TopIcons.PerformLayout();
             this.SideIcons.ResumeLayout(false);
             this.SideIcons.PerformLayout();
+            this.TopIcons.ResumeLayout(false);
+            this.TopIcons.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

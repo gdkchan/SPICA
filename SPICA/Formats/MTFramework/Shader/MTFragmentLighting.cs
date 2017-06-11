@@ -1,5 +1,6 @@
 ﻿using SPICA.Math3D;
 using SPICA.PICA.Commands;
+
 using System.IO;
 
 namespace SPICA.Formats.MTFramework.Shader
