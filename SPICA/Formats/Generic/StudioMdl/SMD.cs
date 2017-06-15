@@ -263,9 +263,6 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             for (i = 0; i < 4 && Vtx.Weights[i] > 0; i++)
             {
-                if (Vtx.Weights[i].ToString(CultureInfo.InvariantCulture) == "0.09999999")
-                    System.Diagnostics.Debug.WriteLine(Vtx.Weights[i]);
-
                 Indices += $" {Vtx.Indices[i]} {Vtx.Weights[i].ToString(CultureInfo.InvariantCulture)}";
             }
 

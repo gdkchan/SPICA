@@ -61,6 +61,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureTransformType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTranslucencyKind.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxAttributeFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxBlendShape.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxBoundingBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxFace.cs" />

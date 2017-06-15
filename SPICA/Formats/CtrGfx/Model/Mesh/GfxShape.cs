@@ -1,9 +1,8 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Serialization.Attributes;
-using System;
+
 using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {

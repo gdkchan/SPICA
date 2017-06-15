@@ -1,5 +1,4 @@
-﻿using SPICA.Formats.Common;
-using SPICA.PICA.Commands;
+﻿using SPICA.PICA.Commands;
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
@@ -20,19 +19,7 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
         public uint LocationAddress;
         public uint MemoryArea;
 
-        private uint FormatFlags;
-
-        public PICAAttributeFormat Format
-        {
-            get
-            {
-                return (PICAAttributeFormat)BitUtils.GetBits(FormatFlags, 0, 4);
-            }
-            set
-            {
-                FormatFlags = BitUtils.SetBits(FormatFlags, (uint)value, 0, 4);
-            }
-        }
+        public GfxAttributeFormat Format;
 
         public int Elements;
 

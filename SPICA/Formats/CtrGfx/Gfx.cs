@@ -34,8 +34,6 @@ namespace SPICA.Formats.CtrGfx
 
             Gfx Scene = Deserializer.Deserialize<Gfx>();
 
-            System.Diagnostics.Debug.WriteLine(Scene.Models[0].Name);
-
             return Scene.ToH3D();
         }
 
@@ -67,7 +65,7 @@ namespace SPICA.Formats.CtrGfx
                         M.Attributes.Add(new PICAAttribute
                         {
                             Name     = Attr.AttrName,
-                            Format   = Attr.Format,
+                            Format   = Attr.Format.ToPICAAttributeFormat(),
                             Elements = Attr.Elements,
                             Scale    = Attr.Scale
                         });
