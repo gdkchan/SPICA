@@ -87,36 +87,55 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         public H3DMetaData MetaData;
 
         [Ignore] public byte[] RawBuffer;
-        [Ignore] public int VertexStride;
-        [Ignore] public PICAAttribute[] Attributes;
-        [Ignore] public PICAFixedAttribute[] FixedAttributes;
+        [Ignore] public int    VertexStride;
+
+        [Ignore] public readonly List<PICAAttribute>      Attributes;
+        [Ignore] public readonly List<PICAFixedAttribute> FixedAttributes;
+
         [Ignore] public Vector4 PositionOffset;
 
         public H3DMesh()
         {
             SubMeshes = new List<H3DSubMesh>();
 
-            UserDefinedAddress = 0; //SBZ, set by program on 3DS
+            Attributes      = new List<PICAAttribute>();
+            FixedAttributes = new List<PICAFixedAttribute>();
         }
 
-        public H3DMesh(IEnumerable<PICAVertex> Vertices, PICAAttribute[] Attributes, ushort[] Indices)
+        public H3DMesh(IEnumerable<PICAVertex> Vertices, List<PICAAttribute> Attributes, ushort[] Indices) : this()
         {
             H3DMeshImpl(Vertices, Attributes);
 
-            SubMeshes = new List<H3DSubMesh> { new H3DSubMesh { Indices = Indices } };
+            this.Attributes = Attributes ?? throw Exceptions.GetNullException("Attributes");
+
+            SubMeshes.Add(new H3DSubMesh(Indices));
         }
 
-        public H3DMesh(IEnumerable<PICAVertex> Vertices, PICAAttribute[] Attributes, List<H3DSubMesh> SubMeshes)
+        public H3DMesh(IEnumerable<PICAVertex> Vertices, List<PICAAttribute> Attributes, List<H3DSubMesh> SubMeshes) : this()
         {
             H3DMeshImpl(Vertices, Attributes);
 
-            this.SubMeshes = SubMeshes;
+            this.Attributes = Attributes ?? throw Exceptions.GetNullException("Attributes");
+
+            this.SubMeshes  = SubMeshes;
         }
 
-        private void H3DMeshImpl(IEnumerable<PICAVertex> Vertices, PICAAttribute[] Attributes)
+        public H3DMesh(
+            byte[]                   RawBuffer,
+            int                      VertexStride,
+            List<PICAAttribute>      Attributes, 
+            List<PICAFixedAttribute> FixedAttributes,
+            List<H3DSubMesh>         SubMeshes)
         {
-            this.Attributes = Attributes;
+            this.RawBuffer       = RawBuffer;
+            this.VertexStride    = VertexStride;
+            this.Attributes      = Attributes      ?? new List<PICAAttribute>();
+            this.FixedAttributes = FixedAttributes ?? new List<PICAFixedAttribute>();
+            this.SubMeshes       = SubMeshes       ?? new List<H3DSubMesh>();
+        }
 
+        private void H3DMeshImpl(IEnumerable<PICAVertex> Vertices, List<PICAAttribute> Attributes)
+        {
             RawBuffer = VerticesConverter.GetBuffer(Vertices, Attributes);
 
             VertexStride = 0;
@@ -202,19 +221,15 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                 }
             }
 
-            Attributes = new PICAAttribute[AttributesCount];
-
-            FixedAttributes = new PICAFixedAttribute[AttributesTotal - AttributesCount];
-
             for (int Index = 0; Index < AttributesTotal; Index++)
             {
                 if (((BufferFormats >> (48 + Index)) & 1) != 0)
                 {
-                    FixedAttributes[Index - AttributesCount] = new PICAFixedAttribute
+                    FixedAttributes.Add(new PICAFixedAttribute
                     {
                         Name  = (PICAAttributeName)((BufferPermutation >> Index * 4) & 0xf),
                         Value = Fixed[Index]
-                    };
+                    });
                 }
                 else
                 {
@@ -242,7 +257,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                         case PICAAttributeName.BoneWeight: Attrib.Scale = Reader.Uniforms[8].W; break;
                     }
 
-                    Attributes[Index] = Attrib;
+                    Attributes.Add(Attrib);
                 }
             }
 
@@ -282,7 +297,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             float[] Scales = new float[] { 1, 0, 0, 0, 1, 0, 0, 0 };
 
             //Normal Attributes
-            for (int Index = 0; Index < Attributes.Length; Index++)
+            for (int Index = 0; Index < Attributes.Count; Index++)
             {
                 PICAAttribute Attrib = Attributes[Index];
 
@@ -290,12 +305,12 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                 ulong AttributeFmt;
 
-                AttributeFmt = (ulong)Attrib.Format;
+                AttributeFmt  = (ulong)Attrib.Format;
                 AttributeFmt |= (ulong)((Attrib.Elements - 1) & 3) << 2;
 
-                BufferFormats |= AttributeFmt << Shift;
+                BufferFormats     |= AttributeFmt << Shift;
                 BufferPermutation |= (ulong)Attrib.Name << Shift;
-                BufferAttributes |= (ulong)Index << Shift;
+                BufferAttributes  |= (ulong)Index << Shift;
 
                 switch (Attrib.Name)
                 {
@@ -311,14 +326,14 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
 
             BufferAttributes |= (ulong)(VertexStride & 0xff) << 48;
-            BufferAttributes |= (ulong)Attributes.Length << 60;
+            BufferAttributes |= (ulong)Attributes.Count << 60;
 
             //Fixed Attributes
-            for (int Index = 0; Index < (FixedAttributes?.Length ?? 0); Index++)
+            for (int Index = 0; Index < FixedAttributes.Count; Index++)
             {
                 PICAFixedAttribute Attrib = FixedAttributes[Index];
 
-                BufferFormats |= 1ul << (48 + AttributesTotal); 
+                BufferFormats     |= 1ul << (48 + AttributesTotal); 
                 BufferPermutation |= (ulong)Attrib.Name << AttributesTotal++ * 4;
             }
 
@@ -338,12 +353,12 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                 (uint)(BufferAttributes >>  0),
                 (uint)(BufferAttributes >> 32));
 
-            for (int Index = 0; Index < (FixedAttributes?.Length ?? 0); Index++)
+            for (int Index = 0; Index < FixedAttributes.Count; Index++)
             {
                 PICAFixedAttribute Attrib = FixedAttributes[Index];
 
                 Writer.SetCommand(PICARegister.GPUREG_FIXEDATTRIB_INDEX, true,
-                    (uint)(Attributes.Length + Index),
+                    (uint)(Attributes.Count + Index),
                     Attrib.Value.Word0,
                     Attrib.Value.Word1,
                     Attrib.Value.Word2);

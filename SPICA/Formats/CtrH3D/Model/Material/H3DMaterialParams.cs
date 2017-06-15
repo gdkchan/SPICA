@@ -48,17 +48,17 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DMaterialLUT ReflecGLUT;
         public H3DMaterialLUT ReflecBLUT;
 
-        private byte _LayerConfig;
+        private byte LayerConfig;
 
-        public H3DLayerConfig LayerConfig
+        public H3DTranslucencyKind TranslucencyKind
         {
             get
             {
-                return (H3DLayerConfig)BitUtils.GetBits(_LayerConfig, 0, 4);
+                return (H3DTranslucencyKind)BitUtils.GetBits(LayerConfig, 0, 4);
             }
             set
             {
-                _LayerConfig = BitUtils.SetBits(_LayerConfig, (uint)value, 0, 4);
+                LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 0, 4);
             }
         }
 
@@ -66,11 +66,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             get
             {
-                return (H3DTexCoordConfig)BitUtils.GetBits(_LayerConfig, 4, 4);
+                return (H3DTexCoordConfig)BitUtils.GetBits(LayerConfig, 4, 4);
             }
             set
             {
-                _LayerConfig = BitUtils.SetBits(_LayerConfig, (uint)value, 4, 4);
+                LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 4, 4);
             }
         }
 
@@ -179,9 +179,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [IfVersion(CmpOp.Gequal, 7)] public H3DMetaData MetaData;
 
-        [Ignore] public PICALUTInAbs   LUTInAbs;
-        [Ignore] public PICALUTInSel   LUTInSel;
-        [Ignore] public PICALUTInScale LUTInScale;
+        [Ignore] public PICALUTInAbs   LUTInputAbsolute;
+        [Ignore] public PICALUTInSel   LUTInputSelection;
+        [Ignore] public PICALUTInScale LUTInputScale;
 
         [Ignore] public readonly PICATexEnvStage[] TexEnvStages;
 
@@ -274,7 +274,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             HashGen.Hash(Constant5Color.ToUInt32());
             HashGen.Hash(BlendColor.ToUInt32());
             HashGen.Hash(ColorScale);
-            HashGen.Hash(_LayerConfig);
+            HashGen.Hash(LayerConfig);
             HashGen.Hash((byte)FresnelSelector);
             HashGen.Hash((byte)BumpMode);
             HashGen.Hash(BumpTexture);
@@ -337,9 +337,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInAbs   = new PICALUTInAbs(Param);   break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInSel   = new PICALUTInSel(Param);   break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInScale = new PICALUTInScale(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInputAbsolute  = new PICALUTInAbs(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSelection = new PICALUTInSel(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInputScale     = new PICALUTInScale(Param); break;
                 }
             }
 
@@ -457,9 +457,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
             Writer = new PICACommandWriter();
 
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS,    LUTInAbs.ToUInt32());
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT, LUTInSel.ToUInt32());
-            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE,  LUTInScale.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS,    LUTInputAbsolute.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT, LUTInputSelection.ToUInt32());
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE,  LUTInputScale.ToUInt32());
 
             LUTConfigCommands = Writer.GetBuffer();
 

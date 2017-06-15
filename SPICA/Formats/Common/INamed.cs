@@ -1,4 +1,4 @@
-﻿namespace SPICA.Formats.CtrH3D
+﻿namespace SPICA.Formats.Common
 {
     public interface INamed
     {

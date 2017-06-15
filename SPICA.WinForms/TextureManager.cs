@@ -13,9 +13,9 @@ namespace SPICA.WinForms
             Dictionary<int, Bitmap> TextureCache = new
             Dictionary<int, Bitmap>();
 
-        private static PatriciaList<H3DTexture> _Textures;
+        private static H3DPatriciaList<H3DTexture> _Textures;
 
-        public static PatriciaList<H3DTexture> Textures
+        public static H3DPatriciaList<H3DTexture> Textures
         {
             get
             {

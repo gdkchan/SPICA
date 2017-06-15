@@ -31,9 +31,7 @@ namespace SPICA.Serialization
 
         private Dictionary<ObjectInfo, ObjectRef> ObjPointers;
 
-        private long BufferedPos = 0;
-        private uint BufferedUInt = 0;
-        private uint BufferedShift = 0;
+        private SerializationOptions Options;
 
         public int FileVersion;
 
@@ -42,9 +40,10 @@ namespace SPICA.Serialization
             BindingFlags.Public |
             BindingFlags.NonPublic;
 
-        public BinaryDeserializer(Stream BaseStream)
+        public BinaryDeserializer(Stream BaseStream, SerializationOptions Options)
         {
             this.BaseStream = BaseStream;
+            this.Options    = Options;
 
             Reader = new BinaryReader(BaseStream);
 
@@ -62,30 +61,17 @@ namespace SPICA.Serialization
             {
                 switch (Type.GetTypeCode(Type))
                 {
-                    case TypeCode.UInt64: return Reader.ReadUInt64();
-                    case TypeCode.UInt32: return Reader.ReadUInt32();
-                    case TypeCode.UInt16: return Reader.ReadUInt16();
-                    case TypeCode.Byte:   return Reader.ReadByte();
-                    case TypeCode.Int64:  return Reader.ReadInt64();
-                    case TypeCode.Int32:  return Reader.ReadInt32();
-                    case TypeCode.Int16:  return Reader.ReadInt16();
-                    case TypeCode.SByte:  return Reader.ReadSByte();
-                    case TypeCode.Single: return Reader.ReadSingle();
-                    case TypeCode.Double: return Reader.ReadDouble();
-                    case TypeCode.Boolean:
-                        if (BufferedPos != BaseStream.Position || BufferedShift == 0)
-                        {
-                            BufferedUInt = Reader.ReadUInt32();
-                            BufferedPos = BaseStream.Position;
-                            BufferedShift = 32;
-                        }
-
-                        bool Value = (BufferedUInt & 1) != 0;
-
-                        BufferedUInt >>= 1;
-                        BufferedShift--;
-
-                        return Value;
+                    case TypeCode.UInt64:  return Reader.ReadUInt64();
+                    case TypeCode.UInt32:  return Reader.ReadUInt32();
+                    case TypeCode.UInt16:  return Reader.ReadUInt16();
+                    case TypeCode.Byte:    return Reader.ReadByte();
+                    case TypeCode.Int64:   return Reader.ReadInt64();
+                    case TypeCode.Int32:   return Reader.ReadInt32();
+                    case TypeCode.Int16:   return Reader.ReadInt16();
+                    case TypeCode.SByte:   return Reader.ReadSByte();
+                    case TypeCode.Single:  return Reader.ReadSingle();
+                    case TypeCode.Double:  return Reader.ReadDouble();
+                    case TypeCode.Boolean: return Reader.ReadByte() != 0;
 
                     default: return null;
                 }
@@ -146,23 +132,51 @@ namespace SPICA.Serialization
                 List = (IList)Activator.CreateInstance(Type);
                 Type = Type.GetGenericArguments()[0];
             }
-            
+
             long Position = BaseStream.Position;
             bool Range = Info?.IsDefined(typeof(RangeAttribute)) ?? false;
             bool Inline = Type.IsDefined(typeof(InlineAttribute));
             bool Pointers = !(Type.IsValueType || Type.IsEnum || Inline);
 
+            uint Bools = 0;
+
             int Index;
+
             for (Index = 0; (Range ? BaseStream.Position : Index) < Length; Index++)
             {
                 if (Pointers)
                 {
                     BaseStream.Seek(Position + Index * 4, SeekOrigin.Begin);
-                    BaseStream.Seek(Reader.ReadUInt32(), SeekOrigin.Begin);
+
+                    uint Address = ReadPointer();
+
+                    if (Address == 0)
+                    {
+                        if (!List.IsFixedSize) List.Add(null);
+
+                        continue;
+                    }
+
+                    BaseStream.Seek(Address, SeekOrigin.Begin);
                 }
 
-                long Address = BaseStream.Position;
-                object Value = ReadValue(Type);
+                object Value;
+
+                if (Type == typeof(bool))
+                {
+                    if ((Index & 0x1f) == 0)
+                    {
+                        Bools = Reader.ReadUInt32();
+                    }
+
+                    Value = (Bools & 1) != 0;
+
+                    Bools >>= 1;
+                }
+                else
+                {
+                    Value = ReadValue(Type);
+                }
 
                 if (List.IsFixedSize)
                     List[Index] = Value;
@@ -170,9 +184,10 @@ namespace SPICA.Serialization
                     List.Add(Value);
             }
 
-            if (Pointers) BaseStream.Seek(Position + Index * 4, SeekOrigin.Begin);
-
-            BufferedShift = 0;
+            if (Pointers)
+            {
+                BaseStream.Seek(Position + Index * 4, SeekOrigin.Begin);
+            }
 
             return List;
         }
@@ -266,16 +281,18 @@ namespace SPICA.Serialization
 
         private void ReadReference(object Parent, FieldInfo Info)
         {
-            uint Address = Reader.ReadUInt32();
-            int Length = 0;
+            uint Address;
+            int  Length;
 
-            if (Info.IsDefined(typeof(FixedLengthAttribute)))
+            if (Options.LenPos == LengthPos.AfterPointer)
             {
-                Length = Info.GetCustomAttribute<FixedLengthAttribute>().Length;
+                Address = ReadPointer();
+                Length  = ReadLength(Info);
             }
-            else if (typeof(IList).IsAssignableFrom(Info.FieldType))
+            else
             {
-                Length = Reader.ReadInt32();
+                Length  = ReadLength(Info);
+                Address = ReadPointer();
             }
 
             if (Info.IsDefined(typeof(RepeatPointerAttribute))) Reader.ReadUInt32();
@@ -290,6 +307,34 @@ namespace SPICA.Serialization
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
             }
+        }
+
+        private int ReadLength(FieldInfo Info)
+        {
+            if (Info.IsDefined(typeof(FixedLengthAttribute)))
+            {
+                return Info.GetCustomAttribute<FixedLengthAttribute>().Length;
+            }
+            else if (typeof(IList).IsAssignableFrom(Info.FieldType))
+            {
+                return Reader.ReadInt32();
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public uint ReadPointer()
+        {
+            uint Address = Reader.ReadUInt32();
+
+            if (Options.PtrType == PointerType.SelfRelative && Address != 0)
+            {
+                Address += (uint)BaseStream.Position - 4;
+            }
+
+            return Address;
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICATextureFormat : byte
+    public enum PICATextureFormat : uint
     {
         RGBA8,
         RGB8,

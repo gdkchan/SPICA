@@ -10,7 +10,7 @@ namespace SPICA.Formats.Common
 {
     static class MeshTransform
     {
-        public static List<PICAVertex> GetVerticesList(PatriciaList<H3DBone> Skeleton, H3DMesh Mesh)
+        public static List<PICAVertex> GetVerticesList(H3DPatriciaList<H3DBone> Skeleton, H3DMesh Mesh)
         {
             List<PICAVertex> Output = new List<PICAVertex>();
 
@@ -54,7 +54,7 @@ namespace SPICA.Formats.Common
             return Output;
         }
 
-        public static PICAVertex[] GetWorldSpaceVertices(PatriciaList<H3DBone> Skeleton, H3DMesh Mesh)
+        public static PICAVertex[] GetWorldSpaceVertices(H3DPatriciaList<H3DBone> Skeleton, H3DMesh Mesh)
         {
             PICAVertex[] Vertices = Mesh.ToVertices();
 

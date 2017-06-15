@@ -1,5 +1,7 @@
 ﻿using SPICA.PICA.Commands;
 
+using System.Collections.Generic;
+
 namespace SPICA.Formats.GFL2.Model.Mesh
 {
     public class GFSubMesh
@@ -21,8 +23,13 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
         public byte[] RawBuffer;
 
-        public PICAAttribute[] Attributes;
+        public readonly List<PICAAttribute>      Attributes;
+        public readonly List<PICAFixedAttribute> FixedAttributes;
 
-        public PICAFixedAttribute[] FixedAttributes;
+        public GFSubMesh()
+        {
+            Attributes      = new List<PICAAttribute>();
+            FixedAttributes = new List<PICAFixedAttribute>();
+        }
     }
 }

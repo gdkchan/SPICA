@@ -118,13 +118,17 @@ namespace SPICA.Formats.Generic.StudioMdl
                             switch (CurrSection)
                             {
                                 case SMDSection.Nodes:
-                                    int NameStart = Line.IndexOf('"') + 1;
-                                    int NameLength = Line.LastIndexOf('"') - NameStart;
+                                    int NameStart  = Line.IndexOf('"') + 1;
+                                    int NameEnd    = Line.LastIndexOf('"');
+                                    int NameLength = NameEnd - NameStart;
+
+                                    Params[1] = Line.Substring(NameStart, NameLength);
+                                    Params[2] = Line.Substring(NameEnd + 1).Trim();
 
                                     Nodes.Add(new SMDNode
                                     {
                                         Index       = int.Parse(Params[0]),
-                                        Name        = Line.Substring(NameStart, NameLength),
+                                        Name        = Params[1],
                                         ParentIndex = int.Parse(Params[2])
                                     });
                                     break;
@@ -259,6 +263,9 @@ namespace SPICA.Formats.Generic.StudioMdl
 
             for (i = 0; i < 4 && Vtx.Weights[i] > 0; i++)
             {
+                if (Vtx.Weights[i].ToString(CultureInfo.InvariantCulture) == "0.09999999")
+                    System.Diagnostics.Debug.WriteLine(Vtx.Weights[i]);
+
                 Indices += $" {Vtx.Indices[i]} {Vtx.Weights[i].ToString(CultureInfo.InvariantCulture)}";
             }
 
@@ -398,8 +405,16 @@ namespace SPICA.Formats.Generic.StudioMdl
                     });
                 }
 
+                List<PICAAttribute> Attributes = PICAAttribute.GetAttributes(
+                    PICAAttributeName.Position,
+                    PICAAttributeName.Normal,
+                    PICAAttributeName.Color,
+                    PICAAttributeName.TexCoord0,
+                    PICAAttributeName.BoneIndex,
+                    PICAAttributeName.BoneWeight);
+
                 //Mesh
-                H3DMesh M = new H3DMesh(Vertices.Keys, GetAttributes(), SubMeshes)
+                H3DMesh M = new H3DMesh(Vertices.Keys, Attributes, SubMeshes)
                 {
                     Skinning      = H3DMeshSkinning.Smooth,
                     MeshCenter    = (MinVector + MaxVector) * 0.5f,
@@ -455,57 +470,6 @@ namespace SPICA.Formats.Generic.StudioMdl
             Output.CopyMaterials();
 
             return Output;
-        }
-
-        private PICAAttribute[] GetAttributes()
-        {
-            PICAAttribute[] Attributes = new PICAAttribute[6];
-
-            for (int i = 0; i < 3; i++)
-            {
-                PICAAttributeName Name = default(PICAAttributeName);
-
-                switch (i)
-                {
-                    case 0: Name = PICAAttributeName.Position; break;
-                    case 1: Name = PICAAttributeName.Normal; break;
-                    case 2: Name = PICAAttributeName.TexCoord0; break;
-                }
-
-                Attributes[i] = new PICAAttribute
-                {
-                    Name     = Name,
-                    Format   = PICAAttributeFormat.Float,
-                    Elements = Name == PICAAttributeName.TexCoord0 ? 2 : 3,
-                    Scale    = 1
-                };
-            }
-
-            Attributes[3] = new PICAAttribute
-            {
-                Name     = PICAAttributeName.Color,
-                Format   = PICAAttributeFormat.Ubyte,
-                Elements = 4,
-                Scale    = 1f / 255
-            };
-
-            Attributes[4] = new PICAAttribute
-            {
-                Name     = PICAAttributeName.BoneIndex,
-                Format   = PICAAttributeFormat.Ubyte,
-                Elements = 4,
-                Scale    = 1
-            };
-
-            Attributes[5] = new PICAAttribute
-            {
-                Name     = PICAAttributeName.BoneWeight,
-                Format   = PICAAttributeFormat.Ubyte,
-                Elements = 4,
-                Scale    = 0.01f
-            };
-
-            return Attributes;
         }
     }
 }

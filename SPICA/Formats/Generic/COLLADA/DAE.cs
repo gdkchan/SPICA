@@ -435,7 +435,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                 H3DAnimation SklAnim = Scene.SkeletalAnimations[AnimIndex];
 
-                PatriciaList<H3DBone> Skeleton = Scene.Models[0].Skeleton;
+                H3DPatriciaList<H3DBone> Skeleton = Scene.Models[0].Skeleton;
 
                 int FramesCount = (int)SklAnim.FramesCount + 1;
 

@@ -12,8 +12,8 @@ namespace SPICA.Formats.MTFramework.Texture
 
         public MTTextureFormat Format;
 
-        public uint Width;
-        public uint Height;
+        public int Width;
+        public int Height;
 
         public string Name;
 
@@ -21,7 +21,7 @@ namespace SPICA.Formats.MTFramework.Texture
         {
             this.Name = Name;
 
-            string Magic = StringUtils.ReadPaddedString(Reader, 4);
+            string Magic = Reader.ReadPaddedString(4);
 
             int  Word0 = Reader.ReadInt32();
             uint Word1 = Reader.ReadUInt32();
@@ -34,8 +34,8 @@ namespace SPICA.Formats.MTFramework.Texture
             uint Format  = (Word2 >>  8) & 0xff;
             uint Aspect  = (Word2 >> 16) & 0x1fff;
 
-            this.Width  = Width  << Shift;
-            this.Height = Height << Shift;
+            this.Width  = (int)Width  << Shift;
+            this.Height = (int)Height << Shift;
 
             this.Format = (MTTextureFormat)Format;
 

@@ -109,7 +109,9 @@ namespace SPICA.Formats.ModelBinary
             {
                 Mesh.PositionOffset = Vector4.Zero;
 
-                Mesh.Attributes   = VerticesDesc[i].Attributes.ToArray();
+                Mesh.Attributes.Clear();
+                Mesh.Attributes.AddRange(VerticesDesc[i].Attributes);
+
                 Mesh.RawBuffer    = VerticesDesc[i].RawBuffer;
                 Mesh.VertexStride = VerticesDesc[i].VertexStride;
 

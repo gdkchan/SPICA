@@ -11,7 +11,19 @@ namespace SPICA.Formats.CtrH3D
 {
     public struct H3DVertexDataAttribute : ICustomSerialization
     {
-        public PICAAttributeName Name;
+        private byte _Name;
+
+        public PICAAttributeName Name
+        {
+            get
+            {
+                return (PICAAttributeName)_Name;
+            }
+            set
+            {
+                _Name = (byte)value;
+            }
+        }
 
         private byte Type;
 

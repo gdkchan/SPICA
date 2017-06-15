@@ -82,7 +82,22 @@ namespace SPICA.Formats.CtrH3D.Model
             InverseTransform = new Matrix3x4();
         }
 
-        public Matrix4x4 GetWorldTransform(PatriciaList<H3DBone> Skeleton)
+        public H3DBone(
+            Vector3 Translation,
+            Vector3 Rotation,
+            Vector3 Scale,
+            string Name,
+            short Parent) : this()
+        {
+            this.Translation = Translation;
+            this.Rotation    = Rotation;
+            this.Scale       = Scale;
+            this.Name        = Name;
+
+            ParentIndex = Parent;
+        }
+
+        public Matrix4x4 GetWorldTransform(H3DPatriciaList<H3DBone> Skeleton)
         {
             Matrix4x4 Transform = Matrix4x4.Identity;
 
@@ -100,7 +115,7 @@ namespace SPICA.Formats.CtrH3D.Model
             return Transform;
         }
 
-        public void CalculateTransform(PatriciaList<H3DBone> Skeleton)
+        public void CalculateTransform(H3DPatriciaList<H3DBone> Skeleton)
         {
             Matrix4x4 Transform = Matrix4x4.Identity;
 

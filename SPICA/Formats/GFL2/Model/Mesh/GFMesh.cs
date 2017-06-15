@@ -112,6 +112,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
             for (int MeshIndex = 0; MeshIndex < SubMeshesCount; MeshIndex++)
             {
+                GFSubMesh SM = SubMeshes[MeshIndex];
+
                 uint[] EnableCommands  = CmdList[MeshIndex * 3 + 0];
                 uint[] DisableCommands = CmdList[MeshIndex * 3 + 1];
                 uint[] IndexCommands   = CmdList[MeshIndex * 3 + 2];
@@ -122,12 +124,12 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
                 PICAVectorFloat24[] Fixed = new PICAVectorFloat24[12];
 
-                ulong BufferFormats = 0;
-                ulong BufferAttributes = 0;
+                ulong BufferFormats     = 0;
+                ulong BufferAttributes  = 0;
                 ulong BufferPermutation = 0;
-                int AttributesCount = 0;
-                int AttributesTotal = 0;
-                int VertexStride = 0;
+                int   AttributesCount   = 0;
+                int   AttributesTotal   = 0;
+                int   VertexStride      = 0;
 
                 int FixedIndex = 0;
 
@@ -157,10 +159,6 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                     }
                 }
 
-                PICAAttribute[] Attributes = new PICAAttribute[AttributesCount];
-
-                PICAFixedAttribute[] FixedAttributes = new PICAFixedAttribute[AttributesTotal - AttributesCount];
-
                 for (int Index = 0; Index < AttributesTotal; Index++)
                 {
                     if (((BufferFormats >> (48 + Index)) & 1) != 0)
@@ -171,11 +169,11 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                             Name == PICAAttributeName.Color ||
                             Name == PICAAttributeName.BoneWeight ? Scales[1] : 1;
 
-                        FixedAttributes[Index - AttributesCount] = new PICAFixedAttribute
+                        SM.FixedAttributes.Add(new PICAFixedAttribute
                         {
-                            Name = Name,
+                            Name  = Name,
                             Value = Fixed[Index] * Scale
-                        };
+                        });
                     }
                     else
                     {
@@ -185,15 +183,15 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
                         PICAAttribute Attrib = new PICAAttribute
                         {
-                            Name = (PICAAttributeName)AttributeName,
-                            Format = (PICAAttributeFormat)(AttributeFmt & 3),
+                            Name     = (PICAAttributeName)AttributeName,
+                            Format   = (PICAAttributeFormat)(AttributeFmt & 3),
                             Elements = (AttributeFmt >> 2) + 1,
-                            Scale = Scales[AttributeFmt & 3]
+                            Scale    = Scales[AttributeFmt & 3]
                         };
 
                         if (Attrib.Name == PICAAttributeName.BoneIndex) Attrib.Scale = 1;
 
-                        Attributes[Index] = Attrib;
+                        SM.Attributes.Add(Attrib);
                     }
                 }
 
@@ -215,12 +213,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                     }
                 }
 
-                GFSubMesh SM = SubMeshes[MeshIndex];
-
-                SM.RawBuffer       = Reader.ReadBytes((int)SM.VerticesLength);
-                SM.VertexStride    = VertexStride;
-                SM.Attributes      = Attributes;
-                SM.FixedAttributes = FixedAttributes;
+                SM.RawBuffer    = Reader.ReadBytes((int)SM.VerticesLength);
+                SM.VertexStride = VertexStride;
 
                 SM.Indices = new ushort[PrimitivesCount];
 

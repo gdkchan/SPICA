@@ -52,10 +52,8 @@ namespace SPICA.Renderer
                 GL.DisableVertexAttribArray((int)Attrib.Name);
             }
 
-            for (int Index = 0; Index < BaseMesh.Attributes.Length; Index++)
+            foreach (PICAAttribute Attrib in BaseMesh.Attributes)
             {
-                PICAAttribute Attrib = BaseMesh.Attributes[Index];
-
                 int Size = Attrib.Elements;
 
                 VertexAttribPointerType Type = default(VertexAttribPointerType);

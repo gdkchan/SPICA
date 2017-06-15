@@ -1,8 +1,6 @@
-﻿using SPICA.Formats.CtrH3D;
-using SPICA.Formats.CtrH3D.Model;
-using SPICA.Formats.CtrH3D.Model.Mesh;
+﻿using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
-
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -113,7 +111,7 @@ namespace SPICA.PICA.Converters
             return Output;
         }
 
-        public static byte[] GetBuffer(IEnumerable<PICAVertex> Vertices, PICAAttribute[] Attributes)
+        public static byte[] GetBuffer(IEnumerable<PICAVertex> Vertices, IEnumerable<PICAAttribute> Attributes)
         {
             using (MemoryStream MS = new MemoryStream())
             {
@@ -163,12 +161,22 @@ namespace SPICA.PICA.Converters
 
         private static void Write(BinaryWriter Writer, PICAAttribute Attrib, float Value)
         {
+            Value /= Attrib.Scale;
+
+            if (Attrib.Format != PICAAttributeFormat.Float)
+            {
+                //Due to float lack of precision it's better to round the number,
+                //because directly casting it will always use the lowest number that
+                //may cause issues for values that float can't represent (like 0.1).
+                Value = (float)Math.Round(Value);
+            }
+
             switch (Attrib.Format)
             {
-                case PICAAttributeFormat.Byte: Writer.Write((sbyte)(Value / Attrib.Scale)); break;
-                case PICAAttributeFormat.Ubyte: Writer.Write((byte)(Value / Attrib.Scale)); break;
-                case PICAAttributeFormat.Short: Writer.Write((short)(Value / Attrib.Scale)); break;
-                case PICAAttributeFormat.Float: Writer.Write(Value / Attrib.Scale); break;
+                case PICAAttributeFormat.Byte:  Writer.Write((sbyte)Value); break;
+                case PICAAttributeFormat.Ubyte: Writer.Write((byte)Value);  break;
+                case PICAAttributeFormat.Short: Writer.Write((short)Value); break;
+                case PICAAttributeFormat.Float: Writer.Write(Value);        break;
             }
         }
     }

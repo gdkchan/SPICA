@@ -35,7 +35,7 @@ namespace SPICA.Formats.MTFramework.Model
 
         public MTModel(BinaryReader Reader, MTMaterials MRLData, MTShaderEffects Shader) : this()
         {
-            string Magic = StringUtils.ReadPaddedString(Reader, 4);
+            string Magic = Reader.ReadPaddedString(4);
 
             ushort Version               = Reader.ReadUInt16();
             ushort BonesCount            = Reader.ReadUInt16();
@@ -167,7 +167,7 @@ namespace SPICA.Formats.MTFramework.Model
 
             H3DModel Model = new H3DModel();
 
-            Model.MeshNodesTree = new PatriciaTree();
+            Model.MeshNodesTree = new H3DPatriciaTree();
 
             Model.Flags = BoneIndicesGroups.Length > 0 ? H3DModelFlags.HasSkeleton : 0;
             Model.Name = "Model";
@@ -198,13 +198,15 @@ namespace SPICA.Formats.MTFramework.Model
             {
                 if (Mesh.RenderType != -1) continue;
 
-                H3DMesh M = new H3DMesh
+                H3DMesh M = new H3DMesh(
+                    Mesh.RawBuffer,
+                    Mesh.VertexStride,
+                    Mesh.Attributes,
+                    null,
+                    null)
                 {
                     MaterialIndex = (ushort)Mesh.MaterialIndex,
-                    NodeIndex     = Index,
-                    RawBuffer     = Mesh.RawBuffer,
-                    VertexStride  = Mesh.VertexStride,
-                    Attributes    = Mesh.Attributes
+                    NodeIndex     = Index
                 };
 
                 byte[] BoneIndices = BoneIndicesGroups[Mesh.BoneIndicesIndex];

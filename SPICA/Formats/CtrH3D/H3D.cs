@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.CtrH3D.Animation;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Camera;
 using SPICA.Formats.CtrH3D.Fog;
 using SPICA.Formats.CtrH3D.Light;
@@ -18,21 +19,21 @@ namespace SPICA.Formats.CtrH3D
 {
     public class H3D : ICustomSerialization
     {
-        public readonly PatriciaList<H3DModel>          Models;
-        public readonly PatriciaList<H3DMaterialParams> Materials;
-        public readonly PatriciaList<H3DShader>         Shaders;
-        public readonly PatriciaList<H3DTexture>        Textures;
-        public readonly PatriciaList<H3DLUT>            LUTs;
-        public readonly PatriciaList<H3DLight>          Lights;
-        public readonly PatriciaList<H3DCamera>         Cameras;
-        public readonly PatriciaList<H3DFog>            Fogs;
-        public readonly PatriciaList<H3DAnimation>      SkeletalAnimations;
-        public readonly PatriciaList<H3DAnimation>      MaterialAnimations;
-        public readonly PatriciaList<H3DAnimation>      VisibilityAnimations;
-        public readonly PatriciaList<H3DAnimation>      LightAnimations;
-        public readonly PatriciaList<H3DAnimation>      CameraAnimations;
-        public readonly PatriciaList<H3DAnimation>      FogAnimations;
-        public readonly PatriciaList<H3DScene>          Scenes;
+        public readonly H3DPatriciaList<H3DModel>          Models;
+        public readonly H3DPatriciaList<H3DMaterialParams> Materials;
+        public readonly H3DPatriciaList<H3DShader>         Shaders;
+        public readonly H3DPatriciaList<H3DTexture>        Textures;
+        public readonly H3DPatriciaList<H3DLUT>            LUTs;
+        public readonly H3DPatriciaList<H3DLight>          Lights;
+        public readonly H3DPatriciaList<H3DCamera>         Cameras;
+        public readonly H3DPatriciaList<H3DFog>            Fogs;
+        public readonly H3DPatriciaList<H3DAnimation>      SkeletalAnimations;
+        public readonly H3DPatriciaList<H3DAnimation>      MaterialAnimations;
+        public readonly H3DPatriciaList<H3DAnimation>      VisibilityAnimations;
+        public readonly H3DPatriciaList<H3DAnimation>      LightAnimations;
+        public readonly H3DPatriciaList<H3DAnimation>      CameraAnimations;
+        public readonly H3DPatriciaList<H3DAnimation>      FogAnimations;
+        public readonly H3DPatriciaList<H3DScene>          Scenes;
 
         [Ignore] public byte BackwardCompatibility;
         [Ignore] public byte ForwardCompatibility;
@@ -43,21 +44,21 @@ namespace SPICA.Formats.CtrH3D
 
         public H3D()
         {
-            Models               = new PatriciaList<H3DModel>();
-            Materials            = new PatriciaList<H3DMaterialParams>();
-            Shaders              = new PatriciaList<H3DShader>();
-            Textures             = new PatriciaList<H3DTexture>();
-            LUTs                 = new PatriciaList<H3DLUT>();
-            Lights               = new PatriciaList<H3DLight>();
-            Cameras              = new PatriciaList<H3DCamera>();
-            Fogs                 = new PatriciaList<H3DFog>();
-            SkeletalAnimations   = new PatriciaList<H3DAnimation>();
-            MaterialAnimations   = new PatriciaList<H3DAnimation>();
-            VisibilityAnimations = new PatriciaList<H3DAnimation>();
-            LightAnimations      = new PatriciaList<H3DAnimation>();
-            CameraAnimations     = new PatriciaList<H3DAnimation>();
-            FogAnimations        = new PatriciaList<H3DAnimation>();
-            Scenes               = new PatriciaList<H3DScene>();
+            Models               = new H3DPatriciaList<H3DModel>();
+            Materials            = new H3DPatriciaList<H3DMaterialParams>();
+            Shaders              = new H3DPatriciaList<H3DShader>();
+            Textures             = new H3DPatriciaList<H3DTexture>();
+            LUTs                 = new H3DPatriciaList<H3DLUT>();
+            Lights               = new H3DPatriciaList<H3DLight>();
+            Cameras              = new H3DPatriciaList<H3DCamera>();
+            Fogs                 = new H3DPatriciaList<H3DFog>();
+            SkeletalAnimations   = new H3DPatriciaList<H3DAnimation>();
+            MaterialAnimations   = new H3DPatriciaList<H3DAnimation>();
+            VisibilityAnimations = new H3DPatriciaList<H3DAnimation>();
+            LightAnimations      = new H3DPatriciaList<H3DAnimation>();
+            CameraAnimations     = new H3DPatriciaList<H3DAnimation>();
+            FogAnimations        = new H3DPatriciaList<H3DAnimation>();
+            Scenes               = new H3DPatriciaList<H3DScene>();
 
             BackwardCompatibility = 0x21;
             ForwardCompatibility  = 0x21;
@@ -79,7 +80,7 @@ namespace SPICA.Formats.CtrH3D
         {
             //Please note that data should be on Memory when opening because addresses are relocated
             //Otherwise the original file would be corrupted!
-            BinaryDeserializer Deserializer = new BinaryDeserializer(MS);
+            BinaryDeserializer Deserializer = new BinaryDeserializer(MS, GetSerializationOptions());
 
             H3DHeader Header = Deserializer.Deserialize<H3DHeader>();
 
@@ -112,7 +113,7 @@ namespace SPICA.Formats.CtrH3D
 
                 H3DRelocator Relocator = new H3DRelocator(FS, Header);
 
-                BinarySerializer Serializer = new BinarySerializer(FS, Relocator);
+                BinarySerializer Serializer = new BinarySerializer(FS, GetSerializationOptions(), Relocator);
 
                 Serializer.FileVersion = Scene.BackwardCompatibility;
 
@@ -153,6 +154,11 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
+        private static SerializationOptions GetSerializationOptions()
+        {
+            return new SerializationOptions(LengthPos.AfterPointer, PointerType.Absolute);
+        }
+
         public void Merge(H3D SceneData)
         {
             AddUnique(SceneData.Models,               Models);
@@ -172,7 +178,7 @@ namespace SPICA.Formats.CtrH3D
             AddUnique(SceneData.Scenes,               Scenes);
         }
 
-        private void AddUnique<T>(PatriciaList<T> Src, PatriciaList<T> Tgt) where T : INamed
+        private void AddUnique<T>(H3DPatriciaList<T> Src, H3DPatriciaList<T> Tgt) where T : INamed
         {
             //We need to make sure that the name isn't already contained on the Tree
             //Otherwise it would throw an exception due to duplicate Keys

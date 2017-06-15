@@ -25,7 +25,7 @@ namespace SPICA.WinForms.Formats
 
             foreach (string FileName in FileNames)
             {
-                PatriciaList<H3DBone> Skeleton = null;
+                H3DPatriciaList<H3DBone> Skeleton = null;
 
                 if (Scene.Models.Count > 0) Skeleton = Scene.Models[0].Skeleton;
 

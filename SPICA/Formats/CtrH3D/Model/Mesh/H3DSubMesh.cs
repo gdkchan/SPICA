@@ -76,6 +76,18 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             _BoneIndices = new ushort[20];
         }
 
+        public H3DSubMesh(ushort[] Indices) : this()
+        {
+            this.Indices = Indices;
+        }
+
+        public H3DSubMesh(ushort[] Indices, ushort[] BoneIndices, H3DSubMeshSkinning Skinning) : this()
+        {
+            this.Indices     = Indices;
+            this.BoneIndices = BoneIndices;
+            this.Skinning    = Skinning;
+        }
+
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader = new PICACommandReader(Commands);

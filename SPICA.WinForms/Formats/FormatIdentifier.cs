@@ -1,4 +1,4 @@
-﻿using SPICA.Formats;
+﻿using SPICA.Formats.CtrGfx;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model;
@@ -20,7 +20,7 @@ namespace SPICA.WinForms.Formats
 {
     static class FormatIdentifier
     {
-        public static H3D IdentifyAndOpen(string FileName, PatriciaList<H3DBone> Skeleton = null)
+        public static H3D IdentifyAndOpen(string FileName, H3DPatriciaList<H3DBone> Skeleton = null)
         {
             //Formats that can by identified by extensions
             string FilePath = Path.GetDirectoryName(FileName);
@@ -72,6 +72,10 @@ namespace SPICA.WinForms.Formats
                     else if (Magic.StartsWith("MFX"))
                     {
                         MTShader = new MTShaderEffects(Reader);
+                    }
+                    else if (Magic.StartsWith("CGFX"))
+                    {
+                        return Gfx.Open(FS);
                     }
                     else
                     {

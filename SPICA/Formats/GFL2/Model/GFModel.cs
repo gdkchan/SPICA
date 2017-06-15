@@ -114,9 +114,10 @@ namespace SPICA.Formats.GFL2.Model
 
         public H3DModel ToH3DModel()
         {
-            H3DModel Output = new H3DModel();
-
-            Output.Name = Name;
+            H3DModel Output = new H3DModel()
+            {
+                Name = Name
+            };
 
             //Skeleton
             foreach (GFBone Bone in Skeleton)
@@ -136,6 +137,11 @@ namespace SPICA.Formats.GFL2.Model
             {
                 Bone.CalculateTransform(Output.Skeleton);
                 Bone.IsSegmentScaleCompensate = true;
+            }
+
+            if (Output.Skeleton.Count > 0)
+            {
+                Output.Flags = H3DModelFlags.HasSkeleton;
             }
 
             //Materials
@@ -200,9 +206,9 @@ namespace SPICA.Formats.GFL2.Model
 
                 Params.ColorScale = 1f;
 
-                Params.LUTInAbs   = Material.LUTInAbs;
-                Params.LUTInSel   = Material.LUTInSel;
-                Params.LUTInScale = Material.LUTInScale;
+                Params.LUTInputAbsolute  = Material.LUTInputAbsolute;
+                Params.LUTInputSelection = Material.LUTInputSelection;
+                Params.LUTInputScale     = Material.LUTInputScale;
 
                 Params.ColorOperation   = Material.ColorOperation;
                 Params.BlendFunction    = Material.BlendFunction;
@@ -287,7 +293,7 @@ namespace SPICA.Formats.GFL2.Model
             }
 
             //Meshes
-            Output.MeshNodesTree = new PatriciaTree();
+            Output.MeshNodesTree = new H3DPatriciaTree();
 
             foreach (GFMesh Mesh in Meshes)
             {
@@ -306,17 +312,7 @@ namespace SPICA.Formats.GFL2.Model
                         NodeIndex = Output.MeshNodesCount++;
                     }
 
-                    H3DMesh M = new H3DMesh();
-
-                    M.Skinning = H3DMeshSkinning.Smooth;
-
-                    M.MaterialIndex = (ushort)Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
-                    M.NodeIndex     = (ushort)NodeIndex;
-
-                    M.RawBuffer       = SubMesh.RawBuffer;
-                    M.Attributes      = SubMesh.Attributes;
-                    M.FixedAttributes = SubMesh.FixedAttributes;
-                    M.VertexStride    = SubMesh.VertexStride;
+                    List<H3DSubMesh> SubMeshes = new List<H3DSubMesh>();
 
                     ushort[] BoneIndices = new ushort[SubMesh.BoneIndicesCount];
 
@@ -325,7 +321,7 @@ namespace SPICA.Formats.GFL2.Model
                         BoneIndices[Index] = SubMesh.BoneIndices[Index];
                     }
 
-                    M.SubMeshes.Add(new H3DSubMesh
+                    SubMeshes.Add(new H3DSubMesh
                     {
                         Skinning         = H3DSubMeshSkinning.Smooth,
                         BoneIndicesCount = SubMesh.BoneIndicesCount,
@@ -333,6 +329,18 @@ namespace SPICA.Formats.GFL2.Model
                         Indices          = SubMesh.Indices,
                         BoolUniforms     = 0x60 //HemiL/AO
                     });
+
+                    H3DMesh M = new H3DMesh(
+                        SubMesh.RawBuffer,
+                        SubMesh.VertexStride,
+                        SubMesh.Attributes, 
+                        SubMesh.FixedAttributes,
+                        SubMeshes);
+
+                    M.Skinning = H3DMeshSkinning.Smooth;
+
+                    M.MaterialIndex = (ushort)Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
+                    M.NodeIndex     = (ushort)NodeIndex;
 
                     M.UpdateBoolUniforms();
 

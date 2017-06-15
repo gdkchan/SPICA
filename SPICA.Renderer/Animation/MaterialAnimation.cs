@@ -9,7 +9,7 @@ namespace SPICA.Renderer.Animation
 {
     public class MaterialAnimation : AnimationControl
     {
-        public OpenTK.Matrix3[][] GetUVTransforms(PatriciaList<H3DMaterial> Materials)
+        public OpenTK.Matrix3[][] GetUVTransforms(H3DPatriciaList<H3DMaterial> Materials)
         {
             OpenTK.Matrix3[][] Output = new OpenTK.Matrix3[Materials.Count][];
 

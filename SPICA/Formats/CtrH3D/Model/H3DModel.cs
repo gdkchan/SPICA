@@ -18,7 +18,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public Matrix3x4 WorldTransform;
 
-        public readonly PatriciaList<H3DMaterial> Materials;
+        public readonly H3DPatriciaList<H3DMaterial> Materials;
 
         public readonly List<H3DMesh> Meshes;
 
@@ -34,7 +34,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public readonly List<H3DSubMeshCulling> SubMeshCullings;
 
-        public readonly PatriciaList<H3DBone> Skeleton;
+        public readonly H3DPatriciaList<H3DBone> Skeleton;
 
         public readonly List<bool> MeshNodesVisibility;
 
@@ -54,7 +54,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public int MeshNodesCount;
 
-        public PatriciaTree MeshNodesTree;
+        public H3DPatriciaTree MeshNodesTree;
 
         private uint UserDefinedAddress;
 
@@ -64,7 +64,7 @@ namespace SPICA.Formats.CtrH3D.Model
         {
             WorldTransform = new Matrix3x4();
 
-            Materials = new PatriciaList<H3DMaterial>();
+            Materials = new H3DPatriciaList<H3DMaterial>();
 
             Meshes = new List<H3DMesh>();
 
@@ -75,7 +75,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
             SubMeshCullings = new List<H3DSubMeshCulling>();
 
-            Skeleton = new PatriciaList<H3DBone>();
+            Skeleton = new H3DPatriciaList<H3DBone>();
 
             MeshNodesVisibility = new List<bool>();
 

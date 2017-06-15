@@ -1,10 +1,8 @@
-﻿using SPICA.Formats.Common;
-using SPICA.Math3D;
+﻿using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
 
 using System.IO;
-using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model.Material
 {
@@ -85,9 +83,9 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public PICAFaceCulling FaceCulling;
 
-        public PICALUTInAbs   LUTInAbs;
-        public PICALUTInSel   LUTInSel;
-        public PICALUTInScale LUTInScale;
+        public PICALUTInAbs   LUTInputAbsolute;
+        public PICALUTInSel   LUTInputSelection;
+        public PICALUTInScale LUTInputScale;
 
         public bool ColorBufferRead;
         public bool ColorBufferWrite;
@@ -255,9 +253,9 @@ namespace SPICA.Formats.GFL2.Model.Material
                         DepthBufferWrite   = (Param & 2) != 0;
                         break;
 
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInAbs   = new PICALUTInAbs(Param);   break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInSel   = new PICALUTInSel(Param);   break;
-                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInScale = new PICALUTInScale(Param); break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_ABS:    LUTInputAbsolute  = new PICALUTInAbs(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SELECT: LUTInputSelection = new PICALUTInSel(Param);   break;
+                    case PICARegister.GPUREG_LIGHTING_LUTINPUT_SCALE:  LUTInputScale     = new PICALUTInScale(Param); break;
                 }
             }
 

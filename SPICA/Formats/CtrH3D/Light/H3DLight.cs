@@ -1,4 +1,6 @@
-﻿namespace SPICA.Formats.CtrH3D.Light
+﻿using SPICA.Formats.Common;
+
+namespace SPICA.Formats.CtrH3D.Light
 {
     public class H3DLight : INamed
     {

@@ -2,7 +2,7 @@
 
 namespace SPICA.PICA.Commands
 {
-    public enum PICALUTScale
+    public enum PICALUTScale : uint
     {
         One = 0,
         Two = 1,

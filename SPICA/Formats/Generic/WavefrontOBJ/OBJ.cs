@@ -98,28 +98,28 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
                             PICAVertex Vertex = new PICAVertex();
 
-                            if (Indices[Index][0] != string.Empty)
+                            if (Indices[Index].Length > 0 && Indices[Index][0] != string.Empty)
                             {
                                 Mesh.HasPosition = true;
-
-                                int i = int.Parse(Indices[Index][0]);
 
                                 Vertex.Position = Positions[GetIndex(Indices[Index][0], Positions.Count)];
                             }
 
-                            if (Indices[Index][1] != string.Empty)
+                            if (Indices[Index].Length > 1 && Indices[Index][1] != string.Empty)
                             {
                                 Mesh.HasTexCoord = true;
 
                                 Vertex.TexCoord0 = TexCoords[GetIndex(Indices[Index][1], Normals.Count)];
                             }
 
-                            if (Indices[Index][2] != string.Empty)
+                            if (Indices[Index].Length > 2 && Indices[Index][2] != string.Empty)
                             {
                                 Mesh.HasNormal = true;
 
                                 Vertex.Normal = Normals[GetIndex(Indices[Index][2], TexCoords.Count)];
                             }
+                            
+                            Vertex.Weights[0] = 1;
 
                             Vertex.Color = Vector4.One;
 
@@ -130,23 +130,27 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                     case "usemtl":
                         if (Params.Length > 1)
                         {
+                            string MaterialName = Line.Substring(Line.IndexOf(" ")).Trim();
+
                             if (Mesh.Vertices.Count > 0)
                             {
                                 Meshes.Add(Mesh);
 
-                                Mesh = new OBJMesh(Params[1]);
+                                Mesh = new OBJMesh(MaterialName);
                             }
                             else
                             {
-                                Mesh.MaterialName = Params[1];
+                                Mesh.MaterialName = MaterialName;
                             }
                         }
                         break;
 
                     case "mtllib":
+                        string MtlLibName = Line.Substring(Line.IndexOf(" ")).Trim();
+
                         if (Params.Length > 1)
                         {
-                            MtlFile = Params[1];
+                            MtlFile = MtlLibName;
                         }
                         break;
                 }
@@ -210,7 +214,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
                                     Material = new OBJMaterial();
 
-                                    MaterialName = Params[1];
+                                    MaterialName = Line.Substring(Line.IndexOf(" ")).Trim();
                                 }
                                 break;
 
@@ -227,7 +231,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                                         Output.Textures.Add(new H3DTexture(TextureFile));
                                     }
 
-                                    Material.DiffuseTexture = TextureName;
+                                    Material.DiffuseTexture = Path.GetFileNameWithoutExtension(TextureName);
                                 }
                                 break;
 
@@ -267,8 +271,11 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
             ushort MaterialIndex = 0;
 
+            Model.Flags       = H3DModelFlags.HasSkeleton;
             Model.BoneScaling = H3DBoneScaling.Maya;
             Model.MeshNodesVisibility.Add(true);
+
+            float Height = 0;
 
             foreach (OBJMesh Mesh in Meshes)
             {
@@ -319,56 +326,23 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
                     H3DSubMesh SM = new H3DSubMesh();
 
-                    SM.Indices = Indices.ToArray();
+                    SM.BoneIndices = new ushort[] { 0 };
+                    SM.Skinning    = H3DSubMeshSkinning.Smooth;
+                    SM.Indices     = Indices.ToArray();
 
                     SubMeshes.Add(SM);
                 }
 
                 //Mesh
-                List<PICAAttribute> Attributes = new List<PICAAttribute>();
+                List<PICAAttribute> Attributes = PICAAttribute.GetAttributes(
+                    PICAAttributeName.Position,
+                    PICAAttributeName.Normal,
+                    PICAAttributeName.TexCoord0,
+                    PICAAttributeName.Color,
+                    PICAAttributeName.BoneIndex,
+                    PICAAttributeName.BoneWeight);
 
-                if (Mesh.HasPosition)
-                {
-                    Attributes.Add(new PICAAttribute
-                    {
-                        Name     = PICAAttributeName.Position,
-                        Format   = PICAAttributeFormat.Float,
-                        Elements = 3,
-                        Scale    = 1
-                    });
-                }
-
-                if (Mesh.HasNormal)
-                {
-                    Attributes.Add(new PICAAttribute
-                    {
-                        Name     = PICAAttributeName.Normal,
-                        Format   = PICAAttributeFormat.Float,
-                        Elements = 3,
-                        Scale    = 1
-                    });
-                }
-
-                if (Mesh.HasTexCoord)
-                {
-                    Attributes.Add(new PICAAttribute
-                    {
-                        Name     = PICAAttributeName.TexCoord0,
-                        Format   = PICAAttributeFormat.Float,
-                        Elements = 2,
-                        Scale    = 1
-                    });
-                }
-
-                Attributes.Add(new PICAAttribute
-                {
-                    Name     = PICAAttributeName.Color,
-                    Format   = PICAAttributeFormat.Ubyte,
-                    Elements = 4,
-                    Scale    = 1f / 255
-                });
-
-                H3DMesh M = new H3DMesh(Vertices.Keys, Attributes.ToArray(), SubMeshes)
+                H3DMesh M = new H3DMesh(Vertices.Keys, Attributes, SubMeshes)
                 {
                     Skinning      = H3DMeshSkinning.Smooth,
                     MeshCenter    = (MinVector + MaxVector) * 0.5f,
@@ -378,6 +352,9 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                 M.UpdateBoolUniforms();
 
                 Model.AddMesh(M);
+
+                if (Height < MaxVector.Y)
+                    Height = MaxVector.Y;
 
                 //Material
                 string MatName = $"Mat{MaterialIndex++.ToString("D5")}_{Mesh.MaterialName}";
@@ -391,6 +368,20 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
                 Model.Materials.Add(Material);
             }
+
+            /*
+             * On Pokémon, the Left Thigh bone is used by the game to move characters around,
+             * and all rigged bones are parented to this bone. It should point upward and be
+             * at half of the character height.
+             */
+            Model.Skeleton.Add(new H3DBone(
+                new Vector3(0, Height * 0.5f, 0),
+                new Vector3(0, 0, (float)(Math.PI * 0.5)),
+                Vector3.One,
+                "Waist",
+                -1));
+
+            Model.Skeleton[0].CalculateTransform(Model.Skeleton);
 
             Output.Models.Add(Model);
 

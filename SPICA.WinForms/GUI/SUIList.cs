@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.CtrH3D;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D;
 
 using System;
 using System.Collections.Generic;
@@ -249,7 +250,7 @@ namespace SPICA.WinForms.GUI
             Invalidate();
         }
 
-        public void Bind<T>(PatriciaList<T> Source) where T : INamed
+        public void Bind<T>(H3DPatriciaList<T> Source) where T : INamed
         {
             if (IsBound) Unbind();
 
@@ -281,7 +282,13 @@ namespace SPICA.WinForms.GUI
             if (IsBound)
             {
                 int Index = e.NewStartingIndex;
-                string Item = ((INamed)e.NewItems[0]).Name;
+
+                string Item = null;
+
+                if (e.Action != NotifyCollectionChangedAction.Reset)
+                {
+                    Item = ((INamed)e.NewItems[0]).Name;
+                }
 
                 switch (e.Action)
                 {

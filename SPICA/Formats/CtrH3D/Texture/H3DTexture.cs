@@ -19,7 +19,19 @@ namespace SPICA.Formats.CtrH3D.Texture
         private uint[] Texture1Commands;
         private uint[] Texture2Commands;
 
-        public PICATextureFormat Format;
+        private byte _Format;
+
+        public PICATextureFormat Format
+        {
+            get
+            {
+                return (PICATextureFormat)_Format;
+            }
+            set
+            {
+                _Format = (byte)value;
+            }
+        }
 
         [Padding(4)] public byte MipmapSize;
 
@@ -39,7 +51,17 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 
-        public byte[] RawBuffer { get { return RawBufferXPos; } }
+        public byte[] RawBuffer
+        {
+            get
+            {
+                return RawBufferXPos;
+            }
+            set
+            {
+                RawBufferXPos = value;
+            }
+        }
 
         [Ignore] public byte[] RawBufferXPos;
         [Ignore] public byte[] RawBufferXNeg;
@@ -48,8 +70,8 @@ namespace SPICA.Formats.CtrH3D.Texture
         [Ignore] public byte[] RawBufferZPos;
         [Ignore] public byte[] RawBufferZNeg;
 
-        [Ignore] public uint Width;
-        [Ignore] public uint Height;
+        [Ignore] public int Width;
+        [Ignore] public int Height;
 
         public H3DTexture() { }
 
@@ -84,8 +106,8 @@ namespace SPICA.Formats.CtrH3D.Texture
         {
             MipmapSize = 1;
 
-            Width  = BitUtils.Pow2RoundDown((uint)Img.Width);
-            Height = BitUtils.Pow2RoundDown((uint)Img.Height);
+            Width  = (int)BitUtils.Pow2RoundDown((uint)Img.Width);
+            Height = (int)BitUtils.Pow2RoundDown((uint)Img.Height);
 
             if (Img.Width != Width || Img.Height != Height)
             {
@@ -156,8 +178,8 @@ namespace SPICA.Formats.CtrH3D.Texture
                 switch (Cmd.Register)
                 {
                     case PICARegister.GPUREG_TEXUNIT0_DIM:
-                        Height = (Param >>  0) & 0x7ff;
-                        Width  = (Param >> 16) & 0x7ff;
+                        Height = (int)(Param >>  0) & 0x7ff;
+                        Width  = (int)(Param >> 16) & 0x7ff;
                         break;
                     case PICARegister.GPUREG_TEXUNIT0_ADDR1: Address[0] = Param; break;
                     case PICARegister.GPUREG_TEXUNIT0_ADDR2: Address[1] = Param; break;
@@ -204,24 +226,26 @@ namespace SPICA.Formats.CtrH3D.Texture
             {
                 PICACommandWriter Writer = new PICACommandWriter();
 
+                uint Resolution = (uint)(Height | (Width << 16));
+
                 switch (Unit)
                 {
                     case 0:
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_DIM, Height | (Width << 16));
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_DIM, Resolution);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_LOD, MipmapSize);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_ADDR1, 0);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_TYPE, (uint)Format);
                         break;
 
                     case 1:
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_DIM, Height | (Width << 16));
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_DIM, Resolution);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_LOD, MipmapSize);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_ADDR, 0);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_TYPE, (uint)Format);
                         break;
 
                     case 2:
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_DIM, Height | (Width << 16));
+                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_DIM, Resolution);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_LOD, MipmapSize);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_ADDR, 0);
                         Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_TYPE, (uint)Format);

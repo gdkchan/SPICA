@@ -1,6 +1,7 @@
 ﻿using SPICA.Formats.MTFramework.Shader;
 using SPICA.PICA.Commands;
-using System;
+
+using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.Formats.MTFramework.Model
@@ -13,7 +14,7 @@ namespace SPICA.Formats.MTFramework.Model
 
         public byte VertexStride;
 
-        public PICAAttribute[] Attributes;
+        public List<PICAAttribute> Attributes;
 
         public uint  MaterialIndex;
         public uint  MeshGroupIndex;

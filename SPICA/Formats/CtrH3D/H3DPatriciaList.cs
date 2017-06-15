@@ -1,4 +1,5 @@
-﻿using SPICA.Serialization.Attributes;
+﻿using SPICA.Formats.Common;
+using SPICA.Serialization.Attributes;
 
 using System.Collections;
 using System.Collections.Generic;
@@ -7,10 +8,10 @@ using System.Collections.Specialized;
 namespace SPICA.Formats.CtrH3D
 {
     [Inline]
-    public class PatriciaList<T> : INotifyCollectionChanged, IEnumerable<T> where T : INamed
+    public class H3DPatriciaList<T> : INotifyCollectionChanged, IEnumerable<T> where T : INamed
     {
-        private List<T>      Contents;
-        private PatriciaTree NameTree;
+        private List<T>         Contents;
+        private H3DPatriciaTree NameTree;
 
         public T this[int Index]
         {
@@ -40,10 +41,10 @@ namespace SPICA.Formats.CtrH3D
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public PatriciaList()
+        public H3DPatriciaList()
         {
             Contents = new List<T>();
-            NameTree = new PatriciaTree();
+            NameTree = new H3DPatriciaTree();
         }
 
         public IEnumerator<T> GetEnumerator()

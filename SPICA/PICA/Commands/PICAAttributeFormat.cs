@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICAAttributeFormat
+    public enum PICAAttributeFormat : uint
     {
         Byte,
         Ubyte,

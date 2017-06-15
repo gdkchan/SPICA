@@ -140,12 +140,12 @@ namespace SPICA.Renderer.Shaders
         private static void GenFragColors(StringBuilder SB, H3DMaterialParams Params, ref bool[] HasTexColor)
         {
             //See Model and Mesh class for the LUT mappings
-            string Dist0   = GetLUTInput(Params.LUTInSel.Dist0,   Params.LUTInScale.Dist0,   0);
-            string Dist1   = GetLUTInput(Params.LUTInSel.Dist1,   Params.LUTInScale.Dist1,   1);
-            string Fresnel = GetLUTInput(Params.LUTInSel.Fresnel, Params.LUTInScale.Fresnel, 2);
-            string ReflecR = GetLUTInput(Params.LUTInSel.ReflecR, Params.LUTInScale.ReflecR, 3);
-            string ReflecG = GetLUTInput(Params.LUTInSel.ReflecG, Params.LUTInScale.ReflecG, 4);
-            string ReflecB = GetLUTInput(Params.LUTInSel.ReflecB, Params.LUTInScale.ReflecB, 5);
+            string Dist0   = GetLUTInput(Params.LUTInputSelection.Dist0,   Params.LUTInputScale.Dist0,   0);
+            string Dist1   = GetLUTInput(Params.LUTInputSelection.Dist1,   Params.LUTInputScale.Dist1,   1);
+            string Fresnel = GetLUTInput(Params.LUTInputSelection.Fresnel, Params.LUTInputScale.Fresnel, 2);
+            string ReflecR = GetLUTInput(Params.LUTInputSelection.ReflecR, Params.LUTInputScale.ReflecR, 3);
+            string ReflecG = GetLUTInput(Params.LUTInputSelection.ReflecG, Params.LUTInputScale.ReflecG, 4);
+            string ReflecB = GetLUTInput(Params.LUTInputSelection.ReflecB, Params.LUTInputScale.ReflecB, 5);
 
             string Color = $"{GetVec4(Params.EmissionColor)} + {GetVec4(Params.AmbientColor)} * SAmbient";
 

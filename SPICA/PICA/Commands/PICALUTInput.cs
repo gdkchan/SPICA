@@ -1,6 +1,6 @@
 ﻿namespace SPICA.PICA.Commands
 {
-    public enum PICALUTInput
+    public enum PICALUTInput : uint
     {
         CosNormalHalf,
         CosViewHalf,

@@ -26,8 +26,7 @@ namespace SPICA.Formats.CtrH3D.LUT
             }
         }
 
-        [Ignore]
-        private float[] _Table;
+        [Ignore] private float[] _Table;
 
         public float[] Table
         {

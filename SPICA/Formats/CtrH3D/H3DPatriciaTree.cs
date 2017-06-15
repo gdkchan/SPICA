@@ -7,9 +7,9 @@ using System.Collections;
 
 namespace SPICA.Formats.CtrH3D
 {
-    public class PatriciaTree : ICustomSerialization, IEnumerable<string>
+    public class H3DPatriciaTree : ICustomSerialization, IEnumerable<string>
     {
-        [Ignore] private List<PatriciaTreeNode> Nodes;
+        [Ignore] private List<H3DPatriciaTreeNode> Nodes;
         [Ignore] private List<string> Names;
 
         [Ignore] private bool TreeNeedsRebuild;
@@ -33,11 +33,9 @@ namespace SPICA.Formats.CtrH3D
 
         private const string DuplicateKeysEx = "Tree shouldn't contain duplicate keys!";
 
-        public PatriciaTree()
+        public H3DPatriciaTree()
         {
-            Nodes = new List<PatriciaTreeNode>();
-            Nodes.Add(new PatriciaTreeNode());
-
+            Nodes = new List<H3DPatriciaTreeNode> { new H3DPatriciaTreeNode() };
             Names = new List<string>();
         }
 
@@ -50,7 +48,7 @@ namespace SPICA.Formats.CtrH3D
 
             while (Index++ <= MaxIndex)
             {
-                PatriciaTreeNode Node = Deserializer.Deserialize<PatriciaTreeNode>();
+                H3DPatriciaTreeNode Node = Deserializer.Deserialize<H3DPatriciaTreeNode>();
 
                 MaxIndex = Math.Max(MaxIndex, Node.LeftNodeIndex);
                 MaxIndex = Math.Max(MaxIndex, Node.RightNodeIndex);
@@ -99,7 +97,7 @@ namespace SPICA.Formats.CtrH3D
 
             if (Nodes != null && Nodes.Count > 0)
             {
-                PatriciaTreeNode Root;
+                H3DPatriciaTreeNode Root;
 
                 Output = Traverse(Name, out Root);
 
@@ -142,9 +140,9 @@ namespace SPICA.Formats.CtrH3D
             Nodes.Clear();
 
             if (Names.Count > 0)
-                Nodes.Add(new PatriciaTreeNode { ReferenceBit = uint.MaxValue });
+                Nodes.Add(new H3DPatriciaTreeNode { ReferenceBit = uint.MaxValue });
             else
-                Nodes.Add(new PatriciaTreeNode());
+                Nodes.Add(new H3DPatriciaTreeNode());
 
             foreach (string Name in Names)
             {
@@ -158,8 +156,8 @@ namespace SPICA.Formats.CtrH3D
         {
             if (Name == null) return;
 
-            PatriciaTreeNode New = new PatriciaTreeNode();
-            PatriciaTreeNode Root;
+            H3DPatriciaTreeNode New = new H3DPatriciaTreeNode();
+            H3DPatriciaTreeNode Root;
 
             uint Bit = (uint)((MaxLength << 3) - 1);
             int Index = Traverse(Name, out Root);
@@ -196,13 +194,13 @@ namespace SPICA.Formats.CtrH3D
             Nodes[RootIndex] = Root;
         }
 
-        private int Traverse(string Name, out PatriciaTreeNode Root, uint Bit = 0)
+        private int Traverse(string Name, out H3DPatriciaTreeNode Root, uint Bit = 0)
         {
             Root = Nodes[0];
 
             int Output = Root.LeftNodeIndex;
 
-            PatriciaTreeNode Left = Nodes[Output];
+            H3DPatriciaTreeNode Left = Nodes[Output];
 
             while (Root.ReferenceBit > Left.ReferenceBit && Left.ReferenceBit > Bit)
             {

@@ -30,7 +30,7 @@ namespace SPICA.Formats.MTFramework.Shader
             1
         };
 
-        public PICAAttribute[] Attributes;
+        public readonly List<PICAAttribute> Attributes;
 
         public MTAttributesGroup() { }
 
@@ -47,7 +47,7 @@ namespace SPICA.Formats.MTFramework.Shader
 
             int RealOffset = 0;
 
-            List<PICAAttribute> Attributes = new List<PICAAttribute>();
+            Attributes = new List<PICAAttribute>();
 
             for (int j = 0; j < AttrCount; j++)
             {
@@ -107,8 +107,6 @@ namespace SPICA.Formats.MTFramework.Shader
 
                 if (RealOffset >= Stride) break;
             }
-
-            this.Attributes = Attributes.ToArray();
         }
     }
 }

@@ -18,7 +18,6 @@ namespace SPICA.Serialization
     {
         public readonly Stream BaseStream;
         public readonly BinaryWriter Writer;
-        public readonly H3DRelocator Relocator;
 
         public int PhysicalAddressCount { get; private set; }
 
@@ -56,9 +55,9 @@ namespace SPICA.Serialization
 
         public readonly List<long> Pointers;
 
-        private bool HasBuffered = false;
-        private uint BufferedUInt = 0;
-        private uint BufferedShift = 0;
+        public readonly H3DRelocator Relocator;
+
+        private SerializationOptions Options;
 
         public int FileVersion;
 
@@ -67,10 +66,11 @@ namespace SPICA.Serialization
             BindingFlags.Public |
             BindingFlags.NonPublic;
 
-        public BinarySerializer(Stream BaseStream, H3DRelocator Relocator = null)
+        public BinarySerializer(Stream BaseStream, SerializationOptions Options, H3DRelocator Relocator = null)
         {
             this.BaseStream = BaseStream;
-            this.Relocator = Relocator;
+            this.Options    = Options;
+            this.Relocator  = Relocator;
 
             Writer = new BinaryWriter(BaseStream);
 
@@ -135,24 +135,17 @@ namespace SPICA.Serialization
             {
                 switch (Type.GetTypeCode(Type))
                 {
-                    case TypeCode.UInt64: Writer.Write((ulong)Value);  break;
-                    case TypeCode.UInt32: Writer.Write((uint)Value);   break;
-                    case TypeCode.UInt16: Writer.Write((ushort)Value); break;
-                    case TypeCode.Byte:   Writer.Write((byte)Value);   break;
-                    case TypeCode.Int64:  Writer.Write((long)Value);   break;
-                    case TypeCode.Int32:  Writer.Write((int)Value);    break;
-                    case TypeCode.Int16:  Writer.Write((short)Value);  break;
-                    case TypeCode.SByte:  Writer.Write((sbyte)Value);  break;
-                    case TypeCode.Single: Writer.Write((float)Value);  break;
-                    case TypeCode.Double: Writer.Write((double)Value); break;
-                    case TypeCode.Boolean:
-                        HasBuffered = true;
-                        BufferedUInt <<= 1;
-                        BufferedUInt |= (uint)(((bool)Value) ? 1 : 0);
-
-                        if (++BufferedShift == 32 || !IsElem) WriteBool();
-
-                        break;
+                    case TypeCode.UInt64:  Writer.Write((ulong)Value);                break;
+                    case TypeCode.UInt32:  Writer.Write((uint)Value);                 break;
+                    case TypeCode.UInt16:  Writer.Write((ushort)Value);               break;
+                    case TypeCode.Byte:    Writer.Write((byte)Value);                 break;
+                    case TypeCode.Int64:   Writer.Write((long)Value);                 break;
+                    case TypeCode.Int32:   Writer.Write((int)Value);                  break;
+                    case TypeCode.Int16:   Writer.Write((short)Value);                break;
+                    case TypeCode.SByte:   Writer.Write((sbyte)Value);                break;
+                    case TypeCode.Single:  Writer.Write((float)Value);                break;
+                    case TypeCode.Double:  Writer.Write((double)Value);               break;
+                    case TypeCode.Boolean: Writer.Write((byte)((bool)Value ? 1 : 0)); break;
                 }
 
                 return;
@@ -214,24 +207,19 @@ namespace SPICA.Serialization
             }
         }
 
-        private void WriteBool()
-        {
-            Writer.Write(BufferedUInt);
-
-            BufferedShift = 0;
-            HasBuffered = false;
-        }
-
         private void WriteList(IList List)
         {
-            //NOTE: This doesn't work as expected for Lists containing different types (not used through)
-            //Assumes that the Type of the first element is the same for all other elements
             if (List.Count == 0) return;
 
+            //NOTE: This doesn't work as expected for Lists containing different types (not used through).
+            //Assumes that the Type of the first element is the same for all other elements.
             Type Type = List[0].GetType();
 
             bool Inline = Type.IsDefined(typeof(InlineAttribute));
             bool Pointers = !(Type.IsValueType || Type.IsEnum || Inline);
+
+            int  Index = 0;
+            uint Bools = 0;
 
             foreach (object Value in List)
             {
@@ -245,13 +233,28 @@ namespace SPICA.Serialization
 
                     Skip(4);
                 }
+                else if (Type == typeof(bool))
+                {
+                    Bools |= (1u << Index);
+
+                    if (++Index == 32)
+                    {
+                        Writer.Write(Bools);
+
+                        Index = 0;
+                        Bools = 0;
+                    }
+                }
                 else
                 {
                     WriteValue(Value, true);
                 }
             }
 
-            if (HasBuffered) WriteBool();
+            if (Index != 0)
+            {
+                Writer.Write(Bools);
+            }
         }
 
         private void WriteValue(RefValue Reference)
@@ -286,7 +289,10 @@ namespace SPICA.Serialization
 
                     BaseStream.Seek(Reference.Position, SeekOrigin.Begin);
 
-                    WritePointer(OInfo.Position + Reference.PointerOffset);
+                    uint Pointer = OInfo.Position + Reference.PointerOffset;
+
+                    if (Options.LenPos == LengthPos.AfterPointer)
+                        WritePointer(Pointer);
 
                     if (Reference.HasLength)
                     {
@@ -296,7 +302,11 @@ namespace SPICA.Serialization
                             Writer.Write(((IList)Value).Count);
                     }
 
-                    if (Reference.HasTwoPtr) WritePointer(OInfo.Position);
+                    if (Options.LenPos == LengthPos.BeforePointer)
+                        WritePointer(Pointer);
+
+                    if (Reference.HasTwoPtr)
+                        WritePointer(Pointer);
 
                     BaseStream.Seek(EndPos, SeekOrigin.Begin);
                 }
@@ -306,6 +316,11 @@ namespace SPICA.Serialization
         public void WritePointer(uint Pointer)
         {
             Pointers.Add(BaseStream.Position);
+
+            if (Options.PtrType == PointerType.SelfRelative && Pointer != 0)
+            {
+                Pointer -= (uint)BaseStream.Position;
+            }
 
             Writer.Write(Pointer);
         }
@@ -325,7 +340,7 @@ namespace SPICA.Serialization
             else if (Value is IList)
             {
                 //This is used to find lists with segments of already serialized values.
-                //We can avoid storing then again if the same sequence is repeated.
+                //We can avoid storing them again if the same sequence is repeated.
                 uint StartPos = 0;
                 int  EndPos   = 0;
                 int  Matches  = 0;

@@ -93,7 +93,7 @@ namespace SPICA.Formats.GFL2.Motion
             }
         }
 
-        public H3DAnimation ToH3DSkeletalAnimation(PatriciaList<H3DBone> Skeleton)
+        public H3DAnimation ToH3DSkeletalAnimation(H3DPatriciaList<H3DBone> Skeleton)
         {
             List<GFBone> GFSkeleton = new List<GFBone>();
 
