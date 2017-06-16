@@ -32,7 +32,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
             set
             {
-                Flags = BitUtils.SetBits(Flags, (uint)value, 0, 2);
+                Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 0, 2);
             }
         }
 
@@ -44,31 +44,31 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
             set
             {
-                Flags = BitUtils.SetBits(Flags, (uint)value, 2, 2);
+                Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 2, 2);
             }
         }
 
-        public uint Priority
+        public int Priority
         {
             get
             {
-                return BitUtils.GetBits(Key, 0, 8);
+                return (int)BitUtils.GetBits(Key, 0, 8);
             }
             set
             {
-                Key = BitUtils.SetBits(Key, value, 0, 8);
+                Key = (ushort)BitUtils.SetBits(Key, value, 0, 8);
             }
         }
 
-        public uint Layer
+        public int Layer
         {
             get
             {
-                return BitUtils.GetBits(Key, 8, 2);
+                return (int)BitUtils.GetBits(Key, 8, 2);
             }
             set
             {
-                Key = BitUtils.SetBits(Key, value, 8, 2);
+                Key = (ushort)BitUtils.SetBits(Key, value, 8, 2);
             }
         }
 
@@ -163,14 +163,14 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             foreach (H3DSubMesh SM in SubMeshes)
             {
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, SM.Skinning == H3DSubMeshSkinning.Smooth, 1);
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, SM.Skinning == H3DSubMeshSkinning.Rigid, 2);
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, Weight, 8);
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap0, 9);
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap1, 10);
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap2, 11);
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, UVMap0, 13);
-                SM.BoolUniforms = BitUtils.SetBit(SM.BoolUniforms, true, 15);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, SM.Skinning == H3DSubMeshSkinning.Smooth, 1);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, SM.Skinning == H3DSubMeshSkinning.Rigid, 2);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, Weight, 8);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, UVMap0, 9);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, UVMap1, 10);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, UVMap2, 11);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, UVMap0, 13);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, true, 15);
             }
         }
 

@@ -60,22 +60,46 @@ namespace SPICA.Formats.CtrGfx
 
                     H3DMesh M = new H3DMesh();
 
-                    foreach (GfxAttribute Attr in Shape.VertexBuffers[0].Attributes)
+                    foreach (GfxVertexBuffer VertexBuffer in Shape.VertexBuffers)
                     {
-                        M.Attributes.Add(new PICAAttribute
+                        if (VertexBuffer.unk2 == 2)
                         {
-                            Name     = Attr.AttrName,
-                            Format   = Attr.Format.ToPICAAttributeFormat(),
-                            Elements = Attr.Elements,
-                            Scale    = Attr.Scale
-                        });
+                            foreach (GfxAttribute Attr in VertexBuffer.Attrib.Attributes)
+                            {
+                                M.Attributes.Add(new PICAAttribute
+                                {
+                                    Name     = Attr.AttrName,
+                                    Format   = Attr.Format.ToPICAAttributeFormat(),
+                                    Elements = Attr.Elements,
+                                    Scale    = Attr.Scale
+                                });
+                            }
+                        }
+                        else
+                        {
+                            float[] Vector = VertexBuffer.AttribFixed.Vector;
+
+                            M.FixedAttributes.Add(new PICAFixedAttribute
+                            {
+                                Name  = VertexBuffer.AttrName,
+
+                                Value = new PICAVectorFloat24(
+                                    Vector.Length > 0 ? Vector[0] : 0,
+                                    Vector.Length > 1 ? Vector[1] : 0,
+                                    Vector.Length > 2 ? Vector[2] : 0,
+                                    Vector.Length > 3 ? Vector[3] : 0)
+                            });
+                        }
                     }
+                    
 
                     M.MaterialIndex  = (ushort)Mesh.MaterialIndex;
                     M.NodeIndex      = (ushort)Mesh.MeshNodeIndex;
                     M.PositionOffset = new Vector4(Shape.PositionOffset, 0);
-                    M.RawBuffer      = Shape.VertexBuffers[0].RawBuffer;
-                    M.VertexStride   = Shape.VertexBuffers[0].VertexStride;
+                    M.RawBuffer      = Shape.VertexBuffers[0].Attrib.RawBuffer;
+                    M.VertexStride   = Shape.VertexBuffers[0].Attrib.VertexStride;
+                    M.Layer          = (int)Model.Materials[Mesh.MaterialIndex].TranslucencyKind;
+                    M.Priority       = Mesh.RenderPriority;
 
                     int SmoothCount = 0;
 
@@ -85,14 +109,21 @@ namespace SPICA.Formats.CtrGfx
                         {
                             H3DSubMesh SM = new H3DSubMesh();
 
+                            SM.BoneIndicesCount = (ushort)SubMesh.BoneIndices.Count;
+
                             for (int i = 0; i < SubMesh.BoneIndices.Count; i++)
                             {
                                 SM.BoneIndices[i] = (ushort)SubMesh.BoneIndices[i];
                             }
 
-                            SM.BoneIndicesCount = (ushort)SubMesh.BoneIndices.Count;
-                            SM.Skinning         = (H3DSubMeshSkinning)SubMesh.Skinning;
-                            SM.Indices          = Face.FaceDescriptors[0].Indices;
+                            switch (SubMesh.Skinning)
+                            {
+                                case GfxSubMeshSkinning.None:   SM.Skinning = H3DSubMeshSkinning.None;   break;
+                                case GfxSubMeshSkinning.Rigid:  SM.Skinning = H3DSubMeshSkinning.Rigid;  break;
+                                case GfxSubMeshSkinning.Smooth: SM.Skinning = H3DSubMeshSkinning.Smooth; break;
+                            }
+
+                            SM.Indices = Face.FaceDescriptors[0].Indices;
 
                             SM.Indices = new ushort[Face.FaceDescriptors[0].Indices.Length * 9];
 
@@ -183,12 +214,20 @@ namespace SPICA.Formats.CtrGfx
                         TC.Rotation    = TexCoord.Rotation;
                         TC.Translation = TexCoord.Translation;
 
-                        if      (TexCoord.MappingType == GfxTextureMappingType.UvCoordinateMap)
-                            Mat.MaterialParams.TextureSources[TCIndex] = TexCoord.SourceCoordIndex;
-                        else if (TexCoord.MappingType == GfxTextureMappingType.CameraCubeEnvMap)
-                            Mat.MaterialParams.TextureSources[TCIndex] = 3;
-                        else if (TexCoord.MappingType == GfxTextureMappingType.CameraSphereEnvMap)
-                            Mat.MaterialParams.TextureSources[TCIndex] = 4;
+                        switch (TexCoord.MappingType)
+                        {
+                            case GfxTextureMappingType.UvCoordinateMap:
+                                Mat.MaterialParams.TextureSources[TCIndex] = TexCoord.SourceCoordIndex;
+                                break;
+
+                            case GfxTextureMappingType.CameraCubeEnvMap:
+                                Mat.MaterialParams.TextureSources[TCIndex] = 3;
+                                break;
+
+                            case GfxTextureMappingType.CameraSphereEnvMap:
+                                Mat.MaterialParams.TextureSources[TCIndex] = 4;
+                                break;
+                        }
 
                         Mat.MaterialParams.TextureCoords[TCIndex++] = TC;
 
@@ -203,7 +242,24 @@ namespace SPICA.Formats.CtrGfx
 
                         H3DTextureMapper TM = new H3DTextureMapper();
 
+                        TM.WrapU = TexMapper.WrapU;
+                        TM.WrapV = TexMapper.WrapV;
+
+                        TM.MagFilter = (H3DTextureMagFilter)TexMapper.MinFilter;
+
+                        switch ((uint)TexMapper.MagFilter | ((uint)TexMapper.MipFilter << 1))
+                        {
+                            case 0: TM.MinFilter = H3DTextureMinFilter.NearestMipmapNearest; break;
+                            case 1: TM.MinFilter = H3DTextureMinFilter.LinearMipmapNearest;  break;
+                            case 2: TM.MinFilter = H3DTextureMinFilter.NearestMipmapLinear;  break;
+                            case 3: TM.MinFilter = H3DTextureMinFilter.LinearMipmapLinear;   break;
+                        }
+
+                        TM.LODBias = TexMapper.LODBias;
+
                         TM.MinLOD = (byte)TexMapper.Sampler.MinLOD;
+
+                        TM.BorderColor = TexMapper.BorderColor;
 
                         Mat.TextureMappers[TMIndex++] = TM;
                     }
@@ -288,6 +344,35 @@ namespace SPICA.Formats.CtrGfx
                     Mat.MaterialParams.TexEnvBufferColor = Material.FragmentShader.TexEnvBufferColor;
 
                     Mdl.Materials.Add(Mat);
+                }
+
+                foreach (GfxBone Bone in Model.Skeleton.Bones)
+                {
+                    bool ScaleCompensate = (Bone.Flags & GfxBoneFlags.IsSegmentScaleCompensate) != 0;
+
+                    Mdl.Skeleton.Add(new H3DBone
+                    {
+                        Name = Bone.Name,
+
+                        ParentIndex = (short)Bone.ParentIndex,
+
+                        Translation = Bone.Translation,
+                        Rotation    = Bone.Rotation,
+                        Scale       = Bone.Scale,
+
+                        InverseTransform = Bone.InvWorldTransform,
+
+                        BillboardMode = (H3DBillboardMode)Bone.BillboardMode,
+
+                        IsSegmentScaleCompensate = ScaleCompensate
+                    });
+                }
+
+                if (Mdl.Skeleton.Count > 0)
+                {
+                    Mdl.Flags |= H3DModelFlags.HasSkeleton;
+
+                    Mdl.BoneScaling = (H3DBoneScaling)Model.Skeleton.ScalingRule;
                 }
 
                 Output.Models.Add(Mdl);

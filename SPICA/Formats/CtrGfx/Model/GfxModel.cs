@@ -60,6 +60,8 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public int LayerId;
 
+        public GfxSkeleton Skeleton;
+
         public GfxModel()
         {
             MetaData = new GfxDict<GfxMetaData>();

@@ -39,9 +39,7 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         private uint BaseAddress;
 
-        public int AttributesCount;
-
-        [FixedLength(1)] public readonly GfxVertexBuffer[] VertexBuffers;
+        public readonly List<GfxVertexBuffer> VertexBuffers;
 
         public GfxBlendShape BlendShape;
 
@@ -53,7 +51,7 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
             SubMeshes = new List<GfxSubMesh>();
 
-            VertexBuffers = new GfxVertexBuffer[1];
+            VertexBuffers = new List<GfxVertexBuffer>();
         }
     }
 }

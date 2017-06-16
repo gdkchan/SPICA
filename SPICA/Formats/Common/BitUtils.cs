@@ -34,48 +34,32 @@
             return Value != 0 && (Value & (Value - 1)) == 0;
         }
 
-        public static uint GetBits(uint Value, int Start, int Count)
+        public static dynamic GetBits(dynamic Value, int Start, int Count)
         {
+            uint Mask = (1u << Count) - 1;
+
             Value >>= Start;
-            Value &= (1u << Count) - 1;
+            Value &=  Mask;
 
             return Value;
         }
 
-        public static uint SetBits(uint Value, uint Bits, int Start, int Count)
+        public static dynamic SetBits(dynamic Value, dynamic Bits, int Start, int Count)
         {
-            Value &= ~(((1u << Count) - 1) << Start);
-            Value |= Bits << Start;
+            uint Mask = (1u << Count) - 1;
+
+            Value &= ~(Mask << Start);
+            Value |=   Bits << Start;
 
             return Value;
         }
 
-        public static uint SetBit(uint Value, bool Bit, int Start)
+        public static dynamic SetBit(dynamic Value, bool Bit, int Start)
         {
             if (Bit)
-                return Value | (1u << Start);
+                return Value |  (1u << Start);
             else
                 return Value & ~(1u << Start);
-        }
-
-        public static ushort SetBits(ushort Value, uint Bits, int Start, int Count)
-        {
-            return (ushort)SetBits((uint)Value, Bits, Start, Count);
-        }
-
-        public static byte SetBits(byte Value, uint Bits, int Start, int Count)
-        {
-            return (byte)SetBits((uint)Value, Bits, Start, Count);
-        }
-
-        public static ushort SetBit(ushort Value, bool Bit, int Start)
-        {
-            return (ushort)SetBit((uint)Value, Bit, Start);
-        }
-
-        public static byte SetBit(byte Value, bool Bit, int Start)
-        {
-            return (byte)SetBit((uint)Value, Bit, Start);
         }
     }
 }

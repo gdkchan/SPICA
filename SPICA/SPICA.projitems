@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\MeshTransform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\Common\PatriciaTree.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Gfx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxInheritance.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDict.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDictionaryNode.cs" />
@@ -26,8 +27,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUTSampler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxAnimationsGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxBillboardMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxBone.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxBoneFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxModelFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxSkeleton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxSkeletonScalingRule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxAlphaTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxBumpMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxFaceCulling.cs" />
@@ -60,8 +66,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureSampler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureTransformType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTranslucencyKind.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxAttrFixed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxAttributeFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxAttrNormal.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxBlendShape.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxBoundingBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxFace.cs" />
@@ -253,6 +261,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICADepthColorMask.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFixedAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICALUTType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureSamplerType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureWrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAVectorFloat24.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAAlphaTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICAFragOpMode.cs" />

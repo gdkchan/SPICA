@@ -1,5 +1,7 @@
 ﻿using SPICA.PICA.Commands;
 
+using System;
+
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
     public enum GfxAttributeFormat : uint
@@ -22,9 +24,9 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
                 case GfxAttributeFormat.GL_UNSIGNED_BYTE: return PICAAttributeFormat.Ubyte;
                 case GfxAttributeFormat.GL_SHORT:         return PICAAttributeFormat.Short;
                 case GfxAttributeFormat.GL_FLOAT:         return PICAAttributeFormat.Float;
-            }
 
-            return 0;
+                default: throw new ArgumentException($"Invalid format {Format}!");
+            }
         }
     }
 }

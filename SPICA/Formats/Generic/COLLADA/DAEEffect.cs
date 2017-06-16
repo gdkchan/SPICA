@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.CtrH3D.Model.Material;
+using SPICA.PICA.Commands;
 
 using System;
 using System.Collections.Generic;
@@ -71,14 +72,14 @@ namespace SPICA.Formats.Generic.COLLADA
 
     public static class DAEH3DTextureWrapExtensions
     {
-        public static DAEWrap ToDAEWrap(this H3DTextureWrap Wrap)
+        public static DAEWrap ToDAEWrap(this PICATextureWrap Wrap)
         {
             switch (Wrap)
             {
-                case H3DTextureWrap.ClampToEdge:   return DAEWrap.CLAMP;
-                case H3DTextureWrap.ClampToBorder: return DAEWrap.BORDER;
-                case H3DTextureWrap.Repeat:        return DAEWrap.WRAP;
-                case H3DTextureWrap.Mirror:        return DAEWrap.MIRROR;
+                case PICATextureWrap.ClampToEdge:   return DAEWrap.CLAMP;
+                case PICATextureWrap.ClampToBorder: return DAEWrap.BORDER;
+                case PICATextureWrap.Repeat:        return DAEWrap.WRAP;
+                case PICATextureWrap.Mirror:        return DAEWrap.MIRROR;
 
                 default: throw new ArgumentException("Invalid Texture wrap!");
             }

@@ -2,7 +2,8 @@
 {
     struct GfxVersion
     {
-        public uint Flags;
+        public GfxInheritance Inheritance;
+
         public uint MagicNumber;
         public uint Revision;
     }

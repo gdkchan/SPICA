@@ -2,13 +2,13 @@
 {
     public enum H3DTranslucencyKind
     {
-        Layer0,
-        Opaque,
-        Layer1,
-        Transparent,
-        Layer2,
-        Subtractive,
-        Additive,
-        Layer3
+        LayerConfig0,
+        LayerConfig1,
+        LayerConfig2,
+        LayerConfig3,
+        LayerConfig4,
+        LayerConfig5,
+        LayerConfig6,
+        LayerConfig7
     }
 }

@@ -58,7 +58,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             }
             set
             {
-                LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 0, 4);
+                LayerConfig = (byte)BitUtils.SetBits(LayerConfig, (uint)value, 0, 4);
             }
         }
 
@@ -70,7 +70,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             }
             set
             {
-                LayerConfig = BitUtils.SetBits(LayerConfig, (uint)value, 4, 4);
+                LayerConfig = (byte)BitUtils.SetBits(LayerConfig, (uint)value, 4, 4);
             }
         }
 
@@ -88,11 +88,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             get
             {
-                return (int)BitUtils.GetBits(ConstantColors, 0, 4);
+                return BitUtils.GetBits(ConstantColors, 0, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 0, 4);
+                ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 0, 4);
             }
         }
 
@@ -100,11 +100,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             get
             {
-                return (int)BitUtils.GetBits(ConstantColors, 4, 4);
+                return BitUtils.GetBits(ConstantColors, 4, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 4, 4);
+                ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 4, 4);
             }
         }
 
@@ -112,11 +112,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             get
             {
-                return (int)BitUtils.GetBits(ConstantColors, 8, 4);
+                return BitUtils.GetBits(ConstantColors, 8, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 8, 4);
+                ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 8, 4);
             }
         }
 
@@ -124,11 +124,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             get
             {
-                return (int)BitUtils.GetBits(ConstantColors, 12, 4);
+                return BitUtils.GetBits(ConstantColors, 12, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 12, 4);
+                ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 12, 4);
             }
         }
 
@@ -136,11 +136,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             get
             {
-                return (int)BitUtils.GetBits(ConstantColors, 16, 4);
+                return BitUtils.GetBits(ConstantColors, 16, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 16, 4);
+                ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 16, 4);
             }
         }
 
@@ -148,11 +148,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         {
             get
             {
-                return (int)BitUtils.GetBits(ConstantColors, 20, 4);
+                return BitUtils.GetBits(ConstantColors, 20, 4);
             }
             set
             {
-                ConstantColors = BitUtils.SetBits(ConstantColors, (uint)value, 20, 4);
+                ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 20, 4);
             }
         }
 

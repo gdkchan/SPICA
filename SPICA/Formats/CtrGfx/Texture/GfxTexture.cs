@@ -15,8 +15,7 @@ namespace SPICA.Formats.CtrGfx.Texture
         {
             get
             {
-                //TODO: Actually figure out what this means
-                return (Revision.Flags & 0xff) == 9;
+                return Revision.Inheritance.CheckPath(0, 2);
             }
         }
 

@@ -82,15 +82,13 @@ namespace SPICA.Formats.CtrH3D.Model
             UserDefinedAddress = 0; //SBZ, set by program on 3DS
         }
 
-        public void AddMesh(H3DMesh Mesh, int Layer = 0, int Priority = 0)
+        public void AddMesh(H3DMesh Mesh)
         {
-            Mesh.Parent   = this;
-            Mesh.Layer    = (uint)Layer;
-            Mesh.Priority = (uint)Priority;
+            Mesh.Parent= this;
 
             Meshes.Add(Mesh);
 
-            switch (Layer)
+            switch (Mesh.Layer)
             {
                 case 0: MeshesLayer0.Add(Mesh); break;
                 case 1: MeshesLayer1.Add(Mesh); break;

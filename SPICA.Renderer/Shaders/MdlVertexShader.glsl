@@ -170,10 +170,12 @@ void main() {
 	Tan  += (mat3(Transforms[b2]) * Tangent) * w[2];
 	Tan  += (mat3(Transforms[b3]) * Tangent) * w[3];
 
-	Position = Pos;
-	ONormal  = ONrm;
-	Normal   = Nrm;
-	Tangent  = Tan;
+	float Sum = w[0] + w[1] + w[2] + w[3];
+
+	Position = (Position * (1 - Sum)) + Pos;
+	ONormal  = (ONormal  * (1 - Sum)) + ONrm;
+	Normal   = (Normal   * (1 - Sum)) + Nrm;
+	Tangent  = (Tangent  * (1 - Sum)) + Tan;
 
 	Position.w = 1;
 

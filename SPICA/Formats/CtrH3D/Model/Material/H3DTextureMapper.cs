@@ -1,4 +1,5 @@
 ﻿using SPICA.Math3D;
+using SPICA.PICA.Commands;
 using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
@@ -7,8 +8,32 @@ namespace SPICA.Formats.CtrH3D.Model.Material
     {
         public byte SamplerType;
 
-        public H3DTextureWrap WrapU;
-        public H3DTextureWrap WrapV;
+        private byte _WrapU;
+        private byte _WrapV;
+
+        public PICATextureWrap WrapU
+        {
+            get
+            {
+                return (PICATextureWrap)_WrapU;
+            }
+            set
+            {
+                _WrapU = (byte)value;
+            }
+        }
+
+        public PICATextureWrap WrapV
+        {
+            get
+            {
+                return (PICATextureWrap)_WrapV;
+            }
+            set
+            {
+                _WrapV = (byte)value;
+            }
+        }
 
         public H3DTextureMagFilter MagFilter;
         public H3DTextureMinFilter MinFilter;

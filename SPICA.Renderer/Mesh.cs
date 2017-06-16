@@ -322,14 +322,14 @@ namespace SPICA.Renderer
             GL.TexParameter(Target, TextureParameterName.TextureMagFilter, MagFilter);
         }
 
-        private static All GetWrap(H3DTextureWrap Wrap)
+        private static All GetWrap(PICATextureWrap Wrap)
         {
             switch (Wrap)
             {
-                case H3DTextureWrap.ClampToEdge:   return All.ClampToEdge;
-                case H3DTextureWrap.ClampToBorder: return All.ClampToBorder;
-                case H3DTextureWrap.Repeat:        return All.Repeat;
-                case H3DTextureWrap.Mirror:        return All.MirroredRepeat;
+                case PICATextureWrap.ClampToEdge:   return All.ClampToEdge;
+                case PICATextureWrap.ClampToBorder: return All.ClampToBorder;
+                case PICATextureWrap.Repeat:        return All.Repeat;
+                case PICATextureWrap.Mirror:        return All.MirroredRepeat;
 
                 default: throw new ArgumentException("Invalid wrap mode!");
             }

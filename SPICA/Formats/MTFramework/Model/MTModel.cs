@@ -206,7 +206,8 @@ namespace SPICA.Formats.MTFramework.Model
                     null)
                 {
                     MaterialIndex = (ushort)Mesh.MaterialIndex,
-                    NodeIndex     = Index
+                    NodeIndex     = Index,
+                    Priority      = Mesh.RenderPriority
                 };
 
                 byte[] BoneIndices = BoneIndicesGroups[Mesh.BoneIndicesIndex];
@@ -339,7 +340,7 @@ namespace SPICA.Formats.MTFramework.Model
                     M.SubMeshes.Add(new H3DSubMesh { Indices = Mesh.Indices });
                 }
 
-                Model.AddMesh(M, 0, Mesh.RenderPriority);
+                Model.AddMesh(M);
 
                 Model.MeshNodesTree.Add($"Mesh_{Index++}");
 

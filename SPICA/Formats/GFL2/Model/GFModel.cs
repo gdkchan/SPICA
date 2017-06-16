@@ -6,6 +6,7 @@ using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.GFL2.Model.Material;
 using SPICA.Formats.GFL2.Model.Mesh;
 using SPICA.Math3D;
+using SPICA.PICA.Commands;
 
 using System;
 using System.Collections.Generic;
@@ -180,8 +181,8 @@ namespace SPICA.Formats.GFL2.Model
                     Params.TextureCoords[Unit].Translation = Material.TextureCoords[Unit].Translation;
 
                     //Texture Mapper
-                    Mat.TextureMappers[Unit].WrapU = (H3DTextureWrap)Material.TextureCoords[Unit].WrapU;
-                    Mat.TextureMappers[Unit].WrapV = (H3DTextureWrap)Material.TextureCoords[Unit].WrapV;
+                    Mat.TextureMappers[Unit].WrapU = (PICATextureWrap)Material.TextureCoords[Unit].WrapU;
+                    Mat.TextureMappers[Unit].WrapV = (PICATextureWrap)Material.TextureCoords[Unit].WrapV;
 
                     Mat.TextureMappers[Unit].MagFilter = (H3DTextureMagFilter)Material.TextureCoords[Unit].MagFilter;
                     Mat.TextureMappers[Unit].MinFilter = (H3DTextureMinFilter)Material.TextureCoords[Unit].MinFilter;
@@ -341,13 +342,12 @@ namespace SPICA.Formats.GFL2.Model
 
                     M.MaterialIndex = (ushort)Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
                     M.NodeIndex     = (ushort)NodeIndex;
+                    M.Layer         = Materials[M.MaterialIndex].RenderLayer;
+                    M.Priority      = Materials[M.MaterialIndex].RenderPriority;
 
                     M.UpdateBoolUniforms();
 
-                    int Layer    = Materials[M.MaterialIndex].RenderLayer;
-                    int Priority = Materials[M.MaterialIndex].RenderPriority;
-
-                    Output.AddMesh(M, Layer, Priority);
+                    Output.AddMesh(M);
                 }
             }
 

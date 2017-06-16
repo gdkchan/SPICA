@@ -1,30 +1,43 @@
-﻿using SPICA.Formats.Common;
-
-using System.Collections.Generic;
+﻿using SPICA.PICA.Commands;
+using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
-    public class GfxVertexBuffer
+    public class GfxVertexBuffer : ICustomSerialization
     {
-        private uint unk0;
-        private uint unk1;
-        private uint unk2;
+        //FIXME: This is kinda hack, the serializers need to be modified to work with inheritance properly.
+        public uint unk0; //Inheritance
 
-        public uint BufferObject;
-        public uint LocationFlag;
+        public PICAAttributeName AttrName;
 
-        public byte[] RawBuffer;
+        public uint unk2; //Type (Normal or Fixed)
 
-        public uint LocationAddress;
-        public uint MemoryArea;
-
-        public int VertexStride;
-
-        public readonly List<GfxAttribute> Attributes;
+        [Ignore] public GfxAttrNormal Attrib;
+        [Ignore] public GfxAttrFixed AttribFixed;
 
         public GfxVertexBuffer()
         {
-            Attributes = new List<GfxAttribute>();
+
+        }
+
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
+        {
+            if (unk2 == 2)
+            {
+                Attrib = Deserializer.Deserialize<GfxAttrNormal>();
+            }
+            else
+            {
+                AttribFixed = Deserializer.Deserialize<GfxAttrFixed>();
+            }
+        }
+
+        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
+        {
+            //TODO
+
+            return false;
         }
     }
 }

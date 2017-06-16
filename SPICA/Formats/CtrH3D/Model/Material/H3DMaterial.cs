@@ -109,8 +109,8 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Output.MaterialParams.TexEnvStages[4] = PICATexEnvStage.PassThrough;
             Output.MaterialParams.TexEnvStages[5] = PICATexEnvStage.PassThrough;
 
-            Output.TextureMappers[0].WrapU = H3DTextureWrap.Repeat;
-            Output.TextureMappers[0].WrapV = H3DTextureWrap.Repeat;
+            Output.TextureMappers[0].WrapU = PICATextureWrap.Repeat;
+            Output.TextureMappers[0].WrapV = PICATextureWrap.Repeat;
 
             Output.TextureMappers[0].MinFilter = H3DTextureMinFilter.NearestMipmapLinear;
             Output.TextureMappers[0].MagFilter = H3DTextureMagFilter.Linear;
