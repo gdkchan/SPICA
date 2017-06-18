@@ -33,7 +33,7 @@ namespace SPICA.Serialization
 
             public bool ReadBit()
             {
-                if ((Index & 0x1f) == 0)
+                if ((Index++ & 0x1f) == 0)
                 {
                     Bools = Reader.ReadUInt32();
                 }
