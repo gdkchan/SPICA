@@ -77,6 +77,8 @@ namespace SPICA.Formats.CtrH3D
 
         public int Find(string Name)
         {
+            if (Name == null) return -1;
+
             if (TreeNeedsRebuild) RebuildTree();
 
             int Output = 0;

@@ -66,6 +66,7 @@ namespace SPICA.Formats.CtrH3D
         public void Add(T Value)
         {
             Values.Add(Value);
+
             NameTree.Add(((INamed)Value).Name);
 
             OnCollectionChanged(NotifyCollectionChangedAction.Add, Value);
@@ -74,6 +75,7 @@ namespace SPICA.Formats.CtrH3D
         public void Insert(int Index, T Value)
         {
             Values.Insert(Index, Value);
+
             NameTree.Insert(Index, ((INamed)Value).Name);
 
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, Value, Index);
@@ -82,6 +84,7 @@ namespace SPICA.Formats.CtrH3D
         public void Remove(T Value)
         {
             Values.Remove(Value);
+
             NameTree.Remove(((INamed)Value).Name);
 
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, Value);
@@ -90,6 +93,7 @@ namespace SPICA.Formats.CtrH3D
         public void Clear()
         {
             Values.Clear();
+
             NameTree.Clear();
 
             OnCollectionChanged(NotifyCollectionChangedAction.Reset, default(T));

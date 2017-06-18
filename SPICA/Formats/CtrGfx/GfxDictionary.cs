@@ -88,6 +88,8 @@ namespace SPICA.Formats.CtrGfx
 
         public int Find(string Name)
         {
+            if (Name == null) return -1;
+
             if (TreeNeedsRebuild) RebuildTree();
 
             int Output = 0;

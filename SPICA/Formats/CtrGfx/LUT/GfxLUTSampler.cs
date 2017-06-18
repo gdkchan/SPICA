@@ -5,10 +5,9 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.LUT
 {
+    [TypeChoice(0x80000000u, typeof(GfxLUTSampler))]
     public class GfxLUTSampler : ICustomSerialization, INamed
     {
-        private uint Unk;
-
         private string _Name;
 
         public string Name
@@ -23,23 +22,9 @@ namespace SPICA.Formats.CtrGfx.LUT
             }
         }
 
-        private uint Absolute;
+        public bool IsAbsolute;
 
-        public bool IsAbsolute
-        {
-            get
-            {
-                return Absolute != 0;
-            }
-            set
-            {
-                Absolute = value ? 1u : 0u;
-            }
-        }
-
-        private uint CommandsByteLength;
-
-        [FixedLength(258)] private uint[] Commands;
+        private byte[] RawCommands;
 
         [Ignore] private float[] _Table;
 
@@ -72,6 +57,17 @@ namespace SPICA.Formats.CtrGfx.LUT
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
+            uint[] Commands = new uint[RawCommands.Length >> 2];
+
+            for (int i = 0; i < RawCommands.Length; i += 4)
+            {
+                Commands[i >> 2] = (uint)(
+                    RawCommands[i + 0] <<  0 |
+                    RawCommands[i + 1] <<  8 |
+                    RawCommands[i + 2] << 16 |
+                    RawCommands[i + 3] << 24);
+            }
+
             uint Index = 0;
 
             PICACommandReader Reader = new PICACommandReader(Commands);
