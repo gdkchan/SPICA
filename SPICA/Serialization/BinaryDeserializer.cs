@@ -12,9 +12,8 @@ using System.Text;
 
 namespace SPICA.Serialization
 {
-    class BinaryDeserializer
+    class BinaryDeserializer : BinarySerialization
     {
-        public readonly Stream BaseStream;
         public readonly BinaryReader Reader;
 
         private struct ObjectInfo
@@ -26,25 +25,13 @@ namespace SPICA.Serialization
         private class ObjectRef
         {
             public object Value;
-            public int Length;
+            public int    Length;
         }
 
         private Dictionary<ObjectInfo, ObjectRef> ObjPointers;
 
-        private SerializationOptions Options;
-
-        public int FileVersion;
-
-        private const BindingFlags Binding =
-            BindingFlags.Instance |
-            BindingFlags.Public |
-            BindingFlags.NonPublic;
-
-        public BinaryDeserializer(Stream BaseStream, SerializationOptions Options)
+        public BinaryDeserializer(Stream BaseStream, SerializationOptions Options) : base(BaseStream, Options)
         {
-            this.BaseStream = BaseStream;
-            this.Options    = Options;
-
             Reader = new BinaryReader(BaseStream);
 
             ObjPointers = new Dictionary<ObjectInfo, ObjectRef>();
@@ -71,7 +58,7 @@ namespace SPICA.Serialization
                     case TypeCode.SByte:   return Reader.ReadSByte();
                     case TypeCode.Single:  return Reader.ReadSingle();
                     case TypeCode.Double:  return Reader.ReadDouble();
-                    case TypeCode.Boolean: return Reader.ReadByte() != 0;
+                    case TypeCode.Boolean: return Reader.ReadUInt32() != 0;
 
                     default: return null;
                 }
@@ -138,9 +125,9 @@ namespace SPICA.Serialization
             bool Inline = Type.IsDefined(typeof(InlineAttribute));
             bool Pointers = !(Type.IsValueType || Type.IsEnum || Inline);
 
-            uint Bools = 0;
-
             int Index;
+
+            BitReader BR = new BitReader(Reader);
 
             for (Index = 0; (Range ? BaseStream.Position : Index) < Length; Index++)
             {
@@ -160,28 +147,18 @@ namespace SPICA.Serialization
                     BaseStream.Seek(Address, SeekOrigin.Begin);
                 }
 
-                object Value;
-
-                if (Type == typeof(bool))
-                {
-                    if ((Index & 0x1f) == 0)
-                    {
-                        Bools = Reader.ReadUInt32();
-                    }
-
-                    Value = (Bools & 1) != 0;
-
-                    Bools >>= 1;
-                }
-                else
-                {
-                    Value = ReadValue(Type);
-                }
+                object Value = Type == typeof(bool)
+                    ? BR.ReadBit()
+                    : ReadValue(Type);
 
                 if (List.IsFixedSize)
+                {
                     List[Index] = Value;
+                }
                 else
+                {
                     List.Add(Value);
+                }
             }
 
             if (Pointers)
@@ -206,8 +183,17 @@ namespace SPICA.Serialization
 
         private object ReadObject(Type ObjectType)
         {
+            if (ObjectType.IsDefined(typeof(TypeChoiceAttribute)))
+            {
+                Type Type = GetMatchingType(ObjectType, Reader.ReadUInt32());
+
+                if (Type != null)
+                {
+                    ObjectType = Type;
+                }
+            }
+
             object Value = Activator.CreateInstance(ObjectType);
-            object OldVal = Value;
 
             ObjectInfo OInfo = new ObjectInfo
             {
@@ -223,13 +209,15 @@ namespace SPICA.Serialization
             }
             else
             {
+                Dictionary<string, Type> TypeDict = new Dictionary<string, Type>();
+
                 ObjectRef ORef = new ObjectRef { Value = Value };
 
                 ObjPointers.Add(OInfo, ORef);
 
                 long Position = BaseStream.Position;
 
-                foreach (FieldInfo Info in ObjectType.GetFields(Binding))
+                foreach (FieldInfo Info in GetFieldsSorted(ObjectType))
                 {
                     if (!Info.GetCustomAttribute<IfVersionAttribute>()?.Compare(FileVersion) ?? false) continue;
 
@@ -239,6 +227,11 @@ namespace SPICA.Serialization
                     {
                         Type Type = Info.FieldType;
 
+                        if (TypeDict.ContainsKey(Info.Name))
+                        {
+                            Type = TypeDict[Info.Name];
+                        }
+
                         bool Inline;
 
                         Inline  = Info.IsDefined(typeof(InlineAttribute));
@@ -246,20 +239,33 @@ namespace SPICA.Serialization
 
                         if (Type.IsValueType || Type.IsEnum || Inline)
                         {
-                            object FieldValue = ReadValue(Type, Info, Info.IsDefined(typeof(FixedLengthAttribute))
-                                ? Info.GetCustomAttribute<FixedLengthAttribute>().Length
-                                : 0);
+                            object FieldValue = ReadValue(Type, Info, Info.GetCustomAttribute<FixedLengthAttribute>()?.Length ?? 0);
 
-                            if (Info.IsDefined(typeof(VersionAttribute)) && Type.IsPrimitive)
+                            if (Type.IsPrimitive || Type.IsEnum)
                             {
-                                FileVersion = Convert.ToInt32(FieldValue);
+                                string Name = Info.GetCustomAttribute<TypeChoiceNameAttribute>()?.FieldName;
+
+                                if (Name != null && Info.IsDefined(typeof(TypeChoiceAttribute)))
+                                {
+                                    Type TargetType = GetMatchingType(Info, Convert.ToUInt32(FieldValue));
+
+                                    if (TargetType != null)
+                                    {
+                                        TypeDict.Add(Name, TargetType);
+                                    }
+                                }
+
+                                if (Info.IsDefined(typeof(VersionAttribute)))
+                                {
+                                    FileVersion = Convert.ToInt32(FieldValue);
+                                }
                             }
 
                             Info.SetValue(Value, FieldValue);
                         }
                         else
                         {
-                            ReadReference(Value, Info);
+                            ReadReference(Value, Info, Type);
                         }
 
                         if (Info.IsDefined(typeof(PaddingAttribute)))
@@ -279,7 +285,20 @@ namespace SPICA.Serialization
             return Value;
         }
 
-        private void ReadReference(object Parent, FieldInfo Info)
+        private Type GetMatchingType(MemberInfo Info, uint TypeId)
+        {
+            foreach (TypeChoiceAttribute Attr in Info.GetCustomAttributes<TypeChoiceAttribute>())
+            {
+                if (Attr.TypeId == TypeId)
+                {
+                    return Attr.Type;
+                }
+            }
+
+            return null;
+        }
+
+        private void ReadReference(object Parent, FieldInfo Info, Type Type)
         {
             uint Address;
             int  Length;
@@ -287,11 +306,11 @@ namespace SPICA.Serialization
             if (Options.LenPos == LengthPos.AfterPointer)
             {
                 Address = ReadPointer();
-                Length  = ReadLength(Info);
+                Length  = ReadLength(Info, Type);
             }
             else
             {
-                Length  = ReadLength(Info);
+                Length  = ReadLength(Info, Type);
                 Address = ReadPointer();
             }
 
@@ -303,19 +322,19 @@ namespace SPICA.Serialization
 
                 BaseStream.Seek(Address, SeekOrigin.Begin);
 
-                Info.SetValue(Parent, ReadValue(Info.FieldType, Info, Length));
+                Info.SetValue(Parent, ReadValue(Type, Info, Length));
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
             }
         }
 
-        private int ReadLength(FieldInfo Info)
+        private int ReadLength(FieldInfo Info, Type Type)
         {
             if (Info.IsDefined(typeof(FixedLengthAttribute)))
             {
                 return Info.GetCustomAttribute<FixedLengthAttribute>().Length;
             }
-            else if (typeof(IList).IsAssignableFrom(Info.FieldType))
+            else if (typeof(IList).IsAssignableFrom(Type))
             {
                 return Reader.ReadInt32();
             }

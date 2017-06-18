@@ -2,15 +2,15 @@
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
-    public struct GfxAttrNormal
+    class GfxVertexBufferInterleaved : GfxVertexBuffer
     {
-        public uint BufferObject;
-        public uint LocationFlag;
+        private uint BufferObj;
+        private uint LocationFlag;
 
         public byte[] RawBuffer;
 
-        public uint LocationAddress;
-        public uint MemoryArea;
+        private uint LocationPtr;
+        private uint MemoryArea;
 
         public int VertexStride;
 

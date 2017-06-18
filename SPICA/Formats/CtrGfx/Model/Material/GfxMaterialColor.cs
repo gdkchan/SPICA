@@ -30,7 +30,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
         public RGBA Constant4;
         public RGBA Constant5;
 
-        private uint CommandsPtr;
+        private uint CommandCache;
 
         public float Scale
         {

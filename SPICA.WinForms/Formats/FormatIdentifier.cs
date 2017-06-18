@@ -20,7 +20,7 @@ namespace SPICA.WinForms.Formats
 {
     static class FormatIdentifier
     {
-        public static H3D IdentifyAndOpen(string FileName, H3DPatriciaList<H3DBone> Skeleton = null)
+        public static H3D IdentifyAndOpen(string FileName, H3DDict<H3DBone> Skeleton = null)
         {
             //Formats that can by identified by extensions
             string FilePath = Path.GetDirectoryName(FileName);

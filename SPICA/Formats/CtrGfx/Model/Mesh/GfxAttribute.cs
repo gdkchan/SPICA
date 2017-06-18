@@ -1,25 +1,17 @@
-﻿using SPICA.PICA.Commands;
-
-namespace SPICA.Formats.CtrGfx.Model.Mesh
+﻿namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
-    public class GfxAttribute
+    public class GfxAttribute : GfxVertexBuffer
     {
-        public uint Flags;
+        private uint BufferObj;
+        private uint LocationFlag;
 
-        public PICAAttributeName AttrName;
+        private uint StreamLength;
+        private uint StreamOffset;
 
-        public uint StreamFlags;
+        private uint LocationPtr;
+        private uint MemoryArea;
 
-        public uint BufferObject;
-        public uint LocationFlags;
-
-        public uint StreamLength;
-        public uint StreamOffset;
-
-        public uint LocationAddress;
-        public uint MemoryArea;
-
-        public GfxAttributeFormat Format;
+        public GfxGLDataType Format;
 
         public int Elements;
 

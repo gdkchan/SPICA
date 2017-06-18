@@ -1,8 +1,8 @@
 ﻿namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
-    public struct GfxAttrFixed
+    class GfxVertexBufferFixed : GfxVertexBuffer
     {
-        public GfxAttributeFormat Format;
+        public GfxGLDataType Format;
 
         public int Elements;
 

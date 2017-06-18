@@ -16,16 +16,22 @@ namespace SPICA.Formats.CtrH3D
         public uint StringsAddress;
         public uint CommandsAddress;
         public uint RawDataAddress;
+
+        //Only newer versions have this section.
         [IfVersion(CmpOp.Gequal, 0x21)]
         public uint RawExtAddress;
+
         public uint RelocationAddress;
 
         public int ContentsLength;
         public int StringsLength;
         public int CommandsLength;
         public int RawDataLength;
+
+        //Only newer versions have this section.
         [IfVersion(CmpOp.Gequal, 0x21)]
         public int RawExtLength;
+
         public int RelocationLength;
 
         public int UnInitDataLength;

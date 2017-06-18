@@ -96,8 +96,8 @@ namespace SPICA.Formats.GFL2.Motion
                 {
                     Name          = Bone.Name,
                     Content       = QuatTransform,
-                    TargetType    = H3DAnimTargetType.Bone,
-                    PrimitiveType = H3DAnimPrimitiveType.QuatTransform
+                    TargetType    = H3DTargetType.Bone,
+                    PrimitiveType = H3DPrimitiveType.QuatTransform
                 });
             }
 

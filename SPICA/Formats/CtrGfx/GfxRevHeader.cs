@@ -1,9 +1,7 @@
 ﻿namespace SPICA.Formats.CtrGfx
 {
-    struct GfxVersion
+    struct GfxRevHeader
     {
-        public GfxInheritance Inheritance;
-
         public uint MagicNumber;
         public uint Revision;
     }

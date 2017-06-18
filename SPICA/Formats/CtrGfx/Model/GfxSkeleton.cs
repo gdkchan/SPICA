@@ -1,10 +1,12 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model
 {
+    [TypeChoice(0x02000000u, typeof(GfxSkeleton))]
     public class GfxSkeleton : INamed
     {
-        private GfxVersion Header;
+        private GfxRevHeader Header;
 
         private string _Name;
 
@@ -34,11 +36,11 @@ namespace SPICA.Formats.CtrGfx.Model
         {
             get
             {
-                return ((Flags >> 1) & 1) != 0;
+                return BitUtils.GetBit(Flags, 1);
             }
             set
             {
-                Flags = BitUtils.SetBit(Flags, value, 1);
+                Flags = (uint)BitUtils.SetBit(Flags, value, 1);
             }
         }
     }

@@ -1,7 +1,6 @@
-﻿using SPICA.Formats.Common;
-namespace SPICA.Formats.CtrH3D.Animation
+﻿namespace SPICA.Formats.CtrH3D.Animation
 {
-    public struct H3DAnimCurve
+    public class H3DAnimationCurve
     {
         public float StartFrame;
         public float EndFrame;

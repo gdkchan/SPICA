@@ -1,10 +1,9 @@
 ﻿using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
-using System;
-
 namespace SPICA.Formats.CtrH3D.Animation
 {
+    [Inline]
     public class H3DAnimVector2D : ICustomSerialization
     {
         [Ignore] private H3DFloatKeyFrameGroup[] Vector;

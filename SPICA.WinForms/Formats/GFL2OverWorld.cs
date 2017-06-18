@@ -17,7 +17,7 @@ namespace SPICA.WinForms.Formats
         const uint GFTextureConstant = 0x15041213;
         const uint GFMotionConstant = 0x00060000;
 
-        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, H3DPatriciaList<H3DBone> Skeleton = null)
+        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, H3DDict<H3DBone> Skeleton = null)
         {
             BinaryReader Reader = new BinaryReader(Input);
 

@@ -6,6 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
+    [Inline]
     public class H3DAnimTransform : ICustomSerialization
     {
         private H3DAnimTransformFlags Flags;

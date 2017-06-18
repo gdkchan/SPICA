@@ -1,13 +1,11 @@
 ﻿using SPICA.Formats.Common;
-using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
-using SPICA.Serialization.Serializer;
 
 using System;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    public class H3DAnimationElement : ICustomSerialization
+    public class H3DAnimationElement
     {
         private string _Name;
 
@@ -23,10 +21,17 @@ namespace SPICA.Formats.CtrH3D.Animation
             }
         }
 
-        public H3DAnimTargetType    TargetType;
-        public H3DAnimPrimitiveType PrimitiveType;
+        public H3DTargetType TargetType;
 
-        [Ignore]
+        [TypeChoiceName("_Content")]
+        [TypeChoice((uint)H3DPrimitiveType.Float,         typeof(H3DAnimFloat))]
+        [TypeChoice((uint)H3DPrimitiveType.Vector2D,      typeof(H3DAnimVector2D))]
+        [TypeChoice((uint)H3DPrimitiveType.Transform,     typeof(H3DAnimTransform))]
+        [TypeChoice((uint)H3DPrimitiveType.QuatTransform, typeof(H3DAnimQuatTransform))]
+        [TypeChoice((uint)H3DPrimitiveType.Boolean,       typeof(H3DAnimBoolean))]
+        [TypeChoice((uint)H3DPrimitiveType.MtxTransform,  typeof(H3DAnimMtxTransform))]
+        public H3DPrimitiveType PrimitiveType;
+
         private object _Content;
 
         public object Content
@@ -50,34 +55,6 @@ namespace SPICA.Formats.CtrH3D.Animation
 
                 _Content = value ?? throw Exceptions.GetNullException("Content");
             }
-        }
-
-        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
-        {
-            switch (PrimitiveType)
-            {
-                case H3DAnimPrimitiveType.Vector2D:      Content = Deserializer.Deserialize<H3DAnimVector2D>();      break;
-                case H3DAnimPrimitiveType.Transform:     Content = Deserializer.Deserialize<H3DAnimTransform>();     break;
-                case H3DAnimPrimitiveType.QuatTransform: Content = Deserializer.Deserialize<H3DAnimQuatTransform>(); break;
-                case H3DAnimPrimitiveType.Boolean:       Content = Deserializer.Deserialize<H3DAnimBoolean>();       break;
-                case H3DAnimPrimitiveType.MtxTransform:  Content = Deserializer.Deserialize<H3DAnimMtxTransform>();  break;
-            }
-        }
-
-        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
-        {
-            Serializer.Strings.Values.Add(new RefValue
-            {
-                Position = Serializer.BaseStream.Position,
-                Value    = _Name
-            });
-
-            Serializer.Writer.Write(0u);
-            Serializer.Writer.Write((ushort)TargetType);
-            Serializer.Writer.Write((ushort)PrimitiveType);
-            Serializer.WriteValue(Content);
-
-            return true;
         }
     }
 }

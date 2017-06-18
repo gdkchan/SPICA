@@ -19,7 +19,7 @@ namespace SPICA.WinForms.Formats
 
         const uint BCHConstant = 0x00484342;
 
-        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, H3DPatriciaList<H3DBone> Skeleton = null)
+        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, H3DDict<H3DBone> Skeleton = null)
         {
             H3D Output = default(H3D);
 

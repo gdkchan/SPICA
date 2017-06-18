@@ -14,9 +14,8 @@ using System.Text;
 
 namespace SPICA.Serialization
 {
-    class BinarySerializer
+    class BinarySerializer : BinarySerialization
     {
-        public readonly Stream BaseStream;
         public readonly BinaryWriter Writer;
 
         public int PhysicalAddressCount { get; private set; }
@@ -57,20 +56,9 @@ namespace SPICA.Serialization
 
         public readonly H3DRelocator Relocator;
 
-        private SerializationOptions Options;
-
-        public int FileVersion;
-
-        private const BindingFlags Binding =
-            BindingFlags.Instance |
-            BindingFlags.Public |
-            BindingFlags.NonPublic;
-
-        public BinarySerializer(Stream BaseStream, SerializationOptions Options, H3DRelocator Relocator = null)
+        public BinarySerializer(Stream BaseStream, SerializationOptions Options, H3DRelocator Relocator = null) : base(BaseStream, Options)
         {
-            this.BaseStream = BaseStream;
-            this.Options    = Options;
-            this.Relocator  = Relocator;
+            this.Relocator = Relocator;
 
             Writer = new BinaryWriter(BaseStream);
 
@@ -135,17 +123,17 @@ namespace SPICA.Serialization
             {
                 switch (Type.GetTypeCode(Type))
                 {
-                    case TypeCode.UInt64:  Writer.Write((ulong)Value);                break;
-                    case TypeCode.UInt32:  Writer.Write((uint)Value);                 break;
-                    case TypeCode.UInt16:  Writer.Write((ushort)Value);               break;
-                    case TypeCode.Byte:    Writer.Write((byte)Value);                 break;
-                    case TypeCode.Int64:   Writer.Write((long)Value);                 break;
-                    case TypeCode.Int32:   Writer.Write((int)Value);                  break;
-                    case TypeCode.Int16:   Writer.Write((short)Value);                break;
-                    case TypeCode.SByte:   Writer.Write((sbyte)Value);                break;
-                    case TypeCode.Single:  Writer.Write((float)Value);                break;
-                    case TypeCode.Double:  Writer.Write((double)Value);               break;
-                    case TypeCode.Boolean: Writer.Write((byte)((bool)Value ? 1 : 0)); break;
+                    case TypeCode.UInt64:  Writer.Write((ulong)Value);          break;
+                    case TypeCode.UInt32:  Writer.Write((uint)Value);           break;
+                    case TypeCode.UInt16:  Writer.Write((ushort)Value);         break;
+                    case TypeCode.Byte:    Writer.Write((byte)Value);           break;
+                    case TypeCode.Int64:   Writer.Write((long)Value);           break;
+                    case TypeCode.Int32:   Writer.Write((int)Value);            break;
+                    case TypeCode.Int16:   Writer.Write((short)Value);          break;
+                    case TypeCode.SByte:   Writer.Write((sbyte)Value);          break;
+                    case TypeCode.Single:  Writer.Write((float)Value);          break;
+                    case TypeCode.Double:  Writer.Write((double)Value);         break;
+                    case TypeCode.Boolean: Writer.Write((bool)Value ? 1u : 0u); break;
                 }
 
                 return;
@@ -218,8 +206,7 @@ namespace SPICA.Serialization
             bool Inline = Type.IsDefined(typeof(InlineAttribute));
             bool Pointers = !(Type.IsValueType || Type.IsEnum || Inline);
 
-            int  Index = 0;
-            uint Bools = 0;
+            BitWriter BW = new BitWriter(Writer);
 
             foreach (object Value in List)
             {
@@ -235,15 +222,7 @@ namespace SPICA.Serialization
                 }
                 else if (Type == typeof(bool))
                 {
-                    Bools |= (1u << Index);
-
-                    if (++Index == 32)
-                    {
-                        Writer.Write(Bools);
-
-                        Index = 0;
-                        Bools = 0;
-                    }
+                    BW.WriteBit((bool)Value);
                 }
                 else
                 {
@@ -251,10 +230,7 @@ namespace SPICA.Serialization
                 }
             }
 
-            if (Index != 0)
-            {
-                Writer.Write(Bools);
-            }
+            BW.Flush();
         }
 
         private void WriteValue(RefValue Reference)
@@ -292,7 +268,9 @@ namespace SPICA.Serialization
                     uint Pointer = OInfo.Position + Reference.PointerOffset;
 
                     if (Options.LenPos == LengthPos.AfterPointer)
+                    {
                         WritePointer(Pointer);
+                    }
 
                     if (Reference.HasLength)
                     {
@@ -303,10 +281,14 @@ namespace SPICA.Serialization
                     }
 
                     if (Options.LenPos == LengthPos.BeforePointer)
+                    {
                         WritePointer(Pointer);
+                    }
 
                     if (Reference.HasTwoPtr)
+                    {
                         WritePointer(Pointer);
+                    }
 
                     BaseStream.Seek(EndPos, SeekOrigin.Begin);
                 }
@@ -378,6 +360,19 @@ namespace SPICA.Serialization
         {
             Type ValueType = Value.GetType();
 
+            if (ValueType.IsDefined(typeof(TypeChoiceAttribute)))
+            {
+                foreach (TypeChoiceAttribute Attr in ValueType.GetCustomAttributes<TypeChoiceAttribute>())
+                {
+                    if (Attr.Type == ValueType)
+                    {
+                        Writer.Write(Attr.TypeId);
+
+                        break;
+                    }
+                }
+            }
+
             int Index = Contents.Values.Count;
 
             if (Value is ICustomSerialization)
@@ -385,7 +380,7 @@ namespace SPICA.Serialization
                 if (((ICustomSerialization)Value).Serialize(this)) return;
             }
 
-            foreach (FieldInfo Info in ValueType.GetFields(Binding))
+            foreach (FieldInfo Info in GetFieldsSorted(ValueType))
             {
                 if (!Info.GetCustomAttribute<IfVersionAttribute>()?.Compare(FileVersion) ?? false) continue;
 

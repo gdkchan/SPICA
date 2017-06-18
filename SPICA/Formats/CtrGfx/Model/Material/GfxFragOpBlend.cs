@@ -14,7 +14,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         private Vector4 ColorF;
 
-        [Inline, FixedLength(5)] private uint[] Commands;
+        [Inline, FixedLength(6)] private uint[] Commands;
 
         [Ignore] public PICAColorOperation ColorOperation;
 

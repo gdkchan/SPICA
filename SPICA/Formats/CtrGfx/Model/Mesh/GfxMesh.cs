@@ -3,12 +3,10 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
+    [TypeChoice(0x10000001u, typeof(GfxMesh))]
     public class GfxMesh
     {
-        public uint Unk;
-
-        private uint MagicNumber;
-        private uint Revision;
+        private GfxRevHeader Header;
 
         private string _Name;
 
@@ -31,7 +29,19 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public GfxModel Parent;
 
-        public bool Visible;
+        private byte Visible;
+
+        public bool IsVisible
+        {
+            get
+            {
+                return Visible != 0;
+            }
+            set
+            {
+                Visible = (byte)(value ? 1 : 0);
+            }
+        }
 
         public byte RenderPriority;
 
@@ -67,8 +77,8 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
             }
         }
 
-        private uint RenderKeysPtr;
-        private uint CommandAllocPtr;
+        private ulong RenderKeyCache;
+        private uint CommandAlloc;
 
         public GfxMesh()
         {

@@ -15,6 +15,11 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         [Ignore] public readonly PICATexEnvStage Stage;
 
+        public GfxTexEnv()
+        {
+            Stage = new PICATexEnvStage();
+        }
+
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
             PICACommandReader Reader = new PICACommandReader(Commands);
@@ -80,11 +85,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
             //TODO
 
             return false;
-        }
-
-        public GfxTexEnv()
-        {
-            Stage = new PICATexEnvStage();
         }
     }
 }

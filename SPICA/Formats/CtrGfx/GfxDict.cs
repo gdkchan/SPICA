@@ -4,15 +4,18 @@ using SPICA.Serialization.Attributes;
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace SPICA.Formats.CtrGfx
 {
     [Inline]
-    public class GfxDict<T> : ICustomSerialization, IEnumerable<T> where T : INamed
+    public class GfxDict<T> : ICustomSerialization, IPatriciaDict<T> where T : INamed
     {
         private int _Count;
 
         private GfxDictionary<T> Contents;
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public int Count { get { return Contents.Count; } }
 
@@ -64,35 +67,43 @@ namespace SPICA.Formats.CtrGfx
             return GetEnumerator();
         }
 
+        private void OnCollectionChanged(NotifyCollectionChangedAction Action, T NewItem, int Index = -1)
+        {
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(Action, NewItem, Index));
+        }
+
         //Implementation
         public bool Contains(string Name)
         {
             return Contents.Contains(Name);
         }
 
-        public T Find(string Name)
-        {
-            return Contents[Contents.Find(Name)];
-        }
-
         public void Add(T Value)
         {
             Contents.Add(Value);
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Add, Value);
         }
 
         public void Insert(int Index, T Value)
         {
             Contents.Insert(Index, Value);
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Replace, Value, Index);
         }
 
         public void Remove(T Value)
         {
             Contents.Remove(Value);
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Remove, Value);
         }
 
         public void Clear()
         {
             Contents.Clear();
+
+            OnCollectionChanged(NotifyCollectionChangedAction.Reset, default(T));
         }
     }
 }

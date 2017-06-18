@@ -80,6 +80,7 @@ namespace SPICA.Formats.CtrH3D
                     case H3DMetaDataType.ASCIIString:   this.Values.Add((string)Value);         break;
                     case H3DMetaDataType.UnicodeString: this.Values.Add((string)Value);         break;
                     case H3DMetaDataType.BoundingBox:   this.Values.Add((H3DBoundingBox)Value); break;
+                    case H3DMetaDataType.VertexData:    this.Values.Add((H3DVertexData)Value);  break;
                 }
             }
         }
@@ -126,7 +127,6 @@ namespace SPICA.Formats.CtrH3D
                         Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
 
                         Values.Add(Deserializer.Reader.ReadNullTerminatedString());
-
                         break;
 
                     case H3DMetaDataType.UnicodeString:
@@ -143,21 +143,18 @@ namespace SPICA.Formats.CtrH3D
 
                             Values.Add(Encoding.Unicode.GetString(MS.ToArray()));
                         }
-
                         break;
 
                     case H3DMetaDataType.BoundingBox:
                         Deserializer.BaseStream.Seek(Address + Index * 0x3c, SeekOrigin.Begin);
 
                         Values.Add(Deserializer.Deserialize<H3DBoundingBox>());
-
                         break;
 
                     case H3DMetaDataType.VertexData:
                         Deserializer.BaseStream.Seek(Address + Index * 0xc, SeekOrigin.Begin);
 
                         Values.Add(Deserializer.Deserialize<H3DVertexData>());
-
                         break;
 
                     default: throw new NotImplementedException();
@@ -187,7 +184,7 @@ namespace SPICA.Formats.CtrH3D
 
             Serializer.Strings.Values.Add(new RefValue
             {
-                Value    = Name,
+                Value    = _Name,
                 Position = Serializer.BaseStream.Position
             });
 

@@ -3,6 +3,7 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
+    [Inline]
     public class H3DAnimFloat : ICustomSerialization
     {
         [Ignore] private H3DFloatKeyFrameGroup _Value;

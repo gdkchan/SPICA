@@ -12,18 +12,6 @@
 
         public GfxBumpMode BumpMode;
 
-        private uint BumpRenormalize;
-
-        public bool IsBumpRenormalize
-        {
-            get
-            {
-                return BumpRenormalize != 0;
-            }
-            set
-            {
-                BumpRenormalize = value ? 1u : 0u;
-            }
-        }
+        public bool IsBumpRenormalize;
     }
 }

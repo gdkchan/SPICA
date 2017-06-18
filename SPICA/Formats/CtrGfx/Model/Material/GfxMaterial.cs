@@ -1,13 +1,15 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System.Collections.Generic;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
+    [TypeChoice(0x08000000u, typeof(GfxMaterial))]
     public class GfxMaterial : INamed
     {
-        private GfxVersion Version;
+        private GfxRevHeader Header;
 
         private string _Name;
 
@@ -44,7 +46,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public readonly GfxProcTextureMapper ProceduralTextureMapper;
 
-        private uint ShaderPtr; //TODO use Shader when it's implemented
+        public readonly GfxShader Shader;
 
         public readonly GfxFragShader FragmentShader;
 

@@ -11,6 +11,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
+    [Inline]
     public class H3DAnimQuatTransform : ICustomSerialization
     {
         private H3DAnimQuatTransformFlags Flags;

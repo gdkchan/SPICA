@@ -2,11 +2,11 @@
 {
     public class H3DMetaData
     {
-        public readonly H3DPatriciaList<H3DMetaDataValue> Values;
+        public readonly H3DDict<H3DMetaDataValue> Values;
 
         public H3DMetaData()
         {
-            Values = new H3DPatriciaList<H3DMetaDataValue>();
+            Values = new H3DDict<H3DMetaDataValue>();
         }
     }
 }

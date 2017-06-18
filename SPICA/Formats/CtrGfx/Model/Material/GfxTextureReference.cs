@@ -1,10 +1,12 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
+    [TypeChoice(0x20000004u, typeof(GfxTextureReference))]
     public class GfxTextureReference
     {
-        private GfxVersion Revision;
+        private GfxRevHeader Header;
 
         private string _Name;
 
@@ -36,6 +38,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
             }
         }
 
-        //I think it have more stuff after this...?
+        private uint TexturePtr;
     }
 }

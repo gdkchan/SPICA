@@ -180,8 +180,8 @@ namespace SPICA.Formats.GFL.Motion
                 {
                     Name          = Bone.Name,
                     Content       = Transform,
-                    TargetType    = H3DAnimTargetType.Bone,
-                    PrimitiveType = H3DAnimPrimitiveType.Transform
+                    TargetType    = H3DTargetType.Bone,
+                    PrimitiveType = H3DPrimitiveType.Transform
                 });
             }
 
@@ -194,9 +194,9 @@ namespace SPICA.Formats.GFL.Motion
 
         private void SetKeyFrameGroup(List<GF1MotKeyFrame> Source, H3DFloatKeyFrameGroup Target, int CurveIndex)
         {
-            Target.Curve.StartFrame  = 0;
-            Target.Curve.EndFrame    = FramesCount;
-            Target.Curve.CurveIndex  = (ushort)CurveIndex;
+            Target.StartFrame  = 0;
+            Target.EndFrame    = FramesCount;
+            Target.CurveIndex  = (ushort)CurveIndex;
             Target.InterpolationType = H3DInterpolationType.Hermite;
 
             foreach (GF1MotKeyFrame KF in Source)

@@ -61,8 +61,8 @@ namespace SPICA.Formats.GFL2.Motion
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimVector2D(Mat.ScaleX, Mat.ScaleY, Motion.FramesCount),
-                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Scale + Unit,
-                        PrimitiveType = H3DAnimPrimitiveType.Vector2D
+                        TargetType    = H3DTargetType.MaterialTexCoord0Scale + Unit,
+                        PrimitiveType = H3DPrimitiveType.Vector2D
                     });
                 }
 
@@ -72,8 +72,8 @@ namespace SPICA.Formats.GFL2.Motion
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimFloat(Mat.Rotation, Motion.FramesCount),
-                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Rot + Unit,
-                        PrimitiveType = H3DAnimPrimitiveType.Float
+                        TargetType    = H3DTargetType.MaterialTexCoord0Rot + Unit,
+                        PrimitiveType = H3DPrimitiveType.Float
                     });
                 }
 
@@ -83,8 +83,8 @@ namespace SPICA.Formats.GFL2.Motion
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimVector2D(Mat.TranslationX, Mat.TranslationY, Motion.FramesCount),
-                        TargetType    = H3DAnimTargetType.MaterialTexCoord0Trans + Unit,
-                        PrimitiveType = H3DAnimPrimitiveType.Vector2D
+                        TargetType    = H3DTargetType.MaterialTexCoord0Trans + Unit,
+                        PrimitiveType = H3DPrimitiveType.Vector2D
                     });
                 }
             }
@@ -115,7 +115,7 @@ namespace SPICA.Formats.GFL2.Motion
         {
             Target.InterpolationType = H3DInterpolationType.Hermite;
 
-            Target.Curve.EndFrame = FramesCount;
+            Target.EndFrame = FramesCount;
 
             foreach (GFMotKeyFrame KF in Source)
             {

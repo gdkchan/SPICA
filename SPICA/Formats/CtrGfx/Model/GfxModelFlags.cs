@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SPICA.Formats.CtrGfx.Model
+﻿namespace SPICA.Formats.CtrGfx.Model
 {
-    enum GfxModelFlags : uint
+    public enum GfxModelFlags : uint
     {
-        HasSkeleton = 1 << 7
+        IsVisible            = 1 << 0,
+        IsNonUniformScalable = 1 << 1
     }
 }

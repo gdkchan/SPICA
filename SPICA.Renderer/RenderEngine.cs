@@ -170,7 +170,7 @@ namespace SPICA.Renderer
             MergeLUTs    (SceneData.LUTs);
         }
 
-        public void MergeModels(H3DPatriciaList<H3DModel> Models)
+        public void MergeModels(H3DDict<H3DModel> Models)
         {
             foreach (H3DModel Mdl in Models)
             {
@@ -178,7 +178,7 @@ namespace SPICA.Renderer
             }
         }
 
-        public void MergeTextures(H3DPatriciaList<H3DTexture> Textures)
+        public void MergeTextures(H3DDict<H3DTexture> Textures)
         {
             foreach (H3DTexture Tex in Textures)
             {
@@ -186,7 +186,7 @@ namespace SPICA.Renderer
             }
         }
 
-        public void MergeLUTs(H3DPatriciaList<H3DLUT> LUTs)
+        public void MergeLUTs(H3DDict<H3DLUT> LUTs)
         {
             foreach (H3DLUT LUT in LUTs)
             {

@@ -62,9 +62,9 @@ namespace SPICA.Formats.CtrGfx
 
                     foreach (GfxVertexBuffer VertexBuffer in Shape.VertexBuffers)
                     {
-                        if (VertexBuffer.unk2 == 2)
+                        if (VertexBuffer is GfxVertexBufferInterleaved)
                         {
-                            foreach (GfxAttribute Attr in VertexBuffer.Attrib.Attributes)
+                            foreach (GfxAttribute Attr in ((GfxVertexBufferInterleaved)VertexBuffer).Attributes)
                             {
                                 M.Attributes.Add(new PICAAttribute
                                 {
@@ -77,27 +77,31 @@ namespace SPICA.Formats.CtrGfx
                         }
                         else
                         {
-                            float[] Vector = VertexBuffer.AttribFixed.Vector;
+                            float[] Vector = ((GfxVertexBufferFixed)VertexBuffer).Vector;
+
+                            float Scale = ((GfxVertexBufferFixed)VertexBuffer).Scale;
 
                             M.FixedAttributes.Add(new PICAFixedAttribute
                             {
                                 Name  = VertexBuffer.AttrName,
 
                                 Value = new PICAVectorFloat24(
-                                    Vector.Length > 0 ? Vector[0] : 0,
-                                    Vector.Length > 1 ? Vector[1] : 0,
-                                    Vector.Length > 2 ? Vector[2] : 0,
-                                    Vector.Length > 3 ? Vector[3] : 0)
+                                    Vector.Length > 0 ? Vector[0] * Scale : 0,
+                                    Vector.Length > 1 ? Vector[1] * Scale : 0,
+                                    Vector.Length > 2 ? Vector[2] * Scale : 0,
+                                    Vector.Length > 3 ? Vector[3] * Scale : 0)
                             });
                         }
                     }
-                    
+
+
+                    GfxVertexBufferInterleaved VtxBuff = (GfxVertexBufferInterleaved)Shape.VertexBuffers[0];
 
                     M.MaterialIndex  = (ushort)Mesh.MaterialIndex;
                     M.NodeIndex      = (ushort)Mesh.MeshNodeIndex;
                     M.PositionOffset = new Vector4(Shape.PositionOffset, 0);
-                    M.RawBuffer      = Shape.VertexBuffers[0].Attrib.RawBuffer;
-                    M.VertexStride   = Shape.VertexBuffers[0].Attrib.VertexStride;
+                    M.RawBuffer      = VtxBuff.RawBuffer;
+                    M.VertexStride   = VtxBuff.VertexStride;
                     M.Layer          = (int)Model.Materials[Mesh.MaterialIndex].TranslucencyKind;
                     M.Priority       = Mesh.RenderPriority;
 
@@ -346,33 +350,33 @@ namespace SPICA.Formats.CtrGfx
                     Mdl.Materials.Add(Mat);
                 }
 
-                foreach (GfxBone Bone in Model.Skeleton.Bones)
+                if (Model is GfxModelSkeletal)
                 {
-                    bool ScaleCompensate = (Bone.Flags & GfxBoneFlags.IsSegmentScaleCompensate) != 0;
-
-                    Mdl.Skeleton.Add(new H3DBone
+                    foreach (GfxBone Bone in ((GfxModelSkeletal)Model).Skeleton.Bones)
                     {
-                        Name = Bone.Name,
+                        bool ScaleCompensate = (Bone.Flags & GfxBoneFlags.IsSegmentScaleCompensate) != 0;
 
-                        ParentIndex = (short)Bone.ParentIndex,
+                        Mdl.Skeleton.Add(new H3DBone
+                        {
+                            Name = Bone.Name,
 
-                        Translation = Bone.Translation,
-                        Rotation    = Bone.Rotation,
-                        Scale       = Bone.Scale,
+                            ParentIndex = (short)Bone.ParentIndex,
 
-                        InverseTransform = Bone.InvWorldTransform,
+                            Translation = Bone.Translation,
+                            Rotation    = Bone.Rotation,
+                            Scale       = Bone.Scale,
 
-                        BillboardMode = (H3DBillboardMode)Bone.BillboardMode,
+                            InverseTransform = Bone.InvWorldTransform,
 
-                        IsSegmentScaleCompensate = ScaleCompensate
-                    });
-                }
+                            BillboardMode = (H3DBillboardMode)Bone.BillboardMode,
 
-                if (Mdl.Skeleton.Count > 0)
-                {
+                            IsSegmentScaleCompensate = ScaleCompensate
+                        });
+                    }
+
                     Mdl.Flags |= H3DModelFlags.HasSkeleton;
 
-                    Mdl.BoneScaling = (H3DBoneScaling)Model.Skeleton.ScalingRule;
+                    Mdl.BoneScaling = (H3DBoneScaling)((GfxModelSkeletal)Model).Skeleton.ScalingRule;
                 }
 
                 Output.Models.Add(Mdl);
@@ -382,18 +386,26 @@ namespace SPICA.Formats.CtrGfx
             {
                 H3DTexture Tex = new H3DTexture()
                 {
-                    Name          = Texture.Name,
-                    Width         = Texture.Width,
-                    Height        = Texture.Height,
-                    Format        = Texture.HwFormat,
-                    MipmapSize    = (byte)Texture.MipmapSize,
-                    RawBufferXPos = Texture.ImageXPos?.RawBuffer,
-                    RawBufferXNeg = Texture.ImageXNeg?.RawBuffer,
-                    RawBufferYPos = Texture.ImageYPos?.RawBuffer,
-                    RawBufferYNeg = Texture.ImageYNeg?.RawBuffer,
-                    RawBufferZPos = Texture.ImageZPos?.RawBuffer,
-                    RawBufferZNeg = Texture.ImageZNeg?.RawBuffer
+                    Name       = Texture.Name,
+                    Width      = Texture.Width,
+                    Height     = Texture.Height,
+                    Format     = Texture.HwFormat,
+                    MipmapSize = (byte)Texture.MipmapSize
                 };
+
+                if (Texture is GfxTextureCube)
+                {
+                    Tex.RawBufferXPos = ((GfxTextureCube)Texture).ImageXPos.RawBuffer;
+                    Tex.RawBufferXNeg = ((GfxTextureCube)Texture).ImageXNeg.RawBuffer;
+                    Tex.RawBufferYPos = ((GfxTextureCube)Texture).ImageYPos.RawBuffer;
+                    Tex.RawBufferYNeg = ((GfxTextureCube)Texture).ImageYNeg.RawBuffer;
+                    Tex.RawBufferZPos = ((GfxTextureCube)Texture).ImageZPos.RawBuffer;
+                    Tex.RawBufferZNeg = ((GfxTextureCube)Texture).ImageZNeg.RawBuffer;
+                }
+                else
+                {
+                    Tex.RawBuffer = ((GfxTextureImage)Texture).Image.RawBuffer;
+                }
 
                 Output.Textures.Add(Tex);
             }

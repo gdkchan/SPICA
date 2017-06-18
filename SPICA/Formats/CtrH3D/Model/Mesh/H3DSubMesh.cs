@@ -1,5 +1,6 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.PICA;
+using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
@@ -71,6 +72,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         [Ignore] public ushort[] Indices;
 
+        [Ignore] public PICAPrimitiveMode PrimitiveMode;
+
         public H3DSubMesh()
         {
             _BoneIndices = new ushort[20];
@@ -103,9 +106,12 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_VSH_BOOLUNIFORM: BoolUniforms = (ushort)Param; break;
+                    case PICARegister.GPUREG_VSH_BOOLUNIFORM:    BoolUniforms  = (ushort)Param; break;
                     case PICARegister.GPUREG_INDEXBUFFER_CONFIG: BufferAddress = Param; break;
-                    case PICARegister.GPUREG_NUMVERTICES: BufferCount = Param; break;
+                    case PICARegister.GPUREG_NUMVERTICES:        BufferCount   = Param; break;
+                    case PICARegister.GPUREG_PRIMITIVE_CONFIG:
+                        PrimitiveMode = (PICAPrimitiveMode)(Param >> 8);
+                        break;
                 }
             }
 
@@ -131,6 +137,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         {
             PICACommandWriter Writer = new PICACommandWriter();
 
+            uint PrimitiveConfig = (uint)PrimitiveMode << 8;
+
             Writer.SetCommand(PICARegister.GPUREG_VSH_BOOLUNIFORM, BoolUniforms | 0x7fff0000u);
             Writer.SetCommand(PICARegister.GPUREG_RESTART_PRIMITIVE, true);
             Writer.SetCommand(PICARegister.GPUREG_INDEXBUFFER_CONFIG, 0);
@@ -139,8 +147,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             Writer.SetCommand(PICARegister.GPUREG_DRAWELEMENTS, true);
             Writer.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, true, 1);
             Writer.SetCommand(PICARegister.GPUREG_VTX_FUNC, true);
-            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
-            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, 0, 8);
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, PrimitiveConfig, 8);
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, PrimitiveConfig, 8);
 
             Writer.WriteEnd();
 

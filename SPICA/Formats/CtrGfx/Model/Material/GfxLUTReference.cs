@@ -1,11 +1,11 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
+    [TypeChoice(0x40000000u, typeof(GfxLUTReference))]
     public class GfxLUTReference
     {
-        private uint Unk;
-
         private string _SamplerName;
 
         public string SamplerName

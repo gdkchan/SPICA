@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.CtrH3D.Animation
 {
-    public enum H3DAnimPrimitiveType : ushort
+    public enum H3DPrimitiveType : ushort
     {
         Float,
         Integer,

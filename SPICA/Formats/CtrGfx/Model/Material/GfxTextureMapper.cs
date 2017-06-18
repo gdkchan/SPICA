@@ -6,11 +6,10 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
+    [TypeChoice(0x80000000u, typeof(GfxTextureMapper))]
     public class GfxTextureMapper : ICustomSerialization
     {
-        private uint Unk;
-
-        private uint DynamicAllocPtr;
+        private uint DynamicAlloc;
 
         public GfxTextureReference Texture;
 

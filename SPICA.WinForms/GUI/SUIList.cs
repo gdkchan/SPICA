@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.Common;
-using SPICA.Formats.CtrH3D;
 
 using System;
 using System.Collections.Generic;
@@ -250,7 +249,7 @@ namespace SPICA.WinForms.GUI
             Invalidate();
         }
 
-        public void Bind<T>(H3DPatriciaList<T> Source) where T : INamed
+        public void Bind<T>(IPatriciaDict<T> Source) where T : INamed
         {
             if (IsBound) Unbind();
 

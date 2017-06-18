@@ -19,21 +19,21 @@ namespace SPICA.Formats.CtrH3D
 {
     public class H3D : ICustomSerialization
     {
-        public readonly H3DPatriciaList<H3DModel>          Models;
-        public readonly H3DPatriciaList<H3DMaterialParams> Materials;
-        public readonly H3DPatriciaList<H3DShader>         Shaders;
-        public readonly H3DPatriciaList<H3DTexture>        Textures;
-        public readonly H3DPatriciaList<H3DLUT>            LUTs;
-        public readonly H3DPatriciaList<H3DLight>          Lights;
-        public readonly H3DPatriciaList<H3DCamera>         Cameras;
-        public readonly H3DPatriciaList<H3DFog>            Fogs;
-        public readonly H3DPatriciaList<H3DAnimation>      SkeletalAnimations;
-        public readonly H3DPatriciaList<H3DAnimation>      MaterialAnimations;
-        public readonly H3DPatriciaList<H3DAnimation>      VisibilityAnimations;
-        public readonly H3DPatriciaList<H3DAnimation>      LightAnimations;
-        public readonly H3DPatriciaList<H3DAnimation>      CameraAnimations;
-        public readonly H3DPatriciaList<H3DAnimation>      FogAnimations;
-        public readonly H3DPatriciaList<H3DScene>          Scenes;
+        public readonly H3DDict<H3DModel>          Models;
+        public readonly H3DDict<H3DMaterialParams> Materials;
+        public readonly H3DDict<H3DShader>         Shaders;
+        public readonly H3DDict<H3DTexture>        Textures;
+        public readonly H3DDict<H3DLUT>            LUTs;
+        public readonly H3DDict<H3DLight>          Lights;
+        public readonly H3DDict<H3DCamera>         Cameras;
+        public readonly H3DDict<H3DFog>            Fogs;
+        public readonly H3DDict<H3DAnimation>      SkeletalAnimations;
+        public readonly H3DDict<H3DAnimation>      MaterialAnimations;
+        public readonly H3DDict<H3DAnimation>      VisibilityAnimations;
+        public readonly H3DDict<H3DAnimation>      LightAnimations;
+        public readonly H3DDict<H3DAnimation>      CameraAnimations;
+        public readonly H3DDict<H3DAnimation>      FogAnimations;
+        public readonly H3DDict<H3DScene>          Scenes;
 
         [Ignore] public byte BackwardCompatibility;
         [Ignore] public byte ForwardCompatibility;
@@ -44,21 +44,21 @@ namespace SPICA.Formats.CtrH3D
 
         public H3D()
         {
-            Models               = new H3DPatriciaList<H3DModel>();
-            Materials            = new H3DPatriciaList<H3DMaterialParams>();
-            Shaders              = new H3DPatriciaList<H3DShader>();
-            Textures             = new H3DPatriciaList<H3DTexture>();
-            LUTs                 = new H3DPatriciaList<H3DLUT>();
-            Lights               = new H3DPatriciaList<H3DLight>();
-            Cameras              = new H3DPatriciaList<H3DCamera>();
-            Fogs                 = new H3DPatriciaList<H3DFog>();
-            SkeletalAnimations   = new H3DPatriciaList<H3DAnimation>();
-            MaterialAnimations   = new H3DPatriciaList<H3DAnimation>();
-            VisibilityAnimations = new H3DPatriciaList<H3DAnimation>();
-            LightAnimations      = new H3DPatriciaList<H3DAnimation>();
-            CameraAnimations     = new H3DPatriciaList<H3DAnimation>();
-            FogAnimations        = new H3DPatriciaList<H3DAnimation>();
-            Scenes               = new H3DPatriciaList<H3DScene>();
+            Models               = new H3DDict<H3DModel>();
+            Materials            = new H3DDict<H3DMaterialParams>();
+            Shaders              = new H3DDict<H3DShader>();
+            Textures             = new H3DDict<H3DTexture>();
+            LUTs                 = new H3DDict<H3DLUT>();
+            Lights               = new H3DDict<H3DLight>();
+            Cameras              = new H3DDict<H3DCamera>();
+            Fogs                 = new H3DDict<H3DFog>();
+            SkeletalAnimations   = new H3DDict<H3DAnimation>();
+            MaterialAnimations   = new H3DDict<H3DAnimation>();
+            VisibilityAnimations = new H3DDict<H3DAnimation>();
+            LightAnimations      = new H3DDict<H3DAnimation>();
+            CameraAnimations     = new H3DDict<H3DAnimation>();
+            FogAnimations        = new H3DDict<H3DAnimation>();
+            Scenes               = new H3DDict<H3DScene>();
 
             BackwardCompatibility = 0x21;
             ForwardCompatibility  = 0x21;
@@ -78,7 +78,7 @@ namespace SPICA.Formats.CtrH3D
 
         public static H3D Open(MemoryStream MS)
         {
-            //Please note that data should be on Memory when opening because addresses are relocated
+            //Please note that data should be on Memory when opening because addresses are relocated.
             //Otherwise the original file would be corrupted!
             BinaryDeserializer Deserializer = new BinaryDeserializer(MS, GetSerializationOptions());
 
@@ -142,7 +142,7 @@ namespace SPICA.Formats.CtrH3D
                 Header.RawExtLength  += Serializer.RawExtVtx.Info.Length;
 
                 Header.UnInitDataLength     = Serializer.PhysicalAddressCount * 4;
-                Header.UnInitCommandsLength = 0; //TODO: Investigate when this length is used
+                Header.UnInitCommandsLength = 0; //TODO: Investigate when this length is used.
                 Header.AddressCount         = (ushort)Serializer.PhysicalAddressCount;
                 Header.Flags                = Scene.Flags;
 
@@ -178,10 +178,10 @@ namespace SPICA.Formats.CtrH3D
             AddUnique(SceneData.Scenes,               Scenes);
         }
 
-        private void AddUnique<T>(H3DPatriciaList<T> Src, H3DPatriciaList<T> Tgt) where T : INamed
+        private void AddUnique<T>(H3DDict<T> Src, H3DDict<T> Tgt) where T : INamed
         {
-            //We need to make sure that the name isn't already contained on the Tree
-            //Otherwise it would throw an exception due to duplicate Keys
+            //We need to make sure that the name isn't already contained on the Tree.
+            //Otherwise it would throw an exception due to duplicate Keys.
             foreach (T Value in Src)
             {
                 string Name = Value.Name;
@@ -207,8 +207,8 @@ namespace SPICA.Formats.CtrH3D
             {
                 foreach (H3DMaterial Material in Model.Materials)
                 {
-                    //Note: The IF is a workaround for multiple models with same material names
-                    //This kind of problem doesn't happen on BCH, but may happen on converted formats
+                    //Note: The IF is a workaround for multiple models with same material names.
+                    //This kind of problem doesn't happen on BCH, but may happen on converted formats.
                     if (!Materials.Contains(Material.Name)) Materials.Add(Material.MaterialParams);
                 }
             }
@@ -218,7 +218,7 @@ namespace SPICA.Formats.CtrH3D
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //The original tool seems to this empty name for some reason
+            //The original tool seems to add this empty name for some reason.
             Serializer.Strings.Values.Add(new RefValue
             {
                 Position = -1,

@@ -6,11 +6,9 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
     {
         public readonly List<GfxFaceDescriptor> FaceDescriptors;
 
-        private uint[] BufferObjects;
-
+        private uint[] BufferObjs; //One for each FaceDescriptor
         private uint Flags;
-
-        private uint CommandAllocPtr;
+        private uint CommandAlloc;
 
         public GfxFace()
         {

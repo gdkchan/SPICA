@@ -3,15 +3,18 @@ using SPICA.Formats.CtrGfx.Model.Material;
 using SPICA.Formats.CtrGfx.Model.Mesh;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
+using SPICA.Serialization.Attributes;
 
 using System.Collections.Generic;
 using System.Numerics;
 
 namespace SPICA.Formats.CtrGfx.Model
 {
+    [TypeChoice(0x40000012u, typeof(GfxModel))]
+    [TypeChoice(0x40000092u, typeof(GfxModelSkeletal))]
     public class GfxModel : INamed
     {
-        private GfxVersion Revision;
+        private GfxRevHeader Header;
 
         private string _Name;
 
@@ -29,13 +32,25 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public readonly GfxDict<GfxMetaData> MetaData;
 
-        public uint Unk0; //TODO: Check this
+        private uint BranchVisible;
 
-        public uint Flags2; //Flags of what?
+        private bool _IsBranchVisible;
 
-        public int ChildsCount; //What is a model "child"? The meshes?
+        public bool IsBranchVisible
+        {
+            get
+            {
+                return _IsBranchVisible;
+            }
+            set
+            {
+                _IsBranchVisible = value;
 
-        public uint Unused;
+                BranchVisible = BitUtils.SetBit(BranchVisible, value, 0);
+            }
+        }
+
+        public List<GfxModel> Childs;
 
         public readonly GfxDict<GfxAnimationsGroup> AnimationsGroup;
 
@@ -54,13 +69,11 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public readonly GfxDict<GfxMeshNode> MeshNodes;
 
-        public uint Flags3;
+        public GfxModelFlags Flags;
 
         public PICAFaceCulling FaceCulling;
 
         public int LayerId;
-
-        public GfxSkeleton Skeleton;
 
         public GfxModel()
         {

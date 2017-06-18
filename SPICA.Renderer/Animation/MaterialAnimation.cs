@@ -9,7 +9,7 @@ namespace SPICA.Renderer.Animation
 {
     public class MaterialAnimation : AnimationControl
     {
-        public OpenTK.Matrix3[][] GetUVTransforms(H3DPatriciaList<H3DMaterial> Materials)
+        public OpenTK.Matrix3[][] GetUVTransforms(H3DDict<H3DMaterial> Materials)
         {
             OpenTK.Matrix3[][] Output = new OpenTK.Matrix3[Materials.Count][];
 
@@ -36,22 +36,22 @@ namespace SPICA.Renderer.Animation
             {
                 foreach (H3DAnimationElement Elem in BaseAnimation.Elements.Where(x => x.Name == MaterialName))
                 {
-                    if (Elem.PrimitiveType == H3DAnimPrimitiveType.Vector2D)
+                    if (Elem.PrimitiveType == H3DPrimitiveType.Vector2D)
                     {
                         H3DAnimVector2D Vector = (H3DAnimVector2D)Elem.Content;
 
                         switch (Elem.TargetType)
                         {
-                            case H3DAnimTargetType.MaterialTexCoord0Scale: SetVector2(Vector, ref TC[0].Scale);       break;
-                            case H3DAnimTargetType.MaterialTexCoord1Scale: SetVector2(Vector, ref TC[1].Scale);       break;
-                            case H3DAnimTargetType.MaterialTexCoord2Scale: SetVector2(Vector, ref TC[2].Scale);       break;
+                            case H3DTargetType.MaterialTexCoord0Scale: SetVector2(Vector, ref TC[0].Scale);       break;
+                            case H3DTargetType.MaterialTexCoord1Scale: SetVector2(Vector, ref TC[1].Scale);       break;
+                            case H3DTargetType.MaterialTexCoord2Scale: SetVector2(Vector, ref TC[2].Scale);       break;
 
-                            case H3DAnimTargetType.MaterialTexCoord0Trans: SetVector2(Vector, ref TC[0].Translation); break;
-                            case H3DAnimTargetType.MaterialTexCoord1Trans: SetVector2(Vector, ref TC[1].Translation); break;
-                            case H3DAnimTargetType.MaterialTexCoord2Trans: SetVector2(Vector, ref TC[2].Translation); break;
+                            case H3DTargetType.MaterialTexCoord0Trans: SetVector2(Vector, ref TC[0].Translation); break;
+                            case H3DTargetType.MaterialTexCoord1Trans: SetVector2(Vector, ref TC[1].Translation); break;
+                            case H3DTargetType.MaterialTexCoord2Trans: SetVector2(Vector, ref TC[2].Translation); break;
                         }
                     }
-                    else if (Elem.PrimitiveType == H3DAnimPrimitiveType.Float)
+                    else if (Elem.PrimitiveType == H3DPrimitiveType.Float)
                     {
                         H3DFloatKeyFrameGroup Float = ((H3DAnimFloat)Elem.Content).Value;
 
@@ -61,9 +61,9 @@ namespace SPICA.Renderer.Animation
 
                         switch (Elem.TargetType)
                         {
-                            case H3DAnimTargetType.MaterialTexCoord0Rot: TC[0].Rotation = Value; break;
-                            case H3DAnimTargetType.MaterialTexCoord1Rot: TC[1].Rotation = Value; break;
-                            case H3DAnimTargetType.MaterialTexCoord2Rot: TC[2].Rotation = Value; break;
+                            case H3DTargetType.MaterialTexCoord0Rot: TC[0].Rotation = Value; break;
+                            case H3DTargetType.MaterialTexCoord1Rot: TC[1].Rotation = Value; break;
+                            case H3DTargetType.MaterialTexCoord2Rot: TC[2].Rotation = Value; break;
                         }
                     }
                 }

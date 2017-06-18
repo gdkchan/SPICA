@@ -97,7 +97,7 @@ namespace SPICA.Formats.CtrH3D.Model
             ParentIndex = Parent;
         }
 
-        public Matrix4x4 GetWorldTransform(H3DPatriciaList<H3DBone> Skeleton)
+        public Matrix4x4 GetWorldTransform(H3DDict<H3DBone> Skeleton)
         {
             Matrix4x4 Transform = Matrix4x4.Identity;
 
@@ -115,28 +115,32 @@ namespace SPICA.Formats.CtrH3D.Model
             return Transform;
         }
 
-        public void CalculateTransform(H3DPatriciaList<H3DBone> Skeleton)
+        public void CalculateTransform(H3DDict<H3DBone> Skeleton)
         {
             Matrix4x4 Transform = Matrix4x4.Identity;
 
             H3DBone Bone = this;
 
-            bool UniformScale = true;
-
             while (true)
             {
                 Transform *= Bone.Transform;
-
-                if (Bone.Scale != Vector3.One) UniformScale = false;
 
                 if (Bone.ParentIndex == -1) break;
 
                 Bone = Skeleton[Bone.ParentIndex];
             }
 
-            Flags = 0;
+            H3DBoneFlags Mask =
+                H3DBoneFlags.IsScaleUniform |
+                H3DBoneFlags.IsScaleVolumeOne |
+                H3DBoneFlags.IsRotationZero |
+                H3DBoneFlags.IsTranslationZero;
 
-            if (UniformScale)                Flags  = H3DBoneFlags.IsScaleUniform;
+            Flags &= ~Mask;
+
+            bool ScaleUniform = Scale.X == Scale.Y && Scale.X == Scale.Z;
+
+            if (ScaleUniform)                Flags  = H3DBoneFlags.IsScaleUniform;
             if (Scale       == Vector3.One)  Flags |= H3DBoneFlags.IsScaleVolumeOne;
             if (Rotation    == Vector3.Zero) Flags |= H3DBoneFlags.IsRotationZero;
             if (Translation == Vector3.Zero) Flags |= H3DBoneFlags.IsTranslationZero;

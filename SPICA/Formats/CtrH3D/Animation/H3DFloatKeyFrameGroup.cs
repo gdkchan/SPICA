@@ -10,10 +10,8 @@ using System.Linq;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    public class H3DFloatKeyFrameGroup : ICustomSerialization
+    public class H3DFloatKeyFrameGroup : H3DAnimationCurve, ICustomSerialization
     {
-        public H3DAnimCurve Curve;
-
         [IfVersion(CmpOp.Gequal, 0x20)] public H3DInterpolationType   InterpolationType;
         [IfVersion(CmpOp.Gequal, 0x20)] public H3DSegmentQuantization SegmentQuantization;
 
@@ -111,7 +109,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                 ValueScale  = MaxValue - MinValue;
                 ValueOffset = MinValue;
                 FrameScale  = MaxFrame - MinFrame;
-                InvDuration = 1f / Curve.EndFrame;
+                InvDuration = 1f / EndFrame;
 
                 /*
                  * Frame and Value quantization scales based on Segment quantization.
@@ -145,35 +143,25 @@ namespace SPICA.Formats.CtrH3D.Animation
                     ValueOffset = 0;
                 }
 
-                Serializer.WriteValue(Curve);
+                Serializer.WriteValue(this);
 
                 if (Serializer.FileVersion < 0x20)
                 {
                     Serializer.WritePointer((uint)Serializer.BaseStream.Position + 4);
 
-                    Serializer.Writer.Write(Curve.StartFrame);
-                    Serializer.Writer.Write(Curve.EndFrame);
-                }
+                    Serializer.Writer.Write(StartFrame);
+                    Serializer.Writer.Write(EndFrame);
 
-                Serializer.Writer.Write((byte)InterpolationType);
-                Serializer.Writer.Write((byte)SegmentQuantization);
-                Serializer.Writer.Write(Count);
+                    Serializer.Writer.Write((byte)InterpolationType);
+                    Serializer.Writer.Write((byte)SegmentQuantization);
 
-                if (Serializer.FileVersion < 0x20)
-                {
+                    Serializer.Writer.Write(Count);
+
                     Serializer.Writer.Write(InvDuration);
+                    Serializer.Writer.Write(ValueScale);
+                    Serializer.Writer.Write(ValueOffset);
+                    Serializer.Writer.Write(FrameScale);
                 }
-
-                Serializer.Writer.Write(ValueScale);
-                Serializer.Writer.Write(ValueOffset);
-                Serializer.Writer.Write(FrameScale);
-
-                if (Serializer.FileVersion >= 0x20)
-                {
-                    Serializer.Writer.Write(InvDuration);
-                }
-
-                Serializer.WritePointer((uint)Serializer.BaseStream.Position + 4);
 
                 foreach (KeyFrame Key in KeyFrames)
                 {
@@ -238,7 +226,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             if (LHS.Frame != RHS.Frame)
             {
                 float FrameDiff = Frame - LHS.Frame;
-                float Weight = FrameDiff / (RHS.Frame - LHS.Frame);
+                float Weight    = FrameDiff / (RHS.Frame - LHS.Frame);
 
                 switch (InterpolationType)
                 {

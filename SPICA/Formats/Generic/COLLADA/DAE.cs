@@ -435,14 +435,14 @@ namespace SPICA.Formats.Generic.COLLADA
 
                 H3DAnimation SklAnim = Scene.SkeletalAnimations[AnimIndex];
 
-                H3DPatriciaList<H3DBone> Skeleton = Scene.Models[0].Skeleton;
+                H3DDict<H3DBone> Skeleton = Scene.Models[0].Skeleton;
 
                 int FramesCount = (int)SklAnim.FramesCount + 1;
 
                 foreach (H3DAnimationElement Elem in SklAnim.Elements)
                 {
-                    if (Elem.PrimitiveType != H3DAnimPrimitiveType.Transform &&
-                        Elem.PrimitiveType != H3DAnimPrimitiveType.QuatTransform) continue;
+                    if (Elem.PrimitiveType != H3DPrimitiveType.Transform &&
+                        Elem.PrimitiveType != H3DPrimitiveType.QuatTransform) continue;
 
                     H3DBone SklBone = Skeleton.FirstOrDefault(x => x.Name == Elem.Name);
                     H3DBone Parent = null;
@@ -460,7 +460,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                         bool IsRotation = i > 0 && i < 4; //1, 2, 3
 
-                        if (Elem.PrimitiveType == H3DAnimPrimitiveType.Transform)
+                        if (Elem.PrimitiveType == H3DPrimitiveType.Transform)
                         {
                             if (SklBone == null) break;
 
@@ -484,7 +484,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             switch (Elem.PrimitiveType)
                             {
-                                case H3DAnimPrimitiveType.Transform:
+                                case H3DPrimitiveType.Transform:
                                     H3DAnimTransform Transform = (H3DAnimTransform)Elem.Content;
 
                                     //Compensate parent bone scale (basically, don't inherit scales)
@@ -536,7 +536,7 @@ namespace SPICA.Formats.Generic.COLLADA
                                     }
                                     break;
 
-                                case H3DAnimPrimitiveType.QuatTransform:
+                                case H3DPrimitiveType.QuatTransform:
                                     H3DAnimQuatTransform QuatTransform = (H3DAnimQuatTransform)Elem.Content;
 
                                     Vector3 Rotation = Vector3.Zero;

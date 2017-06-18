@@ -6,12 +6,10 @@ using System.Numerics;
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
+    [TypeChoice(0x10000001u, typeof(GfxShape))]
     public class GfxShape : INamed
     {
-        public uint Unk;
-
-        private uint MagicNumber;
-        private uint Revision;
+        private GfxRevHeader Header;
 
         private string _Name;
 

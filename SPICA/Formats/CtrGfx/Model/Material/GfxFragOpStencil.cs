@@ -7,8 +7,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 {
     public struct GfxFragOpStencil : ICustomSerialization
     {
-        private uint Unk;
-
         [Inline, FixedLength(4)] private uint[] Commands;
 
         [Ignore] public PICAStencilTest Test;

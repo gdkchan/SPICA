@@ -54,6 +54,11 @@
             return Value;
         }
 
+        public static bool GetBit(dynamic Value, int Start)
+        {
+            return ((Value >> Start) & 1) != 0;
+        }
+
         public static dynamic SetBit(dynamic Value, bool Bit, int Start)
         {
             if (Bit)

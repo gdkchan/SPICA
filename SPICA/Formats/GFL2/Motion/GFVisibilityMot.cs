@@ -47,9 +47,9 @@ namespace SPICA.Formats.GFL2.Motion
             {
                 H3DAnimBoolean Anim = new H3DAnimBoolean();
 
-                Anim.Curve.StartFrame = 0;
-                Anim.Curve.EndFrame   = Motion.FramesCount;
-                Anim.Curve.CurveIndex = Index++;
+                Anim.StartFrame = 0;
+                Anim.EndFrame   = Motion.FramesCount;
+                Anim.CurveIndex = Index++;
 
                 foreach (bool Visibility in Vis.Values)
                 {
@@ -59,8 +59,8 @@ namespace SPICA.Formats.GFL2.Motion
                 Output.Elements.Add(new H3DAnimationElement
                 {
                     Name          = Vis.Name,
-                    PrimitiveType = H3DAnimPrimitiveType.Boolean,
-                    TargetType    = H3DAnimTargetType.MeshNodeVisibility,
+                    PrimitiveType = H3DPrimitiveType.Boolean,
+                    TargetType    = H3DTargetType.MeshNodeVisibility,
                     Content       = Anim
                 });
             }

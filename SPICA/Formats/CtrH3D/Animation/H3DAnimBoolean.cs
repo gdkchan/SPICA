@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using SPICA.Serialization.Attributes;
+
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    public class H3DAnimBoolean
+    [Inline]
+    public class H3DAnimBoolean : H3DAnimationCurve
     {
-        public H3DAnimCurve Curve;
-
         public readonly List<bool> Values;
 
         public H3DAnimBoolean()
