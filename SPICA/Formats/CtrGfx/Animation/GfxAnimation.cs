@@ -2,9 +2,9 @@
 
 using System;
 
-namespace SPICA.Formats.CtrGfx.Model
+namespace SPICA.Formats.CtrGfx.Animation
 {
-    public class GfxAnimationsGroup : INamed
+    public class GfxAnimation : INamed
     {
         public string Name
         {

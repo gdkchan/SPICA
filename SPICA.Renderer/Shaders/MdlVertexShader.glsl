@@ -48,6 +48,9 @@ uniform float ColorScale;
 
 uniform int BoolUniforms;
 uniform int FixedAttr;
+uniform int HasTangent;
+uniform int ObjNormalMap;
+uniform int BumpMode;
 
 uniform vec4 FixedNorm;
 uniform vec4 FixedTan;
@@ -61,9 +64,6 @@ uniform vec4 FixedWeight;
 uniform vec4 PowerScale;
 
 uniform vec4 MDiffuse;
-
-uniform int ObjNormalMap;
-uniform int BumpMode;
 
 #ifdef GL_ARB_explicit_uniform_location
 	layout(location = 0) in vec3 a0_pos;
@@ -148,9 +148,20 @@ void main() {
 
 	ONormal = Normal;
 
-	if (ObjNormalMap != 0 && BumpMode == 1) {
-		Normal  = vec3(0, 0, 1);
-		Tangent = vec3(1, 0, 0);
+	if (BumpMode == 1) {
+		if (ObjNormalMap != 0) {
+			Normal  = vec3(0, 0, 1);
+			Tangent = vec3(1, 0, 0);
+		} else if (HasTangent == 0) {
+			//Compute tangent if model doesn't supply it.
+			//Not the best method, but it's fast and simple.
+			vec3 c1 = cross(Normal, vec3(0, 0, 1));
+			vec3 c2 = cross(Normal, vec3(0, 1, 0));
+
+			Tangent = length(c1) > length(c2)
+				? Tangent = normalize(c1)
+				: Tangent = normalize(c2);
+		}
 	}
 
 	vec3 ONrm, Nrm, Tan;

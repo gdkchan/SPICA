@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace SPICA.Formats.Common
 {
@@ -17,6 +18,15 @@ namespace SPICA.Formats.Common
         public static uint ToUInt32(float Value)
         {
             byte[] Bytes = BitConverter.GetBytes(Value);
+
+            if (!BitConverter.IsLittleEndian) Array.Reverse(Bytes);
+
+            return BitConverter.ToUInt32(Bytes, 0);
+        }
+
+        public static uint ToUInt32(string Magic)
+        {
+            byte[] Bytes = Encoding.ASCII.GetBytes(Magic);
 
             if (!BitConverter.IsLittleEndian) Array.Reverse(Bytes);
 

@@ -46,7 +46,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public readonly GfxProcTextureMapper ProceduralTextureMapper;
 
-        public readonly GfxShader Shader;
+        public readonly GfxShaderReference Shader;
 
         public readonly GfxFragShader FragmentShader;
 

@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.CtrGfx.Model.Material
 {
-    public class GfxShader
+    public class GfxShaderReference
     {
         //TODO
     }

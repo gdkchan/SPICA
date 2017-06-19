@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.CtrGfx
 {
-    class GfxDictionaryNode<T> : IPatriciaTreeNode
+    struct GfxDictionaryNode<T> : IPatriciaTreeNode
     {
         private uint   _ReferenceBit;
         private ushort _LeftNodeIndex;

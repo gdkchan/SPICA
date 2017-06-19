@@ -1,7 +1,14 @@
-﻿using SPICA.Formats.CtrGfx.LUT;
+﻿using SPICA.Formats.CtrGfx.Animation;
+using SPICA.Formats.CtrGfx.Camera;
+using SPICA.Formats.CtrGfx.Emitter;
+using SPICA.Formats.CtrGfx.Fog;
+using SPICA.Formats.CtrGfx.Light;
+using SPICA.Formats.CtrGfx.LUT;
 using SPICA.Formats.CtrGfx.Model;
 using SPICA.Formats.CtrGfx.Model.Material;
 using SPICA.Formats.CtrGfx.Model.Mesh;
+using SPICA.Formats.CtrGfx.Scene;
+using SPICA.Formats.CtrGfx.Shader;
 using SPICA.Formats.CtrGfx.Texture;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.LUT;
@@ -10,6 +17,7 @@ using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Commands;
+using SPICA.PICA.Converters;
 using SPICA.Serialization;
 
 using System.IO;
@@ -22,9 +30,42 @@ namespace SPICA.Formats.CtrGfx
         internal uint MagicNumber;
         internal uint SectionLength;
 
-        public GfxDict<GfxModel>   Models;
-        public GfxDict<GfxTexture> Textures;
-        public GfxDict<GfxLUT>     LUTs;
+        public readonly GfxDict<GfxModel>     Models;
+        public readonly GfxDict<GfxTexture>   Textures;
+        public readonly GfxDict<GfxLUT>       LUTs;
+        public readonly GfxDict<GfxMaterial>  Materials;
+        public readonly GfxDict<GfxShader>    Shaders;
+        public readonly GfxDict<GfxCamera>    Cameras;
+        public readonly GfxDict<GfxLight>     Lights;
+        public readonly GfxDict<GfxFog>       Fogs;
+        public readonly GfxDict<GfxScene>     Scenes;
+        public readonly GfxDict<GfxAnimation> SkeletalAnimations;
+        public readonly GfxDict<GfxAnimation> MaterialAnimations;
+        public readonly GfxDict<GfxAnimation> VisibilityAnimations;
+        public readonly GfxDict<GfxAnimation> CameraAnimations;
+        public readonly GfxDict<GfxAnimation> LightAnimations;
+        public readonly GfxDict<GfxAnimation> FogAnimations;
+        public readonly GfxDict<GfxEmitter>   Emitters;
+
+        public Gfx()
+        {
+            Models               = new GfxDict<GfxModel>();
+            Textures             = new GfxDict<GfxTexture>();
+            LUTs                 = new GfxDict<GfxLUT>();
+            Materials            = new GfxDict<GfxMaterial>();
+            Shaders              = new GfxDict<GfxShader>();
+            Cameras              = new GfxDict<GfxCamera>();
+            Lights               = new GfxDict<GfxLight>();
+            Fogs                 = new GfxDict<GfxFog>();
+            Scenes               = new GfxDict<GfxScene>();
+            SkeletalAnimations   = new GfxDict<GfxAnimation>();
+            MaterialAnimations   = new GfxDict<GfxAnimation>();
+            VisibilityAnimations = new GfxDict<GfxAnimation>();
+            CameraAnimations     = new GfxDict<GfxAnimation>();
+            LightAnimations      = new GfxDict<GfxAnimation>();
+            FogAnimations        = new GfxDict<GfxAnimation>();
+            Emitters             = new GfxDict<GfxEmitter>();
+        }
 
         public static H3D Open(Stream Input)
         {
@@ -60,23 +101,79 @@ namespace SPICA.Formats.CtrGfx
 
                     H3DMesh M = new H3DMesh();
 
+                    PICAVertex[] Vertices = null;
+
                     foreach (GfxVertexBuffer VertexBuffer in Shape.VertexBuffers)
                     {
-                        if (VertexBuffer is GfxVertexBufferInterleaved)
+                        /*
+                         * CGfx supports 3 types of vertex buffer:
+                         * - Non-Interleaved: Each attribute is stored on it's on stream, like this:
+                         * P0 P1 P2 P3 P4 P5 ... N0 N1 N2 N3 N4 N5
+                         * - Interleaved: All attributes are stored on the same stream, like this:
+                         * P0 N0 P1 N1 P2 N2 P3 N3 P4 N4 P5 N5 ...
+                         * - Fixed: The attribute have only a single fixed value, so instead of a stream,
+                         * it have a single vector.
+                         */
+                        if (VertexBuffer is GfxAttribute)
                         {
-                            foreach (GfxAttribute Attr in ((GfxVertexBufferInterleaved)VertexBuffer).Attributes)
+                            //Non-Interleaved buffer
+                            GfxAttribute Attr = (GfxAttribute)VertexBuffer;
+
+                            M.Attributes.Add(Attr.ToPICAAttribute());
+
+                            int Length = Attr.Elements;
+
+                            switch (Attr.Format)
                             {
-                                M.Attributes.Add(new PICAAttribute
+                                case GfxGLDataType.GL_SHORT: Length <<= 1; break;
+                                case GfxGLDataType.GL_FLOAT: Length <<= 2; break;
+                            }
+
+                            M.VertexStride += Length;
+
+                            Vector4[] Vectors = Attr.GetVectors();
+
+                            if (Vertices == null)
+                            {
+                                Vertices = new PICAVertex[Vectors.Length];
+
+                                for (int i = 0; i < Vertices.Length; i++)
                                 {
-                                    Name     = Attr.AttrName,
-                                    Format   = Attr.Format.ToPICAAttributeFormat(),
-                                    Elements = Attr.Elements,
-                                    Scale    = Attr.Scale
-                                });
+                                    Vertices[i] = new PICAVertex();
+                                }
+                            }
+
+                            for (int i = 0; i < Vectors.Length; i++)
+                            {
+                                switch(Attr.AttrName)
+                                {
+                                    case PICAAttributeName.Position:  Vertices[i].Position  = Vectors[i]; break;
+                                    case PICAAttributeName.Normal:    Vertices[i].Normal    = Vectors[i]; break;
+                                    case PICAAttributeName.Tangent:   Vertices[i].Tangent   = Vectors[i]; break;
+                                    case PICAAttributeName.TexCoord0: Vertices[i].TexCoord0 = Vectors[i]; break;
+                                    case PICAAttributeName.TexCoord1: Vertices[i].TexCoord1 = Vectors[i]; break;
+                                    case PICAAttributeName.TexCoord2: Vertices[i].TexCoord2 = Vectors[i]; break;
+                                    case PICAAttributeName.Color:     Vertices[i].Color     = Vectors[i]; break;
+
+                                    case PICAAttributeName.BoneIndex:
+                                        Vertices[i].Indices[0] = (int)Vectors[i].X;
+                                        Vertices[i].Indices[1] = (int)Vectors[i].Y;
+                                        Vertices[i].Indices[2] = (int)Vectors[i].Z;
+                                        Vertices[i].Indices[3] = (int)Vectors[i].W;
+                                        break;
+
+                                    case PICAAttributeName.BoneWeight:
+                                        Vertices[i].Weights[0] =      Vectors[i].X;
+                                        Vertices[i].Weights[1] =      Vectors[i].Y;
+                                        Vertices[i].Weights[2] =      Vectors[i].Z;
+                                        Vertices[i].Weights[3] =      Vectors[i].W;
+                                        break;
+                                }
                             }
                         }
-                        else
+                        else if (VertexBuffer is GfxVertexBufferFixed)
                         {
+                            //Fixed vector
                             float[] Vector = ((GfxVertexBufferFixed)VertexBuffer).Vector;
 
                             float Scale = ((GfxVertexBufferFixed)VertexBuffer).Scale;
@@ -92,16 +189,29 @@ namespace SPICA.Formats.CtrGfx
                                     Vector.Length > 3 ? Vector[3] * Scale : 0)
                             });
                         }
+                        else
+                        {
+                            //Interleaved buffer
+                            GfxVertexBufferInterleaved VtxBuff = (GfxVertexBufferInterleaved)VertexBuffer;
+
+                            foreach (GfxAttribute Attr in ((GfxVertexBufferInterleaved)VertexBuffer).Attributes)
+                            {
+                                M.Attributes.Add(Attr.ToPICAAttribute());
+                            }
+
+                            M.RawBuffer    = VtxBuff.RawBuffer;
+                            M.VertexStride = VtxBuff.VertexStride;
+                        }
                     }
 
-
-                    GfxVertexBufferInterleaved VtxBuff = (GfxVertexBufferInterleaved)Shape.VertexBuffers[0];
+                    if (Vertices != null)
+                    {
+                        M.RawBuffer = VerticesConverter.GetBuffer(Vertices, M.Attributes);
+                    }
 
                     M.MaterialIndex  = (ushort)Mesh.MaterialIndex;
                     M.NodeIndex      = (ushort)Mesh.MeshNodeIndex;
                     M.PositionOffset = new Vector4(Shape.PositionOffset, 0);
-                    M.RawBuffer      = VtxBuff.RawBuffer;
-                    M.VertexStride   = VtxBuff.VertexStride;
                     M.Layer          = (int)Model.Materials[Mesh.MaterialIndex].TranslucencyKind;
                     M.Priority       = Mesh.RenderPriority;
 

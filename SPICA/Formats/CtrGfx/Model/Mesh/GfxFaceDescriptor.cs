@@ -24,7 +24,7 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         [Padding(4)] private byte Visible;
 
-        private byte[] RawBuffer;
+        [Section(SectionName.RawDataVtx)] private byte[] RawBuffer;
 
         private uint BufferObj;
         private uint LocationFlag;

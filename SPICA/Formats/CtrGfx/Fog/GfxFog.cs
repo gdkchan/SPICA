@@ -2,13 +2,12 @@
 
 using System;
 
-namespace SPICA.Formats.CtrGfx.Model.Mesh
+namespace SPICA.Formats.CtrGfx.Fog
 {
-    public class GfxMeshNode : INamed
+    public class GfxFog : INamed
     {
-        //TODO
-
-        public string Name {
+        public string Name
+        {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
         }

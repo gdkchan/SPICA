@@ -233,9 +233,9 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                 }
                 else
                 {
-                    int PermutationIdx = (int)((BufferAttributes >> Index * 4) & 0xf);
+                    int PermutationIdx = (int)((BufferAttributes  >> Index          * 4) & 0xf);
                     int AttributeName  = (int)((BufferPermutation >> PermutationIdx * 4) & 0xf);
-                    int AttributeFmt   = (int)((BufferFormats >> PermutationIdx * 4) & 0xf);
+                    int AttributeFmt   = (int)((BufferFormats     >> PermutationIdx * 4) & 0xf);
 
                     PICAAttribute Attrib = new PICAAttribute
                     {
@@ -343,7 +343,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_INPUTBUFFER_CONFIG, 0xa0000000u | (uint)(AttributesTotal - 1), 0xb);
             Writer.SetCommand(PICARegister.GPUREG_VSH_NUM_ATTR, (uint)(AttributesTotal - 1), 1);
-            Writer.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW, (uint)BufferPermutation);
+            Writer.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW,  (uint)(BufferPermutation >>  0));
             Writer.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH, (uint)(BufferPermutation >> 32));
             Writer.SetCommand(PICARegister.GPUREG_ATTRIBBUFFERS_LOC, true,
                 0, //Base Address (Place holder)

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using SPICA.Serialization.Attributes;
+
+using System.Collections.Generic;
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
@@ -7,7 +9,7 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
         private uint BufferObj;
         private uint LocationFlag;
 
-        public byte[] RawBuffer;
+        [Section(SectionName.RawDataVtx)] public byte[] RawBuffer;
 
         private uint LocationPtr;
         private uint MemoryArea;

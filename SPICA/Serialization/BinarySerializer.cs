@@ -448,12 +448,33 @@ namespace SPICA.Serialization
 
         private void AddReference(Type Type, RefValue Ref)
         {
-            if (Type == typeof(string))
+            if (Ref.Info?.IsDefined(typeof(SectionAttribute)) ?? false)
+            {
+                SectionAttribute Attr = Ref.Info.GetCustomAttribute<SectionAttribute>();
+
+                switch (Attr.Name)
+                {
+                    case SectionName.Contents:   Contents.Values.Add(Ref);   break;
+                    case SectionName.Strings:    Strings.Values.Add(Ref);    break;
+                    case SectionName.Commands:   Commands.Values.Add(Ref);   break;
+                    case SectionName.RawDataTex: RawDataTex.Values.Add(Ref); break;
+                    case SectionName.RawDataVtx: RawDataVtx.Values.Add(Ref); break;
+                    case SectionName.RawExtTex:  RawExtTex.Values.Add(Ref);  break;
+                    case SectionName.RawExtVtx:  RawExtVtx.Values.Add(Ref);  break;
+                }
+            }
+            else if (Type == typeof(string))
+            {
                 Strings.Values.Add(Ref);
+            }
             else if (Type == typeof(uint[]))
+            {
                 Commands.Values.Add(Ref);
+            }
             else
+            {
                 Contents.Values.Add(Ref);
+            }
         }
 
         public void Skip(int Bytes)

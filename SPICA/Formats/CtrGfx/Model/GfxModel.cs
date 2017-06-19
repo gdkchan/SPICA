@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrGfx.Model.AnimGroup;
 using SPICA.Formats.CtrGfx.Model.Material;
 using SPICA.Formats.CtrGfx.Model.Mesh;
 using SPICA.Math3D;
@@ -46,13 +47,13 @@ namespace SPICA.Formats.CtrGfx.Model
             {
                 _IsBranchVisible = value;
 
-                BranchVisible = BitUtils.SetBit(BranchVisible, value, 0);
+                BranchVisible = (uint)BitUtils.SetBit(BranchVisible, value, 0);
             }
         }
 
-        public List<GfxModel> Childs;
+        public readonly List<GfxModel> Childs;
 
-        public readonly GfxDict<GfxAnimationsGroup> AnimationsGroup;
+        public readonly GfxDict<GfxAnimGroup> AnimationsGroup;
 
         public Vector3 TransformScale;
         public Vector3 TransformRotation;
@@ -67,7 +68,7 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public readonly List<GfxShape> Shapes;
 
-        public readonly GfxDict<GfxMeshNode> MeshNodes;
+        public readonly GfxDict<GfxMeshNodeVisibility> MeshNodeVisibilities;
 
         public GfxModelFlags Flags;
 
@@ -79,7 +80,7 @@ namespace SPICA.Formats.CtrGfx.Model
         {
             MetaData = new GfxDict<GfxMetaData>();
 
-            AnimationsGroup = new GfxDict<GfxAnimationsGroup>();
+            AnimationsGroup = new GfxDict<GfxAnimGroup>();
 
             Meshes = new List<GfxMesh>();
 
@@ -87,7 +88,7 @@ namespace SPICA.Formats.CtrGfx.Model
 
             Shapes = new List<GfxShape>();
 
-            MeshNodes = new GfxDict<GfxMeshNode>();
+            MeshNodeVisibilities = new GfxDict<GfxMeshNodeVisibility>();
         }
     }
 }

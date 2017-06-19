@@ -54,7 +54,9 @@ namespace SPICA.Formats.CtrGfx
         {
             _Count = Count;
 
-            return false;
+            if (_Count == 0) Serializer.Skip(8);
+
+            return _Count == 0;
         }
 
         public IEnumerator<T> GetEnumerator()

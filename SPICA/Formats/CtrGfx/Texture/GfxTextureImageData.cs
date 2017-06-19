@@ -1,11 +1,13 @@
-﻿namespace SPICA.Formats.CtrGfx.Texture
+﻿using SPICA.Serialization.Attributes;
+
+namespace SPICA.Formats.CtrGfx.Texture
 {
     public class GfxTextureImageData
     {
         public int Height;
         public int Width;
 
-        public byte[] RawBuffer;
+        [Section(SectionName.RawDataTex)] public byte[] RawBuffer;
 
         private uint DynamicAlloc;
 

@@ -8,6 +8,7 @@ using SPICA.PICA.Commands;
 using SPICA.Renderer.SPICA_GL;
 
 using System;
+using System.Linq;
 
 namespace SPICA.Renderer
 {
@@ -17,6 +18,7 @@ namespace SPICA.Renderer
         private int  VAOHandle;
         public  int  ShaderHandle;
         public  bool Visible;
+        private bool HasTangent;
 
         private  Model       Parent;
         internal H3DMesh     BaseMesh;
@@ -31,6 +33,8 @@ namespace SPICA.Renderer
 
             this.ShaderHandle = ShaderHandle;
             this.Visible      = Visible;
+
+            HasTangent = BaseMesh.Attributes.Any(x => x.Name == PICAAttributeName.Tangent);
 
             Material = Parent.BaseModel.Materials[BaseMesh.MaterialIndex];
 
@@ -47,9 +51,9 @@ namespace SPICA.Renderer
 
             int Offset = 0;
 
-            foreach (PICAAttribute Attrib in BaseMesh.Attributes)
+            for (int AttribIndex = 0; AttribIndex < 9; AttribIndex++)
             {
-                GL.DisableVertexAttribArray((int)Attrib.Name);
+                GL.DisableVertexAttribArray(AttribIndex);
             }
 
             foreach (PICAAttribute Attrib in BaseMesh.Attributes)
@@ -295,8 +299,10 @@ namespace SPICA.Renderer
                 }
 
                 int BoolUniformsLocation = GL.GetUniformLocation(ShaderHandle, "BoolUniforms");
+                int HasTangentLocation   = GL.GetUniformLocation(ShaderHandle, "HasTangent");
 
                 GL.Uniform1(BoolUniformsLocation, SM.BoolUniforms);
+                GL.Uniform1(HasTangentLocation,   HasTangent ? 1 : 0);
 
                 GL.DrawElements(PrimitiveType.Triangles, SM.Indices.Length, DrawElementsType.UnsignedShort, SM.Indices);
             }

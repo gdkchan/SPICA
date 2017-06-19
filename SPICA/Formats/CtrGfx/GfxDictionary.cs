@@ -2,7 +2,6 @@
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -41,19 +40,13 @@ namespace SPICA.Formats.CtrGfx
         {
             uint MagicNumber = Deserializer.Reader.ReadUInt32();
             uint TreeLength  = Deserializer.Reader.ReadUInt32();
-            uint NodesCount  = Deserializer.Reader.ReadUInt32();
-
-            int MaxIndex = 0;
-            int Index    = 0;
+            uint ValuesCount = Deserializer.Reader.ReadUInt32();
 
             Nodes.Clear();
 
-            while (Index++ <= MaxIndex)
+            for (int i = 0; i < ValuesCount + 1; i++)
             {
                 GfxDictionaryNode<T> Node = Deserializer.Deserialize<GfxDictionaryNode<T>>();
-
-                MaxIndex = Math.Max(MaxIndex, Node.LeftNodeIndex);
-                MaxIndex = Math.Max(MaxIndex, Node.RightNodeIndex);
 
                 if (Nodes.Count > 0) Values.Add(Node.Value);
 
@@ -64,6 +57,10 @@ namespace SPICA.Formats.CtrGfx
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             if (TreeNeedsRebuild) RebuildTree();
+
+            Serializer.Writer.Write(IOUtils.ToUInt32("DICT"));
+            Serializer.Writer.Write(Nodes.Count * 0x10 + 0xc);
+            Serializer.Writer.Write(Values.Count);
 
             Serializer.WriteValue(Nodes);
 
