@@ -101,8 +101,9 @@ namespace SPICA.Formats.CtrH3D
         {
             if (IsFixed)
             {
-                Serializer.Contents.Values.Add(new RefValue
+                Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue
                 {
+                    Parent        = this,
                     Position      = Serializer.BaseStream.Position + 4,
                     Value         = GetFixedValueBuffer(),
                     PointerOffset = 0
@@ -110,8 +111,9 @@ namespace SPICA.Formats.CtrH3D
             }
             else
             {
-                Serializer.RawDataVtx.Values.Add(new RefValue
+                Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
                 {
+                    Parent        = this,
                     Position      = Serializer.BaseStream.Position + 4,
                     Value         = RawBuffer,
                     PointerOffset = _Offset

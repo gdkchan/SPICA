@@ -125,7 +125,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                         Serializer.Writer.Write(0u); //KeyFrames Ptr (Place Holder)
                         Serializer.Writer.Write(0u); //KeyFrames Count (Place Holder)
 
-                        Serializer.Contents.Values.Add(new RefValue
+                        Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue
                         {
                             Value     = Elem,
                             Position  = Serializer.BaseStream.Position - 8,

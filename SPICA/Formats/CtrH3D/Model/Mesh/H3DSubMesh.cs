@@ -159,13 +159,13 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         void ICustomSerializeCmd.SerializeCmd(BinarySerializer Serializer, object Value)
         {
-            H3DRelocationType RelocType = H3DRelocationType.RawDataIndex16;
+            H3DSection Section = H3DSection.RawDataIndex16;
 
             object Data;
 
             if (MaxIndex <= byte.MaxValue)
             {
-                RelocType = H3DRelocationType.RawDataIndex8;
+                Section = H3DSection.RawDataIndex8;
 
                 byte[] Buffer = new byte[Indices.Length];
 
@@ -183,13 +183,14 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             long Position = Serializer.BaseStream.Position + 0x10;
 
-            Serializer.RawDataVtx.Values.Add(new RefValue
+            H3DRelocator.AddCmdReloc(Serializer, Section, Position);
+
+            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
             {
+                Parent   = this,
                 Value    = Data,
                 Position = Position
             });
-
-            Serializer.Relocator.RelocTypes.Add(Position, RelocType);
         }
     }
 }

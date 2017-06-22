@@ -22,18 +22,31 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Emitter\GfxEmitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Fog\GfxFog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Gfx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxComparers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDict.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDictionaryNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxMetaData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxMetaDataType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxRevHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxSectionHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Light\GfxLight.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUTSampler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimEvaluationTiming.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupBlendOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupElement.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupMaterialColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupMeshNodeVis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupObjType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupTexCoord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupTexMapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\AnimGroup\GfxAnimGroupTexSampler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxBillboardMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxBone.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxBoneFlags.cs" />
@@ -63,6 +76,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxMaterialFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxProcTextureMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxRasterization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxShaderDesc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxShaderDescFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxShaderReference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxShaderParam.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTexEnvConstant.cs" />
@@ -71,8 +86,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureCoord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureMapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureMappingType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureMinFilter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureReference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureSampler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureSamplerStd.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTextureTransformType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTranslucencyKind.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxAttribute.cs" />
@@ -86,7 +103,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\GfxMeshNodeVisibility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxShape.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxSubMesh.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxSubMesh.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxVertexBufferFixed.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxVertexBufferInterleaved.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Mesh\GfxVertexBufferType.cs" />
@@ -116,6 +133,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DInterpolationType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DLoopType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Animation\H3DSegmentQuantization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DComparers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DStringUtf16.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureCoord.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureCoordFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTextureMagFilter.cs" />
@@ -180,7 +199,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\Material\H3DTranslucencyKind.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DDict.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DPatriciaTree.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DRelocationType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DSection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DRelocator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\H3DPatriciaTreeNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrH3D\Model\H3DBone.cs" />
@@ -303,6 +322,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureCombinerSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATexEnvSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Commands\PICATextureFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\BoneIndices.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\BoneWeights.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\PICAVertex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\TextureCompression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PICA\Converters\TextureConverter.cs" />
@@ -314,6 +335,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\FixedLengthAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\IgnoreAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\SectionAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\CustomLengthAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\TypeChoiceAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\TypeChoiceNameAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\InlineAttribute.cs" />
@@ -325,12 +347,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinaryDeserializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinarySerialization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\BinarySerializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BitReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\BitWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\CmpOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerializeCmd.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\ICustomSerialization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\LengthPos.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\LengthSize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\PointerType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\RefValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\Section.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\StringUtils.cs" />
   </ItemGroup>
 </Project>

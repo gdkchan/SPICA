@@ -3,8 +3,15 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.AnimGroup
 {
-    //TODO: Fill correct type values for all inherited types
+    [TypeChoice(0x00080000u, typeof(GfxAnimGroupMeshNodeVis))]
+    [TypeChoice(0x01000000u, typeof(GfxAnimGroupMesh))]
+    [TypeChoice(0x02000000u, typeof(GfxAnimGroupTexSampler))]
+    [TypeChoice(0x04000000u, typeof(GfxAnimGroupBlendOp))]
+    [TypeChoice(0x08000000u, typeof(GfxAnimGroupMaterialColor))]
+    [TypeChoice(0x10000000u, typeof(GfxAnimGroupModel))]
+    [TypeChoice(0x20000000u, typeof(GfxAnimGroupTexMapper))]
     [TypeChoice(0x40000000u, typeof(GfxAnimGroupBone))]
+    [TypeChoice(0x80000000u, typeof(GfxAnimGroupTexCoord))]
     public class GfxAnimGroupElement : INamed
     {
         private string _Name;
@@ -25,7 +32,7 @@ namespace SPICA.Formats.CtrGfx.Model.AnimGroup
 
         public int BlendOpIndex;
 
-        public uint ObjType;
+        protected GfxAnimGroupObjType ObjType;
 
         public uint MemberType;
 

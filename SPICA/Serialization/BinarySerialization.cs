@@ -1,4 +1,7 @@
-﻿using System;
+﻿using SPICA.Serialization.Attributes;
+
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -18,67 +21,6 @@ namespace SPICA.Serialization
             BindingFlags.Instance |
             BindingFlags.Public |
             BindingFlags.NonPublic;
-
-        protected class BitReader
-        {
-            private BinaryReader Reader;
-
-            private uint Bools;
-            private int  Index;
-
-            public BitReader(BinaryReader Reader)
-            {
-                this.Reader = Reader;
-            }
-
-            public bool ReadBit()
-            {
-                if ((Index++ & 0x1f) == 0)
-                {
-                    Bools = Reader.ReadUInt32();
-                }
-
-                bool Value = (Bools & 1) != 0;
-
-                Bools >>= 1;
-
-                return Value;
-            }
-        }
-
-        protected class BitWriter
-        {
-            private BinaryWriter Writer;
-
-            private uint Bools;
-            private int  Index;
-
-            public BitWriter(BinaryWriter Writer)
-            {
-                this.Writer = Writer;
-            }
-
-            public void WriteBit(bool Value)
-            {
-                Bools |= ((Value ? 1u : 0u) << Index);
-
-                if (++Index == 32)
-                {
-                    Writer.Write(Bools);
-
-                    Index = 0;
-                    Bools = 0;
-                }
-            }
-
-            public void Flush()
-            {
-                if (Index != 0)
-                {
-                    Writer.Write(Bools);
-                }
-            }
-        }
 
         public BinarySerialization(Stream BaseStream, SerializationOptions Options)
         {
@@ -107,6 +49,36 @@ namespace SPICA.Serialization
                     yield return Info;
                 }
             }
+        }
+
+        protected void Align(int BlockSize)
+        {
+            long Remainder = BaseStream.Position % BlockSize;
+
+            if (Remainder != 0)
+            {
+                BaseStream.Seek(BlockSize - Remainder, SeekOrigin.Current);
+            }
+        }
+
+        protected bool IsList(Type Type)
+        {
+            return typeof(IList).IsAssignableFrom(Type);
+        }
+
+        protected LengthPos GetLengthPos(FieldInfo Info = null)
+        {
+            return Info?.GetCustomAttribute<CustomLengthAttribute>()?.Pos ?? Options.LenPos;
+        }
+
+        protected LengthSize GetLengthSize(FieldInfo Info = null)
+        {
+            return Info?.GetCustomAttribute<CustomLengthAttribute>()?.Size ?? LengthSize.Integer;
+        }
+
+        protected int GetIntLengthSize(FieldInfo Info = null)
+        {
+            return GetLengthSize(Info) == LengthSize.Short ? 2 : 4;
         }
     }
 }

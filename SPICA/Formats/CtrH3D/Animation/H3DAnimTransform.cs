@@ -136,7 +136,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                 {
                     if (FrameGrp.KeyFrames.Count > 1)
                     {
-                        Serializer.Contents.Values.Add(new RefValue
+                        Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue
                         {
                             Value    = FrameGrp,
                             Position = Serializer.BaseStream.Position

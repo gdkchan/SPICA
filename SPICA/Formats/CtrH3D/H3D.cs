@@ -13,10 +13,21 @@ using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
+using System;
 using System.IO;
 
 namespace SPICA.Formats.CtrH3D
 {
+    enum H3DSectionId
+    {
+        Contents,
+        Strings,
+        Commands,
+        RawData,
+        RawExt,
+        Relocation
+    }
+
     public class H3D : ICustomSerialization
     {
         public readonly H3DDict<H3DModel>          Models;
@@ -102,49 +113,67 @@ namespace SPICA.Formats.CtrH3D
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
-                uint ContentPosition = 0x44;
-
-                if (Scene.BackwardCompatibility < 0x21) ContentPosition -= 8;
-                if (Scene.BackwardCompatibility < 0x20) ContentPosition -= 4;
-
-                FS.Seek(ContentPosition, SeekOrigin.Begin);
-
                 H3DHeader Header = new H3DHeader();
 
                 H3DRelocator Relocator = new H3DRelocator(FS, Header);
 
-                BinarySerializer Serializer = new BinarySerializer(FS, GetSerializationOptions(), Relocator);
+                BinarySerializer Serializer = new BinarySerializer(FS, GetSerializationOptions());
 
-                Serializer.FileVersion = Scene.BackwardCompatibility;
+                Section Contents = Serializer.Sections[(uint)H3DSectionId.Contents];
 
-                Serializer.Serialize(Scene);
+                Contents.Header = Header;
 
-                Header.Magic = "BCH";
+                /*
+                 * Those comparisons are used to sort Strings and data buffers.
+                 * Strings are sorted in alphabetical order (like on the original file),
+                 * while buffers places textures first, and then vertex/index data after.
+                 * It's unknown why textures needs to come first, but placing the textures
+                 * at the end or at random order causes issues on the game.
+                 * It's most likely an alignment issue.
+                 */
+                Comparison<RefValue> CompStr = H3DComparers.GetComparisonStr();
+                Comparison<RefValue> CompRaw = H3DComparers.GetComparisonRaw();
+
+                Section Strings    = new Section(0x10, CompStr);
+                Section Commands   = new Section(0x80);
+                Section RawData    = new Section(0x80, CompRaw);
+                Section RawExt     = new Section(0x80, CompRaw);
+                Section Relocation = new Section();
+
+                Serializer.AddSection((uint)H3DSectionId.Strings,    Strings,  typeof(string));
+                Serializer.AddSection((uint)H3DSectionId.Strings,    Strings,  typeof(H3DStringUtf16));
+                Serializer.AddSection((uint)H3DSectionId.Commands,   Commands, typeof(uint[]));
+                Serializer.AddSection((uint)H3DSectionId.RawData,    RawData);
+                Serializer.AddSection((uint)H3DSectionId.RawExt,     RawExt);
+                Serializer.AddSection((uint)H3DSectionId.Relocation, Relocation);
 
                 Header.BackwardCompatibility = Scene.BackwardCompatibility;
                 Header.ForwardCompatibility  = Scene.ForwardCompatibility;
 
                 Header.ConverterVersion = Scene.ConverterVersion;
 
-                Header.ContentsAddress = Serializer.Contents.Info.Position;
-                Header.StringsAddress  = Serializer.Strings.Info.Position;
-                Header.CommandsAddress = Serializer.Commands.Info.Position;
-                Header.RawDataAddress  = Serializer.RawDataTex.Info.Position;
-                Header.RawExtAddress   = Serializer.RawExtTex.Info.Position;
+                Header.Flags = Scene.Flags;
 
-                Header.ContentsLength = Serializer.Contents.Info.Length;
-                Header.StringsLength  = Serializer.Strings.Info.Length;
-                Header.CommandsLength = Serializer.Commands.Info.Length;
-                Header.RawDataLength  = Serializer.RawDataTex.Info.Length;
-                Header.RawExtLength   = Serializer.RawExtTex.Info.Length;
+                Serializer.Serialize(Scene);
 
-                Header.RawDataLength += Serializer.RawDataVtx.Info.Length;
-                Header.RawExtLength  += Serializer.RawExtVtx.Info.Length;
+                Header.AddressCount  = (ushort)RawData.SerializedCount;
+                Header.AddressCount += (ushort)RawExt.SerializedCount;
 
-                Header.UnInitDataLength     = Serializer.PhysicalAddressCount * 4;
-                Header.UnInitCommandsLength = 0; //TODO: Investigate when this length is used.
-                Header.AddressCount         = (ushort)Serializer.PhysicalAddressCount;
-                Header.Flags                = Scene.Flags;
+                Header.UnInitDataLength = Header.AddressCount * 4;
+
+                Header.ContentsAddress = Contents.Position;
+                Header.StringsAddress  = Strings.Position;
+                Header.CommandsAddress = Commands.Position;
+                Header.RawDataAddress  = RawData.Position;
+                Header.RawExtAddress   = RawExt.Position;
+
+                Header.RelocationAddress = Relocation.Position;
+
+                Header.ContentsLength = Contents.Length;
+                Header.StringsLength  = Strings.Length;
+                Header.CommandsLength = Commands.Length;
+                Header.RawDataLength  = RawData.Length;
+                Header.RawExtLength   = RawExt.Length;
 
                 Relocator.ToRelative(Serializer);
 
@@ -156,7 +185,7 @@ namespace SPICA.Formats.CtrH3D
 
         private static SerializationOptions GetSerializationOptions()
         {
-            return new SerializationOptions(LengthPos.AfterPointer, PointerType.Absolute);
+            return new SerializationOptions(LengthPos.AfterPtr, PointerType.Absolute);
         }
 
         public void Merge(H3D SceneData)
@@ -219,11 +248,7 @@ namespace SPICA.Formats.CtrH3D
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //The original tool seems to add this empty name for some reason.
-            Serializer.Strings.Values.Add(new RefValue
-            {
-                Position = -1,
-                Value    = string.Empty
-            });
+            Serializer.Sections[(uint)H3DSectionId.Strings].Values.Add(new RefValue(string.Empty));
 
             return false;
         }

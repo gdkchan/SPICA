@@ -290,7 +290,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
 
                 foreach (PICAVertex Vertex in Mesh.Vertices)
                 {
-                    VerticesQueue.Enqueue(Vertex.Clone());
+                    VerticesQueue.Enqueue(Vertex);
                 }
 
                 while (VerticesQueue.Count > 2)

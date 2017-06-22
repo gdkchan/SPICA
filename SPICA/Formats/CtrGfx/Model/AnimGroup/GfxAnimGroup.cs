@@ -26,6 +26,10 @@ namespace SPICA.Formats.CtrGfx.Model.AnimGroup
 
         public readonly GfxDict<GfxAnimGroupElement> Elements;
 
+        public int[] BlendOperationTypes;
+
+        public GfxAnimEvaluationTiming EvaluationTiming;
+
         public GfxAnimGroup()
         {
             Elements = new GfxDict<GfxAnimGroupElement>();

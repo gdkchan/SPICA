@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.CtrH3D
 {
-    enum H3DRelocationType
+    enum H3DSection
     {
         Contents,
         Strings,
@@ -16,8 +16,6 @@
         RawExtVertex,
         RawExtIndex16,
         RawExtIndex8,
-        BaseAddress,
-        Total,
-        NotFound
+        BaseAddress
     }
 }

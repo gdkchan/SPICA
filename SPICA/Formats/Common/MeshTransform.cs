@@ -20,7 +20,7 @@ namespace SPICA.Formats.Common
             {
                 foreach (ushort i in SM.Indices)
                 {
-                    PICAVertex v = Vertices[i].Clone();
+                    PICAVertex v = Vertices[i];
 
                     if (Skeleton != null &&
                         Skeleton.Count > 0 &&

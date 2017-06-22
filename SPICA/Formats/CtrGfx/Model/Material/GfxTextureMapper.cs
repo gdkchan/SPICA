@@ -17,6 +17,8 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         [Inline, FixedLength(14)] private uint[] Commands;
 
+        private uint CommandsLength; //Size of above command in bytes
+
         [Ignore] public RGBA BorderColor;
 
         [Ignore] public PICATextureFilter MagFilter;

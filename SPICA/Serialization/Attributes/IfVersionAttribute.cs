@@ -2,16 +2,6 @@
 
 namespace SPICA.Serialization.Attributes
 {
-    enum CmpOp
-    {
-        Equal,
-        Notqual,
-        Greater,
-        Gequal,
-        Less,
-        Lequal
-    }
-
     [AttributeUsage(AttributeTargets.Field)]
     class IfVersionAttribute : Attribute
     {

@@ -1,17 +1,15 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
-using SPICA.Serialization.Serializer;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace SPICA.Formats.CtrH3D
 {
-    public struct H3DMetaDataValue : ICustomSerialization, IEnumerable<object>, INamed
+    [Inline]
+    public class H3DMetaDataValue : IEnumerable, INamed
     {
         private string _Name;
 
@@ -27,9 +25,16 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
+        [TypeChoiceName("Values")]
+        [TypeChoice((uint)H3DMetaDataType.Integer,       typeof(List<int>))]
+        [TypeChoice((uint)H3DMetaDataType.Single,        typeof(List<float>))]
+        [TypeChoice((uint)H3DMetaDataType.ASCIIString,   typeof(List<string>))]
+        [TypeChoice((uint)H3DMetaDataType.UnicodeString, typeof(List<H3DStringUtf16>))]
+        [TypeChoice((uint)H3DMetaDataType.BoundingBox,   typeof(List<H3DBoundingBox>))]
+        [TypeChoice((uint)H3DMetaDataType.VertexData,    typeof(List<H3DVertexData>))]
         public H3DMetaDataType Type;
 
-        [Ignore] private List<object> Values;
+        [CustomLength(LengthPos.BeforePtr, LengthSize.Short)] private IList Values;
 
         public int Count { get { return Values.Count; } }
 
@@ -45,7 +50,39 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
-        public H3DMetaDataValue(string Name, params object[] Values)
+        public H3DMetaDataValue() { }
+
+        public H3DMetaDataValue(string Name, params int[] Values)
+        {
+            H3DMetaDataValueImpl(Name, H3DMetaDataType.Integer, Values);
+        }
+
+        public H3DMetaDataValue(string Name, params float[] Values)
+        {
+            H3DMetaDataValueImpl(Name, H3DMetaDataType.Single, Values);
+        }
+
+        public H3DMetaDataValue(string Name, params string[] Values)
+        {
+            H3DMetaDataValueImpl(Name, H3DMetaDataType.ASCIIString, Values);
+        }
+
+        public H3DMetaDataValue(string Name, params H3DStringUtf16[] Values)
+        {
+            H3DMetaDataValueImpl(Name, H3DMetaDataType.UnicodeString, Values);
+        }
+
+        public H3DMetaDataValue(string Name, params H3DBoundingBox[] Values)
+        {
+            H3DMetaDataValueImpl(Name, H3DMetaDataType.BoundingBox, Values);
+        }
+
+        public H3DMetaDataValue(string Name, params H3DVertexData[] Values)
+        {
+            H3DMetaDataValueImpl(Name, H3DMetaDataType.VertexData, Values);
+        }
+
+        private void H3DMetaDataValueImpl<T>(string Name, H3DMetaDataType Type, params T[] Values)
         {
             if (Values.Length == 0)
             {
@@ -54,35 +91,9 @@ namespace SPICA.Formats.CtrH3D
 
             _Name = $"${Name}";
 
-            Type ValueType = Values[0].GetType();
+            this.Type = Type;
 
-            if (ValueType == typeof(int))
-                Type = H3DMetaDataType.Integer;
-            else if (ValueType == typeof(float))
-                Type = H3DMetaDataType.Single;
-            else if (ValueType == typeof(string))
-                Type = H3DMetaDataType.ASCIIString;
-            else if (ValueType == typeof(H3DBoundingBox))
-                Type = H3DMetaDataType.BoundingBox;
-            else if (ValueType == typeof(H3DVertexData))
-                Type = H3DMetaDataType.VertexData;
-            else
-                throw new ArgumentException($"Type {ValueType} is not valid as Meta Data!");
-
-            this.Values = new List<object>();
-
-            foreach (object Value in Values)
-            {
-                switch (Type)
-                {
-                    case H3DMetaDataType.Integer:       this.Values.Add((int)Value);            break;
-                    case H3DMetaDataType.Single:        this.Values.Add((float)Value);          break;
-                    case H3DMetaDataType.ASCIIString:   this.Values.Add((string)Value);         break;
-                    case H3DMetaDataType.UnicodeString: this.Values.Add((string)Value);         break;
-                    case H3DMetaDataType.BoundingBox:   this.Values.Add((H3DBoundingBox)Value); break;
-                    case H3DMetaDataType.VertexData:    this.Values.Add((H3DVertexData)Value);  break;
-                }
-            }
+            this.Values = new List<T>(Values);
         }
 
         public H3DMetaDataValue(H3DBoundingBox OBB)
@@ -91,10 +102,10 @@ namespace SPICA.Formats.CtrH3D
 
             Type = H3DMetaDataType.BoundingBox;
 
-            Values = new List<object> { OBB };
+            Values = new List<H3DBoundingBox> { OBB };
         }
 
-        public IEnumerator<object> GetEnumerator()
+        public IEnumerator GetEnumerator()
         {
             return Values.GetEnumerator();
         }
@@ -102,104 +113,6 @@ namespace SPICA.Formats.CtrH3D
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
-        {
-            ushort Count = Deserializer.Reader.ReadUInt16();
-            uint Address = Deserializer.Reader.ReadUInt32();
-
-            long Position = Deserializer.BaseStream.Position;
-
-            Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
-
-            Values = new List<object>();
-
-            for (int Index = 0; Index < Count; Index++)
-            {
-                switch (Type)
-                {
-                    case H3DMetaDataType.Integer: Values.Add(Deserializer.Reader.ReadInt32()); break;
-                    case H3DMetaDataType.Single: Values.Add(Deserializer.Reader.ReadSingle()); break;
-
-                    case H3DMetaDataType.ASCIIString:
-                        Deserializer.BaseStream.Seek(Address + Index * 4, SeekOrigin.Begin);
-                        Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
-
-                        Values.Add(Deserializer.Reader.ReadNullTerminatedString());
-                        break;
-
-                    case H3DMetaDataType.UnicodeString:
-                        Deserializer.BaseStream.Seek(Address + Index * 4, SeekOrigin.Begin);
-                        Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
-
-                        using (MemoryStream MS = new MemoryStream())
-                        {
-                            for (ushort Chr; (Chr = Deserializer.Reader.ReadUInt16()) != 0;)
-                            {
-                                MS.WriteByte((byte)(Chr >> 0));
-                                MS.WriteByte((byte)(Chr >> 8));
-                            }
-
-                            Values.Add(Encoding.Unicode.GetString(MS.ToArray()));
-                        }
-                        break;
-
-                    case H3DMetaDataType.BoundingBox:
-                        Deserializer.BaseStream.Seek(Address + Index * 0x3c, SeekOrigin.Begin);
-
-                        Values.Add(Deserializer.Deserialize<H3DBoundingBox>());
-                        break;
-
-                    case H3DMetaDataType.VertexData:
-                        Deserializer.BaseStream.Seek(Address + Index * 0xc, SeekOrigin.Begin);
-
-                        Values.Add(Deserializer.Deserialize<H3DVertexData>());
-                        break;
-
-                    default: throw new NotImplementedException();
-                }
-            }
-
-            Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
-        }
-
-        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
-        {
-            List<object> NewVals;
-
-            if (Type == H3DMetaDataType.UnicodeString)
-            {
-                NewVals = new List<object>();
-
-                foreach (object Str in Values)
-                {
-                    NewVals.Add(Encoding.Unicode.GetBytes((string)Str + '\0'));
-                }
-            }
-            else
-            {
-                NewVals = Values;
-            }
-
-            Serializer.Strings.Values.Add(new RefValue
-            {
-                Value    = _Name,
-                Position = Serializer.BaseStream.Position
-            });
-
-            Serializer.Contents.Values.Add(new RefValue
-            {
-                Value    = NewVals,
-                Position = Serializer.BaseStream.Position + 8
-            });
-
-            Serializer.Writer.Write(0u);
-            Serializer.Writer.Write((ushort)Type);
-            Serializer.Writer.Write((ushort)Values.Count);
-            Serializer.Writer.Write(0u);
-
-            return true;
         }
     }
 }

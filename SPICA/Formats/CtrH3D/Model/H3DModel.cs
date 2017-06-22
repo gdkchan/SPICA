@@ -2,6 +2,7 @@
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.Math3D;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System;

@@ -5,6 +5,7 @@ using SPICA.Serialization.Attributes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 
 namespace SPICA.Formats.CtrGfx
 {
@@ -54,7 +55,7 @@ namespace SPICA.Formats.CtrGfx
         {
             _Count = Count;
 
-            if (_Count == 0) Serializer.Skip(8);
+            if (_Count == 0) Serializer.BaseStream.Seek(8, SeekOrigin.Current);
 
             return _Count == 0;
         }

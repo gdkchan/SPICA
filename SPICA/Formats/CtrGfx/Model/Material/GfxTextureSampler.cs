@@ -1,11 +1,12 @@
-﻿using System.Numerics;
+﻿using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
+    [TypeChoice(0x80000000u, typeof(GfxTextureSamplerStd))]
     public class GfxTextureSampler
     {
-        public Vector4 BorderColor;
+        public GfxTextureMapper Parent;
 
-        public float MinLOD;
+        public GfxTextureMinFilter MinFilter;
     }
 }

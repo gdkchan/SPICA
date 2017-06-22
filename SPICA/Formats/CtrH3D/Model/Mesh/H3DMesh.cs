@@ -407,16 +407,15 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             {
                 long Position = Serializer.BaseStream.Position;
 
-                Serializer.RawDataVtx.Values.Add(new RefValue
+                Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
                 {
+                    Parent   = this,
                     Value    = RawBuffer,
                     Position = Position + 0x30
                 });
 
-                Serializer.Pointers.Add(Position + 0x20);
-
-                Serializer.Relocator.RelocTypes.Add(Position + 0x20, H3DRelocationType.BaseAddress);
-                Serializer.Relocator.RelocTypes.Add(Position + 0x30, H3DRelocationType.RawDataVertex);
+                H3DRelocator.AddCmdReloc(Serializer, H3DSection.BaseAddress,   Position + 0x20);
+                H3DRelocator.AddCmdReloc(Serializer, H3DSection.RawDataVertex, Position + 0x30);
             }
         }
     }

@@ -311,7 +311,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                 foreach (PICAVertex Vertex in Mesh.Vertices)
                 {
-                    VerticesQueue.Enqueue(Vertex.Clone());
+                    VerticesQueue.Enqueue(Vertex);
                 }
 
                 while (VerticesQueue.Count > 2)
@@ -335,7 +335,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                         {
                             PICAVertex Vertex = Triangle[Tri];
 
-                            for (int i = 0; i < Vertex.Indices.Length; i++)
+                            for (int i = 0; i < 4; i++)
                             {
                                 ushort Index = (ushort)Vertex.Indices[i];
 
@@ -359,7 +359,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                         {
                             PICAVertex Vertex = Triangle[Tri];
 
-                            for (int Index = 0; Index < Vertex.Indices.Length; Index++)
+                            for (int Index = 0; Index < 4; Index++)
                             {
                                 int BoneIndex = BoneIndices.IndexOf((ushort)Vertex.Indices[Index]);
 

@@ -59,13 +59,13 @@ namespace SPICA.Formats.CtrH3D
             Serializer.Writer.Write((byte)DrawMode);
             Serializer.Writer.Write((ushort)Indices.Length);
 
-            H3DRelocationType RelocType = H3DRelocationType.RawDataIndex16;
+            H3DSection Section = H3DSection.RawDataIndex16;
 
             object Data;
 
             if (MaxIndex <= byte.MaxValue)
             {
-                RelocType = H3DRelocationType.RawDataIndex8;
+                Section = H3DSection.RawDataIndex8;
 
                 byte[] Buffer = new byte[Indices.Length];
 
@@ -83,15 +83,15 @@ namespace SPICA.Formats.CtrH3D
 
             long Position = Serializer.BaseStream.Position;
 
-            Serializer.RawDataVtx.Values.Add(new RefValue
+            H3DRelocator.AddCmdReloc(Serializer, Section, Position);
+
+            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
             {
                 Position = Position,
                 Value    = Data
             });
 
-            Serializer.Skip(4);
-
-            Serializer.Relocator.RelocTypes.Add(Position, RelocType);
+            Serializer.BaseStream.Seek(4, SeekOrigin.Current);
 
             return true;
         }

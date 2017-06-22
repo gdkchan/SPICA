@@ -1,5 +1,5 @@
 ﻿using SPICA.Serialization;
-
+using SPICA.Serialization.Serializer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,8 +13,6 @@ namespace SPICA.Formats.CtrH3D
         private BinaryWriter Writer;
         private H3DHeader    Header;
 
-        public Dictionary<long, H3DRelocationType> RelocTypes;
-
         private const string PointerTooBigEx = "Pointer address {0:X8} doesn't fit on 25-bits space!";
 
         public H3DRelocator(Stream BaseStream, H3DHeader Header)
@@ -24,8 +22,6 @@ namespace SPICA.Formats.CtrH3D
 
             Reader = new BinaryReader(BaseStream);
             Writer = new BinaryWriter(BaseStream);
-
-            RelocTypes = new Dictionary<long, H3DRelocationType>();
         }
 
         public void ToAbsolute()
@@ -39,15 +35,15 @@ namespace SPICA.Formats.CtrH3D
                 uint Value = Reader.ReadUInt32();
                 uint PtrAddress = Value & 0x1ffffff;
 
-                H3DRelocationType Target = (H3DRelocationType)((Value >> 25) & 0xf);
-                H3DRelocationType Source = (H3DRelocationType)(Value >> 29);
+                H3DSection Target = (H3DSection)((Value >> 25) & 0xf);
+                H3DSection Source = (H3DSection)(Value >> 29);
 
                 //Take into account sections that didn't existed in older BCH versions.
                 if (Header.BackwardCompatibility < 7 &&
-                    Target >= H3DRelocationType.CommandsSrc)
+                    Target >= H3DSection.CommandsSrc)
                     Target++;
 
-                if (Target != H3DRelocationType.Strings) PtrAddress <<= 2;
+                if (Target != H3DSection.Strings) PtrAddress <<= 2;
 
                 Accumulate32(GetAddress(Source) + PtrAddress, GetAddress(Target));
             }
@@ -55,24 +51,24 @@ namespace SPICA.Formats.CtrH3D
             BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        private uint GetAddress(H3DRelocationType RType)
+        private uint GetAddress(H3DSection RType)
         {
             switch (RType)
             {
-                case H3DRelocationType.Contents:       return Header.ContentsAddress;
-                case H3DRelocationType.Strings:        return Header.StringsAddress;
-                case H3DRelocationType.Commands:       return Header.CommandsAddress;
-                case H3DRelocationType.CommandsSrc:    return Header.CommandsAddress;
-                case H3DRelocationType.RawData:        return Header.RawDataAddress;
-                case H3DRelocationType.RawDataTexture: return Header.RawDataAddress;
-                case H3DRelocationType.RawDataVertex:  return Header.RawDataAddress;
-                case H3DRelocationType.RawDataIndex16: return Header.RawDataAddress | (1u << 31);
-                case H3DRelocationType.RawDataIndex8:  return Header.RawDataAddress;
-                case H3DRelocationType.RawExt:         return Header.RawExtAddress;
-                case H3DRelocationType.RawExtTexture:  return Header.RawExtAddress;
-                case H3DRelocationType.RawExtVertex:   return Header.RawExtAddress;
-                case H3DRelocationType.RawExtIndex16:  return Header.RawExtAddress | (1u << 31);
-                case H3DRelocationType.RawExtIndex8:   return Header.RawExtAddress;
+                case H3DSection.Contents:       return (uint)Header.ContentsAddress;
+                case H3DSection.Strings:        return (uint)Header.StringsAddress;
+                case H3DSection.Commands:       return (uint)Header.CommandsAddress;
+                case H3DSection.CommandsSrc:    return (uint)Header.CommandsAddress;
+                case H3DSection.RawData:        return (uint)Header.RawDataAddress;
+                case H3DSection.RawDataTexture: return (uint)Header.RawDataAddress;
+                case H3DSection.RawDataVertex:  return (uint)Header.RawDataAddress;
+                case H3DSection.RawDataIndex16: return (uint)Header.RawDataAddress | (1u << 31);
+                case H3DSection.RawDataIndex8:  return (uint)Header.RawDataAddress;
+                case H3DSection.RawExt:         return (uint)Header.RawExtAddress;
+                case H3DSection.RawExtTexture:  return (uint)Header.RawExtAddress;
+                case H3DSection.RawExtVertex:   return (uint)Header.RawExtAddress;
+                case H3DSection.RawExtIndex16:  return (uint)Header.RawExtAddress | (1u << 31);
+                case H3DSection.RawExtIndex8:   return (uint)Header.RawExtAddress;
             }
 
             return 0;
@@ -98,8 +94,6 @@ namespace SPICA.Formats.CtrH3D
 
         public void ToRelative(BinarySerializer Serializer)
         {
-            Header.RelocationAddress = (uint)BaseStream.Position;
-
             foreach (long Pointer in Serializer.Pointers)
             {
                 long Position = BaseStream.Position;
@@ -108,21 +102,19 @@ namespace SPICA.Formats.CtrH3D
 
                 uint TargetAddress = Peek32();
 
-                H3DRelocationType Target = GetRelocation(TargetAddress);
-                H3DRelocationType Source = GetRelocation(Pointer);
+                H3DSection Target = GetRelocation(TargetAddress);
+                H3DSection Source = GetRelocation(Pointer);
 
                 uint PointerAddress = ToRelative(Pointer, Source);
 
-                if (Target != H3DRelocationType.Strings) PointerAddress >>= 2;
+                if (Target != H3DSection.Strings) PointerAddress >>= 2;
 
                 //Take into account sections that didn't existed in older BCH versions.
                 if (Header.BackwardCompatibility < 7 &&
-                    Target >= H3DRelocationType.CommandsSrc)
+                    Target >= H3DSection.CommandsSrc)
                     Target--;
 
                 Writer.Write(ToRelative(TargetAddress, Target));
-
-                if (RelocTypes.ContainsKey(Pointer)) Target = RelocTypes[Pointer];
 
                 uint Flags;
 
@@ -139,43 +131,75 @@ namespace SPICA.Formats.CtrH3D
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
 
-                Writer.Write(PointerAddress | (Flags << 25));
+                //Commands are written right before the command is serialized.
+                //The AddCmdReloc is used for that, so we don't need to write it agian.
+                //The reason for this is because Commands needs flags that depends on the data format.
+                if (Source != H3DSection.Commands)
+                {
+                    Writer.Write(PointerAddress | (Flags << 25));
+                }
             }
 
-            Header.RelocationLength = (int)(BaseStream.Position - Header.RelocationAddress);
+            Header.RelocationLength = (int)(BaseStream.Length - Header.RelocationAddress);
         }
 
-        private H3DRelocationType GetRelocation(long Position)
+        public static void AddCmdReloc(BinarySerializer Serializer, H3DSection Target, long Pointer)
         {
-            if (InRange(Position, Header.ContentsAddress, Header.ContentsLength))
-                return H3DRelocationType.Contents;
-            else if (InRange(Position, Header.StringsAddress, Header.StringsLength))
-                return H3DRelocationType.Strings;
-            else if (InRange(Position, Header.CommandsAddress, Header.CommandsLength))
-                return H3DRelocationType.Commands;
-            else if (InRange(Position, Header.RawDataAddress, Header.RawDataLength))
-                return H3DRelocationType.RawData;
-            else if (InRange(Position, Header.RawExtAddress, Header.RawExtLength))
-                return H3DRelocationType.RawExt;
-            else
-                return H3DRelocationType.NotFound;
+            Section Commands   = Serializer.Sections[(uint)H3DSectionId.Commands];
+            Section Relocation = Serializer.Sections[(uint)H3DSectionId.Relocation];
+
+            uint PointerAddress = (uint)(Pointer - Commands.Position) >> 2;
+
+            //Take into account sections that didn't existed in older BCH versions.
+            if (Serializer.FileVersion < 7) Target--;
+
+            uint Flags;
+
+            Flags  = (uint)Target;
+            Flags |= (uint)H3DSection.Commands << 4;
+
+            if (PointerAddress > 0x1ffffff)
+            {
+                //The limit for a pointer value is 25 bits, that is, 32mb addressing space.
+                //Note: Since most Addresses are actually 4-byte aligned (and the lower 2 bits
+                //are not stored), the actual limit is 27 bits (128 mb).
+                throw new OverflowException(string.Format(PointerTooBigEx, PointerAddress));
+            }
+
+            Relocation.Values.Add(new RefValue(PointerAddress | (Flags << 25)));
         }
 
-        private uint ToRelative(long Position, H3DRelocationType Relocation)
+        private H3DSection GetRelocation(long Position)
+        {
+            if      (InRange(Position, Header.ContentsAddress, Header.ContentsLength))
+                return H3DSection.Contents;
+            else if (InRange(Position, Header.StringsAddress,  Header.StringsLength))
+                return H3DSection.Strings;
+            else if (InRange(Position, Header.CommandsAddress, Header.CommandsLength))
+                return H3DSection.Commands;
+            else if (InRange(Position, Header.RawDataAddress,  Header.RawDataLength))
+                return H3DSection.RawData;
+            else if (InRange(Position, Header.RawExtAddress,   Header.RawExtLength))
+                return H3DSection.RawExt;
+            else
+                throw new ArgumentOutOfRangeException();
+        }
+
+        private uint ToRelative(long Position, H3DSection Relocation)
         {
             switch (Relocation)
             {
-                case H3DRelocationType.Contents: return (uint)(Position - Header.ContentsAddress);
-                case H3DRelocationType.Strings:  return (uint)(Position - Header.StringsAddress);
-                case H3DRelocationType.Commands: return (uint)(Position - Header.CommandsAddress);
-                case H3DRelocationType.RawData:  return (uint)(Position - Header.RawDataAddress);
-                case H3DRelocationType.RawExt:   return (uint)(Position - Header.RawExtAddress);
+                case H3DSection.Contents: return (uint)(Position - Header.ContentsAddress);
+                case H3DSection.Strings:  return (uint)(Position - Header.StringsAddress);
+                case H3DSection.Commands: return (uint)(Position - Header.CommandsAddress);
+                case H3DSection.RawData:  return (uint)(Position - Header.RawDataAddress);
+                case H3DSection.RawExt:   return (uint)(Position - Header.RawExtAddress);
             }
 
             return (uint)Position;
         }
 
-        private bool InRange(long Position, uint Start, int Length)
+        private bool InRange(long Position, int Start, int Length)
         {
             return Position >= Start && Position < Start + Length;
         }

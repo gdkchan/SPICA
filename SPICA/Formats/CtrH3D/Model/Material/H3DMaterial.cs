@@ -171,7 +171,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
             //The original tool seems to add those (usually unused) names with the silhouette suffix
-            Serializer.Strings.Values.Add(new RefValue
+            Serializer.Sections[(uint)H3DSectionId.Strings].Values.Add(new RefValue
             {
                 Position = -1,
                 Value    = $"{Name}-silhouette"

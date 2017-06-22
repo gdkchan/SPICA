@@ -2,25 +2,14 @@
 
 namespace SPICA.Serialization.Attributes
 {
-    enum SectionName
-    {
-        Contents,
-        Strings,
-        Commands,
-        RawDataTex,
-        RawDataVtx,
-        RawExtTex,
-        RawExtVtx
-    }
-
     [AttributeUsage(AttributeTargets.Field)]
     class SectionAttribute : Attribute
     {
-        public SectionName Name;
+        public uint SectionId;
 
-        public SectionAttribute(SectionName Name)
+        public SectionAttribute(uint SectionId)
         {
-            this.Name = Name;
+            this.SectionId = SectionId;
         }
     }
 }

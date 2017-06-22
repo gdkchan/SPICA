@@ -1,4 +1,5 @@
-﻿using SPICA.Serialization.Attributes;
+﻿using SPICA.Serialization;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrH3D
 {
@@ -10,25 +11,24 @@ namespace SPICA.Formats.CtrH3D
         [Version]
         public byte BackwardCompatibility;
         public byte ForwardCompatibility;
+
         public ushort ConverterVersion;
 
-        public uint ContentsAddress;
-        public uint StringsAddress;
-        public uint CommandsAddress;
-        public uint RawDataAddress;
+        public int ContentsAddress;
+        public int StringsAddress;
+        public int CommandsAddress;
+        public int RawDataAddress;
 
-        //Only newer versions have this section.
         [IfVersion(CmpOp.Gequal, 0x21)]
-        public uint RawExtAddress;
+        public int RawExtAddress;
 
-        public uint RelocationAddress;
+        public int RelocationAddress;
 
         public int ContentsLength;
         public int StringsLength;
         public int CommandsLength;
         public int RawDataLength;
 
-        //Only newer versions have this section.
         [IfVersion(CmpOp.Gequal, 0x21)]
         public int RawExtLength;
 
@@ -37,10 +37,13 @@ namespace SPICA.Formats.CtrH3D
         public int UnInitDataLength;
         public int UnInitCommandsLength;
 
-        [IfVersion(CmpOp.Gequal, 0x20), Padding(2)]
-        public H3DFlags Flags;
+        [IfVersion(CmpOp.Gequal, 0x20), Padding(2)] public H3DFlags Flags;
 
-        [IfVersion(CmpOp.Gequal, 0x20)]
-        public ushort AddressCount;
+        [IfVersion(CmpOp.Gequal, 0x20)] public ushort AddressCount;
+
+        public H3DHeader()
+        {
+            Magic = "BCH";
+        }
     }
 }

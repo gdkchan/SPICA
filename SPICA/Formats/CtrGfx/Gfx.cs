@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.CtrGfx.Animation;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrGfx.Animation;
 using SPICA.Formats.CtrGfx.Camera;
 using SPICA.Formats.CtrGfx.Emitter;
 using SPICA.Formats.CtrGfx.Fog;
@@ -19,17 +20,23 @@ using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Serialization;
+using SPICA.Serialization.Serializer;
 
+using System;
 using System.IO;
 using System.Numerics;
 
 namespace SPICA.Formats.CtrGfx
 {
+    enum GfxSectionId
+    {
+        Contents,
+        Strings,
+        Image
+    }
+
     public class Gfx
     {
-        internal uint MagicNumber;
-        internal uint SectionLength;
-
         public readonly GfxDict<GfxModel>     Models;
         public readonly GfxDict<GfxTexture>   Textures;
         public readonly GfxDict<GfxLUT>       LUTs;
@@ -78,9 +85,21 @@ namespace SPICA.Formats.CtrGfx
             return Scene.ToH3D();
         }
 
+        private static void WriteSection(
+            BinarySerializer Serializer,
+            string Magic,
+            uint Address,
+            uint Length)
+        {
+            Serializer.BaseStream.Seek(Address, SeekOrigin.Begin);
+
+            Serializer.Writer.Write(IOUtils.ToUInt32(Magic));
+            Serializer.Writer.Write(Length);
+        }
+
         private static SerializationOptions GetSerializationOptions()
         {
-            return new SerializationOptions(LengthPos.BeforePointer, PointerType.SelfRelative);
+            return new SerializationOptions(LengthPos.BeforePtr, PointerType.SelfRelative);
         }
 
         public H3D ToH3D()
@@ -136,11 +155,6 @@ namespace SPICA.Formats.CtrGfx
                             if (Vertices == null)
                             {
                                 Vertices = new PICAVertex[Vectors.Length];
-
-                                for (int i = 0; i < Vertices.Length; i++)
-                                {
-                                    Vertices[i] = new PICAVertex();
-                                }
                             }
 
                             for (int i = 0; i < Vectors.Length; i++)
@@ -371,8 +385,6 @@ namespace SPICA.Formats.CtrGfx
 
                         TM.LODBias = TexMapper.LODBias;
 
-                        TM.MinLOD = (byte)TexMapper.Sampler.MinLOD;
-
                         TM.BorderColor = TexMapper.BorderColor;
 
                         Mat.TextureMappers[TMIndex++] = TM;
@@ -540,6 +552,52 @@ namespace SPICA.Formats.CtrGfx
             Output.CopyMaterials();
 
             return Output;
+        }
+
+        public static void Save(string FileName, Gfx Scene)
+        {
+            using (FileStream FS = new FileStream(FileName, FileMode.Create))
+            {
+                GfxHeader Header = new GfxHeader(0, 0);
+
+                BinarySerializer Serializer = new BinarySerializer(FS, GetSerializationOptions());
+
+                Section Contents = Serializer.Sections[(uint)H3DSectionId.Contents];
+
+                Contents.Header = Header;
+
+                /*
+                 * This is used to sort raw data buffers.
+                 * Buffers places textures first, and then vertex/index data after.
+                 * Whenever placing textures at the end causes issues like on H3D
+                 * is untested.
+                 */
+                Comparison<RefValue> CompRaw = GfxComparers.GetComparisonRaw();
+
+                Section Strings = new Section();
+                Section Image   = new Section(1, CompRaw);
+
+                Image.Header = new GfxSectionHeader("IMAG");
+
+                Serializer.AddSection((uint)GfxSectionId.Strings, Strings, typeof(string));
+                Serializer.AddSection((uint)GfxSectionId.Image,   Image);
+
+                Serializer.Serialize(Scene);
+
+                Header.FileLength = (int)FS.Length;
+
+                Header.UsedSectionsCount = Image.SerializedCount > 0 ? 2 : 1;
+
+                Header.Data.Length = Contents.Length + 8;
+
+                FS.Seek(0, SeekOrigin.Begin);
+
+                Serializer.WriteValue(Header);
+
+                FS.Seek(Image.Position - 4, SeekOrigin.Begin);
+
+                Serializer.Writer.Write(Image.LengthWithHeader);
+            }
         }
     }
 }

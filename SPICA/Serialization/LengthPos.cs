@@ -2,7 +2,7 @@
 {
     enum LengthPos
     {
-        BeforePointer,
-        AfterPointer
+        BeforePtr,
+        AfterPtr
     }
 }

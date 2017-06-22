@@ -95,19 +95,19 @@ namespace SPICA.Formats.CtrH3D
             Serializer.Writer.Write((ushort)Attributes.Length);
             Serializer.Writer.Write((ushort)Indices.Length);
 
-            Serializer.Contents.Values.Add(new RefValue
+            Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue
             {
                 Position = Serializer.BaseStream.Position,
                 Value    = Attributes
             });
 
-            Serializer.Contents.Values.Add(new RefValue
+            Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue
             {
                 Position = Serializer.BaseStream.Position + 4,
                 Value    = Indices
             });
 
-            Serializer.Skip(8);
+            Serializer.BaseStream.Seek(8, SeekOrigin.Current);
 
             return true;
         }

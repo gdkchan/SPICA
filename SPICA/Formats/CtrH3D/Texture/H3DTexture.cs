@@ -115,7 +115,7 @@ namespace SPICA.Formats.CtrH3D.Texture
                  * 3DS GPU only accepts textures with power of 2 sizes.
                  * If the texture doesn't have a power of 2 size, we need to resize it then.
                  */
-                using (Bitmap NewImg = new Bitmap(Img, (int)Width, (int)Height))
+                using (Bitmap NewImg = new Bitmap(Img, Width, Height))
                 {
                     RawBufferXPos = TextureConverter.Encode(NewImg, Format);
                 }
@@ -128,12 +128,12 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public byte[] ToRGBA(int Face = 0)
         {
-            return TextureConverter.DecodeBuffer(BufferFromFace(Face), (int)Width, (int)Height, Format);
+            return TextureConverter.DecodeBuffer(BufferFromFace(Face), Width, Height, Format);
         }
 
         public Bitmap ToBitmap(int Face = 0)
         {
-            return TextureConverter.DecodeBitmap(BufferFromFace(Face), (int)Width, (int)Height, Format);
+            return TextureConverter.DecodeBitmap(BufferFromFace(Face), Width, Height, Format);
         }
 
         private byte[] BufferFromFace(int Face)
@@ -190,7 +190,7 @@ namespace SPICA.Formats.CtrH3D.Texture
                 }
             }
 
-            int Length = TextureConverter.CalculateLength((int)Width, (int)Height, Format);
+            int Length = TextureConverter.CalculateLength(Width, Height, Format);
 
             long Position = Deserializer.BaseStream.Position;
 
@@ -270,13 +270,14 @@ namespace SPICA.Formats.CtrH3D.Texture
             //TODO: Write all 6 faces of a Cube Map
             long Position = Serializer.BaseStream.Position + 0x10;
 
-            Serializer.RawDataTex.Values.Add(new RefValue
+            H3DRelocator.AddCmdReloc(Serializer, H3DSection.RawDataTexture, Position);
+
+            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
             {
+                Parent   = this,
                 Value    = RawBufferXPos,
                 Position = Position
             });
-
-            Serializer.Relocator.RelocTypes.Add(Position, H3DRelocationType.RawDataTexture);
         }
     }
 }

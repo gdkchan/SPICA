@@ -7,7 +7,7 @@ namespace SPICA.Formats.CtrGfx.Texture
         public int Height;
         public int Width;
 
-        [Section(SectionName.RawDataTex)] public byte[] RawBuffer;
+        [Section((uint)GfxSectionId.Image)] public byte[] RawBuffer;
 
         private uint DynamicAlloc;
 

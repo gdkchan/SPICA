@@ -218,7 +218,7 @@ namespace SPICA.Formats.MTFramework.Model
 
                     PICAVertex[] Vertices = M.ToVertices();
 
-                    foreach (PICAVertex Vtx in Vertices)
+                    for (int v = 0; v < Vertices.Length; v++)
                     {
                         Vector4 Position = Vector4.Zero;
 
@@ -226,11 +226,11 @@ namespace SPICA.Formats.MTFramework.Model
 
                         for (int i = 0; i < 4; i++)
                         {
-                            if (Vtx.Weights[i] == 0) break;
+                            if (Vertices[v].Weights[i] == 0) break;
 
-                            WeightSum += Vtx.Weights[i];
+                            WeightSum += Vertices[v].Weights[i];
 
-                            int bi = BoneIndicesGroups[Mesh.BoneIndicesIndex][Vtx.Indices[i]];
+                            int bi = BoneIndicesGroups[Mesh.BoneIndicesIndex][Vertices[v].Indices[i]];
 
                             Vector4 Trans = Vector4.Zero;
 
@@ -244,16 +244,19 @@ namespace SPICA.Formats.MTFramework.Model
 
                             Matrix4x4 WT = Skeleton[bi].WorldTransform;
 
-                            Vector3 P = new Vector3(Vtx.Position.X, Vtx.Position.Y, Vtx.Position.Z);
+                            Vector3 P = new Vector3(
+                                Vertices[v].Position.X,
+                                Vertices[v].Position.Y,
+                                Vertices[v].Position.Z);
 
                             Vector4 TP = Vector4.Transform(P, WT);
 
-                            Position += (TP + Trans) * Vtx.Weights[i];
+                            Position += (TP + Trans) * Vertices[v].Weights[i];
                         }
 
-                        if (WeightSum < 1) Position += Vtx.Position * (1 - WeightSum);
+                        if (WeightSum < 1) Position += Vertices[v].Position * (1 - WeightSum);
 
-                        Vtx.Position = Position;
+                        Vertices[v].Position = Position;
                     }
 
                     /*
