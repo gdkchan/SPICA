@@ -323,7 +323,7 @@ namespace SPICA.Serialization
 
             object Value = null;
 
-            if (Address != 0)
+            if (Address != 0 && (!IsList(Type) || (IsList(Type) && Length > 0)))
             {
                 if (!Objects.TryGetValue(Address, out Value))
                 {

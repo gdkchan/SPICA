@@ -18,9 +18,9 @@ namespace SPICA.Formats.CtrGfx
         public GfxHeader()
         {
             MagicNumber   = IOUtils.ToUInt32("CGFX");
-            ByteOrderMark = 0xfeff;
-            HeaderLength  = 0x14;
-            Revision      = 0x05000000u;
+            ByteOrderMark = GfxConstants.ByteOrderMark;
+            HeaderLength  = GfxConstants.GfxHeaderLength;
+            Revision      = GfxConstants.CGFXRevision;
             FileLength    = 0;
             SectionsCount = 0;
 

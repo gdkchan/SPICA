@@ -26,14 +26,9 @@ namespace SPICA.Formats.CtrH3D.Model
         [Range] public readonly List<H3DMesh> MeshesLayer0;
         [Range] public readonly List<H3DMesh> MeshesLayer1;
         [Range] public readonly List<H3DMesh> MeshesLayer2;
+        [Range] public readonly List<H3DMesh> MeshesLayer3;
 
-        /*
-         * Very old versions of the BCH format only supported 3 layers.
-         * Newer versions added another layer supporting up to 4.
-         */
-        [Range, IfVersion(CmpOp.Gequal, 7)] public readonly List<H3DMesh> MeshesLayer3;
-
-        public readonly List<H3DSubMeshCulling> SubMeshCullings;
+        [IfVersion(CmpOp.Gequal, 7)] public readonly List<H3DSubMeshCulling> SubMeshCullings;
 
         public readonly H3DDict<H3DBone> Skeleton;
 

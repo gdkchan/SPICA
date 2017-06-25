@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.Common;
-using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System.Collections;
@@ -22,97 +21,6 @@ namespace SPICA.Formats.CtrGfx
     {
         [Inline] public readonly List<int> Values = new List<int>();
     }
-
-    #region "String types"
-    //TODO: Support different string formats on the serializer, instead of encapsulating
-    //a string in different types to define encoding. This is a bad solution.
-    public class GfxStringUtf8 : ICustomSerialization
-    {
-        [Ignore] private string Str;
-
-        public GfxStringUtf8() { }
-
-        public GfxStringUtf8(string Str)
-        {
-            this.Str = Str;
-        }
-
-        public override string ToString()
-        {
-            return Str ?? string.Empty;
-        }
-
-        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
-        {
-            Str = Deserializer.Reader.ReadNullTerminatedStringUtf8();
-        }
-
-        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
-        {
-            Serializer.Writer.WriteNullTerminatedStringUtf8(Str);
-
-            return true;
-        }
-    }
-
-    public class GfxStringUtf16LE : ICustomSerialization
-    {
-        [Ignore] private string Str;
-
-        public GfxStringUtf16LE() { }
-
-        public GfxStringUtf16LE(string Str)
-        {
-            this.Str = Str;
-        }
-
-        public override string ToString()
-        {
-            return Str ?? string.Empty;
-        }
-
-        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
-        {
-            Str = Deserializer.Reader.ReadNullTerminatedStringUtf16LE();
-        }
-
-        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
-        {
-            Serializer.Writer.WriteNullTerminatedStringUtf16LE(Str);
-
-            return true;
-        }
-    }
-
-    public class GfxStringUtf16BE : ICustomSerialization
-    {
-        [Ignore] private string Str;
-
-        public GfxStringUtf16BE() { }
-
-        public GfxStringUtf16BE(string Str)
-        {
-            this.Str = Str;
-        }
-
-        public override string ToString()
-        {
-            return Str ?? string.Empty;
-        }
-
-        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
-        {
-            Str = Deserializer.Reader.ReadNullTerminatedStringUtf16BE();
-        }
-
-        bool ICustomSerialization.Serialize(BinarySerializer Serializer)
-        {
-            Serializer.Writer.WriteNullTerminatedStringUtf16BE(Str);
-
-            return true;
-        }
-    }
-    #endregion
 
     public class GfxMetaDataString : GfxMetaData
     {
