@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrGfx.LUT;
 using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
@@ -33,5 +34,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
                 _TableName = value ?? throw Exceptions.GetNullException("TableName");
             }
         }
+
+        public GfxLUT TargetLUT;
     }
 }

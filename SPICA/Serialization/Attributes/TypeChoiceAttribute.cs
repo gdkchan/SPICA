@@ -5,13 +5,13 @@ namespace SPICA.Serialization.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field, AllowMultiple = true, Inherited = true)]
     class TypeChoiceAttribute : Attribute
     {
-        public new uint TypeId;
-        public     Type Type;
+        public uint TypeVal;
+        public Type Type;
 
-        public TypeChoiceAttribute(uint TypeId, Type Type)
+        public TypeChoiceAttribute(uint TypeVal, Type Type)
         {
-            this.TypeId = TypeId;
-            this.Type   = Type;
+            this.TypeVal = TypeVal;
+            this.Type    = Type;
         }
     }
 }

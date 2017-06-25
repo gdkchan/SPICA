@@ -25,16 +25,17 @@ namespace SPICA.Formats.CtrH3D
             }
         }
 
-        [TypeChoiceName("Values")]
+        public H3DMetaDataType Type;
+
+        [TypeChoiceName("Type")]
         [TypeChoice((uint)H3DMetaDataType.Integer,       typeof(List<int>))]
         [TypeChoice((uint)H3DMetaDataType.Single,        typeof(List<float>))]
         [TypeChoice((uint)H3DMetaDataType.ASCIIString,   typeof(List<string>))]
         [TypeChoice((uint)H3DMetaDataType.UnicodeString, typeof(List<H3DStringUtf16>))]
         [TypeChoice((uint)H3DMetaDataType.BoundingBox,   typeof(List<H3DBoundingBox>))]
         [TypeChoice((uint)H3DMetaDataType.VertexData,    typeof(List<H3DVertexData>))]
-        public H3DMetaDataType Type;
-
-        [CustomLength(LengthPos.BeforePtr, LengthSize.Short)] private IList Values;
+        [CustomLength(LengthPos.BeforePtr, LengthSize.Short)]
+        private IList Values;
 
         public int Count { get { return Values.Count; } }
 

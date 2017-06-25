@@ -19,6 +19,34 @@ namespace SPICA.Formats.Common
             }
         }
 
+        public static byte[] ReadNullTerminatedShortLEByteArray(this BinaryReader Reader)
+        {
+            using (MemoryStream MS = new MemoryStream())
+            {
+                for (ushort Value; (Value = Reader.ReadUInt16()) != 0;)
+                {
+                    MS.WriteByte((byte)(Value >> 0));
+                    MS.WriteByte((byte)(Value >> 8));
+                }
+
+                return MS.ToArray();
+            }
+        }
+
+        public static byte[] ReadNullTerminatedShortBEByteArray(this BinaryReader Reader)
+        {
+            using (MemoryStream MS = new MemoryStream())
+            {
+                for (ushort Value; (Value = Reader.ReadUInt16()) != 0;)
+                {
+                    MS.WriteByte((byte)(Value >> 8));
+                    MS.WriteByte((byte)(Value >> 0));
+                }
+
+                return MS.ToArray();
+            }
+        }
+
         public static string ReadNullTerminatedString(this BinaryReader Reader)
         {
             return Encoding.ASCII.GetString(Reader.ReadNullTerminatedByteArray());
@@ -32,6 +60,21 @@ namespace SPICA.Formats.Common
         public static string ReadNullTerminatedStringSJis(this BinaryReader Reader)
         {
             return Reader.ReadNullTerminatedString(932);
+        }
+
+        public static string ReadNullTerminatedStringUtf8(this BinaryReader Reader)
+        {
+            return Encoding.UTF8.GetString(Reader.ReadNullTerminatedByteArray());
+        }
+
+        public static string ReadNullTerminatedStringUtf16LE(this BinaryReader Reader)
+        {
+            return Encoding.Unicode.GetString(Reader.ReadNullTerminatedShortLEByteArray());
+        }
+
+        public static string ReadNullTerminatedStringUtf16BE(this BinaryReader Reader)
+        {
+            return Encoding.Unicode.GetString(Reader.ReadNullTerminatedShortBEByteArray());
         }
 
         public static string ReadPaddedString(this BinaryReader Reader, int Length)
@@ -80,6 +123,21 @@ namespace SPICA.Formats.Common
         }
 
         //Write
+        public static void WriteNullTerminatedStringUtf8(this BinaryWriter Writer, string Value)
+        {
+            Writer.Write(Encoding.UTF8.GetBytes(Value + '\0'));
+        }
+
+        public static void WriteNullTerminatedStringUtf16LE(this BinaryWriter Writer, string Value)
+        {
+            Writer.Write(Encoding.Unicode.GetBytes(Value + '\0'));
+        }
+
+        public static void WriteNullTerminatedStringUtf16BE(this BinaryWriter Writer, string Value)
+        {
+            Writer.Write(IOUtils.ByteSwap16(Encoding.Unicode.GetBytes(Value + '\0')));
+        }
+
         public static void WritePaddedString(this BinaryWriter Writer, string Value, int Length)
         {
             int Index = 0;

@@ -1,7 +1,7 @@
 ﻿using SPICA.Serialization;
 using SPICA.Serialization.Serializer;
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace SPICA.Formats.CtrH3D
@@ -51,9 +51,9 @@ namespace SPICA.Formats.CtrH3D
             BaseStream.Seek(Position, SeekOrigin.Begin);
         }
 
-        private uint GetAddress(H3DSection RType)
+        private uint GetAddress(H3DSection Section)
         {
-            switch (RType)
+            switch (Section)
             {
                 case H3DSection.Contents:       return (uint)Header.ContentsAddress;
                 case H3DSection.Strings:        return (uint)Header.StringsAddress;

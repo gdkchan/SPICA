@@ -82,8 +82,6 @@ namespace SPICA.Serialization
                 Section.Values.Sort(Section.Comparer);
             }
 
-            Section.SerializedCount = Section.Values.Count;
-
             //Write
             long HeaderPosition = BaseStream.Position;
 
@@ -94,10 +92,7 @@ namespace SPICA.Serialization
 
             Section.Position = (int)BaseStream.Position;
 
-            while (Section.Values.Count > 0)
-            {
-                WriteValue(Section.GetAndRemoveAt(0));
-            }
+            WriteSection(Section.Values);
 
             //Set section position and lengths, where:
             //Length is the data length, and length with header is
@@ -110,7 +105,24 @@ namespace SPICA.Serialization
             Align(Section.Padding);
         }
 
-        public void WriteValue(object Value, bool IsElem = false)
+        private RefValue CurrentValue;
+
+        private void WriteSection(List<RefValue> Values)
+        {
+            foreach (RefValue Value in Values)
+            {
+                CurrentValue = Value;
+
+                WriteValue(Value);
+            }
+
+            foreach (RefValue Value in Values)
+            {
+                WriteSection(Value.Childs);
+            }
+        }
+
+        public void WriteValue(object Value)
         {
             Type Type = Value.GetType();
 
@@ -175,10 +187,10 @@ namespace SPICA.Serialization
             }
 
             //Avoid writing the same Object more than once
-            if (Type.IsClass) AddObjPointer(Value, Position);
+            if (Type.IsClass) AddObjInfo(Value, Position);
         }
 
-        private void AddObjPointer(object Value, long Position)
+        private void AddObjInfo(object Value, long Position)
         {
             if (!ObjPointers.ContainsKey(Value))
             {
@@ -227,7 +239,7 @@ namespace SPICA.Serialization
                 }
                 else
                 {
-                    WriteValue(Value, true);
+                    WriteValue(Value);
                 }
             }
 
@@ -257,7 +269,7 @@ namespace SPICA.Serialization
                         ((ICustomSerializeCmd)Parent).SerializeCmd(this, Value);
                     }
 
-                    AddObjPointer(Value, Position);
+                    AddObjInfo(Value, Position);
                     WriteValue(Value);
                 }
 
@@ -376,14 +388,12 @@ namespace SPICA.Serialization
                 {
                     if (Attr.Type == ValueType)
                     {
-                        Writer.Write(Attr.TypeId);
+                        Writer.Write(Attr.TypeVal);
 
                         break;
                     }
                 }
             }
-
-            int Index = Sections[MainSection].Values.Count;
 
             if (Value is ICustomSerialization)
             {
@@ -446,14 +456,6 @@ namespace SPICA.Serialization
                     Align(Info.GetCustomAttribute<PaddingAttribute>()?.Size ?? 1);
                 }
             }
-
-            if (ValueType.IsClass && !ValueType.IsDefined(typeof(InlineAttribute)))
-            {
-                while (Index < Sections[MainSection].Values.Count)
-                {
-                    WriteValue(Sections[MainSection].GetAndRemoveAt(Index));
-                }
-            }
         }
 
         private void AddReference(Type Type, RefValue Ref)
@@ -468,7 +470,7 @@ namespace SPICA.Serialization
             }
             else
             {
-                Sections[MainSection].Values.Add(Ref);
+                CurrentValue.Childs.Add(Ref);
             }
         }
     }

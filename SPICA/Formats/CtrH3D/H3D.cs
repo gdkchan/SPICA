@@ -156,8 +156,8 @@ namespace SPICA.Formats.CtrH3D
 
                 Serializer.Serialize(Scene);
 
-                Header.AddressCount  = (ushort)RawData.SerializedCount;
-                Header.AddressCount += (ushort)RawExt.SerializedCount;
+                Header.AddressCount  = (ushort)RawData.Values.Count;
+                Header.AddressCount += (ushort)RawExt.Values.Count;
 
                 Header.UnInitDataLength = Header.AddressCount * 4;
 

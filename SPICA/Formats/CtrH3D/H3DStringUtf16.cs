@@ -1,8 +1,6 @@
-﻿using SPICA.Serialization;
+﻿using SPICA.Formats.Common;
+using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
-
-using System.IO;
-using System.Text;
 
 namespace SPICA.Formats.CtrH3D
 {
@@ -24,21 +22,12 @@ namespace SPICA.Formats.CtrH3D
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            using (MemoryStream MS = new MemoryStream())
-            {
-                for (ushort Chr; (Chr = Deserializer.Reader.ReadUInt16()) != 0;)
-                {
-                    MS.WriteByte((byte)(Chr >> 0));
-                    MS.WriteByte((byte)(Chr >> 8));
-                }
-
-                Str = Encoding.Unicode.GetString(MS.ToArray());
-            }
+            Str = Deserializer.Reader.ReadNullTerminatedStringUtf16LE();
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            Serializer.Writer.Write(Encoding.Unicode.GetBytes(Str + '\0'));
+            Serializer.Writer.WriteNullTerminatedStringUtf16LE(Str);
 
             return true;
         }

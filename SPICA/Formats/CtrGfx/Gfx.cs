@@ -1,5 +1,4 @@
-﻿using SPICA.Formats.Common;
-using SPICA.Formats.CtrGfx.Animation;
+﻿using SPICA.Formats.CtrGfx.Animation;
 using SPICA.Formats.CtrGfx.Camera;
 using SPICA.Formats.CtrGfx.Emitter;
 using SPICA.Formats.CtrGfx.Fog;
@@ -22,7 +21,6 @@ using SPICA.PICA.Converters;
 using SPICA.Serialization;
 using SPICA.Serialization.Serializer;
 
-using System;
 using System.IO;
 using System.Numerics;
 
@@ -74,6 +72,20 @@ namespace SPICA.Formats.CtrGfx
             Emitters             = new GfxDict<GfxEmitter>();
         }
 
+        public static Gfx Open(string FileName)
+        {
+            using (FileStream Input = new FileStream(FileName, FileMode.Open))
+            {
+                BinaryDeserializer Deserializer = new BinaryDeserializer(Input, GetSerializationOptions());
+
+                GfxHeader Header = Deserializer.Deserialize<GfxHeader>();
+
+                Gfx Scene = Deserializer.Deserialize<Gfx>();
+
+                return Scene;
+            }
+        }
+
         public static H3D Open(Stream Input)
         {
             BinaryDeserializer Deserializer = new BinaryDeserializer(Input, GetSerializationOptions());
@@ -83,23 +95,6 @@ namespace SPICA.Formats.CtrGfx
             Gfx Scene = Deserializer.Deserialize<Gfx>();
 
             return Scene.ToH3D();
-        }
-
-        private static void WriteSection(
-            BinarySerializer Serializer,
-            string Magic,
-            uint Address,
-            uint Length)
-        {
-            Serializer.BaseStream.Seek(Address, SeekOrigin.Begin);
-
-            Serializer.Writer.Write(IOUtils.ToUInt32(Magic));
-            Serializer.Writer.Write(Length);
-        }
-
-        private static SerializationOptions GetSerializationOptions()
-        {
-            return new SerializationOptions(LengthPos.BeforePtr, PointerType.SelfRelative);
         }
 
         public H3D ToH3D()
@@ -558,7 +553,7 @@ namespace SPICA.Formats.CtrGfx
         {
             using (FileStream FS = new FileStream(FileName, FileMode.Create))
             {
-                GfxHeader Header = new GfxHeader(0, 0);
+                GfxHeader Header = new GfxHeader();
 
                 BinarySerializer Serializer = new BinarySerializer(FS, GetSerializationOptions());
 
@@ -566,29 +561,24 @@ namespace SPICA.Formats.CtrGfx
 
                 Contents.Header = Header;
 
-                /*
-                 * This is used to sort raw data buffers.
-                 * Buffers places textures first, and then vertex/index data after.
-                 * Whenever placing textures at the end causes issues like on H3D
-                 * is untested.
-                 */
-                Comparison<RefValue> CompRaw = GfxComparers.GetComparisonRaw();
-
                 Section Strings = new Section();
-                Section Image   = new Section(1, CompRaw);
+                Section Image   = new Section();
 
                 Image.Header = new GfxSectionHeader("IMAG");
 
                 Serializer.AddSection((uint)GfxSectionId.Strings, Strings, typeof(string));
+                Serializer.AddSection((uint)GfxSectionId.Strings, Strings, typeof(GfxStringUtf8));
+                Serializer.AddSection((uint)GfxSectionId.Strings, Strings, typeof(GfxStringUtf16LE));
+                Serializer.AddSection((uint)GfxSectionId.Strings, Strings, typeof(GfxStringUtf16BE));
                 Serializer.AddSection((uint)GfxSectionId.Image,   Image);
 
                 Serializer.Serialize(Scene);
 
                 Header.FileLength = (int)FS.Length;
 
-                Header.UsedSectionsCount = Image.SerializedCount > 0 ? 2 : 1;
+                Header.SectionsCount = Image.Values.Count > 0 ? 2 : 1;
 
-                Header.Data.Length = Contents.Length + 8;
+                Header.Data.Length = Contents.Length + Strings.Length + 8;
 
                 FS.Seek(0, SeekOrigin.Begin);
 
@@ -598,6 +588,11 @@ namespace SPICA.Formats.CtrGfx
 
                 Serializer.Writer.Write(Image.LengthWithHeader);
             }
+        }
+
+        private static SerializationOptions GetSerializationOptions()
+        {
+            return new SerializationOptions(LengthPos.BeforePtr, PointerType.SelfRelative);
         }
     }
 }

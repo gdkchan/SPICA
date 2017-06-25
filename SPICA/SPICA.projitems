@@ -22,7 +22,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Emitter\GfxEmitter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Fog\GfxFog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Gfx.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxComparers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDict.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxDictionaryNode.cs" />
@@ -31,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxMetaDataType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxRevHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxSectionHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxStringFormat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Light\GfxLight.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUTSampler.cs" />
@@ -358,6 +358,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationOptions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\RefValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\Section.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Serializer\StringUtils.cs" />
   </ItemGroup>
 </Project>

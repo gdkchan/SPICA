@@ -33,6 +33,19 @@ namespace SPICA.Formats.Common
             return BitConverter.ToUInt32(Bytes, 0);
         }
 
+        public static byte[] ByteSwap16(byte[] Input)
+        {
+            byte[] Output = new byte[Input.Length];
+
+            for (int i = 0; i < Input.Length; i += 2)
+            {
+                Output[i + 0] = Input[i + 1];
+                Output[i + 1] = Input[i + 0];
+            }
+
+            return Output;
+        }
+
         public static uint ReadUInt24(this BinaryReader Reader)
         {
             return (uint)(

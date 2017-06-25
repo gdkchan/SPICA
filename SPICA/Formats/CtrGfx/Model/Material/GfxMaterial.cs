@@ -1,5 +1,4 @@
 ﻿using SPICA.Formats.Common;
-using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System.Collections.Generic;
@@ -40,8 +39,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public int UsedTextureCoordsCount;
 
-        [Inline, FixedLength(3)] public readonly GfxTextureCoord[] TextureCoords;
-
+        [Inline, FixedLength(3)] public readonly GfxTextureCoord[]  TextureCoords;
         [Inline, FixedLength(3)] public readonly GfxTextureMapper[] TextureMappers;
 
         public readonly GfxProcTextureMapper ProceduralTextureMapper;

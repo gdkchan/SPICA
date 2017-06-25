@@ -3,7 +3,7 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
-    [TypeChoice(0x10000001u, typeof(GfxMesh))]
+    [TypeChoice(0x01000000u, typeof(GfxMesh))]
     public class GfxMesh
     {
         private GfxRevHeader Header;

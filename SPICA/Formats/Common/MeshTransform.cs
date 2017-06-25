@@ -92,6 +92,8 @@ namespace SPICA.Formats.Common
                             v.Normal = Vector4.Transform(v.Normal, Transform);
                             v.Normal = Vector4.Normalize(v.Normal);
                         }
+
+                        Vertices[i] = v;
                     }
                 }
             }

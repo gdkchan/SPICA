@@ -4,6 +4,7 @@ using SPICA.Serialization.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Reflection;
@@ -18,7 +19,6 @@ namespace SPICA.Serialization
 
         private Dictionary<long, object> Objects;
         private Dictionary<long, object> ListObjs;
-
 
         public BinaryDeserializer(Stream BaseStream, SerializationOptions Options) : base(BaseStream, Options)
         {
@@ -201,11 +201,21 @@ namespace SPICA.Serialization
 
             if (ObjectType.IsDefined(typeof(TypeChoiceAttribute)))
             {
-                Type Type = GetMatchingType(ObjectType, Reader.ReadUInt32());
+                uint TypeId = Reader.ReadUInt32();
+
+                Type Type = GetMatchingType(ObjectType, TypeId);
 
                 if (Type != null)
                 {
                     ObjectType = Type;
+                }
+                else
+                {
+                    Debug.WriteLine(string.Format(
+                        "[SPICA|BinaryDeserializer] Unknown Type Id 0x{0:x8} at address {1:x8} and class {2}!",
+                        TypeId,
+                        Position,
+                        ObjectType.FullName));
                 }
             }
 
@@ -213,19 +223,29 @@ namespace SPICA.Serialization
 
             if (IsRef) Objects.Add(Position, Value);
 
-            Dictionary<string, Type> TypeDict = new Dictionary<string, Type>();
+            int FieldsCount = 0;
 
             foreach (FieldInfo Info in GetFieldsSorted(ObjectType))
             {
+                FieldsCount++;
+
                 if (!Info.GetCustomAttribute<IfVersionAttribute>()?.Compare(FileVersion) ?? false) continue;
 
                 if (!(
                     Info.IsDefined(typeof(IgnoreAttribute)) ||
                     Info.IsDefined(typeof(CompilerGeneratedAttribute))))
                 {
-                    if (!TypeDict.TryGetValue(Info.Name, out Type Type))
+                    Type Type = Info.FieldType;
+
+                    string TCName = Info.GetCustomAttribute<TypeChoiceNameAttribute>()?.FieldName;
+
+                    if (TCName != null && Info.IsDefined(typeof(TypeChoiceAttribute)))
                     {
-                        Type = Info.FieldType;
+                        FieldInfo TCInfo = ObjectType.GetField(TCName);
+
+                        uint TypeId = Convert.ToUInt32(TCInfo.GetValue(Value));
+
+                        Type = GetMatchingType(Info, TypeId) ?? Type;
                     }
 
                     bool Inline;
@@ -241,24 +261,9 @@ namespace SPICA.Serialization
                             ? ReadList(Type, Info)
                             : ReadValue(Type);
 
-                        if (Type.IsPrimitive || Type.IsEnum)
+                        if (Type.IsPrimitive && Info.IsDefined(typeof(VersionAttribute)))
                         {
-                            string Name = Info.GetCustomAttribute<TypeChoiceNameAttribute>()?.FieldName;
-
-                            if (Name != null && Info.IsDefined(typeof(TypeChoiceAttribute)))
-                            {
-                                Type TargetType = GetMatchingType(Info, Convert.ToUInt32(FieldValue));
-
-                                if (TargetType != null)
-                                {
-                                    TypeDict.Add(Name, TargetType);
-                                }
-                            }
-
-                            if (Info.IsDefined(typeof(VersionAttribute)))
-                            {
-                                FileVersion = Convert.ToInt32(FieldValue);
-                            }
+                            FileVersion = Convert.ToInt32(FieldValue);
                         }
                     }
                     else
@@ -272,6 +277,11 @@ namespace SPICA.Serialization
                 }
             }
 
+            if (FieldsCount == 0)
+            {
+                Debug.WriteLine($"[SPICA|BinaryDeserializer] Class {ObjectType.FullName} has no accessible fields!");
+            }
+
             if (Value is ICustomSerialization) ((ICustomSerialization)Value).Deserialize(this);
 
             return Value;
@@ -281,7 +291,7 @@ namespace SPICA.Serialization
         {
             foreach (TypeChoiceAttribute Attr in Info.GetCustomAttributes<TypeChoiceAttribute>())
             {
-                if (Attr.TypeId == TypeId)
+                if (Attr.TypeVal == TypeId)
                 {
                     return Attr.Type;
                 }
