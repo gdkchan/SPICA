@@ -29,8 +29,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxMetaData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxMetaDataType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxRevHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxConstants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxSectionHeader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxStringFormat.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxStringUtf16BE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxStringUtf16LE.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\GfxStringUtf8.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Light\GfxLight.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUT.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\LUT\GfxLUTSampler.cs" />
