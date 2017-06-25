@@ -73,7 +73,7 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public PICAAttribute ToPICAAttribute()
         {
-            return new PICAAttribute
+            return new PICAAttribute()
             {
                 Name     = AttrName,
                 Format   = Format.ToPICAAttributeFormat(),

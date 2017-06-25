@@ -62,7 +62,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             {
                 if (Vector[ElemIndex].KeyFrames.Count > 1)
                 {
-                    Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue
+                    Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue()
                     {
                         Value    = Vector[ElemIndex],
                         Position = Serializer.BaseStream.Position

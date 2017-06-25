@@ -56,7 +56,7 @@ namespace SPICA.Formats.GFL2.Motion
                     Anim.Values.Add(Visibility);
                 }
 
-                Output.Elements.Add(new H3DAnimationElement
+                Output.Elements.Add(new H3DAnimationElement()
                 {
                     Name          = Vis.Name,
                     PrimitiveType = H3DPrimitiveType.Boolean,

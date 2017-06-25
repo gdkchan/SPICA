@@ -18,10 +18,7 @@ namespace SPICA.Formats.CtrGfx
 
         public T this[int Index]
         {
-            get
-            {
-                return Values[Index];
-            }
+            get => Values[Index];
             set
             {
                 Values[Index] = value;

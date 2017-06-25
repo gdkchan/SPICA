@@ -73,7 +73,7 @@ namespace SPICA.Formats.ModelBinary
 
                 VertexStride += Size;
 
-                Attributes.Add(new PICAAttribute
+                Attributes.Add(new PICAAttribute()
                 {
                     Name     = AttrName.ToPICAAttributeName(),
                     Format   = AttrFormat.ToPICAAttributeFormat(),
@@ -91,7 +91,7 @@ namespace SPICA.Formats.ModelBinary
 
         private PICAAttribute GetDummyAttribute()
         {
-            return new PICAAttribute
+            return new PICAAttribute()
             {
                 Name     = PICAAttributeName.UserAttribute0,
                 Format   = PICAAttributeFormat.Byte,

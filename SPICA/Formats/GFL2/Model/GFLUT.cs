@@ -14,10 +14,7 @@ namespace SPICA.Formats.GFL2.Model
 
         public float[] Table
         {
-            get
-            {
-                return _Table;
-            }
+            get => _Table;
             set
             {
                 if (value == null)

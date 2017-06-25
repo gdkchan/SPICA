@@ -12,14 +12,8 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public PICAPrimitiveMode PrimitiveMode
         {
-            get
-            {
-                return (PICAPrimitiveMode)_PrimitiveMode;
-            }
-            set
-            {
-                _PrimitiveMode = (byte)value;
-            }
+            get => (PICAPrimitiveMode)_PrimitiveMode;
+            set => _PrimitiveMode = (byte)value;
         }
 
         [Padding(4)] private byte Visible;

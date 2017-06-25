@@ -15,14 +15,8 @@ namespace SPICA.Formats.CtrH3D
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public H3DMetaDataType Type;
@@ -41,14 +35,8 @@ namespace SPICA.Formats.CtrH3D
 
         public object this[int Index]
         {
-            get
-            {
-                return Values[Index];
-            }
-            set
-            {
-                Values[Index] = value;
-            }
+            get => Values[Index];
+            set => Values[Index] = value;
         }
 
         public H3DMetaDataValue() { }

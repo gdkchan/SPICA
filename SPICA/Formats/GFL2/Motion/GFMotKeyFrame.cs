@@ -44,7 +44,7 @@ namespace SPICA.Formats.GFL2.Motion
                         //Stored as Float, 64 bits per entry
                         for (int Index = 0; Index < KeyFramesCount; Index++)
                         {
-                            KeyFrames.Add(new GFMotKeyFrame
+                            KeyFrames.Add(new GFMotKeyFrame()
                             {
                                 Frame = Frames[Index],
                                 Value = Reader.ReadSingle(),
@@ -62,7 +62,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                         for (int Index = 0; Index < KeyFramesCount; Index++)
                         {
-                            KeyFrames.Add(new GFMotKeyFrame
+                            KeyFrames.Add(new GFMotKeyFrame()
                             {
                                 Frame = Frames[Index],
                                 Value = (Reader.ReadUInt16() / (float)0xffff) * ValueScale + ValueOffset,

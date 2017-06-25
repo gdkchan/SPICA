@@ -89,7 +89,7 @@ namespace SPICA.Formats.GFL.Motion
 
                     if (BoneIndex != OldIndex)
                     {
-                        CurrentBone = new GF1MotBoneTransform { Name = Skeleton[BoneIndex].Name };
+                        CurrentBone = new GF1MotBoneTransform() { Name = Skeleton[BoneIndex].Name };
 
                         Bones.Add(CurrentBone);
 
@@ -176,7 +176,7 @@ namespace SPICA.Formats.GFL.Motion
                 SetKeyFrameGroup(Bone.ScaleY,       Transform.ScaleY,       7);
                 SetKeyFrameGroup(Bone.ScaleZ,       Transform.ScaleZ,       8);
 
-                Output.Elements.Add(new H3DAnimationElement
+                Output.Elements.Add(new H3DAnimationElement()
                 {
                     Name          = Bone.Name,
                     Content       = Transform,

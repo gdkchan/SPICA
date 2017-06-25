@@ -12,14 +12,8 @@ namespace SPICA.Formats.CtrGfx.LUT
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public bool IsAbsolute;
@@ -30,10 +24,7 @@ namespace SPICA.Formats.CtrGfx.LUT
 
         public float[] Table
         {
-            get
-            {
-                return _Table;
-            }
+            get => _Table;
             set
             {
                 if (value == null)

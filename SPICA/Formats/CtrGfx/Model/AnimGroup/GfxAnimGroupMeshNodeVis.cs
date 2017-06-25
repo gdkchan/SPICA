@@ -8,14 +8,8 @@ namespace SPICA.Formats.CtrGfx.Model.AnimGroup
 
         public string NodeName
         {
-            get
-            {
-                return _NodeName;
-            }
-            set
-            {
-                _NodeName = value ?? throw Exceptions.GetNullException("NodeName");
-            }
+            get => _NodeName;
+            set => _NodeName = value ?? throw Exceptions.GetNullException("NodeName");
         }
 
         private GfxAnimGroupObjType ObjType2;

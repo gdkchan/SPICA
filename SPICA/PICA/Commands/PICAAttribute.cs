@@ -20,7 +20,7 @@ namespace SPICA.PICA.Commands
                     case PICAAttributeName.Position:
                     case PICAAttributeName.Normal:
                     case PICAAttributeName.Tangent:
-                        Output.Add(new PICAAttribute
+                        Output.Add(new PICAAttribute()
                         {
                             Name     = Name,
                             Format   = PICAAttributeFormat.Float,
@@ -32,7 +32,7 @@ namespace SPICA.PICA.Commands
                     case PICAAttributeName.TexCoord0:
                     case PICAAttributeName.TexCoord1:
                     case PICAAttributeName.TexCoord2:
-                        Output.Add(new PICAAttribute
+                        Output.Add(new PICAAttribute()
                         {
                             Name     = Name,
                             Format   = PICAAttributeFormat.Float,
@@ -42,7 +42,7 @@ namespace SPICA.PICA.Commands
                         break;
 
                     case PICAAttributeName.Color:
-                        Output.Add(new PICAAttribute
+                        Output.Add(new PICAAttribute()
                         {
                             Name     = PICAAttributeName.Color,
                             Format   = PICAAttributeFormat.Ubyte,
@@ -52,7 +52,7 @@ namespace SPICA.PICA.Commands
                         break;
 
                     case PICAAttributeName.BoneIndex:
-                        Output.Add(new PICAAttribute
+                        Output.Add(new PICAAttribute()
                         {
                             Name     = PICAAttributeName.BoneIndex,
                             Format   = PICAAttributeFormat.Ubyte,
@@ -62,7 +62,7 @@ namespace SPICA.PICA.Commands
                         break;
 
                     case PICAAttributeName.BoneWeight:
-                        Output.Add(new PICAAttribute
+                        Output.Add(new PICAAttribute()
                         {
                             Name     = PICAAttributeName.BoneWeight,
                             Format   = PICAAttributeFormat.Ubyte,

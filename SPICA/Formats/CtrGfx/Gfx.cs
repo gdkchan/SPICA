@@ -187,7 +187,7 @@ namespace SPICA.Formats.CtrGfx
 
                             float Scale = ((GfxVertexBufferFixed)VertexBuffer).Scale;
 
-                            M.FixedAttributes.Add(new PICAFixedAttribute
+                            M.FixedAttributes.Add(new PICAFixedAttribute()
                             {
                                 Name  = VertexBuffer.AttrName,
 
@@ -278,7 +278,7 @@ namespace SPICA.Formats.CtrGfx
 
                 foreach (GfxMaterial Material in Model.Materials)
                 {
-                    H3DMaterial Mat = H3DMaterial.GetSimpleMaterial(Mdl.Name, Material.Name, null);
+                    H3DMaterial Mat = new H3DMaterial();
 
                     Mat.MaterialParams.Flags = (H3DMaterialFlags)Material.Flags;
 
@@ -312,6 +312,15 @@ namespace SPICA.Formats.CtrGfx
                     Mat.MaterialParams.DepthColorMask.BlueWrite  = true;
                     Mat.MaterialParams.DepthColorMask.AlphaWrite = true;
                     Mat.MaterialParams.DepthColorMask.DepthWrite = true;
+
+                    Mat.MaterialParams.ColorBufferRead  = false;
+                    Mat.MaterialParams.ColorBufferWrite = true;
+
+                    Mat.MaterialParams.StencilBufferRead  = false;
+                    Mat.MaterialParams.StencilBufferWrite = false;
+
+                    Mat.MaterialParams.DepthBufferRead  = true;
+                    Mat.MaterialParams.DepthBufferWrite = true;
 
                     Mat.MaterialParams.ColorOperation   = Material.FragmentOperation.Blend.ColorOperation;
                     Mat.MaterialParams.LogicalOperation = Material.FragmentOperation.Blend.LogicalOperation;
@@ -473,7 +482,7 @@ namespace SPICA.Formats.CtrGfx
                     {
                         bool ScaleCompensate = (Bone.Flags & GfxBoneFlags.IsSegmentScaleCompensate) != 0;
 
-                        Mdl.Skeleton.Add(new H3DBone
+                        Mdl.Skeleton.Add(new H3DBone()
                         {
                             Name = Bone.Name,
 
@@ -529,11 +538,11 @@ namespace SPICA.Formats.CtrGfx
 
             foreach (GfxLUT LUT in LUTs)
             {
-                H3DLUT L = new H3DLUT { Name = LUT.Name };
+                H3DLUT L = new H3DLUT() { Name = LUT.Name };
 
                 foreach (GfxLUTSampler Sampler in LUT.Samplers)
                 {
-                    L.Samplers.Add(new H3DLUTSampler
+                    L.Samplers.Add(new H3DLUTSampler()
                     {
                         Flags = Sampler.IsAbsolute ? H3DLUTFlags.IsAbsolute : 0,
                         Name  = Sampler.Name,

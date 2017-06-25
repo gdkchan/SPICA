@@ -19,7 +19,7 @@ namespace SPICA.Formats.Generic.COLLADA
             name = Name;
             id = $"{Name}_id";
 
-            DAEArray Array = new DAEArray
+            DAEArray Array = new DAEArray()
             {
                 id    = $"{Name}_array_id",
                 count = (uint)(Elements.Length * Stride),

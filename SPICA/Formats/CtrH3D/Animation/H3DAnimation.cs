@@ -10,14 +10,8 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public H3DAnimationFlags AnimationFlags;

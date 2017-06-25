@@ -15,14 +15,8 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public readonly GfxDict<GfxMetaData> MetaData;

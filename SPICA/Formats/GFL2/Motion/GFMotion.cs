@@ -57,7 +57,7 @@ namespace SPICA.Formats.GFL2.Motion
 
             for (int Anim = 0; Anim < AnimSections.Length; Anim++)
             {
-                AnimSections[Anim] = new Section
+                AnimSections[Anim] = new Section()
                 {
                     SectName = (Sect)Reader.ReadUInt32(),
 
@@ -99,7 +99,7 @@ namespace SPICA.Formats.GFL2.Motion
 
             foreach (H3DBone Bone in Skeleton)
             {
-                GFSkeleton.Add(new GFBone
+                GFSkeleton.Add(new GFBone()
                 {
                     Name        = Bone.Name,
                     Parent      = Bone.ParentIndex != -1 ? Skeleton[Bone.ParentIndex].Name : string.Empty,

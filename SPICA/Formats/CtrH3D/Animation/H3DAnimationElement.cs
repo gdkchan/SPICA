@@ -11,14 +11,8 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public H3DTargetType TargetType;
@@ -36,10 +30,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         public object Content
         {
-            get
-            {
-                return _Content;
-            }
+            get => _Content;
             set
             {
                 Type ValueType = value.GetType();

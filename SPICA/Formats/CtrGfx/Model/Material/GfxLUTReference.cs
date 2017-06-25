@@ -11,28 +11,16 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public string SamplerName
         {
-            get
-            {
-                return _SamplerName;
-            }
-            set
-            {
-                _SamplerName = value ?? throw Exceptions.GetNullException("SamplerName");
-            }
+            get => _SamplerName;
+            set => _SamplerName = value ?? throw Exceptions.GetNullException("SamplerName");
         }
 
         private string _TableName;
 
         public string TableName
         {
-            get
-            {
-                return _TableName;
-            }
-            set
-            {
-                _TableName = value ?? throw Exceptions.GetNullException("TableName");
-            }
+            get => _TableName;
+            set => _TableName = value ?? throw Exceptions.GetNullException("TableName");
         }
 
         public GfxLUT TargetLUT;

@@ -41,7 +41,7 @@ namespace SPICA.PICA
                 {
                     for (int i = 0; i < ExtraParams + 1; i++)
                     {
-                        PICACommand Cmd = new PICACommand
+                        PICACommand Cmd = new PICACommand()
                         {
                             Register   = (PICARegister)Id++,
                             Parameters = new uint[] { Parameter },
@@ -67,7 +67,7 @@ namespace SPICA.PICA
                         Parameters.Add(Cmds[Index++]);
                     }
 
-                    PICACommand Cmd = new PICACommand
+                    PICACommand Cmd = new PICACommand()
                     {
                         Register   = (PICARegister)Id,
                         Parameters = Parameters.ToArray(),

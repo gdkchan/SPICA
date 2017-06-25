@@ -13,26 +13,14 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public PICATextureWrap WrapU
         {
-            get
-            {
-                return (PICATextureWrap)_WrapU;
-            }
-            set
-            {
-                _WrapU = (byte)value;
-            }
+            get => (PICATextureWrap)_WrapU;
+            set => _WrapU = (byte)value;
         }
 
         public PICATextureWrap WrapV
         {
-            get
-            {
-                return (PICATextureWrap)_WrapV;
-            }
-            set
-            {
-                _WrapV = (byte)value;
-            }
+            get => (PICATextureWrap)_WrapV;
+            set => _WrapV = (byte)value;
         }
 
         public H3DTextureMagFilter MagFilter;

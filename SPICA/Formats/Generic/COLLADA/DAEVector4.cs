@@ -11,10 +11,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public static DAEVector4 Empty
         {
-            get
-            {
-                return new DAEVector4 { data = "0 0 0 0" };
-            }
+            get => new DAEVector4() { data = "0 0 0 0" };
         }
 
         public void Set(Vector4 Vector)

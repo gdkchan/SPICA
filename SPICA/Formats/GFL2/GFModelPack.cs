@@ -108,7 +108,7 @@ namespace SPICA.Formats.GFL2
 
                 foreach (GFLUT LUT in Model.LUTs)
                 {
-                    L.Samplers.Add(new H3DLUTSampler
+                    L.Samplers.Add(new H3DLUTSampler()
                     {
                         Name  = LUT.Name,
                         Table = LUT.Table

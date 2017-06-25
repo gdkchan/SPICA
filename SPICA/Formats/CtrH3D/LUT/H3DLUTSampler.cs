@@ -16,24 +16,15 @@ namespace SPICA.Formats.CtrH3D.LUT
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         [Ignore] private float[] _Table;
 
         public float[] Table
         {
-            get
-            {
-                return _Table;
-            }
+            get => _Table;
             set
             {
                 if (value == null)

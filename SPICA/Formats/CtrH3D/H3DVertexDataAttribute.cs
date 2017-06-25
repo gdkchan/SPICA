@@ -15,36 +15,21 @@ namespace SPICA.Formats.CtrH3D
 
         public PICAAttributeName Name
         {
-            get
-            {
-                return (PICAAttributeName)_Name;
-            }
-            set
-            {
-                _Name = (byte)value;
-            }
+            get => (PICAAttributeName)_Name;
+            set => _Name = (byte)value;
         }
 
         private byte Type;
 
         public PICAAttributeFormat Format
         {
-            get
-            {
-                return (PICAAttributeFormat)BitUtils.GetBits(Type, 0, 2);
-            }
-            set
-            {
-                Type = BitUtils.SetBits(Type, (uint)value, 0, 2);
-            }
+            get => (PICAAttributeFormat)BitUtils.GetBits(Type, 0, 2);
+            set => Type = BitUtils.SetBits(Type, (uint)value, 0, 2);
         }
 
         public int Elements
         {
-            get
-            {
-                return (int)BitUtils.GetBits(Type, 2, 2) + 1;
-            }
+            get => (int)BitUtils.GetBits(Type, 2, 2) + 1;
             set
             {
                 if (value < 1)
@@ -69,14 +54,8 @@ namespace SPICA.Formats.CtrH3D
 
         public int Offset
         {
-            get
-            {
-                return IsFixed ? 0 : (int)_Offset;
-            }
-            set
-            {
-                _Offset = (uint)value;
-            }
+            get => IsFixed ? 0 : (int)_Offset;
+            set => _Offset = (uint)value;
         }
 
         [Ignore] public Vector4 FixedValue;
@@ -101,7 +80,7 @@ namespace SPICA.Formats.CtrH3D
         {
             if (IsFixed)
             {
-                Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue
+                Serializer.Sections[(uint)H3DSectionId.Contents].Values.Add(new RefValue()
                 {
                     Parent        = this,
                     Position      = Serializer.BaseStream.Position + 4,
@@ -111,7 +90,7 @@ namespace SPICA.Formats.CtrH3D
             }
             else
             {
-                Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
+                Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue()
                 {
                     Parent        = this,
                     Position      = Serializer.BaseStream.Position + 4,

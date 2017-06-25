@@ -42,7 +42,7 @@ namespace SPICA.Formats.GFL2.Texture
 
         public H3DTexture ToH3DTexture()
         {
-            return new H3DTexture
+            return new H3DTexture()
             {
                 Name          = Name,
                 RawBufferXPos = RawBuffer,

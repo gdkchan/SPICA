@@ -92,7 +92,7 @@ namespace SPICA.Formats.GFL2.Motion
                     QuatTransform.Translations.Add(Translation);
                 }
 
-                Output.Elements.Add(new H3DAnimationElement
+                Output.Elements.Add(new H3DAnimationElement()
                 {
                     Name          = Bone.Name,
                     Content       = QuatTransform,

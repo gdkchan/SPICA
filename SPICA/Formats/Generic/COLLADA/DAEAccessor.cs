@@ -14,7 +14,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public void AddParam(string name, string type)
         {
-            param.Add(new DAEAccessorParam
+            param.Add(new DAEAccessorParam()
             {
                 name = name,
                 type = type

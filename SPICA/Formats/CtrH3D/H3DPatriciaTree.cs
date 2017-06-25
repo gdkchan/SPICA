@@ -128,7 +128,7 @@ namespace SPICA.Formats.CtrH3D
             Nodes.Clear();
 
             if (Names.Count > 0)
-                Nodes.Add(new H3DPatriciaTreeNode { ReferenceBit = uint.MaxValue });
+                Nodes.Add(new H3DPatriciaTreeNode() { ReferenceBit = uint.MaxValue });
             else
                 Nodes.Add(new H3DPatriciaTreeNode());
 
@@ -142,7 +142,7 @@ namespace SPICA.Formats.CtrH3D
 
             foreach (string Name in Names)
             {
-                PatriciaTree.Insert(Nodes, new H3DPatriciaTreeNode { Name = Name }, MaxLength);
+                PatriciaTree.Insert(Nodes, new H3DPatriciaTreeNode() { Name = Name }, MaxLength);
             }
 
             TreeNeedsRebuild = false;

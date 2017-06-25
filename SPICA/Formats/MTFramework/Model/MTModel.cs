@@ -122,7 +122,7 @@ namespace SPICA.Formats.MTFramework.Model
 
                 Vector3 Position = Reader.ReadVector3();
 
-                Skeleton.Add(new MTBone
+                Skeleton.Add(new MTBone()
                 {
                     ParentIndex    = Parent,
                     OppositeIndex  = Opposite,
@@ -340,7 +340,7 @@ namespace SPICA.Formats.MTFramework.Model
                 }
                 else
                 {
-                    M.SubMeshes.Add(new H3DSubMesh { Indices = Mesh.Indices });
+                    M.SubMeshes.Add(new H3DSubMesh() { Indices = Mesh.Indices });
                 }
 
                 Model.AddMesh(M);
@@ -354,7 +354,7 @@ namespace SPICA.Formats.MTFramework.Model
 
             foreach (MTBone Bone in Skeleton)
             {
-                Model.Skeleton.Add(new H3DBone
+                Model.Skeleton.Add(new H3DBone()
                 {
                     Name        = $"Bone_{BoneIndex++}",
                     ParentIndex = Bone.ParentIndex,

@@ -60,7 +60,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                             (Params[0] == "v"
                                 ? Positions
                                 : Normals)
-                                .Add(new Vector4
+                                .Add(new Vector4()
                                 {
                                     X = float.Parse(Params[1], CultureInfo.InvariantCulture),
                                     Y = float.Parse(Params[2], CultureInfo.InvariantCulture),
@@ -72,7 +72,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                     case "vt":
                         if (Params.Length >= 3)
                         {
-                            TexCoords.Add(new Vector4
+                            TexCoords.Add(new Vector4()
                             {
                                 X = float.Parse(Params[1], CultureInfo.InvariantCulture),
                                 Y = float.Parse(Params[2], CultureInfo.InvariantCulture)

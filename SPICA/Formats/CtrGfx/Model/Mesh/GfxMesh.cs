@@ -12,14 +12,8 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public readonly GfxDict<GfxMetaData> MetaData;
@@ -33,14 +27,8 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public bool IsVisible
         {
-            get
-            {
-                return Visible != 0;
-            }
-            set
-            {
-                Visible = (byte)(value ? 1 : 0);
-            }
+            get => Visible != 0;
+            set => Visible = (byte)(value ? 1 : 0);
         }
 
         public byte RenderPriority;
@@ -67,14 +55,8 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public string MeshNodeName
         {
-            get
-            {
-                return _MeshNodeName;
-            }
-            set
-            {
-                _MeshNodeName = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _MeshNodeName;
+            set => _MeshNodeName = value ?? throw Exceptions.GetNullException("Name");
         }
 
         private ulong RenderKeyCache;

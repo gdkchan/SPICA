@@ -24,11 +24,11 @@ namespace SPICA.Formats.GFL.Motion
 
             byte BonesCount = Reader.ReadByte();
 
-            Output.Add(new GF1MotBone { Name = "Origin" });
+            Output.Add(new GF1MotBone() { Name = "Origin" });
 
             for (int Index = 1; Index < BonesCount; Index++)
             {
-                Output.Add(new GF1MotBone
+                Output.Add(new GF1MotBone()
                 {
                     UnkIndex0   = Reader.ReadByte(),
                     ParentIndex = Reader.ReadByte(),

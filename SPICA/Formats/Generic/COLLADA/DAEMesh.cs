@@ -21,7 +21,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public void AddInput(string semantic, string source)
         {
-            input.Add(new DAEInput
+            input.Add(new DAEInput()
             {
                 semantic = semantic,
                 source   = source
@@ -41,7 +41,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public void AddInput(string semantic, string source, uint offset = 0, uint set = 0)
         {
-            input.Add(new DAEInputOffset
+            input.Add(new DAEInputOffset()
             {
                 semantic = semantic,
                 source   = source,

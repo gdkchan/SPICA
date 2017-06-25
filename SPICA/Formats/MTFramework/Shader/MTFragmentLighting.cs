@@ -25,7 +25,7 @@ namespace SPICA.Formats.MTFramework.Shader
 
             for (int Stage = 0; Stage < 6; Stage++)
             {
-                TexEnvStages[Stage] = new PICATexEnvStage
+                TexEnvStages[Stage] = new PICATexEnvStage()
                 {
                     Source   = new PICATexEnvSource(Reader.ReadUInt32()),
                     Operand  = new PICATexEnvOperand(Reader.ReadUInt32()),

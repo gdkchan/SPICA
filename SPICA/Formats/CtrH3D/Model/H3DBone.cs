@@ -13,10 +13,7 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public bool IsSegmentScaleCompensate
         {
-            get
-            {
-                return (Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
-            }
+            get => (Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
             set
             {
                 if (value)
@@ -28,14 +25,8 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public H3DBillboardMode BillboardMode
         {
-            get
-            {
-                return (H3DBillboardMode)BitUtils.GetBits((uint)Flags, 16, 3);
-            }
-            set
-            {
-                Flags = (H3DBoneFlags)BitUtils.SetBits((uint)Flags, (uint)value, 16, 3);
-            }
+            get => (H3DBillboardMode)BitUtils.GetBits((uint)Flags, 16, 3);
+            set => Flags = (H3DBoneFlags)BitUtils.SetBits((uint)Flags, (uint)value, 16, 3);
         }
 
         [Padding(4)] public short ParentIndex;
@@ -49,14 +40,8 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public H3DMetaData MetaData;

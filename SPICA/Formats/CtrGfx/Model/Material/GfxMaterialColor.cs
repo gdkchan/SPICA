@@ -34,14 +34,8 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public float Scale
         {
-            get
-            {
-                return AmbientF.W;
-            }
-            set
-            {
-                AmbientF.W = value;
-            }
+            get => AmbientF.W;
+            set => AmbientF.W = value;
         }
     }
 }

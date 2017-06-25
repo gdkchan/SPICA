@@ -42,14 +42,14 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                 foreach (H3DBone Bone in Mdl.Skeleton)
                 {
-                    SMDNode Node = new SMDNode
+                    SMDNode Node = new SMDNode()
                     {
                         Index       = Index,
                         Name        = Bone.Name,
                         ParentIndex = Bone.ParentIndex
                     };
 
-                    SMDBone B = new SMDBone
+                    SMDBone B = new SMDBone()
                     {
                         NodeIndex   = Index++,
                         Translation = Bone.Translation,
@@ -66,7 +66,7 @@ namespace SPICA.Formats.Generic.StudioMdl
 
                     PICAVertex[] Vertices = Mesh.ToVertices();
 
-                    Meshes.Add(new SMDMesh
+                    Meshes.Add(new SMDMesh()
                     {
                         MaterialName = Mdl.Materials[Mesh.MaterialIndex].Texture0Name + ".png",
                         Vertices     = MeshTransform.GetVerticesList(Mdl.Skeleton, Mesh)
@@ -125,7 +125,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                                     Params[1] = Line.Substring(NameStart, NameLength);
                                     Params[2] = Line.Substring(NameEnd + 1).Trim();
 
-                                    Nodes.Add(new SMDNode
+                                    Nodes.Add(new SMDNode()
                                     {
                                         Index       = int.Parse(Params[0]),
                                         Name        = Params[1],
@@ -134,16 +134,16 @@ namespace SPICA.Formats.Generic.StudioMdl
                                     break;
 
                                 case SMDSection.Skeleton:
-                                    Skeleton.Add(new SMDBone
+                                    Skeleton.Add(new SMDBone()
                                     {
                                         NodeIndex = int.Parse(Params[0]),
-                                        Translation = new Vector3
+                                        Translation = new Vector3()
                                         {
                                             X = ParseFloat(Params[1]),
                                             Y = ParseFloat(Params[2]),
                                             Z = ParseFloat(Params[3])
                                         },
-                                        Rotation = new Vector3
+                                        Rotation = new Vector3()
                                         {
                                             X = ParseFloat(Params[4]),
                                             Y = ParseFloat(Params[5]),
@@ -157,7 +157,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                                     {
                                         if (CurrMesh.MaterialName != Line)
                                         {
-                                            Meshes.Add(CurrMesh = new SMDMesh { MaterialName = Line });
+                                            Meshes.Add(CurrMesh = new SMDMesh() { MaterialName = Line });
                                         }
                                     }
                                     else
@@ -393,7 +393,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                         }
                     }
 
-                    SubMeshes.Add(new H3DSubMesh
+                    SubMeshes.Add(new H3DSubMesh()
                     {
                         Skinning         = H3DSubMeshSkinning.Smooth,
                         BoneIndicesCount = (ushort)BoneIndices.Count,
@@ -446,7 +446,7 @@ namespace SPICA.Formats.Generic.StudioMdl
             {
                 SMDNode Node = Nodes[Bone.NodeIndex];
 
-                Model.Skeleton.Add(new H3DBone
+                Model.Skeleton.Add(new H3DBone()
                 {
                     Name        = Node.Name,
                     ParentIndex = (short)Node.ParentIndex,

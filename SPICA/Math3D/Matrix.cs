@@ -8,7 +8,7 @@ namespace SPICA.Math3D
         //Left-Handed Read
         public static Matrix4x4 ReadMatrix4x4(this BinaryReader Reader)
         {
-            return new Matrix4x4
+            return new Matrix4x4()
             {
                 M11 = Reader.ReadSingle(),
                 M21 = Reader.ReadSingle(),
@@ -31,7 +31,7 @@ namespace SPICA.Math3D
 
         public static Matrix3x4 ReadMatrix3x4(this BinaryReader Reader)
         {
-            return new Matrix3x4
+            return new Matrix3x4()
             {
                 M11 = Reader.ReadSingle(),
                 M21 = Reader.ReadSingle(),
@@ -50,7 +50,7 @@ namespace SPICA.Math3D
 
         public static Matrix3x3 ReadMatrix3x3(this BinaryReader Reader)
         {
-            return new Matrix3x3
+            return new Matrix3x3()
             {
                 M11 = Reader.ReadSingle(),
                 M21 = Reader.ReadSingle(),

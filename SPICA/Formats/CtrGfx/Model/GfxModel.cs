@@ -21,14 +21,8 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public readonly GfxDict<GfxMetaData> MetaData;
@@ -39,10 +33,7 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public bool IsBranchVisible
         {
-            get
-            {
-                return _IsBranchVisible;
-            }
+            get => _IsBranchVisible;
             set
             {
                 _IsBranchVisible = value;

@@ -111,7 +111,7 @@ namespace SPICA.Formats.MTFramework.Model
                     }
                 }
 
-                Materials.Add(new MTMaterial
+                Materials.Add(new MTMaterial()
                 {
                     NameHash         = MaterialNameHash,
                     AlphaBlend       = Shader.GetDescriptor<MTAlphaBlend>(AlphaBlendHash),

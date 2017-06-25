@@ -11,8 +11,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
     {
         private Vector4 TexEnvBufferColorF;
 
-        public GfxFragLight Lighting;
-
+        public GfxFragLight     Lighting;
         public GfxFragLightLUTs LUTs;
 
         [Inline, FixedLength(6)] public readonly GfxTexEnv[] TextureEnvironments;

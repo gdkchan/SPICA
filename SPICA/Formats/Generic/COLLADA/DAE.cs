@@ -228,14 +228,14 @@ namespace SPICA.Formats.Generic.COLLADA
                             Source.name = $"{MeshName}_{Attr.Name}";
                             Source.id   = $"{Source.name}_id";
 
-                            Source.float_array = new DAEArray
+                            Source.float_array = new DAEArray()
                             {
                                 id    = $"{Source.name}_array_id",
                                 count = (uint)(Vertices.Length * Elements),
                                 data  = string.Join(" ", Values)
                             };
 
-                            DAEAccessor Accessor = new DAEAccessor
+                            DAEAccessor Accessor = new DAEAccessor()
                             {
                                 source = $"#{Source.float_array.id}",
                                 count  = (uint)Vertices.Length,
@@ -419,7 +419,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                 foreach (H3DTexture Tex in Scene.Textures)
                 {
-                    library_images.Add(new DAEImage
+                    library_images.Add(new DAEImage()
                     {
                         id        = Tex.Name,
                         init_from = $"./{Tex.Name}.png"

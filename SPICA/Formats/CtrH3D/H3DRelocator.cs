@@ -121,13 +121,7 @@ namespace SPICA.Formats.CtrH3D
                 Flags  = (uint)Target;
                 Flags |= (uint)Source << 4;
 
-                if (PointerAddress > 0x1ffffff)
-                {
-                    //The limit for a pointer value is 25 bits, that is, 32mb addressing space.
-                    //Note: Since most Addresses are actually 4-byte aligned (and the lower 2 bits
-                    //are not stored), the actual limit is 27 bits (128 mb).
-                    throw new OverflowException(string.Format(PointerTooBigEx, PointerAddress));
-                }
+                CheckPtrOvr(PointerAddress);
 
                 BaseStream.Seek(Position, SeekOrigin.Begin);
 
@@ -158,6 +152,13 @@ namespace SPICA.Formats.CtrH3D
             Flags  = (uint)Target;
             Flags |= (uint)H3DSection.Commands << 4;
 
+            CheckPtrOvr(PointerAddress);
+
+            Relocation.Values.Add(new RefValue(PointerAddress | (Flags << 25)));
+        }
+
+        private static void CheckPtrOvr(uint PointerAddress)
+        {
             if (PointerAddress > 0x1ffffff)
             {
                 //The limit for a pointer value is 25 bits, that is, 32mb addressing space.
@@ -165,8 +166,6 @@ namespace SPICA.Formats.CtrH3D
                 //are not stored), the actual limit is 27 bits (128 mb).
                 throw new OverflowException(string.Format(PointerTooBigEx, PointerAddress));
             }
-
-            Relocation.Values.Add(new RefValue(PointerAddress | (Flags << 25)));
         }
 
         private H3DSection GetRelocation(long Position)

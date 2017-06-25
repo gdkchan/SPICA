@@ -8,14 +8,8 @@ namespace SPICA.Formats.CtrGfx.Model.AnimGroup
 
         public string MaterialName
         {
-            get
-            {
-                return _MaterialName;
-            }
-            set
-            {
-                _MaterialName = value ?? throw Exceptions.GetNullException("MaterialName");
-            }
+            get => _MaterialName;
+            set => _MaterialName = value ?? throw Exceptions.GetNullException("MaterialName");
         }
 
         public int TexSamplerIndex;

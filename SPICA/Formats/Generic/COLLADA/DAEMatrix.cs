@@ -13,10 +13,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public static DAEMatrix Identity
         {
-            get
-            {
-                return new DAEMatrix { data = "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1" };
-            }
+            get => new DAEMatrix() { data = "1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1" };
         }
 
         public void Set(params Matrix3x4[] Matrices)

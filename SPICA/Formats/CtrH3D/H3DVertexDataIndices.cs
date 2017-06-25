@@ -85,7 +85,7 @@ namespace SPICA.Formats.CtrH3D
 
             H3DRelocator.AddCmdReloc(Serializer, Section, Position);
 
-            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
+            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue()
             {
                 Parent   = this,
                 Position = Position,

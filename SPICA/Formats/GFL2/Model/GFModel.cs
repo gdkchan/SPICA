@@ -123,7 +123,7 @@ namespace SPICA.Formats.GFL2.Model
             //Skeleton
             foreach (GFBone Bone in Skeleton)
             {
-                Output.Skeleton.Add(new H3DBone
+                Output.Skeleton.Add(new H3DBone()
                 {
                     ParentIndex = (short)Skeleton.FindIndex(x => x.Name == Bone.Parent),
 
@@ -322,7 +322,7 @@ namespace SPICA.Formats.GFL2.Model
                         BoneIndices[Index] = SubMesh.BoneIndices[Index];
                     }
 
-                    SubMeshes.Add(new H3DSubMesh
+                    SubMeshes.Add(new H3DSubMesh()
                     {
                         Skinning         = H3DSubMeshSkinning.Smooth,
                         BoneIndicesCount = SubMesh.BoneIndicesCount,

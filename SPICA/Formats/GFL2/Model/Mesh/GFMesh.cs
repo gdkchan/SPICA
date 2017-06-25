@@ -95,7 +95,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                     BoneIndices[Bone] = Reader.ReadByte();
                 }
 
-                SubMeshes.Add(new GFSubMesh
+                SubMeshes.Add(new GFSubMesh()
                 {
                     BoneIndices      = BoneIndices,
                     BoneIndicesCount = BoneIndicesCount,
@@ -169,7 +169,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                             Name == PICAAttributeName.Color ||
                             Name == PICAAttributeName.BoneWeight ? Scales[1] : 1;
 
-                        SM.FixedAttributes.Add(new PICAFixedAttribute
+                        SM.FixedAttributes.Add(new PICAFixedAttribute()
                         {
                             Name  = Name,
                             Value = Fixed[Index] * Scale
@@ -181,7 +181,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                         int AttributeName = (int)((BufferPermutation >> PermutationIdx * 4) & 0xf);
                         int AttributeFmt = (int)((BufferFormats >> PermutationIdx * 4) & 0xf);
 
-                        PICAAttribute Attrib = new PICAAttribute
+                        PICAAttribute Attrib = new PICAAttribute()
                         {
                             Name     = (PICAAttributeName)AttributeName,
                             Format   = (PICAAttributeFormat)(AttributeFmt & 3),

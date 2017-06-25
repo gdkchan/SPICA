@@ -15,26 +15,14 @@ namespace SPICA.Formats.CtrH3D
 
         public T this[int Index]
         {
-            get
-            {
-                return Values[Index];
-            }
-            set
-            {
-                Values[Index] = value;
-            }
+            get => Values[Index];
+            set => Values[Index] = value;
         }
 
         public T this[string Name]
         {
-            get
-            {
-                return Values[NameTree.Find(Name)];
-            }
-            set
-            {
-                Values[NameTree.Find(Name)] = value;
-            }
+            get => Values[NameTree.Find(Name)];
+            set => Values[NameTree.Find(Name)] = value;
         }
 
         public int Count { get { return Values.Count; } }

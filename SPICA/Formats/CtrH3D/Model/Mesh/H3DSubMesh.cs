@@ -21,10 +21,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
         public ushort[] BoneIndices
         {
-            get
-            {
-                return _BoneIndices;
-            }
+            get => _BoneIndices;
             set
             {
                 if (value == null)
@@ -185,7 +182,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             H3DRelocator.AddCmdReloc(Serializer, Section, Position);
 
-            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
+            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue()
             {
                 Parent   = this,
                 Value    = Data,

@@ -57,7 +57,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                 if ((Mat.ScaleX.Count | Mat.ScaleY.Count) > 0)
                 {
-                    Output.Elements.Add(new H3DAnimationElement
+                    Output.Elements.Add(new H3DAnimationElement()
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimVector2D(Mat.ScaleX, Mat.ScaleY, Motion.FramesCount),
@@ -68,7 +68,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                 if (Mat.Rotation.Count > 0)
                 {
-                    Output.Elements.Add(new H3DAnimationElement
+                    Output.Elements.Add(new H3DAnimationElement()
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimFloat(Mat.Rotation, Motion.FramesCount),
@@ -79,7 +79,7 @@ namespace SPICA.Formats.GFL2.Motion
 
                 if ((Mat.TranslationX.Count | Mat.TranslationY.Count) > 0)
                 {
-                    Output.Elements.Add(new H3DAnimationElement
+                    Output.Elements.Add(new H3DAnimationElement()
                     {
                         Name          = Mat.Name,
                         Content       = GetAnimVector2D(Mat.TranslationX, Mat.TranslationY, Motion.FramesCount),

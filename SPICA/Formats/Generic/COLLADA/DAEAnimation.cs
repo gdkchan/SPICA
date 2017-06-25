@@ -22,7 +22,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public void AddInput(string semantic, string source)
         {
-            input.Add(new DAEInput
+            input.Add(new DAEInput()
             {
                 semantic = semantic,
                 source   = source

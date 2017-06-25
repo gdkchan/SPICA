@@ -8,50 +8,26 @@ namespace SPICA.PICA.Commands
     {
         public float X
         {
-            get
-            {
-                return GetFloat24(Word2 & 0xffffff);
-            }
-            set
-            {
-                CalculateWords(value, Y, Z, W);
-            }
+            get => GetFloat24(Word2 & 0xffffff);
+            set => CalculateWords(value, Y, Z, W);
         }
 
         public float Y
         {
-            get
-            {
-                return GetFloat24((Word2 >> 24) | ((Word1 & 0xffff) << 8));
-            }
-            set
-            {
-                CalculateWords(X, value, Z, W);
-            }
+            get => GetFloat24((Word2 >> 24) | ((Word1 & 0xffff) << 8));
+            set => CalculateWords(X, value, Z, W);
         }
 
         public float Z
         {
-            get
-            {
-                return GetFloat24((Word1 >> 16) | ((Word0 & 0xff) << 16));
-            }
-            set
-            {
-                CalculateWords(X, Y, value, W);
-            }
+            get => GetFloat24((Word1 >> 16) | ((Word0 & 0xff) << 16));
+            set => CalculateWords(X, Y, value, W);
         }
 
         public float W
         {
-            get
-            {
-                return GetFloat24(Word0 >> 8);
-            }
-            set
-            {
-                CalculateWords(X, Y, Z, value);
-            }
+            get => GetFloat24(Word0 >> 8);
+            set => CalculateWords(X, Y, Z, value);
         }
 
         internal uint Word0;

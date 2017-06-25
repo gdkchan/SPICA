@@ -12,14 +12,8 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public readonly GfxDict<GfxMetaData> MetaData;
@@ -28,14 +22,8 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public string TextureName
         {
-            get
-            {
-                return _TextureName;
-            }
-            set
-            {
-                _TextureName = value ?? throw Exceptions.GetNullException("TextureName");
-            }
+            get => _TextureName;
+            set => _TextureName = value ?? throw Exceptions.GetNullException("TextureName");
         }
 
         private uint TexturePtr;

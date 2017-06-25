@@ -26,11 +26,11 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             Rotation = new DAEVector4[3];
 
-            Translation = new DAEVector3 { sid = "translate" };
-            Rotation[0] = new DAEVector4 { sid = "rotateZ" };
-            Rotation[1] = new DAEVector4 { sid = "rotateY" };
-            Rotation[2] = new DAEVector4 { sid = "rotateX" };
-            Scale       = new DAEVector3 { sid = "scale" };
+            Translation = new DAEVector3() { sid = "translate" };
+            Rotation[0] = new DAEVector4() { sid = "rotateZ" };
+            Rotation[1] = new DAEVector4() { sid = "rotateY" };
+            Rotation[2] = new DAEVector4() { sid = "rotateX" };
+            Scale       = new DAEVector3() { sid = "scale" };
 
             Translation.Set(T);
             Rotation[0].Set(new Vector4(0, 0, 1, DAEUtils.RadToDeg(R.Z)));

@@ -194,7 +194,7 @@ namespace SPICA.Serialization
         {
             if (!ObjPointers.ContainsKey(Value))
             {
-                ObjPointers.Add(Value, new ObjectInfo
+                ObjPointers.Add(Value, new ObjectInfo()
                 {
                     Position = (uint)Position,
                     Length   = (int)(BaseStream.Position - Position)
@@ -222,7 +222,7 @@ namespace SPICA.Serialization
             {
                 if (!IsValue)
                 {
-                    RefValue Ref = new RefValue
+                    RefValue Ref = new RefValue()
                     {
                         Value     = Value,
                         Position  = BaseStream.Position,
@@ -331,7 +331,7 @@ namespace SPICA.Serialization
 
         private ObjectInfo GetObjInfo(object Value, FieldInfo Info)
         {
-            ObjectInfo Output = new ObjectInfo
+            ObjectInfo Output = new ObjectInfo()
             {
                 Position = (uint)BaseStream.Position,
                 Length   = 0
@@ -436,7 +436,7 @@ namespace SPICA.Serialization
                         bool HasLength = !Info.IsDefined(typeof(FixedLengthAttribute)) && IsList(Type);
                         bool HasTwoPtr = Info.IsDefined(typeof(RepeatPointerAttribute));
 
-                        RefValue Ref = new RefValue
+                        RefValue Ref = new RefValue()
                         {
                             Parent    = Value,
                             Info      = Info,

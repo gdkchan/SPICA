@@ -22,26 +22,14 @@ namespace SPICA.Formats.CtrGfx
 
         public T this[int Index]
         {
-            get
-            {
-                return Contents[Index];
-            }
-            set
-            {
-                Contents[Index] = value;
-            }
+            get => Contents[Index];
+            set => Contents[Index] = value;
         }
 
         public T this[string Name]
         {
-            get
-            {
-                return Contents[Contents.Find(Name)];
-            }
-            set
-            {
-                Contents[Contents.Find(Name)] = value;
-            }
+            get => Contents[Contents.Find(Name)];
+            set => Contents[Contents.Find(Name)] = value;
         }
 
         public GfxDict()

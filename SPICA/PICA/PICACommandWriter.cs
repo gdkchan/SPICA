@@ -13,12 +13,12 @@ namespace SPICA.PICA
 
             public static implicit operator Cmd(uint Value)
             {
-                return new Cmd { ValUInt = Value };
+                return new Cmd() { ValUInt = Value };
             }
 
             public static implicit operator Cmd(float Value)
             {
-                return new Cmd { ValFloat = Value };
+                return new Cmd() { ValFloat = Value };
             }
         }
 

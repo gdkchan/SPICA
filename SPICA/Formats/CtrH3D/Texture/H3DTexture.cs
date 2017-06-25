@@ -23,14 +23,8 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public PICATextureFormat Format
         {
-            get
-            {
-                return (PICATextureFormat)_Format;
-            }
-            set
-            {
-                _Format = (byte)value;
-            }
+            get => (PICATextureFormat)_Format;
+            set => _Format = (byte)value;
         }
 
         [Padding(4)] public byte MipmapSize;
@@ -39,28 +33,16 @@ namespace SPICA.Formats.CtrH3D.Texture
 
         public string Name
         {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
         public bool IsCubeTexture { get { return RawBufferZNeg != null; } }
 
         public byte[] RawBuffer
         {
-            get
-            {
-                return RawBufferXPos;
-            }
-            set
-            {
-                RawBufferXPos = value;
-            }
+            get => RawBufferXPos;
+            set => RawBufferXPos = value;
         }
 
         [Ignore] public byte[] RawBufferXPos;
@@ -272,7 +254,7 @@ namespace SPICA.Formats.CtrH3D.Texture
 
             H3DRelocator.AddCmdReloc(Serializer, H3DSection.RawDataTexture, Position);
 
-            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue
+            Serializer.Sections[(uint)H3DSectionId.RawData].Values.Add(new RefValue()
             {
                 Parent   = this,
                 Value    = RawBufferXPos,
