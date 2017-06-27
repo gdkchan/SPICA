@@ -3,6 +3,8 @@ using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
+using System.IO;
+
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
     public struct GfxFragOpStencil : ICustomSerialization
@@ -34,6 +36,30 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
+            RebuildCommands();
+
+            return false;
+        }
+
+        internal byte[] GetBytes()
+        {
+            using (MemoryStream MS = new MemoryStream())
+            {
+                BinaryWriter Writer = new BinaryWriter(MS);
+
+                RebuildCommands();
+
+                foreach (uint Cmd in Commands)
+                {
+                    Writer.Write(Cmd);
+                }
+
+                return MS.ToArray();
+            }
+        }
+
+        private void RebuildCommands()
+        {
             PICACommandWriter Writer = new PICACommandWriter();
 
             Writer.SetCommand(PICARegister.GPUREG_STENCIL_TEST, Test.ToUInt32(), 13);
@@ -41,8 +67,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
             Writer.SetCommand(PICARegister.GPUREG_STENCIL_OP, Operation.ToUInt32());
 
             Commands = Writer.GetBuffer();
-
-            return false;
         }
     }
 }

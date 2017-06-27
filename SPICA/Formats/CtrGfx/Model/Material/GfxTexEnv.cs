@@ -3,6 +3,7 @@ using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+
 using System.IO;
 
 namespace SPICA.Formats.CtrGfx.Model.Material

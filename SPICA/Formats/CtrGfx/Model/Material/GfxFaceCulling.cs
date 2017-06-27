@@ -1,5 +1,7 @@
 ﻿using SPICA.PICA.Commands;
 
+using System;
+
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
     public enum GfxFaceCulling : uint
@@ -20,9 +22,9 @@ namespace SPICA.Formats.CtrGfx.Model.Material
                 case GfxFaceCulling.BackFace:  return PICAFaceCulling.BackFace;
                 case GfxFaceCulling.Always:    return PICAFaceCulling.FrontFace;
                 case GfxFaceCulling.Never:     return PICAFaceCulling.Never;
-            }
 
-            return 0;
+                default: throw new ArgumentException($"Invalid PICA Face Culling {FaceCulling}!");
+            }
         }
     }
 }

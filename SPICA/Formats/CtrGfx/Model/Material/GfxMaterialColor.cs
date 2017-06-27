@@ -1,6 +1,7 @@
 ﻿using SPICA.Math3D;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
+
 using System.IO;
 using System.Numerics;
 

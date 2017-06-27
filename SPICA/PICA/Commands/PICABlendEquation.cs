@@ -6,6 +6,6 @@
         FuncSubtract,
         FuncReverseSubtract,
         Min,
-        Max,
+        Max
     }
 }

@@ -74,6 +74,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxFragOpStencil.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxFresnelSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxFragLightLUT.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxLogicalOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxLUTReference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxMaterial.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxMaterialColor.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxShaderDescFlags.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxShaderReference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxShaderParam.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTestFunc.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTexEnvConstant.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTexCoordConfig.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Formats\CtrGfx\Model\Material\GfxTexEnv.cs" />

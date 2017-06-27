@@ -84,11 +84,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
             TexEnvBufferColorF = TexEnvBufferColor.ToVector4();
 
-            for (int i = 0; i < 6 && TextureEnvironments[i] != null; i++)
-            {
-                TextureEnvironments[i].StageIndex = i;
-            }
-
             return false;
         }
     }

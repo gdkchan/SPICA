@@ -79,8 +79,7 @@ namespace SPICA.Formats.CtrGfx
                 BinaryDeserializer Deserializer = new BinaryDeserializer(Input, GetSerializationOptions());
 
                 GfxHeader Header = Deserializer.Deserialize<GfxHeader>();
-
-                Gfx Scene = Deserializer.Deserialize<Gfx>();
+                Gfx       Scene  = Deserializer.Deserialize<Gfx>();
 
                 return Scene;
             }
@@ -91,8 +90,7 @@ namespace SPICA.Formats.CtrGfx
             BinaryDeserializer Deserializer = new BinaryDeserializer(Input, GetSerializationOptions());
 
             GfxHeader Header = Deserializer.Deserialize<GfxHeader>();
-
-            Gfx Scene = Deserializer.Deserialize<Gfx>();
+            Gfx       Scene  = Deserializer.Deserialize<Gfx>();
 
             return Scene.ToH3D();
         }
@@ -389,6 +387,7 @@ namespace SPICA.Formats.CtrGfx
                         }
 
                         TM.LODBias = TexMapper.LODBias;
+                        TM.MinLOD  = TexMapper.MinLOD;
 
                         TM.BorderColor = TexMapper.BorderColor;
 

@@ -46,7 +46,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
                 BinaryWriter Writer = new BinaryWriter(MS);
 
                 Writer.Write((byte)(Test.Enabled ? 1 : 0));
-                Writer.Write(GfxMaterial.GetTestFunc(Test.Function));
+                Writer.Write((uint)Test.Function.ToGfxTestFunc());
                 Writer.Write(Test.Reference / (float)0xff);
 
                 return MS.ToArray();

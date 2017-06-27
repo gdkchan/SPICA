@@ -1,10 +1,8 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Math3D;
-using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -42,11 +40,10 @@ namespace SPICA.Formats.CtrGfx.Model.Material
         [Inline, FixedLength(3)] public readonly GfxTextureCoord[]  TextureCoords;
         [Inline, FixedLength(3)] public readonly GfxTextureMapper[] TextureMappers;
 
-        public readonly GfxProcTextureMapper ProceduralTextureMapper;
+        public GfxProcTextureMapper ProceduralTextureMapper;
 
         public readonly GfxShaderReference Shader;
-
-        public readonly GfxFragShader FragmentShader;
+        public readonly GfxFragShader      FragmentShader;
 
         public int ShaderProgramDescIndex;
 
@@ -74,6 +71,11 @@ namespace SPICA.Formats.CtrGfx.Model.Material
         {
             TextureCoords  = new GfxTextureCoord[3];
             TextureMappers = new GfxTextureMapper[3];
+
+            Shader         = new GfxShaderReference();
+            FragmentShader = new GfxFragShader();
+
+            ShaderParameters = new List<GfxShaderParam>();
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer) { }
@@ -83,6 +85,11 @@ namespace SPICA.Formats.CtrGfx.Model.Material
             for (int i = 0; i < 3 && TextureMappers[i] != null; i++)
             {
                 TextureMappers[i].MapperIndex = i;
+            }
+
+            for (int i = 0; i < 6 && FragmentShader.TextureEnvironments[i] != null; i++)
+            {
+                FragmentShader.TextureEnvironments[i].StageIndex = i;
             }
 
             CalcMaterialFlagsHash();
@@ -102,7 +109,14 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         private void CalcMaterialFlagsHash()
         {
-            MaterialFlagsHash = HashBuffer(UInt32ToBuffer((uint)(Flags | GfxMaterialFlags.IsPolygonOffsetEnabled)));
+            using (MemoryStream MS = new MemoryStream())
+            {
+                BinaryWriter Writer = new BinaryWriter(MS);
+
+                Writer.Write((uint)(Flags | GfxMaterialFlags.IsPolygonOffsetEnabled));
+
+                MaterialFlagsHash = HashBuffer(MS.ToArray());
+            }
         }
 
         private void CalcShaderParamsHash()
@@ -172,8 +186,12 @@ namespace SPICA.Formats.CtrGfx.Model.Material
             {
                 BinaryWriter Writer = new BinaryWriter(MS);
 
+                byte FragLightEnb = (Flags & GfxMaterialFlags.IsFragmentLightingEnabled) != 0
+                    ? (byte)1
+                    : (byte)0;
+
                 Writer.Write(FragmentShader.Lighting.GetBytes());
-                Writer.Write((byte)((Flags & GfxMaterialFlags.IsFragmentLightingEnabled) != 0 ? 1 : 0));
+                Writer.Write(FragLightEnb);
 
                 FragLightHash = HashBuffer(MS.ToArray());
             }   
@@ -186,7 +204,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         private void CalcTextureEnvironmentHash()
         {
-            //FIXME: This hash is different from the original. Not that it makes any difference anyway.
             using (MemoryStream MS = new MemoryStream())
             {
                 BinaryWriter Writer = new BinaryWriter(MS);
@@ -209,16 +226,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         private void CalcFragOpHash()
         {
-            FragOpHash = HashBuffer(FragmentShader.AlphaTest.GetBytes());
-        }
-
-        private byte[] UInt32ToBuffer(uint Value)
-        {
-            byte[] Buffer = BitConverter.GetBytes(Value);
-
-            if (!BitConverter.IsLittleEndian) Array.Reverse(Buffer);
-
-            return Buffer;
+            FragOpHash = HashBuffer(FragmentOperation.GetBytes());
         }
 
         private uint HashBuffer(byte[] Input)
@@ -236,27 +244,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
                 return Hash != 0 ? Hash : 1;
             }
-        }
-
-        internal static uint GetTestFunc(PICATestFunc TestFunc)
-        {
-            //Too much to ask to use the same values the GPU use?
-            //Really hate to convert between those stupid inconsistent enumerations.
-            //TODO: Axe this since the hash value doesn't matter, the game isn't going to verify this.
-            //It's only necessary to be unique per material setting.
-            switch (TestFunc)
-            {
-                case PICATestFunc.Never:    return 0;
-                case PICATestFunc.Always:   return 1;
-                case PICATestFunc.Less:     return 2;
-                case PICATestFunc.Lequal:   return 3;
-                case PICATestFunc.Equal:    return 4;
-                case PICATestFunc.Gequal:   return 5;
-                case PICATestFunc.Greater:  return 6;
-                case PICATestFunc.Notequal: return 7;
-            }
-
-            return 0;
         }
     }
 }

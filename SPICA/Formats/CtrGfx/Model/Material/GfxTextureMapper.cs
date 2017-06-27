@@ -11,9 +11,8 @@ namespace SPICA.Formats.CtrGfx.Model.Material
     {
         private uint DynamicAlloc;
 
-        public GfxTextureReference Texture;
-
-        internal GfxTextureSampler Sampler;
+        public   GfxTextureReference Texture;
+        internal GfxTextureSampler   Sampler;
 
         [Inline, FixedLength(14)] private uint[] Commands;
 
@@ -35,6 +34,7 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         public GfxTextureMapper()
         {
+            Texture = new GfxTextureReference();
             Sampler = new GfxTextureSamplerStd() { Parent = this };
         }
 
