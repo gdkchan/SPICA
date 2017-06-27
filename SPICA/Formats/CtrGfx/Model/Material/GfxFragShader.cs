@@ -60,7 +60,34 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //TODO
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            uint UpdateColor = 0;
+
+            if (TextureEnvironments[1].Stage.UpdateColorBuffer) UpdateColor |= 0x100;
+            if (TextureEnvironments[2].Stage.UpdateColorBuffer) UpdateColor |= 0x200;
+            if (TextureEnvironments[3].Stage.UpdateColorBuffer) UpdateColor |= 0x400;
+            if (TextureEnvironments[4].Stage.UpdateColorBuffer) UpdateColor |= 0x800;
+
+            if (TextureEnvironments[1].Stage.UpdateAlphaBuffer) UpdateColor |= 0x1000;
+            if (TextureEnvironments[2].Stage.UpdateAlphaBuffer) UpdateColor |= 0x2000;
+            if (TextureEnvironments[3].Stage.UpdateAlphaBuffer) UpdateColor |= 0x4000;
+            if (TextureEnvironments[4].Stage.UpdateAlphaBuffer) UpdateColor |= 0x8000;
+
+            Writer.SetCommand(PICARegister.GPUREG_TEXENV_BUFFER_COLOR, TexEnvBufferColor.ToUInt32());
+
+            Writer.SetCommand(PICARegister.GPUREG_TEXENV_UPDATE_BUFFER, UpdateColor, 2);
+
+            Writer.SetCommand(PICARegister.GPUREG_LIGHTING_CONFIG0, 0x400u, 2);
+
+            Commands = Writer.GetBuffer();
+
+            TexEnvBufferColorF = TexEnvBufferColor.ToVector4();
+
+            for (int i = 0; i < 6 && TextureEnvironments[i] != null; i++)
+            {
+                TextureEnvironments[i].StageIndex = i;
+            }
 
             return false;
         }

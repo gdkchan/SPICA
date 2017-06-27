@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Numerics;
 
 namespace SPICA.Math3D
 {
@@ -44,14 +46,25 @@ namespace SPICA.Math3D
 
         public uint ToUInt32()
         {
-            uint Param = 0;
+            uint Param;
 
-            Param |= (uint)R << 0;
+            Param  = (uint)R << 0;
             Param |= (uint)G << 8;
             Param |= (uint)B << 16;
             Param |= (uint)A << 24;
 
             return Param;
+        }
+
+        private const float ByteToFloat = 1f / 255;
+
+        public Vector4 ToVector4()
+        {
+            return new Vector4(
+                (float)Math.Round(R * ByteToFloat, 2),
+                (float)Math.Round(G * ByteToFloat, 2),
+                (float)Math.Round(B * ByteToFloat, 2),
+                (float)Math.Round(A * ByteToFloat, 2));
         }
 
         public void Write(BinaryWriter Writer)

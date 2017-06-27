@@ -248,7 +248,7 @@ namespace SPICA.Formats.CtrGfx
 
                             SM.Indices = Face.FaceDescriptors[0].Indices;
 
-                            SM.Indices = new ushort[Face.FaceDescriptors[0].Indices.Length * 9];
+                            SM.Indices = new ushort[Face.FaceDescriptors[0].Indices.Length];
 
                             for (int i = 0; i < Face.FaceDescriptors[0].Indices.Length; i++)
                             {
@@ -296,6 +296,7 @@ namespace SPICA.Formats.CtrGfx
                     Mat.MaterialParams.Constant3Color = Material.Colors.Constant3;
                     Mat.MaterialParams.Constant4Color = Material.Colors.Constant4;
                     Mat.MaterialParams.Constant5Color = Material.Colors.Constant5;
+                    Mat.MaterialParams.ColorScale     = Material.Colors.Scale;
 
                     if (Material.Rasterization.IsPolygonOffsetEnabled)
                     {

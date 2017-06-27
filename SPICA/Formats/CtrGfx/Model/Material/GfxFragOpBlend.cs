@@ -3,7 +3,7 @@ using SPICA.PICA;
 using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
-
+using System;
 using System.Numerics;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
@@ -49,7 +49,23 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //TODO
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            uint LogicalOp = (uint)LogicalOperation & 0xf;
+
+            Writer.SetCommand(PICARegister.GPUREG_COLOR_OPERATION, true,
+                ColorOperation.ToUInt32(),
+                Function.ToUInt32(),
+                LogicalOp,
+                Color.ToUInt32());
+
+            Commands = new uint[6];
+
+            Buffer.BlockCopy(Writer.GetBuffer(), 0, Commands, 0, 5);
+
+            Commands = Writer.GetBuffer();
+
+            ColorF = Color.ToVector4();
 
             return false;
         }

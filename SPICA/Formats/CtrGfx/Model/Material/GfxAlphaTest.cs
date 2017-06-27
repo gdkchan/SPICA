@@ -3,6 +3,8 @@ using SPICA.PICA.Commands;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
+using System.IO;
+
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
     public struct GfxAlphaTest : ICustomSerialization
@@ -28,9 +30,27 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //TODO
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            Writer.SetCommand(PICARegister.GPUREG_FRAGOP_ALPHA_TEST, Test.ToUInt32());
+
+            Commands = Writer.GetBuffer();
 
             return false;
+        }
+
+        internal byte[] GetBytes()
+        {
+            using (MemoryStream MS = new MemoryStream())
+            {
+                BinaryWriter Writer = new BinaryWriter(MS);
+
+                Writer.Write((byte)(Test.Enabled ? 1 : 0));
+                Writer.Write(GfxMaterial.GetTestFunc(Test.Function));
+                Writer.Write(Test.Reference / (float)0xff);
+
+                return MS.ToArray();
+            }
         }
     }
 }

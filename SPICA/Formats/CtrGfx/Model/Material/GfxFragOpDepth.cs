@@ -30,7 +30,20 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //TODO
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            uint ZDepth;
+
+            if ((uint)ColorMask.DepthFunc > 1)
+                ZDepth = (uint)ColorMask.DepthFunc > 5 ? 2u : 3u;
+            else
+                ZDepth = (uint)ColorMask.DepthFunc;
+
+            Writer.SetCommand(PICARegister.GPUREG_DEPTH_COLOR_MASK, ColorMask.ToUInt32(), 1);
+
+            Writer.SetCommand(PICARegister.GPUREG_GAS_DELTAZ_DEPTH, ZDepth << 24, 8);
+
+            Commands = Writer.GetBuffer();
 
             return false;
         }

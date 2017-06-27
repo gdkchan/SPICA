@@ -34,7 +34,13 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            //TODO
+            PICACommandWriter Writer = new PICACommandWriter();
+
+            Writer.SetCommand(PICARegister.GPUREG_STENCIL_TEST, Test.ToUInt32(), 13);
+
+            Writer.SetCommand(PICARegister.GPUREG_STENCIL_OP, Operation.ToUInt32());
+
+            Commands = Writer.GetBuffer();
 
             return false;
         }
