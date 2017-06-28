@@ -158,9 +158,10 @@ void main() {
 			vec3 c1 = cross(Normal, vec3(0, 0, 1));
 			vec3 c2 = cross(Normal, vec3(0, 1, 0));
 
-			Tangent = length(c1) > length(c2)
-				? Tangent = normalize(c1)
-				: Tangent = normalize(c2);
+			if (length(c1) > length(c2))
+				Tangent = normalize(c1);
+			else
+				Tangent = normalize(c2);
 		}
 	}
 
