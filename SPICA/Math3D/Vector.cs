@@ -68,6 +68,15 @@ namespace SPICA.Math3D
             Writer.Write(q.W);
         }
 
+        public static Quaternion CreateRotationBetweenVectors(Vector3 a, Vector3 b)
+        {
+            float qw = Vector3.Dot(a, b) + (float)Math.Sqrt(a.LengthSquared() * b.LengthSquared());
+
+            Quaternion Rotation = new Quaternion(Vector3.Cross(a, b), qw);
+
+            return Quaternion.Normalize(Rotation);
+        }
+
         public static Vector3 ToEuler(this Quaternion q)
         {
             return new Vector3(

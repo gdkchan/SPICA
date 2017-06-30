@@ -11,9 +11,9 @@ namespace SPICA.Formats.GFL.Motion
     {
         public string Name;
 
-        public byte UnkIndex0;
-        public byte ParentIndex;
-        public byte UnkIndex1;
+        public int  ParentIndex;
+        public byte Flags;
+        public byte ChildsCount;
 
         public Vector3    Translation;
         public Quaternion QuatRotation;
@@ -24,20 +24,25 @@ namespace SPICA.Formats.GFL.Motion
 
             byte BonesCount = Reader.ReadByte();
 
-            Output.Add(new GF1MotBone() { Name = "Origin" });
+            //This seems to be the index of the first bone of this Skeleton on the H3D Skeleton.
+            //This bone also seems to be maybe used to translate the model around on the world.
+            byte FirstSkeletonBoneIndex = Reader.ReadByte();
+
+            Output.Add(new GF1MotBone()
+            {
+                Name        = "Origin",
+                ParentIndex = -1
+            });
 
             for (int Index = 1; Index < BonesCount; Index++)
             {
                 Output.Add(new GF1MotBone()
                 {
-                    UnkIndex0   = Reader.ReadByte(),
                     ParentIndex = Reader.ReadByte(),
-                    UnkIndex1   = Reader.ReadByte()
+                    Flags       = Reader.ReadByte(),
+                    ChildsCount = Reader.ReadByte()
                 });
             }
-
-            //This usually have the value one, no idea of what it is supposed to be, maybe padding?
-            Reader.ReadByte();
 
             for (int Index = 1; Index < BonesCount; Index++)
             {

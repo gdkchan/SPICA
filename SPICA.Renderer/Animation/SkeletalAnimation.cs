@@ -29,6 +29,7 @@ namespace SPICA.Renderer.Animation
         public Matrix4[] GetSkeletonTransforms(H3DDict<H3DBone> Skeleton)
         {
             Matrix4[] Output = new Matrix4[Skeleton.Count];
+
             Bone[] FrameSkeleton = new Bone[Skeleton.Count];
 
             int Index = 0;
@@ -115,17 +116,17 @@ namespace SPICA.Renderer.Animation
 
         private void SetBone(H3DAnimTransform Transform, ref Bone B)
         {
-            if (Transform.ScaleX.HasData)       B.Scale.X       = Transform.ScaleX.GetFrameValue(Frame);
-            if (Transform.ScaleY.HasData)       B.Scale.Y       = Transform.ScaleY.GetFrameValue(Frame);
-            if (Transform.ScaleZ.HasData)       B.Scale.Z       = Transform.ScaleZ.GetFrameValue(Frame);
+            if (Transform.ScaleX.Exists)       B.Scale.X       = Transform.ScaleX.GetFrameValue(Frame);
+            if (Transform.ScaleY.Exists)       B.Scale.Y       = Transform.ScaleY.GetFrameValue(Frame);
+            if (Transform.ScaleZ.Exists)       B.Scale.Z       = Transform.ScaleZ.GetFrameValue(Frame);
 
-            if (Transform.RotationX.HasData)    B.Rotation.X    = Transform.RotationX.GetFrameValue(Frame);
-            if (Transform.RotationY.HasData)    B.Rotation.Y    = Transform.RotationY.GetFrameValue(Frame);
-            if (Transform.RotationZ.HasData)    B.Rotation.Z    = Transform.RotationZ.GetFrameValue(Frame);
+            if (Transform.RotationX.Exists)    B.Rotation.X    = Transform.RotationX.GetFrameValue(Frame);
+            if (Transform.RotationY.Exists)    B.Rotation.Y    = Transform.RotationY.GetFrameValue(Frame);
+            if (Transform.RotationZ.Exists)    B.Rotation.Z    = Transform.RotationZ.GetFrameValue(Frame);
 
-            if (Transform.TranslationX.HasData) B.Translation.X = Transform.TranslationX.GetFrameValue(Frame);
-            if (Transform.TranslationY.HasData) B.Translation.Y = Transform.TranslationY.GetFrameValue(Frame);
-            if (Transform.TranslationZ.HasData) B.Translation.Z = Transform.TranslationZ.GetFrameValue(Frame);
+            if (Transform.TranslationX.Exists) B.Translation.X = Transform.TranslationX.GetFrameValue(Frame);
+            if (Transform.TranslationY.Exists) B.Translation.Y = Transform.TranslationY.GetFrameValue(Frame);
+            if (Transform.TranslationZ.Exists) B.Translation.Z = Transform.TranslationZ.GetFrameValue(Frame);
         }
 
         private void SetBone(H3DAnimQuatTransform Transform, ref Bone B)

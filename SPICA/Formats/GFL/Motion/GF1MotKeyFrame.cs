@@ -2,7 +2,7 @@
 {
     struct GF1MotKeyFrame
     {
-        public int Frame;
+        public int   Frame;
         public float Value;
         public float Slope;
 

@@ -1,5 +1,6 @@
 ﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
+using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.GFL;
 using SPICA.Formats.GFL.Motion;
 
@@ -34,7 +35,7 @@ namespace SPICA.WinForms.Formats
 
                 foreach (GF1Motion Mot in MotPack)
                 {
-                    H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation();
+                    H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation(Output.Models[0].Skeleton);
 
                     SklAnim.Name = $"Motion_{Mot.Index}";
 

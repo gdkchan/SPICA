@@ -466,9 +466,9 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             if (IsRotation)
                             {
-                                if (i == 1 && !((H3DAnimTransform)Elem.Content).RotationX.HasData) i++;
-                                if (i == 2 && !((H3DAnimTransform)Elem.Content).RotationY.HasData) i++;
-                                if (i == 3 && !((H3DAnimTransform)Elem.Content).RotationZ.HasData) i++;
+                                if (i == 1 && !((H3DAnimTransform)Elem.Content).RotationX.Exists) i++;
+                                if (i == 2 && !((H3DAnimTransform)Elem.Content).RotationY.Exists) i++;
+                                if (i == 3 && !((H3DAnimTransform)Elem.Content).RotationZ.Exists) i++;
 
                                 IsRotation = i < 4;
                             }
@@ -495,9 +495,9 @@ namespace SPICA.Formats.Generic.COLLADA
                                             H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
 
                                             InvScale /= new Vector3(
-                                                PTrans.ScaleX.HasData ? PTrans.ScaleX.GetFrameValue(Frame) : Parent.Scale.X,
-                                                PTrans.ScaleY.HasData ? PTrans.ScaleY.GetFrameValue(Frame) : Parent.Scale.Y,
-                                                PTrans.ScaleZ.HasData ? PTrans.ScaleZ.GetFrameValue(Frame) : Parent.Scale.Z);
+                                                PTrans.ScaleX.Exists ? PTrans.ScaleX.GetFrameValue(Frame) : Parent.Scale.X,
+                                                PTrans.ScaleY.Exists ? PTrans.ScaleY.GetFrameValue(Frame) : Parent.Scale.Y,
+                                                PTrans.ScaleZ.Exists ? PTrans.ScaleZ.GetFrameValue(Frame) : Parent.Scale.Z);
                                         }
                                         else
                                         {
@@ -510,22 +510,22 @@ namespace SPICA.Formats.Generic.COLLADA
                                         //Translation
                                         case 0:
                                             StrTrans = DAEUtils.VectorStr(new Vector3(
-                                                Transform.TranslationX.HasData //X
+                                                Transform.TranslationX.Exists //X
                                                 ? Transform.TranslationX.GetFrameValue(Frame) : SklBone.Translation.X,
-                                                Transform.TranslationY.HasData //Y
+                                                Transform.TranslationY.Exists //Y
                                                 ? Transform.TranslationY.GetFrameValue(Frame) : SklBone.Translation.Y,
-                                                Transform.TranslationZ.HasData //Z
+                                                Transform.TranslationZ.Exists //Z
                                                 ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z));
                                             break;
 
                                         //Scale
                                         case 4:
                                             StrTrans = DAEUtils.VectorStr(InvScale * new Vector3(
-                                                Transform.ScaleX.HasData //X
+                                                Transform.ScaleX.Exists //X
                                                 ? Transform.ScaleX.GetFrameValue(Frame) : SklBone.Scale.X,
-                                                Transform.ScaleY.HasData //Y
+                                                Transform.ScaleY.Exists //Y
                                                 ? Transform.ScaleY.GetFrameValue(Frame) : SklBone.Scale.Y,
-                                                Transform.ScaleZ.HasData //Z
+                                                Transform.ScaleZ.Exists //Z
                                                 ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z));
                                             break;
 

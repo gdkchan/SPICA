@@ -24,7 +24,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         [Ignore] public readonly List<KeyFrame> KeyFrames;
 
-        public bool HasData { get { return KeyFrames.Count > 0; } }
+        public bool Exists => KeyFrames.Count > 0;
 
         public H3DFloatKeyFrameGroup()
         {
@@ -87,7 +87,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            if (HasData)
+            if (Exists)
             {
                 Count = (ushort)KeyFrames.Count;
 

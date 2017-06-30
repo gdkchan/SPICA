@@ -55,7 +55,7 @@ namespace SPICA.Renderer.Animation
                     {
                         H3DFloatKeyFrameGroup Float = ((H3DAnimFloat)Elem.Content).Value;
 
-                        if (!Float.HasData) continue;
+                        if (!Float.Exists) continue;
 
                         float Value = Float.GetFrameValue(Frame);
 
@@ -92,8 +92,8 @@ namespace SPICA.Renderer.Animation
 
         private void SetVector2(H3DAnimVector2D Vector, ref Vector2 Target)
         {
-            if (Vector.X.HasData) Target.X = Vector.X.GetFrameValue(Frame);
-            if (Vector.Y.HasData) Target.Y = Vector.Y.GetFrameValue(Frame);
+            if (Vector.X.Exists) Target.X = Vector.X.GetFrameValue(Frame);
+            if (Vector.Y.Exists) Target.Y = Vector.Y.GetFrameValue(Frame);
         }
     }
 }

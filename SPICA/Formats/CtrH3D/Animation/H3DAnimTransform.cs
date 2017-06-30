@@ -3,6 +3,7 @@ using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System.IO;
+using System.Numerics;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
@@ -23,17 +24,23 @@ namespace SPICA.Formats.CtrH3D.Animation
         [Ignore] private H3DFloatKeyFrameGroup _TranslationY;
         [Ignore] private H3DFloatKeyFrameGroup _TranslationZ;
 
-        public H3DFloatKeyFrameGroup ScaleX       { get { return _ScaleX;       } }
-        public H3DFloatKeyFrameGroup ScaleY       { get { return _ScaleY;       } }
-        public H3DFloatKeyFrameGroup ScaleZ       { get { return _ScaleZ;       } }
+        public H3DFloatKeyFrameGroup ScaleX       => _ScaleX;
+        public H3DFloatKeyFrameGroup ScaleY       => _ScaleY;
+        public H3DFloatKeyFrameGroup ScaleZ       => _ScaleZ;
 
-        public H3DFloatKeyFrameGroup RotationX    { get { return _RotationX;    } }
-        public H3DFloatKeyFrameGroup RotationY    { get { return _RotationY;    } }
-        public H3DFloatKeyFrameGroup RotationZ    { get { return _RotationZ;    } }
+        public H3DFloatKeyFrameGroup RotationX    => _RotationX;
+        public H3DFloatKeyFrameGroup RotationY    => _RotationY;
+        public H3DFloatKeyFrameGroup RotationZ    => _RotationZ;
 
-        public H3DFloatKeyFrameGroup TranslationX { get { return _TranslationX; } }
-        public H3DFloatKeyFrameGroup TranslationY { get { return _TranslationY; } }
-        public H3DFloatKeyFrameGroup TranslationZ { get { return _TranslationZ; } }
+        public H3DFloatKeyFrameGroup TranslationX => _TranslationX;
+        public H3DFloatKeyFrameGroup TranslationY => _TranslationY;
+        public H3DFloatKeyFrameGroup TranslationZ => _TranslationZ;
+
+        public bool ScaleExists       => _ScaleX.Exists       || _ScaleY.Exists       || _ScaleZ.Exists;
+
+        public bool RotationExists    => _RotationX.Exists    || _RotationY.Exists    || _RotationZ.Exists;
+
+        public bool TranslationExists => _TranslationX.Exists || _TranslationY.Exists || _TranslationZ.Exists;
 
         public H3DAnimTransform()
         {

@@ -6,6 +6,8 @@ namespace SPICA.Formats.GFL.Motion
     {
         public string Name;
 
+        public bool IsWorldSpace;
+
         public readonly List<GF1MotKeyFrame> ScaleX;
         public readonly List<GF1MotKeyFrame> ScaleY;
         public readonly List<GF1MotKeyFrame> ScaleZ;

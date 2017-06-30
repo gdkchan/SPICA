@@ -1,5 +1,6 @@
 ﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
+using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.GFL;
 using SPICA.Formats.GFL.Motion;
 
@@ -9,7 +10,7 @@ namespace SPICA.WinForms.Formats
 {
     class GFPkmnSklAnim
     {
-        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header)
+        public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, H3DDict<H3DBone> Skeleton)
         {
             H3D Output = new H3D();
 
@@ -27,7 +28,7 @@ namespace SPICA.WinForms.Formats
 
                 foreach (GF1Motion Mot in MotPack)
                 {
-                    H3DAnimation Anim = Mot.ToH3DSkeletalAnimation();
+                    H3DAnimation Anim = Mot.ToH3DSkeletalAnimation(Skeleton);
 
                     Anim.Name = $"Motion_{Index++}";
 
