@@ -296,10 +296,10 @@ namespace SPICA.Formats.Generic.COLLADA
                             Controller.skin.source = $"#{Geometry.id}";
                             Controller.skin.vertex_weights.count = (uint)Vertices.Length;
 
-                            string[] BoneNames = new string[SM.BoneIndicesCount];
-                            string[] BindPoses = new string[SM.BoneIndicesCount];
+                            string[] BoneNames = new string[SM.BoneIndices.Length];
+                            string[] BindPoses = new string[SM.BoneIndices.Length];
 
-                            for (int Index = 0; Index < SM.BoneIndicesCount; Index++)
+                            for (int Index = 0; Index < SM.BoneIndices.Length; Index++)
                             {
                                 if (SM.BoneIndices[Index] >= Mdl.Skeleton.Count) break;
 
@@ -317,6 +317,8 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             if (SM.Skinning == H3DSubMeshSkinning.Smooth)
                             {
+                                int TotalCount = 0;
+
                                 foreach (PICAVertex Vertex in Vertices)
                                 {
                                     int Count = 0;
@@ -347,7 +349,11 @@ namespace SPICA.Formats.Generic.COLLADA
                                     }
 
                                     vcount[vci++] = Count;
+
+                                    TotalCount += Count;
                                 }
+
+                                Array.Resize(ref v, TotalCount * 2);
                             }
                             else
                             {
