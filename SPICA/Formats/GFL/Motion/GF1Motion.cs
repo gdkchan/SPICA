@@ -11,7 +11,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.GFL.Motion
 {
-    class GF1Motion
+    public class GF1Motion
     {
         public ushort FramesCount;
 

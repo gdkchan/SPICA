@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    class MTDepthStencil : MTShaderEffect
+    public class MTDepthStencil : MTShaderEffect
     {
         public bool DepthTest;
         public bool DepthWrite;

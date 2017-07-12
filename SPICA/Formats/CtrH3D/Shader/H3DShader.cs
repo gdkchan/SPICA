@@ -4,7 +4,28 @@ namespace SPICA.Formats.CtrH3D.Shader
 {
     public class H3DShader : INamed
     {
-        //TODO
-        public string Name { get { return null; } set { } }
+        public byte[] Program;
+
+        public uint[] ShaderAllCommands;
+        public uint[] ShaderCommands;
+        public uint[] ShaderSetupCommands;
+
+        public short VertexShaderIndex;
+        public short GeometryShaderIndex;
+
+        public readonly H3DShaderBinding Binding;
+
+        private string _Name;
+
+        public string Name
+        {
+            get => _Name;
+            set => _Name = value ?? throw Exceptions.GetNullException("Name");
+        }
+
+        public H3DShader()
+        {
+            Binding = new H3DShaderBinding();
+        }
     }
 }

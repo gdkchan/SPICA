@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.GFL.Motion
 {
-    class GF1MotBoneTransform
+    public class GF1MotBoneTransform
     {
         public string Name;
 

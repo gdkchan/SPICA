@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.MTFramework.Model
 {
-    class MTMesh
+    public class MTMesh
     {
         public ushort[] Indices;
 

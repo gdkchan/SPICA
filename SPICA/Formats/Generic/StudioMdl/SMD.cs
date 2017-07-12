@@ -16,7 +16,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.Generic.StudioMdl
 {
-    class SMD
+    public class SMD
     {
         private List<SMDNode> Nodes    = new List<SMDNode>();
         private List<SMDBone> Skeleton = new List<SMDBone>();
@@ -418,7 +418,7 @@ namespace SPICA.Formats.Generic.StudioMdl
                     MaterialIndex = MaterialIndex
                 };
 
-                M.UpdateBoolUniforms();
+                M.UpdateBoolUniforms(true, true, true);
 
                 Model.AddMesh(M);
 

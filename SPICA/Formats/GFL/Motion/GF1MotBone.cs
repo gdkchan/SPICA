@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.GFL.Motion
 {
-    class GF1MotBone
+    public class GF1MotBone
     {
         public string Name;
 

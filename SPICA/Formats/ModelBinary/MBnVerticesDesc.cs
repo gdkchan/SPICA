@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.ModelBinary
 {
-    class MBnVerticesDesc
+    public class MBnVerticesDesc
     {
         public readonly List<PICAAttribute> Attributes;
 

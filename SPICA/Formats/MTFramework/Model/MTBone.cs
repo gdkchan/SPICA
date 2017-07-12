@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.MTFramework.Model
 {
-    class MTBone
+    public class MTBone
     {
         public sbyte ParentIndex;
         public sbyte OppositeIndex;

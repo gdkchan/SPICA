@@ -4,7 +4,7 @@ using System;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    enum MTTestFunction
+    public enum MTTestFunction
     {
         Never,
         Less,

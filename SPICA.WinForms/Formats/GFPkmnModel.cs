@@ -117,11 +117,22 @@ namespace SPICA.WinForms.Formats
                     break;
 
                 case BCHConstant:
-                    Input.Seek(-4, SeekOrigin.Current);
+                    Output = new H3D();
 
-                    byte[] Buffer = Reader.ReadBytes(Header.Entries[0].Length);
+                    foreach (GFPackage.Entry Entry in Header.Entries)
+                    {
+                        Input.Seek(Entry.Address, SeekOrigin.Begin);
 
-                    Output = H3D.Open(Buffer);
+                        MagicNum = Reader.ReadUInt32();
+
+                        if (MagicNum != BCHConstant) continue;
+
+                        Input.Seek(-4, SeekOrigin.Current);
+
+                        byte[] Buffer = Reader.ReadBytes(Entry.Length);
+
+                        Output.Merge(H3D.Open(Buffer));
+                    }
 
                     break;
             }

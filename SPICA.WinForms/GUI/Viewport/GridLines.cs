@@ -74,9 +74,19 @@ namespace SPICA.WinForms.GUI.Viewport
             {
                 GL.UseProgram(ShaderHandle);
 
-                int MdlMtxLocation = GL.GetUniformLocation(ShaderHandle, "ModelMatrix");
+                int WrldMtx0Location = GL.GetUniformLocation(ShaderHandle, "UnivReg[0]");
+                int WrldMtx1Location = GL.GetUniformLocation(ShaderHandle, "UnivReg[1]");
+                int WrldMtx2Location = GL.GetUniformLocation(ShaderHandle, "UnivReg[2]");
+                int IrScaleLocation = GL.GetUniformLocation(ShaderHandle, "IrScale[0]");
+                int BoolUniformsLocation = GL.GetUniformLocation(ShaderHandle, "BoolUniforms");
 
-                GL.UniformMatrix4(MdlMtxLocation, false, ref Transform);
+                Vector4 Scales = Vector4.One;
+
+                GL.Uniform4(WrldMtx0Location, ref Transform.Row0);
+                GL.Uniform4(WrldMtx1Location, ref Transform.Row1);
+                GL.Uniform4(WrldMtx2Location, ref Transform.Row2);
+                GL.Uniform4(IrScaleLocation,  ref Scales);
+                GL.Uniform1(BoolUniformsLocation, (int)0);
 
                 GL.LineWidth(1);
 

@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.MTFramework.Model
 {
-    class MTMaterial
+    public class MTMaterial
     {
         public uint NameHash;
 

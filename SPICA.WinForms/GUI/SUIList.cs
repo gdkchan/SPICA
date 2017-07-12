@@ -17,6 +17,8 @@ namespace SPICA.WinForms.GUI
 
         private int _SelectedIndex;
 
+        private List<int> _SelectedIndices;
+
         private int _ItemHeight = 16;
 
         private Color _SelectionColor = Color.Orange;
@@ -25,17 +27,14 @@ namespace SPICA.WinForms.GUI
 
         [Browsable(false)] public string this[int Index] { get { return Items[Index]; } }
 
-        [Browsable(false)] public int Count { get { return Items.Count; } }
+        [Browsable(false)] public int Count => Items.Count;
 
         [Browsable(false)] public bool IsBound { get; private set; }
 
         [Browsable(false)]
         public int SelectedIndex
         {
-            get
-            {
-                return _SelectedIndex;
-            }
+            get => _SelectedIndex;
             set
             {
                 OldIndex = _SelectedIndex = value;
@@ -44,13 +43,26 @@ namespace SPICA.WinForms.GUI
             }
         }
 
+        [Browsable(false)] public int[] SelectedIndices => _SelectedIndices.ToArray();
+
+        [Category("Appearance"), Description("The normal color of the Scroll Bar.")]
+        public Color BarColor
+        {
+            get => ListScroll.BarColor;
+            set => ListScroll.BarColor = value;
+        }
+
+        [Category("Appearance"), Description("The color of the Scroll Bar on mouse hover.")]
+        public Color BarColorHover
+        {
+            get => ListScroll.BarColorHover;
+            set => ListScroll.BarColorHover = value;
+        }
+
         [Category("Behavior"), Description("The fixed height of each list Item.")]
         public int ItemHeight
         {
-            get
-            {
-                return _ItemHeight;
-            }
+            get => _ItemHeight;
             set
             {
                 _ItemHeight = value;
@@ -62,10 +74,7 @@ namespace SPICA.WinForms.GUI
         [Category("Appearance"), Description("The background color of a selected Item.")]
         public Color SelectionColor
         {
-            get
-            {
-                return _SelectionColor;
-            }
+            get => _SelectionColor;
             set
             {
                 _SelectionColor = value;
@@ -74,31 +83,8 @@ namespace SPICA.WinForms.GUI
             }
         }
 
-        [Category("Appearance"), Description("The normal color of the Scroll Bar.")]
-        public Color BarColor
-        {
-            get
-            {
-                return ListScroll.BarColor;
-            }
-            set
-            {
-                ListScroll.BarColor = value;
-            }
-        }
-
-        [Category("Appearance"), Description("The color of the Scroll Bar on mouse hover.")]
-        public Color BarColorHover
-        {
-            get
-            {
-                return ListScroll.BarColorHover;
-            }
-            set
-            {
-                ListScroll.BarColorHover = value;
-            }
-        }
+        [Category("Behavior"), Description("Allows multiple items to be selected at once.")]
+        public bool MultiSelect { get; set; } = false;
 
         public event EventHandler Selected;
         public event EventHandler SelectedIndexChanged;
@@ -108,6 +94,8 @@ namespace SPICA.WinForms.GUI
             InitializeComponent();
 
             Items = new List<string>();
+
+            _SelectedIndices = new List<int>();
 
             OldIndex = _SelectedIndex = -1;
         }
@@ -124,7 +112,7 @@ namespace SPICA.WinForms.GUI
             {
                 int Y = ScrollY + Index * ItemHeight;
 
-                if (Index == _SelectedIndex)
+                if (_SelectedIndices.Contains(Index))
                 {
                     e.Graphics.FillRectangle(new SolidBrush(SelectionColor), new Rectangle(0, Y, Width, ItemHeight));
                 }
@@ -140,7 +128,9 @@ namespace SPICA.WinForms.GUI
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            Select((e.Y + (ListScroll.Visible ? ListScroll.Value : 0)) / ItemHeight);
+            int ClickIndex = (e.Y + (ListScroll.Visible ? ListScroll.Value : 0)) / ItemHeight;
+
+            Select(ClickIndex, MultiSelect && ModifierKeys.HasFlag(Keys.Control));
 
             base.OnMouseDown(e);
         }
@@ -204,16 +194,36 @@ namespace SPICA.WinForms.GUI
             }
         }
 
-        public void Select(int Index)
+        public void Select(int Index, bool Multi = false)
         {
-            if (Index >= Items.Count || Index < 0)
-                _SelectedIndex = -1;
-            else
-                _SelectedIndex = Index;
+            if (Index >= Items.Count || Index < 0) Index = -1;
 
-            if (_SelectedIndex != OldIndex)
+            if (Multi)
             {
-                OldIndex = _SelectedIndex;
+                if (_SelectedIndices.Contains(Index))
+                {
+                    _SelectedIndices.Remove(Index);
+                }
+                else if (Index != -1)
+                {
+                    _SelectedIndices.Add(Index);
+                }
+            }
+            else
+            {
+                _SelectedIndices.Clear();
+
+                if (Index != -1)
+                {
+                    _SelectedIndices.Add(Index);
+                }
+            }
+
+            _SelectedIndex = _SelectedIndices.Count > 0 ? _SelectedIndices[0] : -1;
+
+            if (Index != OldIndex || Multi)
+            {
+                OldIndex = Index;
 
                 SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
 

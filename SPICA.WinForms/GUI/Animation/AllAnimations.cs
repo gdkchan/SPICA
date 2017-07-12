@@ -1,7 +1,7 @@
 ﻿using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
-using SPICA.Renderer;
-using SPICA.Renderer.Animation;
+using SPICA.Rendering;
+using SPICA.Rendering.Animation;
 
 namespace SPICA.WinForms.GUI.Animation
 {

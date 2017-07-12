@@ -340,12 +340,17 @@ namespace SPICA.Formats.GFL2.Model
 
                     M.Skinning = H3DMeshSkinning.Smooth;
 
+                    GFMaterial Mat = Materials[M.MaterialIndex];
+
                     M.MaterialIndex = (ushort)Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
                     M.NodeIndex     = (ushort)NodeIndex;
-                    M.Layer         = Materials[M.MaterialIndex].RenderLayer;
-                    M.Priority      = Materials[M.MaterialIndex].RenderPriority;
+                    M.Layer         = Mat.RenderLayer;
+                    M.Priority      = Mat.RenderPriority;
 
-                    M.UpdateBoolUniforms();
+                    M.UpdateBoolUniforms(
+                        Mat.TextureCoords[0].MappingType == GFTextureMappingType.UvCoordinateMap,
+                        Mat.TextureCoords[1].MappingType == GFTextureMappingType.UvCoordinateMap,
+                        Mat.TextureCoords[2].MappingType == GFTextureMappingType.UvCoordinateMap);
 
                     Output.AddMesh(M);
                 }

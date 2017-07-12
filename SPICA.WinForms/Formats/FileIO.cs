@@ -3,7 +3,7 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.Generic.COLLADA;
 using SPICA.Formats.Generic.StudioMdl;
-using SPICA.Renderer;
+using SPICA.Rendering;
 
 using System.IO;
 using System.Windows.Forms;

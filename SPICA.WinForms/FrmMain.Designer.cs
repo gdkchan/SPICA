@@ -425,6 +425,7 @@
             this.ModelsList.ItemHeight = 16;
             this.ModelsList.Location = new System.Drawing.Point(3, 3);
             this.ModelsList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.ModelsList.MultiSelect = true;
             this.ModelsList.Name = "ModelsList";
             this.ModelsList.SelectedIndex = -1;
             this.ModelsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));

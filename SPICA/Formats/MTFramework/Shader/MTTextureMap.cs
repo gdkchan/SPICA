@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    class MTTextureMap : MTShaderEffect
+    public class MTTextureMap : MTShaderEffect
     {
         public MTTextureMap(BinaryReader Reader)
         {

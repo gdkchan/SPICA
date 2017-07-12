@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SPICA.Formats.ModelBinary
 {
-    class MBnIndicesDesc
+    public class MBnIndicesDesc
     {
         public ushort[] BoneIndices;
         public ushort[] Indices;

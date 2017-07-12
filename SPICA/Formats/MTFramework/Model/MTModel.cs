@@ -14,7 +14,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.MTFramework.Model
 {
-    class MTModel
+    public class MTModel
     {
         public readonly List<MTMaterial> Materials;
         public readonly List<MTMesh>     Meshes;

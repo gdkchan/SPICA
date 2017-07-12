@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL
 {
-    class GF1MotionPack : IEnumerable<GF1Motion>
+    public class GF1MotionPack : IEnumerable<GF1Motion>
     {
         private List<GF1Motion> Animations;
 

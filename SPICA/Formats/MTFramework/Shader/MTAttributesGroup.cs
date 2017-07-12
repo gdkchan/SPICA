@@ -5,7 +5,7 @@ using System.IO;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    class MTAttributesGroup : MTShaderEffect
+    public class MTAttributesGroup : MTShaderEffect
     {
         private enum AttributeFormat
         {

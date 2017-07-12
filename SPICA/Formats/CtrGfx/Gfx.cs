@@ -183,17 +183,15 @@ namespace SPICA.Formats.CtrGfx
                             //Fixed vector
                             float[] Vector = ((GfxVertexBufferFixed)VertexBuffer).Vector;
 
-                            float Scale = ((GfxVertexBufferFixed)VertexBuffer).Scale;
-
                             M.FixedAttributes.Add(new PICAFixedAttribute()
                             {
                                 Name  = VertexBuffer.AttrName,
 
                                 Value = new PICAVectorFloat24(
-                                    Vector.Length > 0 ? Vector[0] * Scale : 0,
-                                    Vector.Length > 1 ? Vector[1] * Scale : 0,
-                                    Vector.Length > 2 ? Vector[2] * Scale : 0,
-                                    Vector.Length > 3 ? Vector[3] * Scale : 0)
+                                    Vector.Length > 0 ? Vector[0] : 0,
+                                    Vector.Length > 1 ? Vector[1] : 0,
+                                    Vector.Length > 2 ? Vector[2] : 0,
+                                    Vector.Length > 3 ? Vector[3] : 0)
                             });
                         }
                         else
@@ -219,6 +217,7 @@ namespace SPICA.Formats.CtrGfx
                     M.MaterialIndex  = (ushort)Mesh.MaterialIndex;
                     M.NodeIndex      = (ushort)Mesh.MeshNodeIndex;
                     M.PositionOffset = new Vector4(Shape.PositionOffset, 0);
+                    M.MeshCenter     = Shape.BoundingBox.Center;
                     M.Layer          = (int)Model.Materials[Mesh.MaterialIndex].TranslucencyKind;
                     M.Priority       = Mesh.RenderPriority;
 
@@ -269,14 +268,22 @@ namespace SPICA.Formats.CtrGfx
                     else
                         M.Skinning = H3DMeshSkinning.Rigid;
 
-                    M.UpdateBoolUniforms();
+                    GfxMaterial Mat = Model.Materials[Mesh.MaterialIndex];
+
+                    M.UpdateBoolUniforms(
+                        Mat.TextureCoords[0].MappingType == GfxTextureMappingType.UvCoordinateMap,
+                        Mat.TextureCoords[1].MappingType == GfxTextureMappingType.UvCoordinateMap,
+                        Mat.TextureCoords[2].MappingType == GfxTextureMappingType.UvCoordinateMap);
 
                     Mdl.AddMesh(M);
                 }
 
                 foreach (GfxMaterial Material in Model.Materials)
                 {
-                    H3DMaterial Mat = new H3DMaterial();
+                    H3DMaterial Mat = new H3DMaterial() { Name = Material.Name };
+
+                    Mat.MaterialParams.ModelReference  = $"{Mat.Name}@{Model.Name}";
+                    Mat.MaterialParams.ShaderReference = "0@DefaultShader";
 
                     Mat.MaterialParams.Flags = (H3DMaterialFlags)Material.Flags;
 

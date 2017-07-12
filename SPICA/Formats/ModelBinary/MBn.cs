@@ -10,7 +10,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.ModelBinary
 {
-    class MBn
+    public class MBn
     {
         public ushort Type;
 

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.MTFramework.Model
 {
-    class MTMaterials
+    public class MTMaterials
     {
         public readonly List<MTMaterial> Materials;
 

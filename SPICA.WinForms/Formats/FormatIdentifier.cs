@@ -93,7 +93,9 @@ namespace SPICA.WinForms.Formats
                                 case "MM": Output = GFOWCharaModel.OpenAsH3D(FS, PackHeader); break;
                                 case "PC": Output = GFPkmnModel.OpenAsH3D(FS, PackHeader, Skeleton); break;
                                 case "PT": Output = GFPackedTexture.OpenAsH3D(FS, PackHeader, 0); break;
-                                case "PK": Output = GFPkmnSklAnim.OpenAsH3D(FS, PackHeader, Skeleton); break;
+                                case "PK":
+                                case "PB":
+                                    Output = GFPkmnSklAnim.OpenAsH3D(FS, PackHeader, Skeleton); break;
                             }
                         }
                         else

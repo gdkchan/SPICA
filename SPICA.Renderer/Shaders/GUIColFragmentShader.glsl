@@ -1,9 +1,0 @@
-﻿#version 130
-
-precision highp float;
-
-in vec4 Color;
-
-void main() {
-	gl_FragColor = Color;
-}

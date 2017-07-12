@@ -123,7 +123,7 @@ namespace SPICA.PICA.Commands
             Word2 = (WY << 24) | (WX >>  0);
         }
 
-        private float GetFloat24(uint Value)
+        internal static float GetFloat24(uint Value)
         {
             uint Float;
 
@@ -145,7 +145,7 @@ namespace SPICA.PICA.Commands
             return IOUtils.ToSingle(Float);
         }
 
-        private uint GetWord24(float Value)
+        internal static uint GetWord24(float Value)
         {
             uint Word = IOUtils.ToUInt32(Value);
 

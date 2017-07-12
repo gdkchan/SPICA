@@ -4,7 +4,7 @@ using System;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    enum MTBlendFunction
+    public enum MTBlendFunction
     {
         Zero,
         One,

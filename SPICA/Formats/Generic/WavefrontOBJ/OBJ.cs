@@ -14,7 +14,7 @@ using System.Numerics;
 
 namespace SPICA.Formats.Generic.WavefrontOBJ
 {
-    class OBJ
+    public class OBJ
     {
         private string MtlFile;
 
@@ -349,7 +349,7 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                     MaterialIndex = MaterialIndex
                 };
 
-                M.UpdateBoolUniforms();
+                M.UpdateBoolUniforms(true, true, true);
 
                 Model.AddMesh(M);
 

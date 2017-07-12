@@ -4,7 +4,7 @@ using System.IO;
 
 namespace SPICA.Formats.MTFramework.Shader
 {
-    class MTAlphaBlend : MTShaderEffect
+    public class MTAlphaBlend : MTShaderEffect
     {
         public PICABlendMode BlendMode;
         public PICABlendFunction BlendFunction;

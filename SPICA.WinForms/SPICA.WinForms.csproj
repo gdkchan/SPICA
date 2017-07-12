@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SPICA.WinForms</RootNamespace>
     <AssemblyName>SPICA.WinForms</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <PublishUrl>publish\</PublishUrl>
@@ -161,12 +161,19 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SPICA.Rendering\SPICA.Rendering.csproj">
+      <Project>{8adce9f5-2397-4e64-806c-5fa52cfd4215}</Project>
+      <Name>SPICA.Rendering</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SPICA\SPICA.csproj">
+      <Project>{8149ac62-dd21-4b20-9691-f7ae5f47340f}</Project>
+      <Name>SPICA</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\sui_ticked.png" />
   </ItemGroup>
-  <Import Project="..\SPICA\SPICA.projitems" Label="Shared" />
-  <Import Project="..\SPICA.Renderer\SPICA.Renderer.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -261,10 +261,10 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             Reader.BaseStream.Seek(Position + MaterialSection.Length, SeekOrigin.Begin);
 
-            TextureSources[0] = CmdReader.Uniforms[0].X;
-            TextureSources[1] = CmdReader.Uniforms[0].Y;
-            TextureSources[2] = CmdReader.Uniforms[0].Z;
-            TextureSources[3] = CmdReader.Uniforms[0].W;
+            TextureSources[0] = CmdReader.VertexShaderUniforms[0].X;
+            TextureSources[1] = CmdReader.VertexShaderUniforms[0].Y;
+            TextureSources[2] = CmdReader.VertexShaderUniforms[0].Z;
+            TextureSources[3] = CmdReader.VertexShaderUniforms[0].W;
         }
     }
 }

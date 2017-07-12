@@ -3,7 +3,9 @@ using OpenTK.Graphics;
 
 using SPICA.Formats;
 using SPICA.Formats.CtrH3D;
-using SPICA.Renderer;
+using SPICA.PICA.Shader;
+using SPICA.Rendering;
+using SPICA.Rendering.Shaders;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
 using SPICA.WinForms.GUI.Animation;
@@ -12,6 +14,7 @@ using SPICA.WinForms.Properties;
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms
@@ -161,14 +164,14 @@ namespace SPICA.WinForms
         {
             Renderer.Clear();
 
-            UIGrid.Render(Renderer.Set3DColorShader());
+            UIGrid.Render(0);
 
-            if (ModelsList.SelectedIndex != -1 && ModelsList.SelectedIndex < Renderer.Models.Count)
+            foreach (int i in ModelsList.SelectedIndices)
             {
-                Renderer.Render(ModelsList.SelectedIndex);
+                Renderer.Models[i].Render();
             }
 
-            UIAxis.Render(Renderer.Set3DColorShader());
+            UIAxis.Render(0);
 
             Viewport.SwapBuffers();
         }
@@ -306,10 +309,7 @@ namespace SPICA.WinForms
 
         private void UpdateTransforms()
         {
-            if (ModelsList.SelectedIndex != -1)
-            {
-                Renderer.Models[ModelsList.SelectedIndex].Transform = MdlCenter * MdlTrans;
-            }
+            Renderer.SetAllTransforms(MdlCenter * MdlTrans);
 
             UIGrid.Transform = MdlCenter * MdlTrans;
             UIAxis.Transform = MdlCenter.ClearTranslation() * MdlTrans;
@@ -321,9 +321,15 @@ namespace SPICA.WinForms
         #region Side menu events
         private void ModelsList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ModelsList.SelectedIndex != -1)
+            int SelectedIndices = ModelsList.SelectedIndices.Length;
+
+            if (SelectedIndices > 0)
             {
-                Animations.Model = Renderer.Models[ModelsList.SelectedIndex];
+                int Index = ModelsList.SelectedIndex;
+
+                Animations.Model = Renderer.Models[Index];
+
+                SyncAnimationStates();
 
                 Tuple<Vector3, Vector3> CD = Renderer.Models[ModelsList.SelectedIndex].GetCenterDim();
 
@@ -342,7 +348,7 @@ namespace SPICA.WinForms
                     Position = new Vector3(0, CD.Item1.Y, Dimension),
                     Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1.0f),
                     Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
-                    Specular = new Color4(0.2f, 0.2f, 0.2f, 1.0f),
+                    Specular = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
                     Enabled  = true
                 });
 
@@ -380,9 +386,9 @@ namespace SPICA.WinForms
         #region Animation related + playback controls
         private void Animator_Tick(object sender, EventArgs e)
         {
-            Animations.AdvanceFrame();
+            Renderer.AnimateAll();
 
-            UpdateSeekBar();
+            AnimSeekBar.Value = Animations.Frame;
 
             Viewport.Invalidate();
         }
@@ -395,9 +401,23 @@ namespace SPICA.WinForms
                 Animations.Reset();
 
             AnimSeekBar.Maximum = Animations.FramesCount;
+            AnimSeekBar.Value = 0;
 
-            UpdateSeekBar();
             UpdateAnimLbls();
+            SyncAnimationStates();
+        }
+
+        private void SyncAnimationStates()
+        {
+            int Index = ModelsList.SelectedIndex;
+
+            for (int i = 1; i < ModelsList.SelectedIndices.Length; i++)
+            {
+                Model Curr = Renderer.Models[ModelsList.SelectedIndices[i]];
+
+                Curr.SkeletalAnim.CopyState(Renderer.Models[Index].SkeletalAnim);
+                Curr.MaterialAnim.CopyState(Renderer.Models[Index].MaterialAnim);
+            }
         }
 
         private void UpdateAnimLbls()
@@ -407,19 +427,22 @@ namespace SPICA.WinForms
             LblAnimLoopMode.Text = Animations.IsLooping ? "LOOP" : "1 GO";
         }
 
-        private void UpdateSeekBar()
-        {
-            AnimSeekBar.Value = Animations.Frame;
-        }
-
         private void EnableAnimator()
         {
-            Animator.Enabled = true; UpdateAnimLbls();
+            Animator.Enabled = true;
+
+            UpdateAnimLbls();
+
+            SyncAnimationStates();
         }
 
         private void DisableAnimator()
         {
-            Animator.Enabled = false; Viewport.Invalidate();
+            Animator.Enabled = false;
+
+            Viewport.Invalidate();
+
+            SyncAnimationStates();
         }
 
         private void UpdateViewport()
@@ -454,21 +477,29 @@ namespace SPICA.WinForms
 
         private void AnimButtonStop_Click(object sender, EventArgs e)
         {
+            Animations.Stop();
+
             DisableAnimator();
 
             AnimSeekBar.Value = 0;
-
-            Animations.Stop();
         }
 
         private void AnimButtonSlowDown_Click(object sender, EventArgs e)
         {
-            Animations.SlowDown(); UpdateAnimLbls();
+            Animations.SlowDown();
+
+            UpdateAnimLbls();
+
+            SyncAnimationStates();
         }
 
         private void AnimButtonSpeedUp_Click(object sender, EventArgs e)
         {
-            Animations.SpeedUp(); UpdateAnimLbls();
+            Animations.SpeedUp();
+
+            UpdateAnimLbls();
+
+            SyncAnimationStates();
         }
 
         private void AnimButtonPrev_Click(object sender, EventArgs e)
@@ -496,11 +527,15 @@ namespace SPICA.WinForms
             Animations.Frame = AnimSeekBar.Value;
 
             UpdateViewport();
+
+            SyncAnimationStates();
         }
 
         private void AnimSeekBar_MouseUp(object sender, MouseEventArgs e)
         {
             Animations.Play();
+
+            SyncAnimationStates();
         }
         #endregion
     }

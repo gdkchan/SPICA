@@ -6,6 +6,7 @@ using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace SPICA.Formats.CtrH3D.Model.Material
@@ -171,6 +172,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             get => ModelReference;
             set => ModelReference = value;
         }
+
+        public Dictionary<uint, Vector4> VertexShaderUniforms   { get; private set; }
+        public Dictionary<uint, Vector4> GeometryShaderUniforms { get; private set; }
 
         public H3DMaterialParams()
         {
@@ -391,10 +395,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
              * 4 = CameraSphereEnvMap aka SkyDome
              * 5 = ProjectionMap?
              */
-            TextureSources[0] = Reader.Uniforms[10].X;
-            TextureSources[1] = Reader.Uniforms[10].Y;
-            TextureSources[2] = Reader.Uniforms[10].Z;
-            TextureSources[3] = Reader.Uniforms[10].W;
+            TextureSources[0] = Reader.VertexShaderUniforms[10].X;
+            TextureSources[1] = Reader.VertexShaderUniforms[10].Y;
+            TextureSources[2] = Reader.VertexShaderUniforms[10].Z;
+            TextureSources[3] = Reader.VertexShaderUniforms[10].W;
+
+            VertexShaderUniforms   = Reader.GetAllVertexShaderUniforms();
+            GeometryShaderUniforms = Reader.GetAllGeometryShaderUniforms();
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
@@ -469,7 +476,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             for (int Unit = 0; Unit < 3; Unit++)
             {
                 if (TextureCoords[Unit].Scale != Vector2.Zero)
-                    TexMtx[Unit] = TextureCoords[Unit].Transform;
+                    TexMtx[Unit] = TextureCoords[Unit].GetTransform();
                 else
                     TexMtx[Unit] = new Matrix3x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }

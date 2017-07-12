@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.GFL.Motion
 {
-    struct GF1MotKeyFrame
+    public struct GF1MotKeyFrame
     {
         public int   Frame;
         public float Value;

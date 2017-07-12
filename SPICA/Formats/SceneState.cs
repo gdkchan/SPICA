@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats
 {
-    struct SceneState
+    public struct SceneState
     {
         public int ModelIndex;
         public int LightIndex;
