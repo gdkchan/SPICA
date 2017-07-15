@@ -1,6 +1,7 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.PICA.Commands;
 
+using System;
 using System.IO;
 using System.Numerics;
 
@@ -79,21 +80,25 @@ namespace SPICA.PICA.Shader
                     {
                         MS.Seek(ConstTblOffset + ci * 0x14, SeekOrigin.Begin);
 
-                        byte Type  = (byte)Reader.ReadUInt16();
-                        byte RegId = (byte)Reader.ReadUInt16();
+                        byte Type = (byte)Reader.ReadUInt16();
+                        byte Reg  = (byte)Reader.ReadUInt16();
+
+                        ShaderUniform Uniform = GetUniform(Programs[i], Reg, Type);
+
+                        Uniform.IsConstant = true;
 
                         switch (Type)
                         {
-                            case 0: //Bool
-                                Programs[i].BoolUniforms[RegId]  = new ShaderUniformBool(Reader.ReadByte() != 0);
+                            case 0: //Boolean
+                                ((ShaderUniformBool)Uniform).Constant = Reader.ReadByte() != 0;
                                 break;
 
                             case 1: //Integer Vector4
-                                Programs[i].IVec4Uniforms[RegId] = new ShaderUniformVec4(ReadIVec4(Reader));
+                                ((ShaderUniformVec4)Uniform).Constant = ReadIVec4(Reader);
                                 break;
 
                             case 2: //Float Vector4
-                                Programs[i].Vec4Uniforms[RegId]  = new ShaderUniformVec4(ReadVec4(Reader));
+                                ((ShaderUniformVec4)Uniform).Constant = ReadVec4(Reader);
                                 break;
                         }
                     }
@@ -129,8 +134,8 @@ namespace SPICA.PICA.Shader
 
                         Programs[i].OutputRegs[RegId] = new ShaderOutputReg()
                         {
-                            Name  = (ShaderOutputRegName)(Value & 0xf),
-                            Mask  = (uint)(Value >> 32) & 0xf
+                            Name = (ShaderOutputRegName)(Value & 0xf),
+                            Mask = (uint)(Value >> 32) & 0xf
                         };
                     }
 
@@ -146,34 +151,21 @@ namespace SPICA.PICA.Shader
 
                         string Name = Reader.ReadNullTerminatedString();
 
-                        for (int CurrReg = StartReg; CurrReg <= EndReg; CurrReg++)
+                        for (int r = StartReg; r <= EndReg; r++)
                         {
-                            if (CurrReg < 0x10)
+                            if (r < 0x10)
                             {
-                                Programs[i].InputRegs[CurrReg] = Name;
+                                Programs[i].InputRegs[r] = Name;
                             }
                             else
                             {
-                                ShaderUniform Uniform = null;
-
-                                if (CurrReg < 0x70)
-                                {
-                                    Uniform = Programs[i].Vec4Uniforms[CurrReg - 0x10]  = new ShaderUniformVec4();
-                                }
-                                else if (CurrReg < 0x74)
-                                {
-                                    Uniform = Programs[i].IVec4Uniforms[CurrReg - 0x70] = new ShaderUniformVec4();
-                                }
-                                else if (CurrReg >= 0x78 && CurrReg < 0x88)
-                                {
-                                    Uniform = Programs[i].BoolUniforms[CurrReg - 0x78]  = new ShaderUniformBool();
-                                }
+                                ShaderUniform Uniform = GetUniform(Programs[i], r);
 
                                 if (Uniform != null)
                                 {
                                     Uniform.Name        = Name;
                                     Uniform.IsArray     = EndReg != StartReg;
-                                    Uniform.ArrayIndex  = CurrReg - StartReg;
+                                    Uniform.ArrayIndex  = r - StartReg;
                                     Uniform.ArrayLength = (EndReg - StartReg) + 1;
                                 }
                             }
@@ -198,6 +190,38 @@ namespace SPICA.PICA.Shader
                 {
                     Swizzles[i] = Reader.ReadUInt64();
                 }
+            }
+        }
+
+        private ShaderUniform GetUniform(ShaderProgram Program, int Reg, int Type)
+        {
+            switch (Type)
+            {
+                case 0: return Program.BoolUniforms[Reg];
+                case 1: return Program.IVec4Uniforms[Reg];
+                case 2: return Program.Vec4Uniforms[Reg];
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(Type));
+        }
+
+        private ShaderUniform GetUniform(ShaderProgram Program, int Reg)
+        {
+            if (Reg < 0x70)
+            {
+                return Program.Vec4Uniforms[Reg - 0x10];
+            }
+            else if (Reg < 0x74)
+            {
+                return Program.IVec4Uniforms[Reg - 0x70];
+            }
+            else if (Reg >= 0x78 && Reg < 0x88)
+            {
+                return Program.BoolUniforms[Reg - 0x78];
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(Reg));
             }
         }
 

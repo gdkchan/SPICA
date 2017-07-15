@@ -173,8 +173,8 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             set => ModelReference = value;
         }
 
-        public Dictionary<uint, Vector4> VertexShaderUniforms   { get; private set; }
-        public Dictionary<uint, Vector4> GeometryShaderUniforms { get; private set; }
+        public Dictionary<uint, Vector4> VtxShaderUniforms { get; private set; }
+        public Dictionary<uint, Vector4> GeoShaderUniforms { get; private set; }
 
         public H3DMaterialParams()
         {
@@ -187,6 +187,9 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             }
 
             TextureSources = new float[4];
+
+            VtxShaderUniforms = new Dictionary<uint, Vector4>();
+            GeoShaderUniforms = new Dictionary<uint, Vector4>();
         }
 
         private void GenerateUniqueId()
@@ -258,7 +261,6 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             {
                 switch ((ConstantColors >> Stage * 4) & 0xf)
                 {
-                    default:
                     case 0: return Constant0Color;
                     case 1: return Constant1Color;
                     case 2: return Constant2Color;
@@ -267,10 +269,8 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                     case 5: return Constant5Color;
                 }
             }
-            else
-            {
-                throw new ArgumentOutOfRangeException("Expected Stage in 0-5 range!");
-            }
+
+            throw new ArgumentOutOfRangeException(nameof(Stage));
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
@@ -400,8 +400,8 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureSources[2] = Reader.VertexShaderUniforms[10].Z;
             TextureSources[3] = Reader.VertexShaderUniforms[10].W;
 
-            VertexShaderUniforms   = Reader.GetAllVertexShaderUniforms();
-            GeometryShaderUniforms = Reader.GetAllGeometryShaderUniforms();
+            VtxShaderUniforms   = Reader.GetAllVertexShaderUniforms();
+            GeoShaderUniforms = Reader.GetAllGeometryShaderUniforms();
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)

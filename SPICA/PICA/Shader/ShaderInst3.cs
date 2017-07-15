@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SPICA.PICA.Shader
+﻿namespace SPICA.PICA.Shader
 {
     public struct ShaderInst3
     {

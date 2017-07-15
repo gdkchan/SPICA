@@ -1,27 +1,48 @@
 ﻿using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
+using SPICA.PICA.Shader;
 
 using System.Globalization;
 using System.Text;
 
 namespace SPICA.Rendering.Shaders
 {
-    static class FragmentShaderGenerator
+    class FragmentShaderGenerator
     {
-        public static string GenFragShader(H3DMaterialParams Params)
+        private StringBuilder SB;
+
+        private H3DMaterialParams Params;
+
+        private bool[] HasTexColor;
+
+        public FragmentShaderGenerator(H3DMaterialParams Params)
         {
-            StringBuilder SB = new StringBuilder(BuiltInShaders.FragmentShaderBase);
+            this.Params = Params;
+        }
+
+        public string GetFragShader()
+        {
+            SB = new StringBuilder(BuiltInShaders.FragmentShaderBase);
+
+            HasTexColor = new bool[] { false, false, false };
 
             int Index = 0;
 
             bool HasFragColors = false;
 
-            bool[] HasTexColor = { false, false, false };
-
             SB.AppendLine();
             SB.AppendLine();
             SB.AppendLine("//SPICA auto-generated Fragment Shader");
+            SB.AppendLine($"in vec4 {ShaderOutputRegName.QuatNormal};");
+            SB.AppendLine($"in vec4 {ShaderOutputRegName.Color};");
+            SB.AppendLine($"in vec4 {ShaderOutputRegName.TexCoord0};");
+            SB.AppendLine($"in vec4 {ShaderOutputRegName.TexCoord1};");
+            SB.AppendLine($"in vec4 {ShaderOutputRegName.TexCoord2};");
+            SB.AppendLine($"in vec4 {ShaderOutputRegName.View};");
+            SB.AppendLine();
+            SB.AppendLine("out vec4 Output;");
+            SB.AppendLine();
             SB.AppendLine("void main() {");
             SB.AppendLine("\tvec4 Previous;");
             SB.AppendLine($"\tvec4 CombBuffer = {GetVec4(Params.TexEnvBufferColor)};");
@@ -45,7 +66,7 @@ namespace SPICA.Rendering.Shaders
                         Stage.Source.Color[Param] == PICATextureCombinerSource.FragmentSecondaryColor ||
                         Stage.Source.Alpha[Param] == PICATextureCombinerSource.FragmentSecondaryColor))
                     {
-                        GenFragColors(SB, Params, ref HasTexColor);
+                        GenFragColors();
                         HasFragColors = true;
                     }
 
@@ -56,7 +77,7 @@ namespace SPICA.Rendering.Shaders
                             Stage.Source.Color[Param] == PICATextureCombinerSource.Texture0 + Unit ||
                             Stage.Source.Alpha[Param] == PICATextureCombinerSource.Texture0 + Unit))
                         {
-                            GenTexColor(SB, Params, Unit);
+                            GenTexColor(Unit);
                             HasTexColor[Unit] = true;
                         }
                     }
@@ -91,10 +112,10 @@ namespace SPICA.Rendering.Shaders
                 }
 
                 if (HasColor)
-                    GenCombinerColor(SB, Stage, ColorArgs);
+                    GenCombinerColor(Stage, ColorArgs);
 
                 if (HasAlpha)
-                    GenCombinerAlpha(SB, Stage, AlphaArgs);
+                    GenCombinerAlpha(Stage, AlphaArgs);
 
                 int ColorScale = 1 << (int)Stage.Scale.Color;
                 int AlphaScale = 1 << (int)Stage.Scale.Alpha;
@@ -137,7 +158,7 @@ namespace SPICA.Rendering.Shaders
             return SB.ToString();
         }
 
-        private static void GenFragColors(StringBuilder SB, H3DMaterialParams Params, ref bool[] HasTexColor)
+        private void GenFragColors()
         {
             //See Model and Mesh class for the LUT mappings
             string Dist0   = GetLUTInput(Params.LUTInputSelection.Dist0,   Params.LUTInputScale.Dist0,   0);
@@ -156,7 +177,7 @@ namespace SPICA.Rendering.Shaders
             {
                 if (!HasTexColor[Params.BumpTexture])
                 {
-                    GenTexColor(SB, Params, Params.BumpTexture);
+                    GenTexColor(Params.BumpTexture);
                     HasTexColor[Params.BumpTexture] = true;
                 }
 
@@ -173,16 +194,19 @@ namespace SPICA.Rendering.Shaders
                 SB.AppendLine("\tvec3 SurfNormal = vec3(0, 0, 1);");
             }
 
-            SB.AppendLine("\tvec3 Normal = QuatRotate(QuatNormal, SurfNormal);");
+            string QuatNormal = $"{ShaderOutputRegName.QuatNormal}";
+            string View       = $"{ShaderOutputRegName.View}";
+
+            SB.AppendLine($"\tvec3 Normal = QuatRotate({QuatNormal}, SurfNormal);");
 
             //Lights loop start
             SB.AppendLine();
             SB.AppendLine("\tfor (int i = 0; i < LightsCount; i++) {");
-            SB.AppendLine("\t\tvec3 Light = normalize(Lights[i].Position + View.xyz);");
-            SB.AppendLine("\t\tvec3 Half = normalize(View.xyz) + Light;");
+            SB.AppendLine($"\t\tvec3 Light = normalize(Lights[i].Position + {View}.xyz);");
+            SB.AppendLine($"\t\tvec3 Half = normalize({View}.xyz) + Light;");
             SB.AppendLine("\t\tfloat CosNormalHalf = dot(Normal, Half);");
-            SB.AppendLine("\t\tfloat CosViewHalf = dot(normalize(View.xyz), Half);");
-            SB.AppendLine("\t\tfloat CosNormalView = dot(Normal, normalize(View.xyz));");
+            SB.AppendLine($"\t\tfloat CosViewHalf = dot(normalize({View}.xyz), Half);");
+            SB.AppendLine($"\t\tfloat CosNormalView = dot(Normal, normalize({View}.xyz));");
             SB.AppendLine("\t\tfloat CosLightNormal = dot(Light, Normal);");
 
             string ClampHighLight = string.Empty;
@@ -276,26 +300,30 @@ namespace SPICA.Rendering.Shaders
             return Output;
         }
 
-        private static void GenTexColor(StringBuilder SB, H3DMaterialParams Params, int Index)
+        private void GenTexColor(int Index)
         {
             H3DTextureCoord TexCoord = Params.TextureCoords[Index];
 
             string Texture;
+
+            string TexCoord0 = $"{ShaderOutputRegName.TexCoord0}";
+            string TexCoord1 = $"{ShaderOutputRegName.TexCoord1}";
+            string TexCoord2 = $"{ShaderOutputRegName.TexCoord2}";
 
             if (Index == 0)
             {
                 switch (Params.TextureCoords[0].MappingType)
                 {
                     case H3DTextureMappingType.CameraCubeEnvMap:
-                        Texture = $"texture(TextureCube, TexCoord0.xyz)";
+                        Texture = $"texture(TextureCube, {TexCoord0}.xyz)";
                         break;
 
                     case H3DTextureMappingType.ProjectionMap:
-                        Texture = $"textureProj(Textures[0], TexCoord0)";
+                        Texture = $"textureProj(Textures[0], {TexCoord0})";
                         break;
 
                     default:
-                        Texture = $"texture(Textures[0], TexCoord0.xy)";
+                        Texture = $"texture(Textures[0], {TexCoord0}.xy)";
                         break;
                 }
             }
@@ -311,13 +339,19 @@ namespace SPICA.Rendering.Shaders
                     CoordIndex = 1;
                 }
 
-                Texture = $"texture(Textures[{Index}], TexCoord{CoordIndex}.xy)";
+                switch (CoordIndex)
+                {
+                    default:
+                    case 0: Texture = $"texture(Textures[{Index}], {TexCoord0}.xy)"; break;
+                    case 1: Texture = $"texture(Textures[{Index}], {TexCoord1}.xy)"; break;
+                    case 2: Texture = $"texture(Textures[{Index}], {TexCoord2}.xy)"; break;
+                }
             }
 
             SB.AppendLine($"\tvec4 Color{Index} = {Texture};");
         }
 
-        private static void GenCombinerColor(StringBuilder SB, PICATexEnvStage Stage, string[] ColorArgs)
+        private void GenCombinerColor(PICATexEnvStage Stage, string[] ColorArgs)
         {
             switch (Stage.Combiner.Color)
             {
@@ -354,7 +388,7 @@ namespace SPICA.Rendering.Shaders
             }
         }
 
-        private static void GenCombinerAlpha(StringBuilder SB, PICATexEnvStage Stage, string[] AlphaArgs)
+        private void GenCombinerAlpha(PICATexEnvStage Stage, string[] AlphaArgs)
         {
             switch (Stage.Combiner.Alpha)
             {
@@ -396,7 +430,7 @@ namespace SPICA.Rendering.Shaders
             switch (Source)
             {
                 default:
-                case PICATextureCombinerSource.PrimaryColor:           return "Color";
+                case PICATextureCombinerSource.PrimaryColor:           return $"{ShaderOutputRegName.Color}";
                 case PICATextureCombinerSource.FragmentPrimaryColor:   return "FragPriColor";
                 case PICATextureCombinerSource.FragmentSecondaryColor: return "FragSecColor";
                 case PICATextureCombinerSource.Texture0:               return "Color0";

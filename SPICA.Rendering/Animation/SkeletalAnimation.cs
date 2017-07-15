@@ -85,7 +85,7 @@ namespace SPICA.Rendering.Animation
 
                 if (FrameSkeleton[b].HasMtxTransform) continue;
 
-                bool ScaleCompensate = Skeleton[i].IsSegmentScaleCompensate;
+                bool ScaleCompensate = Skeleton[i].Flags.HasFlag(H3DBoneFlags.IsSegmentScaleCompensate);
 
                 Output[i] = Matrix4.CreateScale(FrameSkeleton[b].Scale);
 
@@ -116,17 +116,17 @@ namespace SPICA.Rendering.Animation
 
         private void SetBone(H3DAnimTransform Transform, ref Bone B)
         {
-            if (Transform.ScaleX.Exists)       B.Scale.X       = Transform.ScaleX.GetFrameValue(Frame);
-            if (Transform.ScaleY.Exists)       B.Scale.Y       = Transform.ScaleY.GetFrameValue(Frame);
-            if (Transform.ScaleZ.Exists)       B.Scale.Z       = Transform.ScaleZ.GetFrameValue(Frame);
+            Transform.ScaleX.TrySetFrameValue      (Frame, ref B.Scale.X);
+            Transform.ScaleY.TrySetFrameValue      (Frame, ref B.Scale.Y);
+            Transform.ScaleZ.TrySetFrameValue      (Frame, ref B.Scale.Z);
 
-            if (Transform.RotationX.Exists)    B.Rotation.X    = Transform.RotationX.GetFrameValue(Frame);
-            if (Transform.RotationY.Exists)    B.Rotation.Y    = Transform.RotationY.GetFrameValue(Frame);
-            if (Transform.RotationZ.Exists)    B.Rotation.Z    = Transform.RotationZ.GetFrameValue(Frame);
+            Transform.RotationX.TrySetFrameValue   (Frame, ref B.Rotation.X);
+            Transform.RotationY.TrySetFrameValue   (Frame, ref B.Rotation.Y);
+            Transform.RotationZ.TrySetFrameValue   (Frame, ref B.Rotation.Z);
 
-            if (Transform.TranslationX.Exists) B.Translation.X = Transform.TranslationX.GetFrameValue(Frame);
-            if (Transform.TranslationY.Exists) B.Translation.Y = Transform.TranslationY.GetFrameValue(Frame);
-            if (Transform.TranslationZ.Exists) B.Translation.Z = Transform.TranslationZ.GetFrameValue(Frame);
+            Transform.TranslationX.TrySetFrameValue(Frame, ref B.Translation.X);
+            Transform.TranslationY.TrySetFrameValue(Frame, ref B.Translation.Y);
+            Transform.TranslationZ.TrySetFrameValue(Frame, ref B.Translation.Z);
         }
 
         private void SetBone(H3DAnimQuatTransform Transform, ref Bone B)
@@ -143,20 +143,22 @@ namespace SPICA.Rendering.Animation
                 B.Scale = Vector3.Lerp(LHS, RHS, Weight);
             }
 
-            if (B.IsQuatRotation = Transform.HasRotation)
-            {
-                Quaternion LHS = Transform.GetRotationValue(IntFrame + 0).ToQuaternion();
-                Quaternion RHS = Transform.GetRotationValue(IntFrame + 1).ToQuaternion();
-
-                B.QuatRotation = Quaternion.Slerp(LHS, RHS, Weight);
-            }
-
             if (Transform.HasTranslation)
             {
                 Vector3 LHS = Transform.GetTranslationValue(IntFrame + 0).ToVector3();
                 Vector3 RHS = Transform.GetTranslationValue(IntFrame + 1).ToVector3();
 
                 B.Translation = Vector3.Lerp(LHS, RHS, Weight);
+            }
+
+            if (Transform.HasRotation)
+            {
+                Quaternion LHS = Transform.GetRotationValue(IntFrame + 0).ToQuaternion();
+                Quaternion RHS = Transform.GetRotationValue(IntFrame + 1).ToQuaternion();
+
+                B.QuatRotation = Quaternion.Slerp(LHS, RHS, Weight);
+
+                B.IsQuatRotation = true;
             }
         }
     }

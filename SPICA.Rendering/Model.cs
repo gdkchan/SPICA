@@ -23,11 +23,10 @@ namespace SPICA.Rendering
         internal List<Mesh>   Meshes1;
         internal List<Mesh>   Meshes2;
         internal List<Mesh>   Meshes3;
-        internal List<ShaderManager> ShaderMgrs;
         internal List<Shader> Shaders;
-        internal Matrix4[]    InverseTransform;
-        internal Matrix4[]    SkeletonTransform;
-        internal Matrix4[][]  MaterialTransform;
+        internal Matrix4[]    InverseTransforms;
+        internal Matrix4[]    SkeletonTransforms;
+        internal Matrix4[][]  MaterialTransforms;
 
         public SkeletalAnimation SkeletalAnim;
         public MaterialAnimation MaterialAnim;
@@ -43,14 +42,13 @@ namespace SPICA.Rendering
             Meshes1 = new List<Mesh>();
             Meshes2 = new List<Mesh>();
             Meshes3 = new List<Mesh>();
-            ShaderMgrs = new List<ShaderManager>();
             Shaders = new List<Shader>();
 
-            InverseTransform = new Matrix4[BaseModel.Skeleton.Count];
+            InverseTransforms = new Matrix4[BaseModel.Skeleton.Count];
 
             for (int Bone = 0; Bone < BaseModel.Skeleton.Count; Bone++)
             {
-                InverseTransform[Bone] = BaseModel.Skeleton[Bone].InverseTransform.ToMatrix4();
+                InverseTransforms[Bone] = BaseModel.Skeleton[Bone].InverseTransform.ToMatrix4();
             }
 
             UpdateShaders();
@@ -92,57 +90,40 @@ namespace SPICA.Rendering
             {
                 H3DMaterialParams Params = Material.MaterialParams;
 
-                string ShaderCode = FragmentShaderGenerator.GenFragShader(Params);
+                FragmentShaderGenerator FragShaderGen = new FragmentShaderGenerator(Params);
 
                 int FragmentShaderHandle = GL.CreateShader(ShaderType.FragmentShader);
 
-                ShaderManager.CompileAndCheck(FragmentShaderHandle, ShaderCode);
+                Shader.CompileAndCheck(FragmentShaderHandle, FragShaderGen.GetFragShader());
 
-                Shader Shader = Renderer.GetShader(Params.ShaderReference);
+                VertexShader VtxShader = Renderer.GetShader(Params.ShaderReference);
 
-                ShaderManager ShaderMgr = new ShaderManager(
-                    FragmentShaderHandle,
-                    Shader?.VertexShaderHandle   ?? Renderer.VertexShaderHandle,
-                    Shader?.GeometryShaderHandle ?? 0);
+                Shader Shdr = new Shader(FragmentShaderHandle, VtxShader);
 
-                ShaderMgrs.Add(ShaderMgr);
-                Shaders.Add(Shader);
+                Shaders.Add(Shdr);
 
-                GL.UseProgram(ShaderMgr.Handle);
+                GL.UseProgram(Shdr.Handle);
 
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "Textures[0]"), 0);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "Textures[1]"), 1);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "Textures[2]"), 2);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "TextureCube"), 3);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "LUTs[0]"),     4);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "LUTs[1]"),     5);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "LUTs[2]"),     6);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "LUTs[3]"),     7);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "LUTs[4]"),     8);
-                GL.Uniform1(GL.GetUniformLocation(ShaderMgr.Handle, "LUTs[5]"),     9);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "Textures[0]"), 0);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "Textures[1]"), 1);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "Textures[2]"), 2);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "TextureCube"), 3);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[0]"),     4);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[1]"),     5);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[2]"),     6);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[3]"),     7);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[4]"),     8);
+                GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[5]"),     9);
 
-                if (Shader != null)
+                //Send values from material matching register ids to names.
+                foreach (KeyValuePair<uint, System.Numerics.Vector4> KV in Params.VtxShaderUniforms)
                 {
-                    //Reset ti default value
-                    foreach (string Name in Shader.VertexShaderUniforms.Vec4s.Where(x => x != null))
-                    {
-                        ShaderMgr.SetVector4(Name, Vector4.UnitW);
-                    }
+                    Shdr.SetVtxVector4((int)KV.Key, KV.Value.ToVector4());
+                }
 
-                    //Send values from material matching register ids to names.
-                    foreach (KeyValuePair<uint, System.Numerics.Vector4> KV in Params.VertexShaderUniforms)
-                    {
-                        string Name = Shader.VertexShaderUniforms.Vec4s[KV.Key];
-
-                        if (Name != null) ShaderMgr.SetVector4(Name, KV.Value);
-                    }
-
-                    foreach (KeyValuePair<uint, System.Numerics.Vector4> KV in Params.GeometryShaderUniforms)
-                    {
-                        string Name = Shader.GeometryShaderUniforms.Vec4s[KV.Key];
-
-                        if (Name != null) ShaderMgr.SetVector4(Name, KV.Value);
-                    }
+                foreach (KeyValuePair<uint, System.Numerics.Vector4> KV in Params.GeoShaderUniforms)
+                {
+                    Shdr.SetGeoVector4((int)KV.Key, KV.Value.ToVector4());
                 }
 
                 Vector4 MatAmbient = new Vector4(
@@ -151,25 +132,30 @@ namespace SPICA.Rendering
                     Params.AmbientColor.B / 255F,
                     Params.ColorScale);
 
+                Vector4 MatDiffuse = new Vector4(
+                    Params.DiffuseColor.R / 255f,
+                    Params.DiffuseColor.G / 255f,
+                    Params.DiffuseColor.B / 255f,
+                    Params.DiffuseColor.A / 255f);
+
                 Vector4 TexCoordMap = new Vector4(
                     Params.TextureSources[0],
                     Params.TextureSources[1],
                     Params.TextureSources[2],
                     Params.TextureSources[3]);
 
-                ShaderMgr.SetVector4("is_left_render_flag", Vector4.One); //SSB needs this
-                ShaderMgr.SetVector4("HslGCol", Vector4.UnitW);
-                ShaderMgr.SetVector4("HslSCol", Vector4.One);
-                ShaderMgr.SetVector4("HslSDir", new Vector4(0, 1, 0, 0.5f));
-                ShaderMgr.SetVector4("MatAmbi", MatAmbient);
-                ShaderMgr.SetVector4("MatDiff", Params.DiffuseColor.ToVector4());
-                ShaderMgr.SetVector4("TexcMap", TexCoordMap);
+                Shdr.SetVtxVector4(DefaultShaderIds.HsLGCol, Vector4.UnitW);
+                Shdr.SetVtxVector4(DefaultShaderIds.HsLSCol, Vector4.One);
+                Shdr.SetVtxVector4(DefaultShaderIds.HsLSDir, new Vector4(Vector3.UnitY, 0.5f));
+                Shdr.SetVtxVector4(DefaultShaderIds.MatAmbi, MatAmbient);
+                Shdr.SetVtxVector4(DefaultShaderIds.MatDiff, MatDiffuse);
+                Shdr.SetVtxVector4(DefaultShaderIds.TexcMap, TexCoordMap);
             }
         }
 
         public void UpdateUniforms()
         {
-            foreach (ShaderManager Shader in ShaderMgrs)
+            foreach (Shader Shader in Shaders)
             {
                 GL.UseProgram(Shader.Handle);
 
@@ -196,12 +182,12 @@ namespace SPICA.Rendering
             }
         }
 
-        public Tuple<Vector3, Vector3> GetCenterDim()
+        public BoundingBox GetModelAABB()
         {
             bool IsFirst = true;
 
-            Vector3 Min = Vector3.Zero;
-            Vector3 Max = Vector3.Zero;
+            Vector4 Min = Vector4.Zero;
+            Vector4 Max = Vector4.Zero;
 
             foreach (H3DMesh Mesh in BaseModel.Meshes)
             {
@@ -211,32 +197,31 @@ namespace SPICA.Rendering
 
                 if (IsFirst)
                 {
-                    Min = Max = Vertices[0].Position.ToVector4().Xyz;
+                    Min = Max = Vertices[0].Position.ToVector4();
 
                     IsFirst = false;
                 }
 
                 foreach (PICAVertex Vertex in Vertices)
                 {
-                    Min.X = Math.Min(Min.X, Vertex.Position.X);
-                    Min.Y = Math.Min(Min.Y, Vertex.Position.Y);
-                    Min.Z = Math.Min(Min.Z, Vertex.Position.Z);
+                    Vector4 P = Vertex.Position.ToVector4();
 
-                    Max.X = Math.Max(Max.X, Vertex.Position.X);
-                    Max.Y = Math.Max(Max.Y, Vertex.Position.Y);
-                    Max.Z = Math.Max(Max.Z, Vertex.Position.Z);
+                    Min = Vector4.Min(Min, P);
+                    Max = Vector4.Max(Max, P);
                 }
             }
 
-            return Tuple.Create((Min + Max) * 0.5f, Max - Min);
+            return new BoundingBox(
+                ((Max + Min) * 0.5f).Xyz,
+                 (Max - Min).Xyz);
         }
 
         public void UpdateAnimationTransforms()
         {
             if (BaseModel.Meshes.Count > 0)
             {
-                SkeletonTransform = SkeletalAnim.GetSkeletonTransforms(BaseModel.Skeleton);
-                MaterialTransform = MaterialAnim.GetUVTransforms(BaseModel.Materials);
+                SkeletonTransforms = SkeletalAnim.GetSkeletonTransforms(BaseModel.Skeleton);
+                MaterialTransforms = MaterialAnim.GetUVTransforms(BaseModel.Materials);
             }
         }
 
@@ -252,20 +237,14 @@ namespace SPICA.Rendering
         {
             foreach (Mesh Mesh in Meshes.OrderBy(x => x.BaseMesh.Priority))
             {
-                ShaderManager ShaderMgr = ShaderMgrs[Mesh.BaseMesh.MaterialIndex];
+                Shader Shader = Shaders[Mesh.BaseMesh.MaterialIndex];
 
-                GL.UseProgram(ShaderMgr.Handle);
+                GL.UseProgram(Shader.Handle);
 
-                Matrix4 NormalMatrix = Transform.ClearScale();
-
-                Matrix4 ModelViewMatrix = Renderer.ViewMatrix * Transform;
-
-                Matrix4 Identity = Matrix4.Identity;
-
-                ShaderMgr.Set4x4Array("ProjMtx", ref Renderer.ProjectionMatrix);
-                ShaderMgr.Set3x4Array("ViewMtx", ref ModelViewMatrix);
-                ShaderMgr.Set3x4Array("NormMtx", ref NormalMatrix);
-                ShaderMgr.Set3x4Array("WrldMtx", ref Identity);
+                Shader.SetVtx4x4Array(DefaultShaderIds.ProjMtx, Renderer.ProjectionMatrix);
+                Shader.SetVtx3x4Array(DefaultShaderIds.ViewMtx, Renderer.ViewMatrix * Transform);
+                Shader.SetVtx3x4Array(DefaultShaderIds.NormMtx, Transform.ClearScale());
+                Shader.SetVtx3x4Array(DefaultShaderIds.WrldMtx, Matrix4.Identity);
 
                 Mesh.Render();
             }
@@ -290,13 +269,12 @@ namespace SPICA.Rendering
 
         private void DisposeShaders()
         {
-            foreach (ShaderManager Shader in ShaderMgrs)
+            foreach (Shader Shader in Shaders)
             {
                 Shader.DetachAllShaders();
                 Shader.DeleteFragmentShader();
             }
 
-            ShaderMgrs.Clear();
             Shaders.Clear();
         }
 

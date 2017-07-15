@@ -91,7 +91,8 @@ namespace SPICA.Formats.CtrH3D.Texture
             Width  = (int)BitUtils.Pow2RoundDown((uint)Img.Width);
             Height = (int)BitUtils.Pow2RoundDown((uint)Img.Height);
 
-            if (Img.Width != Width || Img.Height != Height)
+            if (Img.Width  != Width ||
+                Img.Height != Height)
             {
                 /*
                  * 3DS GPU only accepts textures with power of 2 sizes.

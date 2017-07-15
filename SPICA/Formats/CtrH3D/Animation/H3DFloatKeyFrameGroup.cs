@@ -247,5 +247,15 @@ namespace SPICA.Formats.CtrH3D.Animation
                 return LHS.Value;
             }
         }
+
+        public bool TrySetFrameValue(float Frame, ref float Value)
+        {
+            if (Exists)
+            {
+                Value = GetFrameValue(Frame);
+            }
+
+            return Exists;
+        }
     }
 }

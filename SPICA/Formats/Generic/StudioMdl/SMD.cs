@@ -418,10 +418,6 @@ namespace SPICA.Formats.Generic.StudioMdl
                     MaterialIndex = MaterialIndex
                 };
 
-                M.UpdateBoolUniforms(true, true, true);
-
-                Model.AddMesh(M);
-
                 //Material
                 string TexName = Path.GetFileNameWithoutExtension(Mesh.MaterialName);
                 string MatName = $"Mat{MaterialIndex++.ToString("D5")}_{TexName}";
@@ -439,6 +435,10 @@ namespace SPICA.Formats.Generic.StudioMdl
                         Output.Textures.Add(new H3DTexture(TextureFile));
                     }
                 }
+
+                M.UpdateBoolUniforms(Material);
+
+                Model.AddMesh(M);
             }
 
             //Build Skeleton

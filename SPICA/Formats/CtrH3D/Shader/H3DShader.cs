@@ -10,8 +10,8 @@ namespace SPICA.Formats.CtrH3D.Shader
         public uint[] ShaderCommands;
         public uint[] ShaderSetupCommands;
 
-        public short VertexShaderIndex;
-        public short GeometryShaderIndex;
+        public short VtxShaderIndex;
+        public short GeoShaderIndex;
 
         public readonly H3DShaderBinding Binding;
 

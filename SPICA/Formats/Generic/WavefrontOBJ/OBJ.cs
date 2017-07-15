@@ -349,10 +349,6 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                     MaterialIndex = MaterialIndex
                 };
 
-                M.UpdateBoolUniforms(true, true, true);
-
-                Model.AddMesh(M);
-
                 if (Height < MaxVector.Y)
                     Height = MaxVector.Y;
 
@@ -367,12 +363,16 @@ namespace SPICA.Formats.Generic.WavefrontOBJ
                     Material.Texture0Name = "NoTexture";
 
                 Model.Materials.Add(Material);
+
+                M.UpdateBoolUniforms(Material);
+
+                Model.AddMesh(M);
             }
 
             /*
-             * On Pokémon, the Left Thigh bone is used by the game to move characters around,
-             * and all rigged bones are parented to this bone. It should point upward and be
-             * at half of the character height.
+             * On Pokémon, the root bone (on the animaiton file) is used by the game to move
+             * characters around, and all rigged bones are parented to this bone.
+             * It's usually the Waist bone, that points upward and is half the character height.
              */
             Model.Skeleton.Add(new H3DBone(
                 new Vector3(0, Height * 0.5f, 0),

@@ -51,6 +51,7 @@
     <Compile Include="Animation\IAnimationControl.cs" />
     <Compile Include="Animation\MaterialAnimation.cs" />
     <Compile Include="Animation\SkeletalAnimation.cs" />
+    <Compile Include="BoundingBox.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="LUT.cs" />
     <Compile Include="Mesh.cs" />
@@ -58,13 +59,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderEngine.cs" />
     <Compile Include="RenderUtils.cs" />
-    <Compile Include="Shader.cs" />
+    <Compile Include="Shaders\DefaultShaderIds.cs" />
+    <Compile Include="VertexShader.cs" />
     <Compile Include="Shaders\BuiltInShaders.cs" />
     <Compile Include="Shaders\FragmentShaderGenerator.cs" />
     <Compile Include="Shaders\GeometryShaderGenerator.cs" />
-    <Compile Include="Shaders\ShaderCompilationException.cs" />
+    <Compile Include="Shaders\ShaderException.cs" />
     <Compile Include="Shaders\ShaderGenerator.cs" />
-    <Compile Include="Shaders\ShaderManager.cs" />
+    <Compile Include="Shaders\Shader.cs" />
     <Compile Include="Shaders\ShaderNameBlock.cs" />
     <Compile Include="Shaders\VertexShaderGenerator.cs" />
     <Compile Include="SPICA_GL\Matrix.cs" />

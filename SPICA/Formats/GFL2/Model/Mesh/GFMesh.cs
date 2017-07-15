@@ -146,8 +146,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                         case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG1: BufferAttributes |= Param; break;
                         case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG2:
                             BufferAttributes |= (Param & 0xffff) << 32;
-                            VertexStride = (byte)(Param >> 16);
-                            AttributesCount = (int)(Param >> 28);
+                            VertexStride    = (byte)(Param >> 16);
+                            AttributesCount =  (int)(Param >> 28);
                             break;
                         case PICARegister.GPUREG_FIXEDATTRIB_INDEX: FixedIndex = (int)Param; break;
                         case PICARegister.GPUREG_FIXEDATTRIB_DATA0: Fixed[FixedIndex].Word0 = (uint)Param; break;
@@ -177,9 +177,9 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                     }
                     else
                     {
-                        int PermutationIdx = (int)((BufferAttributes >> Index * 4) & 0xf);
-                        int AttributeName = (int)((BufferPermutation >> PermutationIdx * 4) & 0xf);
-                        int AttributeFmt = (int)((BufferFormats >> PermutationIdx * 4) & 0xf);
+                        int PermutationIdx = (int)((BufferAttributes  >> Index          * 4) & 0xf);
+                        int AttributeName  = (int)((BufferPermutation >> PermutationIdx * 4) & 0xf);
+                        int AttributeFmt   = (int)((BufferFormats     >> PermutationIdx * 4) & 0xf);
 
                         PICAAttribute Attrib = new PICAAttribute()
                         {

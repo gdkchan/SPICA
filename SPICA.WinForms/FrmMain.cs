@@ -3,9 +3,7 @@ using OpenTK.Graphics;
 
 using SPICA.Formats;
 using SPICA.Formats.CtrH3D;
-using SPICA.PICA.Shader;
 using SPICA.Rendering;
-using SPICA.Rendering.Shaders;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
 using SPICA.WinForms.GUI.Animation;
@@ -14,7 +12,6 @@ using SPICA.WinForms.Properties;
 
 using System;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms
@@ -331,13 +328,13 @@ namespace SPICA.WinForms
 
                 SyncAnimationStates();
 
-                Tuple<Vector3, Vector3> CD = Renderer.Models[ModelsList.SelectedIndex].GetCenterDim();
+                BoundingBox AABB = Renderer.Models[ModelsList.SelectedIndex].GetModelAABB();
 
                 Dimension = 0;
 
-                Dimension = Math.Max(Dimension, Math.Abs(CD.Item2.X));
-                Dimension = Math.Max(Dimension, Math.Abs(CD.Item2.Y));
-                Dimension = Math.Max(Dimension, Math.Abs(CD.Item2.Z));
+                Dimension = Math.Max(Dimension, Math.Abs(AABB.Size.X));
+                Dimension = Math.Max(Dimension, Math.Abs(AABB.Size.Y));
+                Dimension = Math.Max(Dimension, Math.Abs(AABB.Size.Z));
 
                 Dimension *= 2;
 
@@ -345,7 +342,7 @@ namespace SPICA.WinForms
 
                 Renderer.Lights.Add(new Light
                 {
-                    Position = new Vector3(0, CD.Item1.Y, Dimension),
+                    Position = new Vector3(0, AABB.Center.Y, Dimension),
                     Ambient  = new Color4(0.0f, 0.0f, 0.0f, 1.0f),
                     Diffuse  = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
                     Specular = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
@@ -354,7 +351,7 @@ namespace SPICA.WinForms
 
                 Renderer.Models[ModelsList.SelectedIndex].UpdateUniforms();
 
-                MdlCenter = Matrix4.CreateTranslation(-CD.Item1);
+                MdlCenter = Matrix4.CreateTranslation(-AABB.Center);
             }
 
             UpdateViewport();

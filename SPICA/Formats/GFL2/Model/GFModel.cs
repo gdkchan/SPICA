@@ -137,7 +137,8 @@ namespace SPICA.Formats.GFL2.Model
             foreach (H3DBone Bone in Output.Skeleton)
             {
                 Bone.CalculateTransform(Output.Skeleton);
-                Bone.IsSegmentScaleCompensate = true;
+
+                Bone.Flags |= H3DBoneFlags.IsSegmentScaleCompensate;
             }
 
             if (Output.Skeleton.Count > 0)
@@ -340,17 +341,16 @@ namespace SPICA.Formats.GFL2.Model
 
                     M.Skinning = H3DMeshSkinning.Smooth;
 
-                    GFMaterial Mat = Materials[M.MaterialIndex];
+                    int MatIndex = Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
 
-                    M.MaterialIndex = (ushort)Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
+                    GFMaterial Mat = Materials[MatIndex];
+
+                    M.MaterialIndex = (ushort)MatIndex;
                     M.NodeIndex     = (ushort)NodeIndex;
                     M.Layer         = Mat.RenderLayer;
                     M.Priority      = Mat.RenderPriority;
 
-                    M.UpdateBoolUniforms(
-                        Mat.TextureCoords[0].MappingType == GFTextureMappingType.UvCoordinateMap,
-                        Mat.TextureCoords[1].MappingType == GFTextureMappingType.UvCoordinateMap,
-                        Mat.TextureCoords[2].MappingType == GFTextureMappingType.UvCoordinateMap);
+                    M.UpdateBoolUniforms(Output.Materials[MatIndex]);
 
                     Output.AddMesh(M);
                 }

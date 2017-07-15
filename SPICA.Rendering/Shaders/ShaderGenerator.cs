@@ -9,15 +9,11 @@ namespace SPICA.Rendering.Shaders
 {
     class ShaderGenerator
     {
-        protected const string Vec4Type  = "vec4";
-        protected const string IVec4Type = "ivec4";
-        protected const string MainProc  = "main";
-
+        public    const string BoolsName   = "BoolUniforms";
         protected const string TempRegName = "reg_temp";
         protected const string A0RegName   = "reg_a0";
         protected const string ALRegName   = "reg_al";
         protected const string CmpRegName  = "reg_cmp";
-        protected const string BoolsName   = "BoolUniforms";
 
         protected string[] Vec4UniformNames;
         protected string[] IVec4UniformNames;
@@ -145,7 +141,7 @@ namespace SPICA.Rendering.Shaders
 
             Procs.Enqueue(new ProcInfo()
             {
-                Name   = MainProc,
+                Name   = "main",
                 Offset = Program.MainOffset,
                 Length = Program.EndMainOffset - Program.MainOffset
             });
@@ -159,7 +155,17 @@ namespace SPICA.Rendering.Shaders
             }
         }
 
-        protected void GenVec4Uniforms(StringBuilder Output, ShaderUniformVec4[] Uniforms, string Type)
+        protected void GenVec4Uniforms(StringBuilder Output, ShaderUniformVec4[] Uniforms)
+        {
+            GenVec4Uniforms(Output, Uniforms, Vec4UniformNames, "vec4");
+        }
+
+        protected void GenIVec4Uniforms(StringBuilder Output, ShaderUniformVec4[] Uniforms)
+        {
+            GenVec4Uniforms(Output, Uniforms, IVec4UniformNames, "ivec4");
+        }
+
+        private void GenVec4Uniforms(StringBuilder Output, ShaderUniformVec4[] Uniforms, string[] Names, string Type)
         {
             for (int i = 0; i < Uniforms.Length; i++)
             {
@@ -169,19 +175,66 @@ namespace SPICA.Rendering.Shaders
 
                 string Name = GetValidName(Uniform.Name);
 
-                if (Type == Vec4Type)
-                    Vec4UniformNames[i] = Name;
-                else
-                    IVec4UniformNames[i] = Name;
+                /*
+                 * For registers used as arrays, the name is stored with the
+                 * indexer ([0], [1], [2]...), and GetSrcReg func inserts the indirect
+                 * addressing register values one character before the string size, so
+                 * something like [0] turns into [0 + val]. Keep this in mind if you
+                 * decide to change the naming here for some reason.
+                 */
+                string Indexer = Uniform.IsArray ? $"[{Uniform.ArrayIndex}]" : string.Empty;
+
+                Names[i] = Name + Indexer;
 
                 if (Uniform.ArrayIndex == 0 && !UniformNameTbl.Contains(Name))
                 {
                     if (Uniform.IsArray)
-                        Output.AppendLine($"uniform {Type} {Name}[{Uniform.ArrayLength}];");
+                        Output.AppendLine($"uniform {Type} {Type}_{i}_{Name}[{Uniform.ArrayLength}];");
                     else
-                        Output.AppendLine($"uniform {Type} {Name};");
+                        Output.AppendLine($"uniform {Type} {Type}_{i}_{Name};");
 
                     UniformNameTbl.Add(Name);
+                }
+            }
+        }
+
+        protected void GenBoolUniforms(StringBuilder Output, ShaderUniformBool[] Uniforms)
+        {
+            Output.AppendLine($"uniform int {BoolsName};");
+
+            Output.AppendLine();
+
+            for (int i = 0; i < Uniforms.Length; i++)
+            {
+                string Name = GetValidName(Uniforms[i].Name);
+
+                BoolUniformNames[i] = Name;
+
+                Output.AppendLine($"#define bool_{i}_{Name} (1 << {i})");
+            }
+        }
+
+        protected void GenOutputs(StringBuilder Output, ShaderOutputReg[] Regs, string Prefix = "")
+        {
+            for (int i = 0; i < Regs.Length; i++)
+            {
+                ShaderOutputReg Reg = Regs[i];
+
+                if (Reg.Mask != 0)
+                {
+                    if (Reg.Name == ShaderOutputRegName.TexCoord0W)
+                        Reg.Name =  ShaderOutputRegName.TexCoord0;
+
+                    OutputNames[i] = $"{Prefix}{Reg.Name}";
+
+                    //Shaders can have more than one generic output.
+                    //In this case we need to add a suffix to avoid name clashes.
+                    if (Reg.Name == ShaderOutputRegName.Generic)
+                    {
+                        OutputNames[i] += "_" + i;
+                    }
+
+                    Output.AppendLine($"out vec4 {OutputNames[i]};");
                 }
             }
         }
@@ -222,10 +275,20 @@ namespace SPICA.Rendering.Shaders
 
         protected string GetValidName(string Name)
         {
-            //Do not allow dots on the name (TODO: maybe verify all characters?)
-            return Name?.Contains(".") ?? false
-                ? Name.Substring(0, Name.IndexOf('.'))
-                : Name;
+            StringBuilder Output = new StringBuilder();
+
+            foreach (char c in Name)
+            {
+                if ((c >= 'A' && c <= 'Z') ||
+                    (c >= 'a' && c <= 'z') ||
+                    (c >= '0' && c <= '9') ||
+                    (c == '_'))
+                {
+                    Output.Append(c);
+                }
+            }
+
+            return Output.ToString();
         }
 
         /* Instructions CodeGen */
@@ -768,13 +831,13 @@ namespace SPICA.Rendering.Shaders
             SB.AppendLine(Ident + Code);
         }
 
-        private string GetSrcReg(ShaderProgram Program, uint RegId, uint Idx = 0)
+        private string GetSrcReg(ShaderProgram Program, uint Reg, uint Idx = 0)
         {
-            if (RegId >= 0x20 && RegId < 0x80)
+            if (Reg >= 0x20 && Reg < 0x80)
             {
-                ShaderUniformVec4 Uniform = Program?.Vec4Uniforms[RegId - 0x20];
+                ShaderUniformVec4 Uniform = Program.Vec4Uniforms[Reg - 0x20];
 
-                string Name = Vec4UniformNames[RegId - 0x20];
+                string Name = Vec4UniformNames[Reg - 0x20];
 
                 if (Uniform.IsConstant)
                 {
@@ -784,51 +847,47 @@ namespace SPICA.Rendering.Shaders
                         Uniform.Constant.Z,
                         Uniform.Constant.W);
                 }
-                else if (Uniform.IsArray)
+                else if (Uniform.IsArray && Idx > 0)
                 {
-                    string IdxReg = string.Empty;
+                    int Pos = Name.Length - 1;
 
                     switch (Idx)
                     {
-                        case 1: IdxReg = $" + {A0RegName}.x"; break;
-                        case 2: IdxReg = $" + {A0RegName}.y"; break;
-                        case 3: IdxReg = $" + {ALRegName}";   break;
+                        case 1: return Name.Insert(Pos, $" + {A0RegName}.x");
+                        case 2: return Name.Insert(Pos, $" + {A0RegName}.y");
+                        case 3: return Name.Insert(Pos, $" + {ALRegName}");
                     }
+                }
 
-                    return $"{Name}[{Uniform.ArrayIndex}{IdxReg}]";
-                }
-                else
-                {
-                    return Name;
-                }
+                return Name;
             }
-            else if (RegId < 0x10)
+            else if (Reg < 0x10)
             {
-                return InputNames[RegId];
+                return InputNames[Reg];
             }
-            else if (RegId < 0x20)
+            else if (Reg < 0x20)
             {
-                return $"{TempRegName}[{RegId - 0x10}]";
+                return $"{TempRegName}[{Reg - 0x10}]";
             }
             else
             {
-                throw new InvalidOperationException($"Invalid register Index {RegId} used!");
+                throw new InvalidOperationException($"Invalid register Index {Reg} used!");
             }
         }
 
-        private string GetDstReg(ShaderProgram Program, uint RegId)
+        private string GetDstReg(ShaderProgram Program, uint Reg)
         {
-            if (RegId < 0x10)
+            if (Reg < 0x10)
             {
-                return OutputNames[RegId];
+                return OutputNames[Reg];
             }
-            else if (RegId < 0x20)
+            else if (Reg < 0x20)
             {
-                return $"{TempRegName}[{RegId - 0x10}]";
+                return $"{TempRegName}[{Reg - 0x10}]";
             }
             else
             {
-                throw new InvalidOperationException($"Invalid register Index {RegId} used!");
+                throw new InvalidOperationException($"Invalid register Index {Reg} used!");
             }
         }
 

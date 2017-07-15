@@ -12,7 +12,6 @@ using SPICA.Rendering.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace SPICA.Rendering
 {
@@ -20,16 +19,17 @@ namespace SPICA.Rendering
     {
         public const float ClipDistance = 100000f;
 
-        public readonly List<Model>   Models;
-        public readonly List<Texture> Textures;
-        public readonly List<LUT>     LUTs;
-        public readonly List<Shader>  Shaders;
-        public readonly List<Light>   Lights;
+        public readonly List<Model> Models;
+        public readonly List<Light> Lights;
+
+        public readonly Dictionary<string, Texture>      Textures;
+        public readonly Dictionary<string, LUT>          LUTs;
+        public readonly Dictionary<string, VertexShader> Shaders;
 
         internal Matrix4 ProjectionMatrix;
         internal Matrix4 ViewMatrix;
 
-        internal int VertexShaderHandle;
+        private VertexShader DefaultShader;
 
         private int Width, Height;
 
@@ -48,18 +48,21 @@ namespace SPICA.Rendering
 
         public RenderEngine(int Width, int Height)
         {
-            Models   = new List<Model>();
-            Textures = new List<Texture>();
-            LUTs     = new List<LUT>();
-            Shaders  = new List<Shader>();
-            Lights   = new List<Light>();
+            Models = new List<Model>();
+            Lights = new List<Light>();
 
-            VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
+            Textures = new Dictionary<string, Texture>();
+            LUTs     = new Dictionary<string, LUT>();
+            Shaders  = new Dictionary<string, VertexShader>();
+
+            int VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
 
             GL.ShaderSource(VertexShaderHandle, BuiltInShaders.DefaultVertexShader);
             GL.CompileShader(VertexShaderHandle);
 
-            ShaderManager.CheckCompilation(VertexShaderHandle);
+            Shader.CheckCompilation(VertexShaderHandle);
+
+            DefaultShader = new VertexShader(VertexShaderHandle);
 
             ViewMatrix = Matrix4.Identity;
 
@@ -97,17 +100,17 @@ namespace SPICA.Rendering
 
         public void Merge(H3DDict<H3DModel> Models)
         {
-            foreach (H3DModel Mdl in Models)
+            foreach (H3DModel Model in Models)
             {
-                this.Models.Add(new Model(this, Mdl));
+                this.Models.Add(new Model(this, Model));
             }
         }
 
         public void Merge(H3DDict<H3DTexture> Textures)
         {
-            foreach (H3DTexture Tex in Textures)
+            foreach (H3DTexture Texture in Textures)
             {
-                this.Textures.Add(new Texture(Tex));
+                this.Textures.Add(Texture.Name, new Texture(Texture));
             }
         }
 
@@ -115,15 +118,15 @@ namespace SPICA.Rendering
         {
             foreach (H3DLUT LUT in LUTs)
             {
-                this.LUTs.Add(new LUT(LUT));
+                this.LUTs.Add(LUT.Name, new LUT(LUT));
             }
         }
 
         public void Merge(H3DDict<H3DShader> Shaders)
         {
-            foreach (H3DShader Shdr in Shaders)
+            foreach (H3DShader Shader in Shaders)
             {
-                this.Shaders.Add(new Shader(Shdr));
+                this.Shaders.Add(Shader.Name, new VertexShader(Shader));
             }
 
             UpdateAllShaders();
@@ -191,19 +194,36 @@ namespace SPICA.Rendering
             }
         }
 
-        internal void BindTexture(int Unit, string TextureName)
+        internal bool TryBindTexture(int Unit, string TextureName)
         {
-            Textures.FirstOrDefault(x => x.Name == TextureName)?.Bind(Unit);
+            if (TextureName != null && Textures.TryGetValue(TextureName, out Texture Texture))
+            {
+                Texture.Bind(Unit);
+
+                return true;
+            }
+
+            return false;
         }
 
-        internal bool BindLUT(int Unit, string TableName, string SamplerName)
+        internal bool TryBindLUT(int Unit, string TableName, string SamplerName)
         {
-            return LUTs.FirstOrDefault(x => x.Name == TableName)?.BindSampler(Unit, SamplerName) ?? false;
+            if (TableName != null && LUTs.TryGetValue(TableName, out LUT LUT))
+            {
+                return LUT.BindSampler(Unit, SamplerName);
+            }
+
+            return false;
         }
 
-        internal Shader GetShader(string ShaderName)
+        internal VertexShader GetShader(string ShaderName)
         {
-            return Shaders.FirstOrDefault(x => x.Name == ShaderName);
+            if (!Shaders.TryGetValue(ShaderName, out VertexShader Output))
+            {
+                Output = DefaultShader;
+            }
+
+            return Output;
         }
 
         private void DisposeAndClear<T>(List<T> Values) where T : IDisposable
@@ -216,6 +236,16 @@ namespace SPICA.Rendering
             Values.Clear();
         }
 
+        private void DisposeAndClear<T>(Dictionary<string, T> Dict) where T : IDisposable
+        {
+            foreach (T Value in Dict.Values)
+            {
+                Value.Dispose();
+            }
+
+            Dict.Clear();
+        }
+
         private bool Disposed;
 
         protected virtual void Dispose(bool Disposing)
@@ -224,7 +254,7 @@ namespace SPICA.Rendering
             {
                 DeleteAll();
 
-                GL.DeleteShader(VertexShaderHandle);
+                DefaultShader.Dispose();
 
                 Disposed = true;
             }

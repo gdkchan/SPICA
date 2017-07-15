@@ -26,26 +26,9 @@ namespace SPICA.Rendering.Shaders
 
             Output.AppendLine();
 
-            GenVec4Uniforms(Output, Program.Vec4Uniforms, Vec4Type);
-            GenVec4Uniforms(Output, Program.IVec4Uniforms, IVec4Type);
-
-            Output.AppendLine($"uniform int {BoolsName};");
-
-            Output.AppendLine();
-
-            for (int i = 0; i < Program.BoolUniforms.Length; i++)
-            {
-                string Name = Program.BoolUniforms[i]?.Name;
-
-                if (Name != null)
-                {
-                    Name = GetValidName(Name);
-
-                    BoolUniformNames[i] = Name;
-
-                    Output.AppendLine($"#define {Name} (1 << {i})");
-                }
-            }
+            GenVec4Uniforms (Output, Program.Vec4Uniforms);
+            GenIVec4Uniforms(Output, Program.IVec4Uniforms);
+            GenBoolUniforms (Output, Program.BoolUniforms);
 
             Output.AppendLine();
 
@@ -74,17 +57,7 @@ namespace SPICA.Rendering.Shaders
 
             Output.AppendLine();
 
-            for (int i = 0; i < Program.OutputRegs.Length; i++)
-            {
-                ShaderOutputReg Reg = Program.OutputRegs[i];
-
-                if (Reg.Mask != 0)
-                {
-                    OutputNames[i] = $"{Reg.Name}";
-
-                    Output.AppendLine($"out vec4 {OutputNames[i]};");
-                }
-            }
+            GenOutputs(Output, Program.OutputRegs);
 
             int FuncStart = Output.Length;
 
@@ -116,6 +89,9 @@ namespace SPICA.Rendering.Shaders
             }
             else
             {
+                //TODO: Support other geometry shader types.
+                //Currently, only Point Sprites are supported,
+                //but some models uses silhouette, and maybe subdivision too.
                 SB.AppendLine($"void main() {{");
                 SB.AppendLine("\tfor (geo_i = 0; geo_i < 3; geo_i++) {");
 

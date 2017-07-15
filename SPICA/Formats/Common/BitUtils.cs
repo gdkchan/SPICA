@@ -34,6 +34,26 @@
             return Value != 0 && (Value & (Value - 1)) == 0;
         }
 
+        public static dynamic MaskBits(dynamic Value, int Start, int Count)
+        {
+            uint Mask = (1u << Count) - 1;
+
+            Mask  <<= Start;
+            Value &=  Mask;
+
+            return Value;
+        }
+
+        public static dynamic MaskOutBits(dynamic Value, int Start, int Count)
+        {
+            uint Mask = (1u << Count) - 1;
+
+            Mask  <<= Start;
+            Value &=  ~Mask;
+
+            return Value;
+        }
+
         public static dynamic GetBits(dynamic Value, int Start, int Count)
         {
             uint Mask = (1u << Count) - 1;
@@ -61,10 +81,9 @@
 
         public static dynamic SetBit(dynamic Value, bool Bit, int Start)
         {
-            if (Bit)
-                return Value |  (1u << Start);
-            else
-                return Value & ~(1u << Start);
+            return Bit
+                ? Value |  (1u << Start)
+                : Value & ~(1u << Start);
         }
     }
 }

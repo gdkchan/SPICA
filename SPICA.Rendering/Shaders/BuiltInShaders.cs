@@ -26,16 +26,6 @@ uniform Light_t Lights[8];
 
 uniform vec4 SAmbient;
 
-in vec4 View;
-in vec4 QuatNormal;
-in vec3 Tangent;
-in vec4 Color;
-in vec4 TexCoord0;
-in vec4 TexCoord1;
-in vec4 TexCoord2;
-
-out vec4 Output;
-
 vec3 QuatRotate(vec4 q, vec3 v) {
     return v + 2 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
 }";
@@ -43,6 +33,7 @@ vec3 QuatRotate(vec4 q, vec3 v) {
         public const string DefaultVertexShader = @"
 //SPICA auto-generated code
 //This code was translated from a MAESTRO Vertex Shader
+//This file was also hand modified to improve compatibility
 #version 330 core
 precision highp float;
 
@@ -272,6 +263,7 @@ void proc_calc_vertex_lighting() {
 			reg_temp[9].w = reg_temp[9].w + reg_temp[4].w;
 		}
 		reg_temp[3].xyzw = -vec4(3, 4, 5, 6).wwww + reg_temp[3].xyzw;
+        if (LightCt.z == 0) break;
 	}
 	reg_temp[8].x = vec4(0, 1, 2, 3).y;
 }
@@ -390,16 +382,12 @@ void proc_calc_texcoord2() {
 		reg_temp[5].y = dot(TexMtx2[1].xywz, reg_temp[6].xyzw);
 		TexCoord2.xyzw = reg_temp[5].xyzw;
 	} else {
-		if ((BoolUniforms & IsTex2) != 0) {
-			reg_temp[6].zw = vec4(0, 1, 2, 3).yy;
-			reg_temp[5].zw = reg_temp[6].ww;
-			proc_gen_texcoord_sphere_reflection();
-			reg_temp[5].x = dot(TexMtx2[0].xyzw, reg_temp[6].xyzw);
-			reg_temp[5].y = dot(TexMtx2[1].xyzw, reg_temp[6].xyzw);
-			TexCoord2.xyzw = reg_temp[5].xyzw;
-		} else {
-			TexCoord2.xyzw = vec4(0, 1, 2, 3).xxxx;
-		}
+		reg_temp[6].zw = vec4(0, 1, 2, 3).yy;
+		reg_temp[5].zw = reg_temp[6].ww;
+		proc_gen_texcoord_sphere_reflection();
+		reg_temp[5].x = dot(TexMtx2[0].xyzw, reg_temp[6].xyzw);
+		reg_temp[5].y = dot(TexMtx2[1].xyzw, reg_temp[6].xyzw);
+		TexCoord2.xyzw = reg_temp[5].xyzw;
 	}
 }
 
@@ -411,27 +399,23 @@ void proc_calc_texcoord1() {
 		reg_temp[4].y = dot(TexMtx1[1].xywz, reg_temp[6].xyzw);
 		TexCoord1.xyzw = reg_temp[4].xyzw;
 	} else {
-		if ((BoolUniforms & IsTex1) != 0) {
-			reg_cmp.x = vec4(3, 4, 5, 6).x == reg_temp[0].x;
-			reg_cmp.y = vec4(3, 4, 5, 6).y == reg_temp[0].y;
-			reg_temp[6].zw = vec4(0, 1, 2, 3).yy;
-			if (!reg_cmp.x && !reg_cmp.y) {
-				reg_temp[6].xyzw = reg_temp[10].xyzw;
-				reg_temp[4].x = dot(TexMtx1[0].xyzw, reg_temp[6].xyzw);
-				reg_temp[4].y = dot(TexMtx1[1].xyzw, reg_temp[6].xyzw);
-				reg_temp[4].z = dot(TexMtx1[2].xyzw, reg_temp[6].xyzw);
-				reg_temp[6].w = 1 / reg_temp[4].z;
-				reg_temp[4].xy = reg_temp[4].xy * reg_temp[6].ww;
-				reg_temp[4].xy = TexTran.zw + reg_temp[4].xy;
-			} else {
-				proc_gen_texcoord_sphere_reflection();
-				reg_temp[4].x = dot(TexMtx1[0].xyzw, reg_temp[6].xyzw);
-				reg_temp[4].y = dot(TexMtx1[1].xyzw, reg_temp[6].xyzw);
-			}
-			TexCoord1.xyzw = reg_temp[4].xyzw;
+		reg_cmp.x = vec4(3, 4, 5, 6).x == reg_temp[0].x;
+		reg_cmp.y = vec4(3, 4, 5, 6).y == reg_temp[0].y;
+		reg_temp[6].zw = vec4(0, 1, 2, 3).yy;
+		if (!reg_cmp.x && !reg_cmp.y) {
+			reg_temp[6].xyzw = reg_temp[10].xyzw;
+			reg_temp[4].x = dot(TexMtx1[0].xyzw, reg_temp[6].xyzw);
+			reg_temp[4].y = dot(TexMtx1[1].xyzw, reg_temp[6].xyzw);
+			reg_temp[4].z = dot(TexMtx1[2].xyzw, reg_temp[6].xyzw);
+			reg_temp[6].w = 1 / reg_temp[4].z;
+			reg_temp[4].xy = reg_temp[4].xy * reg_temp[6].ww;
+			reg_temp[4].xy = TexTran.zw + reg_temp[4].xy;
 		} else {
-			TexCoord1.xyzw = vec4(0, 1, 2, 3).xxxx;
+			proc_gen_texcoord_sphere_reflection();
+			reg_temp[4].x = dot(TexMtx1[0].xyzw, reg_temp[6].xyzw);
+			reg_temp[4].y = dot(TexMtx1[1].xyzw, reg_temp[6].xyzw);
 		}
+		TexCoord1.xyzw = reg_temp[4].xyzw;
 	}
 }
 
@@ -508,7 +492,7 @@ void l_transform_matrix() {
 		reg_temp[7].xyzw = vec4(0, 1, 2, 3).xxxx;
 		reg_temp[12].xyzw = vec4(0, 1, 2, 3).xxxx;
 		reg_temp[11].xyzw = vec4(0, 1, 2, 3).xxxx;
-		reg_temp[2].xyzw = vec4(0, 1, 2, 3).wwww * aBoneIndex.xyzw;
+		reg_temp[2].xyzw = vec4(0, 1, 2, 3).wwww * min(aBoneIndex.xyzw, vec4(19));
 		if (reg_cmp.x && !reg_cmp.y) {
 			reg_cmp.x = vec4(0, 1, 2, 3).x != aBoneWeight.z;
 			reg_cmp.y = vec4(0, 1, 2, 3).x != aBoneWeight.w;
@@ -612,7 +596,7 @@ void l_transform_matrix() {
 		reg_cmp.x = vec4(0, 1, 2, 3).x != reg_temp[0].y;
 		reg_cmp.y = vec4(0, 1, 2, 3).x != reg_temp[0].z;
 		if ((BoolUniforms & IsRgdSk) != 0) {
-			reg_temp[1].x = vec4(0, 1, 2, 3).w * aBoneIndex.x;
+			reg_temp[1].x = vec4(0, 1, 2, 3).w * min(aBoneIndex.x, 19);
 			reg_a0.x = int(reg_temp[1].x);
 			reg_temp[7].x = dot(UnivReg[0 + reg_a0.x].xyzw, reg_temp[15].xyzw);
 			reg_temp[7].y = dot(UnivReg[1 + reg_a0.x].xyzw, reg_temp[15].xyzw);

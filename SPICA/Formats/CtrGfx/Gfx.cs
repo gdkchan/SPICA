@@ -107,177 +107,6 @@ namespace SPICA.Formats.CtrGfx
 
                 Mdl.WorldTransform = Model.WorldTransform;
 
-                foreach (GfxMesh Mesh in Model.Meshes)
-                {
-                    GfxShape Shape = Model.Shapes[Mesh.ShapeIndex];
-
-                    H3DMesh M = new H3DMesh();
-
-                    PICAVertex[] Vertices = null;
-
-                    foreach (GfxVertexBuffer VertexBuffer in Shape.VertexBuffers)
-                    {
-                        /*
-                         * CGfx supports 3 types of vertex buffer:
-                         * - Non-Interleaved: Each attribute is stored on it's on stream, like this:
-                         * P0 P1 P2 P3 P4 P5 ... N0 N1 N2 N3 N4 N5
-                         * - Interleaved: All attributes are stored on the same stream, like this:
-                         * P0 N0 P1 N1 P2 N2 P3 N3 P4 N4 P5 N5 ...
-                         * - Fixed: The attribute have only a single fixed value, so instead of a stream,
-                         * it have a single vector.
-                         */
-                        if (VertexBuffer is GfxAttribute)
-                        {
-                            //Non-Interleaved buffer
-                            GfxAttribute Attr = (GfxAttribute)VertexBuffer;
-
-                            M.Attributes.Add(Attr.ToPICAAttribute());
-
-                            int Length = Attr.Elements;
-
-                            switch (Attr.Format)
-                            {
-                                case GfxGLDataType.GL_SHORT: Length <<= 1; break;
-                                case GfxGLDataType.GL_FLOAT: Length <<= 2; break;
-                            }
-
-                            M.VertexStride += Length;
-
-                            Vector4[] Vectors = Attr.GetVectors();
-
-                            if (Vertices == null)
-                            {
-                                Vertices = new PICAVertex[Vectors.Length];
-                            }
-
-                            for (int i = 0; i < Vectors.Length; i++)
-                            {
-                                switch(Attr.AttrName)
-                                {
-                                    case PICAAttributeName.Position:  Vertices[i].Position  = Vectors[i]; break;
-                                    case PICAAttributeName.Normal:    Vertices[i].Normal    = Vectors[i]; break;
-                                    case PICAAttributeName.Tangent:   Vertices[i].Tangent   = Vectors[i]; break;
-                                    case PICAAttributeName.TexCoord0: Vertices[i].TexCoord0 = Vectors[i]; break;
-                                    case PICAAttributeName.TexCoord1: Vertices[i].TexCoord1 = Vectors[i]; break;
-                                    case PICAAttributeName.TexCoord2: Vertices[i].TexCoord2 = Vectors[i]; break;
-                                    case PICAAttributeName.Color:     Vertices[i].Color     = Vectors[i]; break;
-
-                                    case PICAAttributeName.BoneIndex:
-                                        Vertices[i].Indices[0] = (int)Vectors[i].X;
-                                        Vertices[i].Indices[1] = (int)Vectors[i].Y;
-                                        Vertices[i].Indices[2] = (int)Vectors[i].Z;
-                                        Vertices[i].Indices[3] = (int)Vectors[i].W;
-                                        break;
-
-                                    case PICAAttributeName.BoneWeight:
-                                        Vertices[i].Weights[0] =      Vectors[i].X;
-                                        Vertices[i].Weights[1] =      Vectors[i].Y;
-                                        Vertices[i].Weights[2] =      Vectors[i].Z;
-                                        Vertices[i].Weights[3] =      Vectors[i].W;
-                                        break;
-                                }
-                            }
-                        }
-                        else if (VertexBuffer is GfxVertexBufferFixed)
-                        {
-                            //Fixed vector
-                            float[] Vector = ((GfxVertexBufferFixed)VertexBuffer).Vector;
-
-                            M.FixedAttributes.Add(new PICAFixedAttribute()
-                            {
-                                Name  = VertexBuffer.AttrName,
-
-                                Value = new PICAVectorFloat24(
-                                    Vector.Length > 0 ? Vector[0] : 0,
-                                    Vector.Length > 1 ? Vector[1] : 0,
-                                    Vector.Length > 2 ? Vector[2] : 0,
-                                    Vector.Length > 3 ? Vector[3] : 0)
-                            });
-                        }
-                        else
-                        {
-                            //Interleaved buffer
-                            GfxVertexBufferInterleaved VtxBuff = (GfxVertexBufferInterleaved)VertexBuffer;
-
-                            foreach (GfxAttribute Attr in ((GfxVertexBufferInterleaved)VertexBuffer).Attributes)
-                            {
-                                M.Attributes.Add(Attr.ToPICAAttribute());
-                            }
-
-                            M.RawBuffer    = VtxBuff.RawBuffer;
-                            M.VertexStride = VtxBuff.VertexStride;
-                        }
-                    }
-
-                    if (Vertices != null)
-                    {
-                        M.RawBuffer = VerticesConverter.GetBuffer(Vertices, M.Attributes);
-                    }
-
-                    M.MaterialIndex  = (ushort)Mesh.MaterialIndex;
-                    M.NodeIndex      = (ushort)Mesh.MeshNodeIndex;
-                    M.PositionOffset = new Vector4(Shape.PositionOffset, 0);
-                    M.MeshCenter     = Shape.BoundingBox.Center;
-                    M.Layer          = (int)Model.Materials[Mesh.MaterialIndex].TranslucencyKind;
-                    M.Priority       = Mesh.RenderPriority;
-
-                    int SmoothCount = 0;
-
-                    foreach (GfxSubMesh SubMesh in Shape.SubMeshes)
-                    {
-                        foreach (GfxFace Face in SubMesh.Faces)
-                        {
-                            H3DSubMesh SM = new H3DSubMesh();
-
-                            SM.BoneIndicesCount = (ushort)SubMesh.BoneIndices.Count;
-
-                            for (int i = 0; i < SubMesh.BoneIndices.Count; i++)
-                            {
-                                SM.BoneIndices[i] = (ushort)SubMesh.BoneIndices[i];
-                            }
-
-                            switch (SubMesh.Skinning)
-                            {
-                                case GfxSubMeshSkinning.None:   SM.Skinning = H3DSubMeshSkinning.None;   break;
-                                case GfxSubMeshSkinning.Rigid:  SM.Skinning = H3DSubMeshSkinning.Rigid;  break;
-                                case GfxSubMeshSkinning.Smooth: SM.Skinning = H3DSubMeshSkinning.Smooth; break;
-                            }
-
-                            SM.Indices = Face.FaceDescriptors[0].Indices;
-
-                            SM.Indices = new ushort[Face.FaceDescriptors[0].Indices.Length];
-
-                            for (int i = 0; i < Face.FaceDescriptors[0].Indices.Length; i++)
-                            {
-                                SM.Indices[i] = Face.FaceDescriptors[0].Indices[i];
-                            }
-
-                            M.SubMeshes.Add(SM);
-                        }
-
-                        if (SubMesh.Skinning == GfxSubMeshSkinning.Smooth)
-                        {
-                            SmoothCount++;
-                        }
-                    }
-
-                    if (SmoothCount == Shape.SubMeshes.Count)
-                        M.Skinning = H3DMeshSkinning.Smooth;
-                    else if (SmoothCount > 0)
-                        M.Skinning = H3DMeshSkinning.Mixed;
-                    else
-                        M.Skinning = H3DMeshSkinning.Rigid;
-
-                    GfxMaterial Mat = Model.Materials[Mesh.MaterialIndex];
-
-                    M.UpdateBoolUniforms(
-                        Mat.TextureCoords[0].MappingType == GfxTextureMappingType.UvCoordinateMap,
-                        Mat.TextureCoords[1].MappingType == GfxTextureMappingType.UvCoordinateMap,
-                        Mat.TextureCoords[2].MappingType == GfxTextureMappingType.UvCoordinateMap);
-
-                    Mdl.AddMesh(M);
-                }
-
                 foreach (GfxMaterial Material in Model.Materials)
                 {
                     H3DMaterial Mat = new H3DMaterial() { Name = Material.Name };
@@ -483,28 +312,197 @@ namespace SPICA.Formats.CtrGfx
                     Mdl.Materials.Add(Mat);
                 }
 
+                foreach (GfxMesh Mesh in Model.Meshes)
+                {
+                    GfxShape Shape = Model.Shapes[Mesh.ShapeIndex];
+
+                    H3DMesh M = new H3DMesh();
+
+                    PICAVertex[] Vertices = null;
+
+                    foreach (GfxVertexBuffer VertexBuffer in Shape.VertexBuffers)
+                    {
+                        /*
+                         * CGfx supports 3 types of vertex buffer:
+                         * - Non-Interleaved: Each attribute is stored on it's on stream, like this:
+                         * P0 P1 P2 P3 P4 P5 ... N0 N1 N2 N3 N4 N5
+                         * - Interleaved: All attributes are stored on the same stream, like this:
+                         * P0 N0 P1 N1 P2 N2 P3 N3 P4 N4 P5 N5 ...
+                         * - Fixed: The attribute have only a single fixed value, so instead of a stream,
+                         * it have a single vector.
+                         */
+                        if (VertexBuffer is GfxAttribute)
+                        {
+                            //Non-Interleaved buffer
+                            GfxAttribute Attr = (GfxAttribute)VertexBuffer;
+
+                            M.Attributes.Add(Attr.ToPICAAttribute());
+
+                            int Length = Attr.Elements;
+
+                            switch (Attr.Format)
+                            {
+                                case GfxGLDataType.GL_SHORT: Length <<= 1; break;
+                                case GfxGLDataType.GL_FLOAT: Length <<= 2; break;
+                            }
+
+                            M.VertexStride += Length;
+
+                            Vector4[] Vectors = Attr.GetVectors();
+
+                            if (Vertices == null)
+                            {
+                                Vertices = new PICAVertex[Vectors.Length];
+                            }
+
+                            for (int i = 0; i < Vectors.Length; i++)
+                            {
+                                switch(Attr.AttrName)
+                                {
+                                    case PICAAttributeName.Position:  Vertices[i].Position  = Vectors[i]; break;
+                                    case PICAAttributeName.Normal:    Vertices[i].Normal    = Vectors[i]; break;
+                                    case PICAAttributeName.Tangent:   Vertices[i].Tangent   = Vectors[i]; break;
+                                    case PICAAttributeName.TexCoord0: Vertices[i].TexCoord0 = Vectors[i]; break;
+                                    case PICAAttributeName.TexCoord1: Vertices[i].TexCoord1 = Vectors[i]; break;
+                                    case PICAAttributeName.TexCoord2: Vertices[i].TexCoord2 = Vectors[i]; break;
+                                    case PICAAttributeName.Color:     Vertices[i].Color     = Vectors[i]; break;
+
+                                    case PICAAttributeName.BoneIndex:
+                                        Vertices[i].Indices[0] = (int)Vectors[i].X;
+                                        Vertices[i].Indices[1] = (int)Vectors[i].Y;
+                                        Vertices[i].Indices[2] = (int)Vectors[i].Z;
+                                        Vertices[i].Indices[3] = (int)Vectors[i].W;
+                                        break;
+
+                                    case PICAAttributeName.BoneWeight:
+                                        Vertices[i].Weights[0] =      Vectors[i].X;
+                                        Vertices[i].Weights[1] =      Vectors[i].Y;
+                                        Vertices[i].Weights[2] =      Vectors[i].Z;
+                                        Vertices[i].Weights[3] =      Vectors[i].W;
+                                        break;
+                                }
+                            }
+                        }
+                        else if (VertexBuffer is GfxVertexBufferFixed)
+                        {
+                            //Fixed vector
+                            float[] Vector = ((GfxVertexBufferFixed)VertexBuffer).Vector;
+
+                            M.FixedAttributes.Add(new PICAFixedAttribute()
+                            {
+                                Name  = VertexBuffer.AttrName,
+
+                                Value = new PICAVectorFloat24(
+                                    Vector.Length > 0 ? Vector[0] : 0,
+                                    Vector.Length > 1 ? Vector[1] : 0,
+                                    Vector.Length > 2 ? Vector[2] : 0,
+                                    Vector.Length > 3 ? Vector[3] : 0)
+                            });
+                        }
+                        else
+                        {
+                            //Interleaved buffer
+                            GfxVertexBufferInterleaved VtxBuff = (GfxVertexBufferInterleaved)VertexBuffer;
+
+                            foreach (GfxAttribute Attr in ((GfxVertexBufferInterleaved)VertexBuffer).Attributes)
+                            {
+                                M.Attributes.Add(Attr.ToPICAAttribute());
+                            }
+
+                            M.RawBuffer    = VtxBuff.RawBuffer;
+                            M.VertexStride = VtxBuff.VertexStride;
+                        }
+                    }
+
+                    if (Vertices != null)
+                    {
+                        M.RawBuffer = VerticesConverter.GetBuffer(Vertices, M.Attributes);
+                    }
+
+                    Vector4 PositionOffset = new Vector4(Shape.PositionOffset, 0);
+
+                    int Layer = (int)Model.Materials[Mesh.MaterialIndex].TranslucencyKind;
+
+                    M.MaterialIndex  = (ushort)Mesh.MaterialIndex;
+                    M.NodeIndex      = (ushort)Mesh.MeshNodeIndex;
+                    M.PositionOffset = PositionOffset;
+                    M.MeshCenter     = Shape.BoundingBox.Center;
+                    M.Layer          = Layer;
+                    M.Priority       = Mesh.RenderPriority;
+
+                    int SmoothCount = 0;
+
+                    foreach (GfxSubMesh SubMesh in Shape.SubMeshes)
+                    {
+                        foreach (GfxFace Face in SubMesh.Faces)
+                        {
+                            H3DSubMesh SM = new H3DSubMesh();
+
+                            SM.BoneIndicesCount = (ushort)SubMesh.BoneIndices.Count;
+
+                            for (int i = 0; i < SubMesh.BoneIndices.Count; i++)
+                            {
+                                SM.BoneIndices[i] = (ushort)SubMesh.BoneIndices[i];
+                            }
+
+                            switch (SubMesh.Skinning)
+                            {
+                                case GfxSubMeshSkinning.None:   SM.Skinning = H3DSubMeshSkinning.None;   break;
+                                case GfxSubMeshSkinning.Rigid:  SM.Skinning = H3DSubMeshSkinning.Rigid;  break;
+                                case GfxSubMeshSkinning.Smooth: SM.Skinning = H3DSubMeshSkinning.Smooth; break;
+                            }
+
+                            SM.Indices = Face.FaceDescriptors[0].Indices;
+
+                            SM.Indices = new ushort[Face.FaceDescriptors[0].Indices.Length];
+
+                            for (int i = 0; i < Face.FaceDescriptors[0].Indices.Length; i++)
+                            {
+                                SM.Indices[i] = Face.FaceDescriptors[0].Indices[i];
+                            }
+
+                            M.SubMeshes.Add(SM);
+                        }
+
+                        if (SubMesh.Skinning == GfxSubMeshSkinning.Smooth)
+                        {
+                            SmoothCount++;
+                        }
+                    }
+
+                    if (SmoothCount == Shape.SubMeshes.Count)
+                        M.Skinning = H3DMeshSkinning.Smooth;
+                    else if (SmoothCount > 0)
+                        M.Skinning = H3DMeshSkinning.Mixed;
+                    else
+                        M.Skinning = H3DMeshSkinning.Rigid;
+
+                    GfxMaterial Mat = Model.Materials[Mesh.MaterialIndex];
+
+                    M.UpdateBoolUniforms(Mdl.Materials[Mesh.MaterialIndex]);
+
+                    Mdl.AddMesh(M);
+                }
+
                 if (Model is GfxModelSkeletal)
                 {
                     foreach (GfxBone Bone in ((GfxModelSkeletal)Model).Skeleton.Bones)
                     {
+                        H3DBone B = new H3DBone()
+                        {
+                            Name             = Bone.Name,
+                            ParentIndex      = (short)Bone.ParentIndex,
+                            Translation      = Bone.Translation,
+                            Rotation         = Bone.Rotation,
+                            Scale            = Bone.Scale,
+                            InverseTransform = Bone.InvWorldTransform
+                        };
+
                         bool ScaleCompensate = (Bone.Flags & GfxBoneFlags.IsSegmentScaleCompensate) != 0;
 
-                        Mdl.Skeleton.Add(new H3DBone()
-                        {
-                            Name = Bone.Name,
+                        if (ScaleCompensate) B.Flags |= H3DBoneFlags.IsSegmentScaleCompensate;
 
-                            ParentIndex = (short)Bone.ParentIndex,
-
-                            Translation = Bone.Translation,
-                            Rotation    = Bone.Rotation,
-                            Scale       = Bone.Scale,
-
-                            InverseTransform = Bone.InvWorldTransform,
-
-                            BillboardMode = (H3DBillboardMode)Bone.BillboardMode,
-
-                            IsSegmentScaleCompensate = ScaleCompensate
-                        });
+                        Mdl.Skeleton.Add(B);
                     }
 
                     Mdl.Flags |= H3DModelFlags.HasSkeleton;

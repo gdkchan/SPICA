@@ -10,7 +10,6 @@ using SPICA.Rendering.SPICA_GL;
 
 using System;
 using System.IO;
-using System.Linq;
 
 namespace SPICA.Rendering
 {
@@ -25,6 +24,7 @@ namespace SPICA.Rendering
         internal H3DMaterial Material;
         private  Vector4     Scales0;
         private  Vector4     Scales1;
+        private  Vector4     PosOffs;
 
         public Mesh(Model Parent, H3DMesh BaseMesh, bool Visible = true)
         {
@@ -33,6 +33,8 @@ namespace SPICA.Rendering
             this.Visible  = Visible;
 
             Material = Parent.BaseModel.Materials[BaseMesh.MaterialIndex];
+
+            PosOffs = BaseMesh.PositionOffset.ToVector4();
 
             int VtxCount = 1, FAOffset = 0;
 
@@ -126,7 +128,16 @@ namespace SPICA.Rendering
 
                 GL.VertexAttribPointer(AttribIndex, 4, VertexAttribPointerType.Float, false, 0, FAOffset);
 
-                SetScale(Attrib.Name, 1);
+                /*
+                 * Pokémon Sun/Moon seems to have fixed attributes for all unused attributes,
+                 * with the vector set to zero (?). On the H3D shader this would normally
+                 * make the Tangent scale one, and this signals the shader to use the Tangent
+                 * to calculate the normal quaternion, and that would ruin the lighting
+                 * 'cause the tangent is actually zero, so we force it to use normals by
+                 * setting the Scale to zero here. Using the original Sun/Moon shaders
+                 * should avoid this issue entirely.
+                 */
+                SetScale(Attrib.Name, Attrib.Name != PICAAttributeName.Tangent ? 1 : 0);
 
                 FAOffset += 0x10 * VtxCount;
             }
@@ -151,7 +162,7 @@ namespace SPICA.Rendering
 
         public void Render()
         {
-            ShaderManager ShaderMgr = Parent.ShaderMgrs[BaseMesh.MaterialIndex];
+            Shader Shader = Parent.Shaders[BaseMesh.MaterialIndex];
 
             H3DMaterialParams Params = Material.MaterialParams;
 
@@ -171,39 +182,33 @@ namespace SPICA.Rendering
             RenderUtils.SetState(EnableCap.DepthTest,   Params.DepthColorMask.Enabled);
             RenderUtils.SetState(EnableCap.CullFace,    Params.FaceCulling != PICAFaceCulling.Never);
 
-            Parent.Renderer.BindLUT(4, Params.LUTDist0TableName,   Params.LUTDist0SamplerName);
-            Parent.Renderer.BindLUT(5, Params.LUTDist1TableName,   Params.LUTDist1SamplerName);
-            Parent.Renderer.BindLUT(6, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
-            Parent.Renderer.BindLUT(7, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
+            Parent.Renderer.TryBindLUT(4, Params.LUTDist0TableName,   Params.LUTDist0SamplerName);
+            Parent.Renderer.TryBindLUT(5, Params.LUTDist1TableName,   Params.LUTDist1SamplerName);
+            Parent.Renderer.TryBindLUT(6, Params.LUTFresnelTableName, Params.LUTFresnelSamplerName);
+            Parent.Renderer.TryBindLUT(7, Params.LUTReflecRTableName, Params.LUTReflecRSamplerName);
 
-            Parent.Renderer.BindLUT(8,
+            Parent.Renderer.TryBindLUT(8,
                 Params.LUTReflecGTableName   ?? Params.LUTReflecRTableName, 
                 Params.LUTReflecGSamplerName ?? Params.LUTReflecRSamplerName);
 
-            Parent.Renderer.BindLUT(9,
+            Parent.Renderer.TryBindLUT(9,
                 Params.LUTReflecBTableName   ?? Params.LUTReflecRTableName, 
                 Params.LUTReflecBSamplerName ?? Params.LUTReflecRSamplerName);
 
             //Setup texture transforms
-            Matrix4[] MaterialTransform = Parent.MaterialTransform[BaseMesh.MaterialIndex];
+            Matrix4[] MaterialTransform = Parent.MaterialTransforms[BaseMesh.MaterialIndex];
 
             for (int Index = 0; Index < MaterialTransform.Length; Index++)
             {
                 switch (Index)
                 {
-                    case 0: ShaderMgr.Set3x4Array("TexMtx0", ref MaterialTransform[Index]); break;
-                    case 1: ShaderMgr.Set3x4Array("TexMtx1", ref MaterialTransform[Index]); break;
-                    case 2: ShaderMgr.Set2x4Array("TexMtx2", ref MaterialTransform[Index]); break;
+                    case 0: Shader.SetVtx3x4Array(DefaultShaderIds.TexMtx0, MaterialTransform[Index]); break;
+                    case 1: Shader.SetVtx3x4Array(DefaultShaderIds.TexMtx1, MaterialTransform[Index]); break;
+                    case 2: Shader.SetVtx2x4Array(DefaultShaderIds.TexMtx2, MaterialTransform[Index]); break;
                 }
             }
 
-            ShaderMgr.SetVector4("TexcMap", new Vector4(
-                Params.TextureSources[0],
-                Params.TextureSources[1],
-                Params.TextureSources[2],
-                Params.TextureSources[3]));
-
-            ShaderMgr.SetVector4("TexTran", new Vector4(
+            Shader.SetVtxVector4(DefaultShaderIds.TexTran, new Vector4(
                 MaterialTransform[0].Row3.X,
                 MaterialTransform[0].Row3.Y,
                 MaterialTransform[1].Row3.X,
@@ -215,13 +220,13 @@ namespace SPICA.Rendering
                 //Only the texture unit 0 can have a Cube Map texture
                 if (Params.TextureCoords[0].MappingType == H3DTextureMappingType.CameraCubeEnvMap)
                 {
-                    Parent.Renderer.BindTexture(3, Material.Texture0Name);
+                    Parent.Renderer.TryBindTexture(3, Material.Texture0Name);
 
                     SetWrapAndFilter(TextureTarget.TextureCubeMap, 0);
                 }
                 else
                 {
-                    Parent.Renderer.BindTexture(0, Material.Texture0Name);
+                    Parent.Renderer.TryBindTexture(0, Material.Texture0Name);
 
                     SetWrapAndFilter(TextureTarget.Texture2D, 0);
                 }
@@ -229,21 +234,21 @@ namespace SPICA.Rendering
 
             if (Material.Texture1Name != null)
             {
-                Parent.Renderer.BindTexture(1, Material.Texture1Name);
+                Parent.Renderer.TryBindTexture(1, Material.Texture1Name);
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 1);
             }
 
             if (Material.Texture2Name != null)
             {
-                Parent.Renderer.BindTexture(2, Material.Texture2Name);
+                Parent.Renderer.TryBindTexture(2, Material.Texture2Name);
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 2);
             }
 
-            ShaderMgr.SetVector4("PosOffs",    BaseMesh.PositionOffset);
-            ShaderMgr.SetVector4("IrScale[0]", Scales0);
-            ShaderMgr.SetVector4("IrScale[1]", Scales1);
+            Shader.SetVtxVector4(DefaultShaderIds.PosOffs,     PosOffs);
+            Shader.SetVtxVector4(DefaultShaderIds.IrScale + 0, Scales0);
+            Shader.SetVtxVector4(DefaultShaderIds.IrScale + 1, Scales1);
 
             //Render all SubMeshes
             GL.BindVertexArray(VAOHandle);
@@ -256,17 +261,17 @@ namespace SPICA.Rendering
 
                 for (int Index = 0; Index < Transforms.Length; Index++)
                 {
-                    Matrix4 Transform;
+                    Matrix4 Transform = Matrix4.Identity;
 
-                    if (Index < SM.BoneIndicesCount && SM.BoneIndices[Index] < Parent.SkeletonTransform.Length)
+                    if (Index < SM.BoneIndicesCount && SM.BoneIndices[Index] < Parent.SkeletonTransforms.Length)
                     {
                         int BoneIndex = SM.BoneIndices[Index];
 
-                        Transform = Parent.SkeletonTransform[BoneIndex];
+                        Transform = Parent.SkeletonTransforms[BoneIndex];
 
                         if (SmoothSkin)
                         {
-                            Transform = Parent.InverseTransform[BoneIndex] * Transform;
+                            Transform = Parent.InverseTransforms[BoneIndex] * Transform;
                         }
 
                         //Build billboard matrix if needed (used to make the bones follow the camera view)
@@ -324,15 +329,13 @@ namespace SPICA.Rendering
                             Transform = Matrix4.CreateScale(Transform.ExtractScale()) * BillMtx * WrldMtx;
                         }
                     }
-                    else
-                    {
-                        Transform = Matrix4.Identity;
-                    }
 
-                    ShaderMgr.Set3x4Array("UnivReg", ref Transform, Index);
+                    Shader.SetVtx3x4Array(DefaultShaderIds.UnivReg + Index * 3, Transform);
                 }
 
-                ShaderMgr.SetInteger("BoolUniforms", SM.BoolUniforms);
+                int BoolsLocation = GL.GetUniformLocation(Shader.Handle, ShaderGenerator.BoolsName);
+
+                GL.Uniform1(BoolsLocation, SM.BoolUniforms);
 
                 GL.DrawElements(PrimitiveType.Triangles, SM.Indices.Length, DrawElementsType.UnsignedShort, SM.Indices);
             }

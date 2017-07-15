@@ -9,24 +9,25 @@ namespace SPICA.Formats.CtrH3D.Model
     [Inline]
     public class H3DBone : INamed
     {
-        private H3DBoneFlags Flags;
+        private H3DBoneFlags _Flags;
 
-        public bool IsSegmentScaleCompensate
+        public H3DBoneFlags Flags
         {
-            get => (Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0;
+            get => (H3DBoneFlags)BitUtils.MaskOutBits((uint)_Flags, 16, 3);
             set
             {
-                if (value)
-                    Flags |= H3DBoneFlags.IsSegmentScaleCompensate;
-                else
-                    Flags &= ~H3DBoneFlags.IsSegmentScaleCompensate;
+                uint Value = BitUtils.MaskOutBits((uint)value, 16, 3);
+
+                Value |= BitUtils.MaskBits((uint)_Flags, 16, 3);
+
+                _Flags = (H3DBoneFlags)Value;
             }
         }
 
         public H3DBillboardMode BillboardMode
         {
-            get => (H3DBillboardMode)BitUtils.GetBits((uint)Flags, 16, 3);
-            set => Flags = (H3DBoneFlags)BitUtils.SetBits((uint)Flags, (uint)value, 16, 3);
+            get => (H3DBillboardMode)BitUtils.GetBits((uint)_Flags, 16, 3);
+            set => _Flags = (H3DBoneFlags)BitUtils.SetBits((uint)_Flags, (uint)value, 16, 3);
         }
 
         [Padding(4)] public short ParentIndex;
@@ -121,14 +122,14 @@ namespace SPICA.Formats.CtrH3D.Model
                 H3DBoneFlags.IsRotationZero |
                 H3DBoneFlags.IsTranslationZero;
 
-            Flags &= ~Mask;
+            _Flags &= ~Mask;
 
             bool ScaleUniform = Scale.X == Scale.Y && Scale.X == Scale.Z;
 
-            if (ScaleUniform)                Flags  = H3DBoneFlags.IsScaleUniform;
-            if (Scale       == Vector3.One)  Flags |= H3DBoneFlags.IsScaleVolumeOne;
-            if (Rotation    == Vector3.Zero) Flags |= H3DBoneFlags.IsRotationZero;
-            if (Translation == Vector3.Zero) Flags |= H3DBoneFlags.IsTranslationZero;
+            if (ScaleUniform)                _Flags  = H3DBoneFlags.IsScaleUniform;
+            if (Scale       == Vector3.One)  _Flags |= H3DBoneFlags.IsScaleVolumeOne;
+            if (Rotation    == Vector3.Zero) _Flags |= H3DBoneFlags.IsRotationZero;
+            if (Translation == Vector3.Zero) _Flags |= H3DBoneFlags.IsTranslationZero;
 
             Matrix4x4 Inverse;
             Matrix4x4.Invert(Transform, out Inverse);
