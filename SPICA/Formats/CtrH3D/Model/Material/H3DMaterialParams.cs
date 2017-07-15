@@ -400,7 +400,7 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             TextureSources[2] = Reader.VertexShaderUniforms[10].Z;
             TextureSources[3] = Reader.VertexShaderUniforms[10].W;
 
-            VtxShaderUniforms   = Reader.GetAllVertexShaderUniforms();
+            VtxShaderUniforms = Reader.GetAllVertexShaderUniforms();
             GeoShaderUniforms = Reader.GetAllGeometryShaderUniforms();
         }
 

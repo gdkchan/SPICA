@@ -173,7 +173,7 @@ namespace SPICA.Rendering.Shaders
 
                 if (Uniform?.IsConstant ?? true) continue;
 
-                string Name = GetValidName(Uniform.Name);
+                string Name = $"{Type}_{i - Uniform.ArrayIndex}_{GetValidName(Uniform.Name)}";
 
                 /*
                  * For registers used as arrays, the name is stored with the
@@ -189,9 +189,9 @@ namespace SPICA.Rendering.Shaders
                 if (Uniform.ArrayIndex == 0 && !UniformNameTbl.Contains(Name))
                 {
                     if (Uniform.IsArray)
-                        Output.AppendLine($"uniform {Type} {Type}_{i}_{Name}[{Uniform.ArrayLength}];");
+                        Output.AppendLine($"uniform {Type} {Name}[{Uniform.ArrayLength}];");
                     else
-                        Output.AppendLine($"uniform {Type} {Type}_{i}_{Name};");
+                        Output.AppendLine($"uniform {Type} {Name};");
 
                     UniformNameTbl.Add(Name);
                 }
@@ -206,11 +206,11 @@ namespace SPICA.Rendering.Shaders
 
             for (int i = 0; i < Uniforms.Length; i++)
             {
-                string Name = GetValidName(Uniforms[i].Name);
+                string Name = $"bool_{i}_{GetValidName(Uniforms[i].Name)}";
 
                 BoolUniformNames[i] = Name;
 
-                Output.AppendLine($"#define bool_{i}_{Name} (1 << {i})");
+                Output.AppendLine($"#define {Name} (1 << {i})");
             }
         }
 
