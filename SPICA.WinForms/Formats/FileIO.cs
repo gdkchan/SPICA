@@ -12,11 +12,11 @@ namespace SPICA.WinForms.Formats
 {
     class FileIO
     {
-        public static H3D Merge(string[] FileNames, RenderEngine Renderer, H3D Scene = null)
+        public static H3D Merge(string[] FileNames, Renderer Renderer, H3D Scene = null)
         {
             if (Scene == null)
             {
-                Renderer.DeleteAll();
+                //Renderer.DeleteAll();
 
                 Scene = new H3D();
             }

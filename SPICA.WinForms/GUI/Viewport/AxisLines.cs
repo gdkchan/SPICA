@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+using SPICA.Rendering;
+
 using System;
 
 namespace SPICA.WinForms.GUI.Viewport
@@ -14,8 +16,14 @@ namespace SPICA.WinForms.GUI.Viewport
 
         public Matrix4 Transform;
 
-        public AxisLines()
+        private Renderer Renderer;
+        private Shader   Shader;
+
+        public AxisLines(Renderer Renderer, Shader Shader)
         {
+            this.Renderer = Renderer;
+            this.Shader   = Shader;
+
             Vector4[] Buffer = new Vector4[]
             {
                 new Vector4(0), new Vector4(1, 0, 0, 1), new Vector4(20,  0,  0, 1), new Vector4(1, 0, 0, 1),
@@ -35,25 +43,29 @@ namespace SPICA.WinForms.GUI.Viewport
             GL.BindVertexArray(VAOHandle);
 
             GL.EnableVertexAttribArray(0);
-            GL.EnableVertexAttribArray(3);
+            GL.EnableVertexAttribArray(1);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBOHandle);
 
             GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 32, 0);
-            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 32, 16);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 32, 16);
 
             GL.BindVertexArray(0);
         }
 
-        public void Render(int ShaderHandle)
+        public void Render()
         {
             if (Visible)
             {
-                GL.UseProgram(ShaderHandle);
+                GL.UseProgram(Shader.Handle);
 
-                int MdlMtxLocation = GL.GetUniformLocation(ShaderHandle, "ModelMatrix");
+                int ProjMtxLocation = GL.GetUniformLocation(Shader.Handle, "ProjMatrix");
+                int ViewMtxLocation = GL.GetUniformLocation(Shader.Handle, "ViewMatrix");
+                int WrldMtxLocation = GL.GetUniformLocation(Shader.Handle, "ModelMatrix");
 
-                GL.UniformMatrix4(MdlMtxLocation, false, ref Transform);
+                GL.UniformMatrix4(ProjMtxLocation, false, ref Renderer.ProjectionMatrix);
+                GL.UniformMatrix4(ViewMtxLocation, false, ref Renderer.ViewMatrix);
+                GL.UniformMatrix4(WrldMtxLocation, false, ref Transform);
 
                 GL.LineWidth(2);
 
@@ -65,7 +77,9 @@ namespace SPICA.WinForms.GUI.Viewport
                 GL.DepthFunc(DepthFunction.Always);
 
                 GL.BindVertexArray(VAOHandle);
+
                 GL.DrawArrays(PrimitiveType.Lines, 0, 6);
+
                 GL.BindVertexArray(0);
             }
         }

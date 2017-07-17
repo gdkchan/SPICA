@@ -1,8 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-using SPICA.Rendering.SPICA_GL;
-
 using System;
 
 namespace SPICA.Rendering.Shaders
@@ -110,8 +108,8 @@ namespace SPICA.Rendering.Shaders
         private int GetLocFromId(int Id, ShaderType Type)
         {
             string Name = Type == ShaderType.Vertex
-                ? VtxShader.VtxNames.Vec4Uniforms[Id]
-                : VtxShader.GeoNames.Vec4Uniforms[Id];
+                ? VtxShader.VtxNames.Vec4Uniforms?[Id]
+                : VtxShader.GeoNames.Vec4Uniforms?[Id];
 
             if (Name != null)
             {
@@ -168,6 +166,11 @@ namespace SPICA.Rendering.Shaders
         public void DeleteFragmentShader()
         {
             GL.DeleteShader(FragShaderHandle);
+        }
+
+        public void DeleteProgram()
+        {
+            GL.DeleteProgram(Handle);
         }
 
         public void DetachAllShaders()

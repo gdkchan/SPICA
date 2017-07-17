@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
+using SPICA.Rendering;
+
 using System;
 
 namespace SPICA.WinForms.GUI.Viewport
@@ -16,8 +18,14 @@ namespace SPICA.WinForms.GUI.Viewport
 
         public Matrix4 Transform;
 
-        public GridLines()
+        private Renderer Renderer;
+        private Shader   Shader;
+
+        public GridLines(Renderer Renderer, Shader Shader)
         {
+            this.Renderer = Renderer;
+            this.Shader   = Shader;
+
             Vector4[] Buffer = new Vector4[LinesCount * 4];
 
             int Index = 0;
@@ -58,35 +66,29 @@ namespace SPICA.WinForms.GUI.Viewport
             GL.BindVertexArray(VAOHandle);
 
             GL.EnableVertexAttribArray(0);
-            GL.EnableVertexAttribArray(3);
+            GL.EnableVertexAttribArray(1);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBOHandle);
 
             GL.VertexAttribPointer(0, 4, VertexAttribPointerType.Float, false, 32, 0);
-            GL.VertexAttribPointer(3, 4, VertexAttribPointerType.Float, false, 32, 16);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 32, 16);
 
             GL.BindVertexArray(0);
         }
 
-        public void Render(int ShaderHandle)
+        public void Render()
         {
             if (Visible)
             {
-                GL.UseProgram(ShaderHandle);
+                GL.UseProgram(Shader.Handle);
 
-                int WrldMtx0Location = GL.GetUniformLocation(ShaderHandle, "UnivReg[0]");
-                int WrldMtx1Location = GL.GetUniformLocation(ShaderHandle, "UnivReg[1]");
-                int WrldMtx2Location = GL.GetUniformLocation(ShaderHandle, "UnivReg[2]");
-                int IrScaleLocation = GL.GetUniformLocation(ShaderHandle, "IrScale[0]");
-                int BoolUniformsLocation = GL.GetUniformLocation(ShaderHandle, "BoolUniforms");
+                int ProjMtxLocation = GL.GetUniformLocation(Shader.Handle, "ProjMatrix");
+                int ViewMtxLocation = GL.GetUniformLocation(Shader.Handle, "ViewMatrix");
+                int WrldMtxLocation = GL.GetUniformLocation(Shader.Handle, "ModelMatrix");
 
-                Vector4 Scales = Vector4.One;
-
-                GL.Uniform4(WrldMtx0Location, ref Transform.Row0);
-                GL.Uniform4(WrldMtx1Location, ref Transform.Row1);
-                GL.Uniform4(WrldMtx2Location, ref Transform.Row2);
-                GL.Uniform4(IrScaleLocation,  ref Scales);
-                GL.Uniform1(BoolUniformsLocation, (int)0);
+                GL.UniformMatrix4(ProjMtxLocation, false, ref Renderer.ProjectionMatrix);
+                GL.UniformMatrix4(ViewMtxLocation, false, ref Renderer.ViewMatrix);
+                GL.UniformMatrix4(WrldMtxLocation, false, ref Transform);
 
                 GL.LineWidth(1);
 
@@ -98,7 +100,9 @@ namespace SPICA.WinForms.GUI.Viewport
                 GL.DepthFunc(DepthFunction.Less);
 
                 GL.BindVertexArray(VAOHandle);
+
                 GL.DrawArrays(PrimitiveType.Lines, 0, LinesCount * 2);
+
                 GL.BindVertexArray(0);
             }
         }

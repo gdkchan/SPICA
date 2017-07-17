@@ -395,10 +395,10 @@ namespace SPICA.Formats.CtrH3D.Model.Material
              * 4 = CameraSphereEnvMap aka SkyDome
              * 5 = ProjectionMap?
              */
-            TextureSources[0] = Reader.VertexShaderUniforms[10].X;
-            TextureSources[1] = Reader.VertexShaderUniforms[10].Y;
-            TextureSources[2] = Reader.VertexShaderUniforms[10].Z;
-            TextureSources[3] = Reader.VertexShaderUniforms[10].W;
+            TextureSources[0] = Reader.VtxShaderUniforms[10].X;
+            TextureSources[1] = Reader.VtxShaderUniforms[10].Y;
+            TextureSources[2] = Reader.VtxShaderUniforms[10].Z;
+            TextureSources[3] = Reader.VtxShaderUniforms[10].W;
 
             VtxShaderUniforms = Reader.GetAllVertexShaderUniforms();
             GeoShaderUniforms = Reader.GetAllGeometryShaderUniforms();

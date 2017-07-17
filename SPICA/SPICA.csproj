@@ -36,10 +36,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -234,7 +231,6 @@
     <Compile Include="Formats\CtrH3D\Model\Mesh\H3DSubMeshSkinning.cs" />
     <Compile Include="Formats\CtrH3D\Scene\H3DScene.cs" />
     <Compile Include="Formats\CtrH3D\Shader\H3DShader.cs" />
-    <Compile Include="Formats\CtrH3D\Shader\H3DShaderBinding.cs" />
     <Compile Include="Formats\CtrH3D\Texture\H3DTexture.cs" />
     <Compile Include="Formats\Generic\COLLADA\DAE.cs" />
     <Compile Include="Formats\Generic\COLLADA\DAEAccessor.cs" />

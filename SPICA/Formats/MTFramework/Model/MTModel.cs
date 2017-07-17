@@ -216,7 +216,7 @@ namespace SPICA.Formats.MTFramework.Model
                 {
                     M.Skinning  = H3DMeshSkinning.Smooth;
 
-                    PICAVertex[] Vertices = M.ToVertices();
+                    PICAVertex[] Vertices = M.GetVertices();
 
                     for (int v = 0; v < Vertices.Length; v++)
                     {

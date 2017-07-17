@@ -4,9 +4,9 @@ using System;
 
 namespace SPICA.Rendering.Animation
 {
-    public class AnimationControl : IAnimationControl
+    public class AnimationControl
     {
-        protected H3DAnimation Animation;
+        public H3DAnimation Animation;
 
         protected AnimationState State;
 
@@ -20,10 +20,9 @@ namespace SPICA.Rendering.Animation
             }
             set
             {
-                if (value > FramesCount)
-                    _Frame = value % FramesCount;
-                else
-                    _Frame = value;
+                _Frame = value > FramesCount
+                    ? value % FramesCount
+                    : value;
             }
         }
 
@@ -39,37 +38,10 @@ namespace SPICA.Rendering.Animation
 
         public void CopyState(AnimationControl Control)
         {
-            Animation = Control.Animation;
             State     = Control.State;
-            _Frame    = Control.Frame;
+            Frame     = Control.Frame;
             IsLooping = Control.IsLooping;
             Step      = Control.Step;
-        }
-
-        public void SetAnimation(H3DAnimation BaseAnimation)
-        {
-            this.Animation = BaseAnimation;
-
-            if (BaseAnimation == null)
-            {
-                Stop();
-
-                return;
-            }
-
-            IsLooping = (BaseAnimation.AnimationFlags & H3DAnimationFlags.IsLooping) != 0;
-
-            if (State == AnimationState.Playing)
-            {
-                if (Step < 0)
-                    _Frame = BaseAnimation.FramesCount;
-                else
-                    _Frame = 0;
-            }
-            else
-            {
-                Stop();
-            }
         }
 
         public void AdvanceFrame()

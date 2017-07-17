@@ -6,14 +6,15 @@ namespace SPICA.Formats.CtrH3D.Shader
     {
         public byte[] Program;
 
-        public uint[] ShaderAllCommands;
-        public uint[] ShaderCommands;
-        public uint[] ShaderSetupCommands;
+        //Those seems to be always null?
+        private uint[] ShaderAllCommands;
+        private uint[] ShaderProgramCommands;
+        private uint[] ShaderSetupCommands;
 
         public short VtxShaderIndex;
         public short GeoShaderIndex;
 
-        public readonly H3DShaderBinding Binding;
+        private uint BindingAddress; //SBZ?
 
         private string _Name;
 
@@ -23,9 +24,6 @@ namespace SPICA.Formats.CtrH3D.Shader
             set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
-        public H3DShader()
-        {
-            Binding = new H3DShaderBinding();
-        }
+        private uint UserDefinedAddress; //SBZ
     }
 }

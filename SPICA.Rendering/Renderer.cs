@@ -7,6 +7,7 @@ using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Shader;
 using SPICA.Formats.CtrH3D.Texture;
+using SPICA.Rendering.Properties;
 using SPICA.Rendering.Shaders;
 
 using System;
@@ -15,7 +16,7 @@ using System.Drawing;
 
 namespace SPICA.Rendering
 {
-    public class RenderEngine : IDisposable
+    public class Renderer : IDisposable
     {
         public const float ClipDistance = 100000f;
 
@@ -26,27 +27,16 @@ namespace SPICA.Rendering
         public readonly Dictionary<string, LUT>          LUTs;
         public readonly Dictionary<string, VertexShader> Shaders;
 
-        internal Matrix4 ProjectionMatrix;
-        internal Matrix4 ViewMatrix;
+        public Matrix4 ProjectionMatrix;
+        public Matrix4 ViewMatrix;
+
+        public Color4 SceneAmbient;
 
         private VertexShader DefaultShader;
 
         private int Width, Height;
 
-        private Color4 _SceneAmbient;
-
-        public Color4 SceneAmbient
-        {
-            get => _SceneAmbient;
-            set
-            {
-                _SceneAmbient = value;
-
-                UpdateAllUniforms();
-            }
-        }
-
-        public RenderEngine(int Width, int Height)
+        public Renderer(int Width, int Height)
         {
             Models = new List<Model>();
             Lights = new List<Light>();
@@ -57,7 +47,7 @@ namespace SPICA.Rendering
 
             int VertexShaderHandle = GL.CreateShader(ShaderType.VertexShader);
 
-            GL.ShaderSource(VertexShaderHandle, BuiltInShaders.DefaultVertexShader);
+            GL.ShaderSource(VertexShaderHandle, Resources.DefaultVertexShader);
             GL.CompileShader(VertexShaderHandle);
 
             Shader.CheckCompilation(VertexShaderHandle);
@@ -157,32 +147,6 @@ namespace SPICA.Rendering
             foreach (Model Model in Models)
             {
                 Model.Render();
-            }
-        }
-
-        public void SetAllTransforms(Matrix4 Transform)
-        {
-            foreach (Model Model in Models)
-            {
-                Model.Transform = Transform;
-            }
-        }
-
-        public void AnimateAll()
-        {
-            foreach (Model Model in Models)
-            {
-                Model.SkeletalAnim.AdvanceFrame();
-                Model.MaterialAnim.AdvanceFrame();
-                Model.UpdateAnimationTransforms();
-            }
-        }
-
-        public void UpdateAllUniforms()
-        {
-            foreach (Model Model in Models)
-            {
-                Model.UpdateUniforms();
             }
         }
 

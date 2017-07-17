@@ -1,36 +1,3 @@
-namespace SPICA.Rendering.Shaders
-{
-    class BuiltInShaders
-    {
-        public const string FragmentShaderBase = @"
-#version 150
-
-precision highp float;
-
-uniform sampler2D LUTs[6];
-
-uniform sampler2D Textures[3];
-
-uniform samplerCube TextureCube;
-
-struct Light_t {
-	vec3 Position;
-	vec4 Ambient;
-	vec4 Diffuse;
-	vec4 Specular;
-};
-
-uniform int LightsCount;
-
-uniform Light_t Lights[8];
-
-uniform vec4 SAmbient;
-
-vec3 QuatRotate(vec4 q, vec3 v) {
-    return v + 2 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
-}";
-
-        public const string DefaultVertexShader = @"
 //SPICA auto-generated code
 //This code was translated from a MAESTRO Vertex Shader
 //This file was also hand modified to improve compatibility
@@ -41,7 +8,6 @@ uniform vec4 WrldMtx[3];
 uniform vec4 NormMtx[3];
 uniform vec4 PosOffs;
 uniform vec4 IrScale[2];
-uniform vec4 uniform_float_9;
 uniform vec4 TexcMap;
 uniform vec4 TexMtx0[3];
 uniform vec4 TexMtx1[3];
@@ -53,19 +19,13 @@ uniform vec4 HslGCol;
 uniform vec4 HslSCol;
 uniform vec4 HslSDir;
 uniform vec4 UnivReg[60];
-uniform vec4 uniform_float_85;
 uniform vec4 ProjMtx[4];
 uniform vec4 ViewMtx[3];
 uniform ivec4 LightCt;
-uniform ivec4 uniform_int_1;
-uniform ivec4 uniform_int_2;
-uniform ivec4 uniform_int_3;
 uniform int BoolUniforms;
 
 #define IsSmoSk (1 << 1)
 #define IsRgdSk (1 << 2)
-#define uniform_bool_3 (1 << 3)
-#define uniform_bool_4 (1 << 4)
 #define IsHemiL (1 << 5)
 #define IsHemiO (1 << 6)
 #define IsVertA (1 << 7)
@@ -667,7 +627,4 @@ void main() {
 	proc_calc_texcoord1();
 	proc_calc_texcoord2();
 	gl_Position = Position;
-}
-";
-    }
 }

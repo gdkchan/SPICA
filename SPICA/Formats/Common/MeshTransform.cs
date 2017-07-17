@@ -14,7 +14,7 @@ namespace SPICA.Formats.Common
         {
             List<PICAVertex> Output = new List<PICAVertex>();
 
-            PICAVertex[] Vertices = Mesh.ToVertices();
+            PICAVertex[] Vertices = Mesh.GetVertices();
 
             foreach (H3DSubMesh SM in Mesh.SubMeshes)
             {
@@ -56,7 +56,7 @@ namespace SPICA.Formats.Common
 
         public static PICAVertex[] GetWorldSpaceVertices(H3DDict<H3DBone> Skeleton, H3DMesh Mesh)
         {
-            PICAVertex[] Vertices = Mesh.ToVertices();
+            PICAVertex[] Vertices = Mesh.GetVertices();
 
             bool[] TransformedVertices = new bool[Vertices.Length];
 

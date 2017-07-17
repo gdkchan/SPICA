@@ -98,8 +98,8 @@ namespace SPICA.PICA
         private UniformManager VtxShader;
         private UniformManager GeoShader;
 
-        public Vector4[] VertexShaderUniforms   => VtxShader.Uniforms;
-        public Vector4[] GeometryShaderUniforms => GeoShader.Uniforms;
+        public Vector4[] VtxShaderUniforms => VtxShader.Uniforms;
+        public Vector4[] GeoShaderUniforms => GeoShader.Uniforms;
 
         public PICACommandReader(uint[] Cmds)
         {

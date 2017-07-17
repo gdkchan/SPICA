@@ -69,7 +69,6 @@
   <ItemGroup>
     <Compile Include="Formats\FileIO.cs" />
     <Compile Include="Formats\GFPkmnSklAnim.cs" />
-    <Compile Include="GUI\Animation\AllAnimations.cs" />
     <Compile Include="Formats\FormatIdentifier.cs" />
     <Compile Include="Formats\GFBtlSklAnim.cs" />
     <Compile Include="Formats\GFCharaModel.cs" />
@@ -111,6 +110,7 @@
     </Compile>
     <Compile Include="GUI\ToolsRenderer.cs" />
     <Compile Include="GUI\Animation\AnimationType.cs" />
+    <Compile Include="GUI\Viewport\Shader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GUI\Viewport\AxisLines.cs" />
@@ -173,6 +173,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\sui_ticked.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\VertexShader.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FragmentShader.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

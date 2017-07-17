@@ -2,6 +2,7 @@
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Shader;
+using SPICA.Rendering.Properties;
 
 using System.Globalization;
 using System.Text;
@@ -23,7 +24,7 @@ namespace SPICA.Rendering.Shaders
 
         public string GetFragShader()
         {
-            SB = new StringBuilder(BuiltInShaders.FragmentShaderBase);
+            SB = new StringBuilder(Resources.FragmentShaderBase);
 
             HasTexColor = new bool[] { false, false, false };
 

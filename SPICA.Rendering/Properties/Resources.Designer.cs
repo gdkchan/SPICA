@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SPICA.WinForms.Properties {
+namespace SPICA.Rendering.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SPICA.WinForms.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SPICA.WinForms.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SPICA.Rendering.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,55 +61,64 @@ namespace SPICA.WinForms.Properties {
         }
         
         /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a #version 130
-        ///
+        ///   Consulta uma cadeia de caracteres localizada semelhante a //SPICA auto-generated code
+        /////This code was translated from a MAESTRO Vertex Shader
+        /////This file was also hand modified to improve compatibility
+        ///#version 330 core
         ///precision highp float;
         ///
-        ///in vec4 Color;
-        ///
-        ///void main() {
-        ///	gl_FragColor = Color;
-        ///}.
+        ///uniform vec4 WrldMtx[3];
+        ///uniform vec4 NormMtx[3];
+        ///uniform vec4 PosOffs;
+        ///uniform vec4 IrScale[2];
+        ///uniform vec4 TexcMap;
+        ///uniform vec4 TexMtx0[3];
+        ///uniform vec4 TexMtx1[3];
+        ///uniform vec4 TexMtx2[2];
+        ///uniform vec4 TexTran;
+        ///uniform vec4 MatAmbi;
+        ///uniform vec4 MatDiff;
+        ///uniform vec4 HslGCol;
+        ///uniform vec4 HslSCol;
+        ///uni [o restante da cadeia de caracteres foi truncado]&quot;;.
         /// </summary>
-        internal static string FragmentShader {
+        internal static string DefaultVertexShader {
             get {
-                return ResourceManager.GetString("FragmentShader", resourceCulture);
+                return ResourceManager.GetString("DefaultVertexShader", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap sui_ticked {
-            get {
-                object obj = ResourceManager.GetObject("sui_ticked", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Consulta uma cadeia de caracteres localizada semelhante a #version 330 core
+        ///   Consulta uma cadeia de caracteres localizada semelhante a #version 150
         ///
         ///precision highp float;
         ///
-        ///uniform mat4 ProjMatrix;
-        ///uniform mat4 ViewMatrix;
-        ///uniform mat4 ModelMatrix;
+        ///uniform sampler2D LUTs[6];
         ///
-        ///layout(location = 0) in vec3 pos;
-        ///layout(location = 1) in vec4 col;
+        ///uniform sampler2D Textures[3];
         ///
-        ///out vec4 Color;
+        ///uniform samplerCube TextureCube;
         ///
-        ///void main() {
-        ///	Color = col;
+        ///struct Light_t {
+        ///	vec3 Position;
+        ///	vec4 Ambient;
+        ///	vec4 Diffuse;
+        ///	vec4 Specular;
+        ///};
         ///
-        ///	gl_Position = ProjMatrix * ViewMatrix * ModelMatrix * pos;
+        ///uniform int LightsCount;
+        ///
+        ///uniform Light_t Lights[8];
+        ///
+        ///uniform vec4 SAmbient;
+        ///
+        ///vec3 QuatRotate(vec4 q, vec3 v) {
+        ///    return v + 2 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
         ///}.
         /// </summary>
-        internal static string VertexShader {
+        internal static string FragmentShaderBase {
             get {
-                return ResourceManager.GetString("VertexShader", resourceCulture);
+                return ResourceManager.GetString("FragmentShaderBase", resourceCulture);
             }
         }
     }

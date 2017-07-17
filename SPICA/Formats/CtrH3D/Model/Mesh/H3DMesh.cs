@@ -161,7 +161,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             }
         }
 
-        public PICAVertex[] ToVertices()
+        public PICAVertex[] GetVertices()
         {
             return VerticesConverter.GetVertices(this);
         }
@@ -234,14 +234,14 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                     switch (Attrib.Name)
                     {
-                        case PICAAttributeName.Position:   Attrib.Scale = Reader.VertexShaderUniforms[7].X; break;
-                        case PICAAttributeName.Normal:     Attrib.Scale = Reader.VertexShaderUniforms[7].Y; break;
-                        case PICAAttributeName.Tangent:    Attrib.Scale = Reader.VertexShaderUniforms[7].Z; break;
-                        case PICAAttributeName.Color:      Attrib.Scale = Reader.VertexShaderUniforms[7].W; break;
-                        case PICAAttributeName.TexCoord0:  Attrib.Scale = Reader.VertexShaderUniforms[8].X; break;
-                        case PICAAttributeName.TexCoord1:  Attrib.Scale = Reader.VertexShaderUniforms[8].Y; break;
-                        case PICAAttributeName.TexCoord2:  Attrib.Scale = Reader.VertexShaderUniforms[8].Z; break;
-                        case PICAAttributeName.BoneWeight: Attrib.Scale = Reader.VertexShaderUniforms[8].W; break;
+                        case PICAAttributeName.Position:   Attrib.Scale = Reader.VtxShaderUniforms[7].X; break;
+                        case PICAAttributeName.Normal:     Attrib.Scale = Reader.VtxShaderUniforms[7].Y; break;
+                        case PICAAttributeName.Tangent:    Attrib.Scale = Reader.VtxShaderUniforms[7].Z; break;
+                        case PICAAttributeName.Color:      Attrib.Scale = Reader.VtxShaderUniforms[7].W; break;
+                        case PICAAttributeName.TexCoord0:  Attrib.Scale = Reader.VtxShaderUniforms[8].X; break;
+                        case PICAAttributeName.TexCoord1:  Attrib.Scale = Reader.VtxShaderUniforms[8].Y; break;
+                        case PICAAttributeName.TexCoord2:  Attrib.Scale = Reader.VtxShaderUniforms[8].Z; break;
+                        case PICAAttributeName.BoneWeight: Attrib.Scale = Reader.VtxShaderUniforms[8].W; break;
                     }
 
                     Attributes.Add(Attrib);
@@ -262,7 +262,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             BufferCount++;
 
-            PositionOffset = Reader.VertexShaderUniforms[6];
+            PositionOffset = Reader.VtxShaderUniforms[6];
 
             Deserializer.BaseStream.Seek(BufferAddress, SeekOrigin.Begin);
 

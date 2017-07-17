@@ -12,9 +12,7 @@ namespace SPICA.Formats.CtrH3D
         [Ignore] public H3DVertexDataAttribute[] Attributes;
         [Ignore] public H3DVertexDataIndices[]   Indices;
 
-        [Ignore] private int _VertexStride;
-
-        public int VertexStride { get { return _VertexStride; } }
+        public int VertexStride { get; private set; }
 
         [Ignore] public byte[] RawBuffer;
 
@@ -41,7 +39,7 @@ namespace SPICA.Formats.CtrH3D
                 }
             }
 
-            _VertexStride = 0;
+            VertexStride = 0;
 
             for (int Index = 0; Index < Attributes.Length; Index++)
             {
@@ -57,7 +55,7 @@ namespace SPICA.Formats.CtrH3D
                         case PICAAttributeFormat.Float: Size <<= 2; break;
                     }
 
-                    _VertexStride += Size;
+                    VertexStride += Size;
                 }
             }
 
@@ -82,7 +80,7 @@ namespace SPICA.Formats.CtrH3D
 
             Deserializer.BaseStream.Seek(BaseAddress, SeekOrigin.Begin);
 
-            RawBuffer = Deserializer.Reader.ReadBytes(BufferCount * _VertexStride);
+            RawBuffer = Deserializer.Reader.ReadBytes(BufferCount * VertexStride);
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)

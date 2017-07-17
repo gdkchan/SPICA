@@ -1,0 +1,26 @@
+#version 150
+
+precision highp float;
+
+uniform sampler2D LUTs[6];
+
+uniform sampler2D Textures[3];
+
+uniform samplerCube TextureCube;
+
+struct Light_t {
+	vec3 Position;
+	vec4 Ambient;
+	vec4 Diffuse;
+	vec4 Specular;
+};
+
+uniform int LightsCount;
+
+uniform Light_t Lights[8];
+
+uniform vec4 SAmbient;
+
+vec3 QuatRotate(vec4 q, vec3 v) {
+    return v + 2 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+}

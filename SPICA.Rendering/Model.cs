@@ -17,7 +17,7 @@ namespace SPICA.Rendering
 {
     public class Model : IDisposable
     {
-        internal RenderEngine Renderer;
+        internal Renderer     Renderer;
         internal H3DModel     BaseModel;
         internal List<Mesh>   Meshes0;
         internal List<Mesh>   Meshes1;
@@ -33,7 +33,7 @@ namespace SPICA.Rendering
 
         public Matrix4 Transform;
 
-        public Model(RenderEngine Renderer, H3DModel BaseModel)
+        public Model(Renderer Renderer, H3DModel BaseModel)
         {
             this.Renderer  = Renderer;
             this.BaseModel = BaseModel;
@@ -115,6 +115,13 @@ namespace SPICA.Rendering
                 GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[4]"),     8);
                 GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[5]"),     9);
 
+                //Reset
+                for (int i = 0; i < 96; i++)
+                {
+                    Shdr.SetVtxVector4(i, Vector4.UnitW);
+                    Shdr.SetGeoVector4(i, Vector4.UnitW);
+                }
+
                 //Send values from material matching register ids to names.
                 foreach (KeyValuePair<uint, System.Numerics.Vector4> KV in Params.VtxShaderUniforms)
                 {
@@ -144,9 +151,9 @@ namespace SPICA.Rendering
                     Params.TextureSources[2],
                     Params.TextureSources[3]);
 
-                Shdr.SetVtxVector4(DefaultShaderIds.HsLGCol, Vector4.UnitW);
-                Shdr.SetVtxVector4(DefaultShaderIds.HsLSCol, Vector4.One);
-                Shdr.SetVtxVector4(DefaultShaderIds.HsLSDir, new Vector4(Vector3.UnitY, 0.5f));
+                //Shdr.SetVtxVector4(DefaultShaderIds.HsLGCol, Vector4.UnitW);
+                //Shdr.SetVtxVector4(DefaultShaderIds.HsLSCol, Vector4.One);
+                //Shdr.SetVtxVector4(DefaultShaderIds.HsLSDir, new Vector4(Vector3.UnitY, 0.5f));
                 Shdr.SetVtxVector4(DefaultShaderIds.MatAmbi, MatAmbient);
                 Shdr.SetVtxVector4(DefaultShaderIds.MatDiff, MatDiffuse);
                 Shdr.SetVtxVector4(DefaultShaderIds.TexcMap, TexCoordMap);
@@ -191,7 +198,7 @@ namespace SPICA.Rendering
 
             foreach (H3DMesh Mesh in BaseModel.Meshes)
             {
-                PICAVertex[] Vertices = Mesh.ToVertices();
+                PICAVertex[] Vertices = Mesh.GetVertices();
 
                 if (Vertices.Length == 0) continue;
 
@@ -273,6 +280,7 @@ namespace SPICA.Rendering
             {
                 Shader.DetachAllShaders();
                 Shader.DeleteFragmentShader();
+                Shader.DeleteProgram();
             }
 
             Shaders.Clear();
