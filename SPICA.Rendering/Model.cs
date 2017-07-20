@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
@@ -118,16 +119,19 @@ namespace SPICA.Rendering
                 //Pokémon uses this
                 Vector4 ShaderParam = Vector4.Zero;
 
-                foreach (H3DMetaDataValue Value in Params.MetaData.Values)
+                if (Params.MetaData != null)
                 {
-                    if (Value.Type == H3DMetaDataType.Single)
+                    foreach (H3DMetaDataValue Value in Params.MetaData.Values)
                     {
-                        switch (Value.Name)
+                        if (Value.Type == H3DMetaDataType.Single)
                         {
-                            case "$ShaderParam0": ShaderParam.W = (float)Value[0]; break;
-                            case "$ShaderParam1": ShaderParam.Z = (float)Value[0]; break;
-                            case "$ShaderParam2": ShaderParam.Y = (float)Value[0]; break;
-                            case "$ShaderParam3": ShaderParam.X = (float)Value[0]; break;
+                            switch (Value.Name)
+                            {
+                                case "$ShaderParam0": ShaderParam.W = (float)Value[0]; break;
+                                case "$ShaderParam1": ShaderParam.Z = (float)Value[0]; break;
+                                case "$ShaderParam2": ShaderParam.Y = (float)Value[0]; break;
+                                case "$ShaderParam3": ShaderParam.X = (float)Value[0]; break;
+                            }
                         }
                     }
                 }
