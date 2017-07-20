@@ -9,13 +9,15 @@ namespace SPICA.Rendering.Shaders
 {
     class ShaderGenerator
     {
-        public    const string BoolsName   = "BoolUniforms";
+        public const string BoolsName = "BoolUniforms";
+
         protected const string TempRegName = "reg_temp";
         protected const string A0RegName   = "reg_a0";
         protected const string ALRegName   = "reg_al";
         protected const string CmpRegName  = "reg_cmp";
 
         protected string[] Vec4UniformNames;
+        protected string[] Vec4UniformNamesNoIdx;
         protected string[] IVec4UniformNames;
         protected string[] BoolUniformNames;
         protected string[] InputNames;
@@ -36,8 +38,6 @@ namespace SPICA.Rendering.Shaders
 
         protected HashSet<string> ProcTbl;
 
-        private HashSet<string> UniformNameTbl;
-
         protected Dictionary<uint, string> Labels;
 
         protected ShaderBinary SHBin;
@@ -52,11 +52,12 @@ namespace SPICA.Rendering.Shaders
         {
             this.SHBin = SHBin;
 
-            Vec4UniformNames  = new string[96];
-            IVec4UniformNames = new string[4];
-            BoolUniformNames  = new string[16];
-            InputNames        = new string[16];
-            OutputNames       = new string[16];
+            Vec4UniformNames      = new string[96];
+            Vec4UniformNamesNoIdx = new string[96];
+            IVec4UniformNames     = new string[4];
+            BoolUniformNames      = new string[16];
+            InputNames            = new string[16];
+            OutputNames           = new string[16];
 
             InstTbl = new GenInstCode[]
             {
@@ -135,8 +136,6 @@ namespace SPICA.Rendering.Shaders
 
             ProcTbl = new HashSet<string>();
 
-            UniformNameTbl = new HashSet<string>();
-
             Labels = new Dictionary<uint, string>();
 
             Procs.Enqueue(new ProcInfo()
@@ -177,23 +176,25 @@ namespace SPICA.Rendering.Shaders
 
                 /*
                  * For registers used as arrays, the name is stored with the
-                 * indexer ([0], [1], [2]...), and GetSrcReg func inserts the indirect
-                 * addressing register values one character before the string size, so
-                 * something like [0] turns into [0 + val]. Keep this in mind if you
-                 * decide to change the naming here for some reason.
+                 * indexer ([0], [1], [2]...), but a version without the indexer
+                 * is also stored in Vec4UniformNamesNoIdx for GetSrcReg func, since it
+                 * needs indexed array access with illegal memory access protection.
                  */
                 string Indexer = Uniform.IsArray ? $"[{Uniform.ArrayIndex}]" : string.Empty;
 
                 Names[i] = Name + Indexer;
 
-                if (Uniform.ArrayIndex == 0 && !UniformNameTbl.Contains(Name))
+                if (Names == Vec4UniformNames)
+                {
+                    Vec4UniformNamesNoIdx[i] = Name;
+                }
+
+                if (Uniform.ArrayIndex == 0)
                 {
                     if (Uniform.IsArray)
                         Output.AppendLine($"uniform {Type} {Name}[{Uniform.ArrayLength}];");
                     else
                         Output.AppendLine($"uniform {Type} {Name};");
-
-                    UniformNameTbl.Add(Name);
                 }
             }
         }
@@ -849,13 +850,16 @@ namespace SPICA.Rendering.Shaders
                 }
                 else if (Uniform.IsArray && Idx > 0)
                 {
-                    int Pos = Name.Length - 1;
+                    //Min protects against illegal accesses (can cause glitches on some GPUs).
+                    Name = Vec4UniformNamesNoIdx[Reg - 0x20];
+
+                    int Max = Uniform.ArrayLength - 1;
 
                     switch (Idx)
                     {
-                        case 1: return Name.Insert(Pos, $" + {A0RegName}.x");
-                        case 2: return Name.Insert(Pos, $" + {A0RegName}.y");
-                        case 3: return Name.Insert(Pos, $" + {ALRegName}");
+                        case 1: return $"{Name}[min({Uniform.ArrayIndex} + {A0RegName}.x, {Max})]";
+                        case 2: return $"{Name}[min({Uniform.ArrayIndex} + {A0RegName}.y, {Max})]";
+                        case 3: return $"{Name}[min({Uniform.ArrayIndex} + {ALRegName}, {Max})]";
                     }
                 }
 

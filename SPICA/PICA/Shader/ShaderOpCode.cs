@@ -25,6 +25,8 @@
         SGEI    = 0x1a,
         SLTI    = 0x1b,
         Break   = 0x20,
+        NOp     = 0x21,
+        End     = 0x22,
         BreakC  = 0x23,
         Call    = 0x24,
         CallC   = 0x25,

@@ -2,6 +2,7 @@
 using SPICA.PICA.Commands;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 
@@ -9,12 +10,17 @@ namespace SPICA.PICA.Shader
 {
     public class ShaderBinary
     {
-        public readonly ShaderProgram[] Programs;
-
         public uint[]  Executable;
         public ulong[] Swizzles;
 
-        public ShaderBinary(byte[] Data)
+        public readonly List<ShaderProgram> Programs;
+
+        public ShaderBinary()
+        {
+            Programs = new List<ShaderProgram>();
+        }
+
+        public ShaderBinary(byte[] Data) : this()
         {
             using (MemoryStream MS = new MemoryStream(Data))
             {
@@ -37,11 +43,9 @@ namespace SPICA.PICA.Shader
                 uint   SwizzlesCount        = Reader.ReadUInt32();
                 uint   FileNamesPtrsAddress = Reader.ReadUInt32() + DVLPPosition;
 
-                Programs = new ShaderProgram[DVLECount];
-
                 for (int i = 0; i < DVLECount; i++)
                 {
-                    Programs[i] = new ShaderProgram();
+                    Programs.Add(new ShaderProgram());
 
                     MS.Seek(8 + i * 4, SeekOrigin.Begin);
                     MS.Seek(Reader.ReadUInt32(), SeekOrigin.Begin);

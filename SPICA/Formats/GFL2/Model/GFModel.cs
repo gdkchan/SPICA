@@ -153,7 +153,7 @@ namespace SPICA.Formats.GFL2.Model
 
                 H3DMaterialParams Params = Mat.MaterialParams;
 
-                Mat.Name = Material.MaterialName.Name;
+                Mat.Name = Material.MaterialName;
 
                 Params.FragmentFlags = H3DFragmentFlags.IsLUTReflectionEnabled;
 
@@ -261,9 +261,17 @@ namespace SPICA.Formats.GFL2.Model
                 Params.Constant4Assignment = Material.Constant4Assignment;
                 Params.Constant5Assignment = Material.Constant5Assignment;
 
-                Params.ShaderReference = "0@DefaultShader";
+                Params.ShaderReference = "0@" + Material.VtxShaderName;
                 Params.ModelReference = $"{Mat.Name}@{Name}";
 
+                /*
+                 * Add those for compatibility with the older BCH models.
+                 * It's worth noting that ShaderParam0 is usually used as "UVScale" on model that uses
+                 * geometry shader to make billboarded point sprites. On the new shader it have a
+                 * multiplication of the Color by 3, while the older one doesn't have such multiplication,
+                 * so for compatibility with the older shader, the easiest thing to do is just multiply the
+                 * scale by 3 to give the same results on the old shader.
+                 */
                 Params.MetaData = new H3DMetaData();
 
                 Params.MetaData.Values.Add(new H3DMetaDataValue("EdgeType",           Material.EdgeType));
@@ -286,7 +294,7 @@ namespace SPICA.Formats.GFL2.Model
                 Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant4",      Material.BakeConstant4));
                 Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant5",      Material.BakeConstant5));
                 Params.MetaData.Values.Add(new H3DMetaDataValue("VertexShaderType",   Material.VertexShaderType));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam0",       Material.ShaderParam0));
+                Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam0",       Material.ShaderParam0 * 3));
                 Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam1",       Material.ShaderParam1));
                 Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam2",       Material.ShaderParam2));
                 Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam3",       Material.ShaderParam3));
@@ -323,13 +331,16 @@ namespace SPICA.Formats.GFL2.Model
                         BoneIndices[Index] = SubMesh.BoneIndices[Index];
                     }
 
+                    H3DSubMeshSkinning SMSk = Output.Skeleton.Count > 0
+                        ? H3DSubMeshSkinning.Smooth
+                        : H3DSubMeshSkinning.None;
+
                     SubMeshes.Add(new H3DSubMesh()
                     {
-                        Skinning         = H3DSubMeshSkinning.Smooth,
+                        Skinning         = SMSk,
                         BoneIndicesCount = SubMesh.BoneIndicesCount,
                         BoneIndices      = BoneIndices,
-                        Indices          = SubMesh.Indices,
-                        BoolUniforms     = 0x60 //HemiL/AO
+                        Indices          = SubMesh.Indices
                     });
 
                     H3DMesh M = new H3DMesh(
@@ -341,7 +352,7 @@ namespace SPICA.Formats.GFL2.Model
 
                     M.Skinning = H3DMeshSkinning.Smooth;
 
-                    int MatIndex = Materials.FindIndex(x => x.MaterialName.Name == SubMesh.Name);
+                    int MatIndex = Materials.FindIndex(x => x.MaterialName == SubMesh.Name);
 
                     GFMaterial Mat = Materials[MatIndex];
 

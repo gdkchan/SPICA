@@ -22,13 +22,13 @@ namespace SPICA.Rendering
         {
             Name = Shdr.Name;
 
+            ShaderBinary SHBin = new ShaderBinary(Shdr.Program);
+
             bool HasGeometryShader = Shdr.GeoShaderIndex != -1;
 
             if (Shdr.VtxShaderIndex != -1)
             {
                 VtxShaderHandle = GL.CreateShader(ShaderType.VertexShader);
-
-                ShaderBinary SHBin = new ShaderBinary(Shdr.Program);
 
                 VertexShaderGenerator VtxShaderGen = new VertexShaderGenerator(SHBin);
 
@@ -40,8 +40,6 @@ namespace SPICA.Rendering
             if (HasGeometryShader)
             {
                 GeoShaderHandle = GL.CreateShader(ShaderType.GeometryShader);
-
-                ShaderBinary SHBin = new ShaderBinary(Shdr.Program);
 
                 GeometryShaderGenerator GeoShaderGen = new GeometryShaderGenerator(SHBin);
 
@@ -55,8 +53,8 @@ namespace SPICA.Rendering
         {
             VtxShaderHandle = VertexShaderHandle;
 
-            VtxNames = GetNameBlock();
-            GeoNames = GetNameBlock();
+            VtxNames = new ShaderNameBlock();
+            GeoNames = new ShaderNameBlock();
 
             VtxNames.Vec4Uniforms[DefaultShaderIds.PosOffs]     = "PosOffs";
             VtxNames.Vec4Uniforms[DefaultShaderIds.IrScale + 0] = "IrScale[0]";
@@ -88,16 +86,6 @@ namespace SPICA.Rendering
             {
                 VtxNames.Vec4Uniforms[DefaultShaderIds.UnivReg + i] = $"UnivReg[{i}]";
             }
-        }
-
-        private ShaderNameBlock GetNameBlock()
-        {
-            return new ShaderNameBlock(
-                new string[96],
-                new string[4],
-                new string[16],
-                new string[16],
-                new string[16]);
         }
 
         private bool Disposed;

@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace SPICA.Formats.GFL2
 {
@@ -20,20 +21,20 @@ namespace SPICA.Formats.GFL2
         {
             Model,
             Texture,
-            VtxShader,
-            GeoShader,
-            FragShader
+            Unknown2,
+            Unknown3,
+            Shader
         }
 
-        public readonly List<GFModel>      Models;
-        public readonly List<GFTexture>    Textures;
-        public readonly List<GFFragShader> FragShaders;
+        public readonly List<GFModel>   Models;
+        public readonly List<GFTexture> Textures;
+        public readonly List<GFShader>  Shaders;
 
         public GFModelPack()
         {
-            Models      = new List<GFModel>();
-            Textures    = new List<GFTexture>();
-            FragShaders = new List<GFFragShader>();
+            Models   = new List<GFModel>();
+            Textures = new List<GFTexture>();
+            Shaders  = new List<GFShader>();
         }
 
         public GFModelPack(Stream Input) : this(new BinaryReader(Input)) { }
@@ -67,9 +68,9 @@ namespace SPICA.Formats.GFL2
 
                     switch ((Section)Sect)
                     {
-                        case Section.Model: Models.Add(new GFModel(Reader, Name)); break;
-                        case Section.Texture: Textures.Add(new GFTexture(Reader)); break;
-                        case Section.FragShader: FragShaders.Add(new GFFragShader(Reader)); break;
+                        case Section.Model:   Models.Add(new GFModel(Reader, Name)); break;
+                        case Section.Texture: Textures.Add(new GFTexture(Reader));   break;
+                        case Section.Shader:  Shaders.Add(new GFShader(Reader));     break;
                     }
                 }
 
@@ -94,15 +95,30 @@ namespace SPICA.Formats.GFL2
                 {
                     H3DMaterialParams Params = Mdl.Materials[MatIndex].MaterialParams;
 
-                    GFHashName FragShaderName = Model.Materials[MatIndex].FragShaderName;
+                    string FragShaderName = Model.Materials[MatIndex].FragShaderName;
+                    string VtxShaderName  = Model.Materials[MatIndex].VtxShaderName;
 
-                    GFFragShader FragShader = FragShaders.FirstOrDefault(x => x.Name == FragShaderName.Name);
+                    GFShader FragShader = Shaders.FirstOrDefault(x => x.Name == FragShaderName);
+                    GFShader VtxShader  = Shaders.FirstOrDefault(x => x.Name == VtxShaderName);
 
                     if (FragShader != null)
                     {
                         Params.TexEnvBufferColor = FragShader.TexEnvBufferColor;
 
                         Array.Copy(FragShader.TexEnvStages, Params.TexEnvStages, 6);
+                    }
+
+                    if (VtxShader != null)
+                    {
+                        foreach (KeyValuePair<uint, Vector4> KV in VtxShader.VtxShaderUniforms)
+                        {
+                            Params.VtxShaderUniforms.Add(KV.Key, KV.Value);
+                        }
+
+                        foreach (KeyValuePair<uint, Vector4> KV in VtxShader.GeoShaderUniforms)
+                        {
+                            Params.GeoShaderUniforms.Add(KV.Key, KV.Value);
+                        }
                     }
                 }
 

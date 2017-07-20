@@ -135,8 +135,10 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         {
             H3DMaterialParams Params = Material.MaterialParams;
 
+            bool Quat  = Attributes.Any(x => x.Name == PICAAttributeName.Normal);
+            bool VertA = Attributes.Any(x => x.Name == PICAAttributeName.Color);
             bool BoneW = Attributes.Any(x => x.Name == PICAAttributeName.BoneWeight);
-
+            
             bool UVMap0 = Params.TextureCoords[0].MappingType == H3DTextureMappingType.UvCoordinateMap;
             bool UVMap1 = Params.TextureCoords[1].MappingType == H3DTextureMappingType.UvCoordinateMap;
             bool UVMap2 = Params.TextureCoords[2].MappingType == H3DTextureMappingType.UvCoordinateMap;
@@ -151,7 +153,8 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                 SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, IsSmoSk, 1);
                 SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, IsRgdSk, 2);
-                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, true,    3);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, Quat,    3);
+                SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, VertA,   7);
                 SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, BoneW,   8);
                 SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, UVMap0,  9);
                 SM.BoolUniforms = (ushort)BitUtils.SetBit(SM.BoolUniforms, UVMap1,  10);

@@ -74,16 +74,6 @@ namespace SPICA.WinForms.Formats
                 Magic1 < 'A' || Magic1 > 'Z')
                 return false;
 
-            ushort Entries = Reader.ReadUInt16();
-
-            int FileLengthAddress = 4 + Entries * 4;
-
-            if (FileLengthAddress + 4 > Reader.BaseStream.Length) return false;
-
-            Reader.BaseStream.Seek(FileLengthAddress, SeekOrigin.Begin);
-
-            if (Reader.ReadUInt32() != Reader.BaseStream.Length) return false;
-
             return true;
         }
     }

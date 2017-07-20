@@ -116,17 +116,25 @@ namespace SPICA.Rendering.Animation
 
         private void SetBone(H3DAnimTransform Transform, ref Bone B)
         {
-            Transform.ScaleX.TrySetFrameValue      (Frame, ref B.Scale.X);
-            Transform.ScaleY.TrySetFrameValue      (Frame, ref B.Scale.Y);
-            Transform.ScaleZ.TrySetFrameValue      (Frame, ref B.Scale.Z);
+            TrySetFrameValue(Transform.ScaleX,       ref B.Scale.X);
+            TrySetFrameValue(Transform.ScaleY,       ref B.Scale.Y);
+            TrySetFrameValue(Transform.ScaleZ,       ref B.Scale.Z);
 
-            Transform.RotationX.TrySetFrameValue   (Frame, ref B.Rotation.X);
-            Transform.RotationY.TrySetFrameValue   (Frame, ref B.Rotation.Y);
-            Transform.RotationZ.TrySetFrameValue   (Frame, ref B.Rotation.Z);
+            TrySetFrameValue(Transform.RotationX,    ref B.Rotation.X);
+            TrySetFrameValue(Transform.RotationY,    ref B.Rotation.Y);
+            TrySetFrameValue(Transform.RotationZ,    ref B.Rotation.Z);
 
-            Transform.TranslationX.TrySetFrameValue(Frame, ref B.Translation.X);
-            Transform.TranslationY.TrySetFrameValue(Frame, ref B.Translation.Y);
-            Transform.TranslationZ.TrySetFrameValue(Frame, ref B.Translation.Z);
+            TrySetFrameValue(Transform.TranslationX, ref B.Translation.X);
+            TrySetFrameValue(Transform.TranslationY, ref B.Translation.Y);
+            TrySetFrameValue(Transform.TranslationZ, ref B.Translation.Z);
+        }
+
+        private void TrySetFrameValue(H3DFloatKeyFrameGroup Group, ref float Value)
+        {
+            if (Group.Exists)
+            {
+                Value = Group.GetFrameValue(Frame);
+            }
         }
 
         private void SetBone(H3DAnimQuatTransform Transform, ref Bone B)

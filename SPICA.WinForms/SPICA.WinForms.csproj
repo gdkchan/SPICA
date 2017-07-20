@@ -115,7 +115,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GUI\Viewport\AxisLines.cs" />
     <Compile Include="GUI\Viewport\GridLines.cs" />
-    <Compile Include="SettingsManager.cs" />
     <Compile Include="TextureManager.cs" />
     <EmbeddedResource Include="FrmExport.resx">
       <DependentUpon>FrmExport.cs</DependentUpon>

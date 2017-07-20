@@ -26,7 +26,7 @@ namespace SPICA.Formats.Common
 
         public static Exception GetNullException(string Name)
         {
-            return new ArgumentNullException(Name, $"Value on {Name} should not be null!");
+            return new ArgumentNullException(Name);
         }
     }
 }

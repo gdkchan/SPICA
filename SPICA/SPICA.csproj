@@ -45,6 +45,7 @@
     <Compile Include="Formats\Common\Exceptions.cs" />
     <Compile Include="Formats\Common\FNVHash.cs" />
     <Compile Include="Formats\Common\INamed.cs" />
+    <Compile Include="Formats\Common\InvalidMagicException.cs" />
     <Compile Include="Formats\Common\IOUtils.cs" />
     <Compile Include="Formats\Common\IPatriciaDict.cs" />
     <Compile Include="Formats\Common\IPatriciaTreeNode.cs" />
@@ -282,7 +283,7 @@
     <Compile Include="Formats\GFL2\Motion\GFMotUVTransform.cs" />
     <Compile Include="Formats\GFL2\Motion\GFSkeletonMot.cs" />
     <Compile Include="Formats\GFL2\Motion\GFVisibilityMot.cs" />
-    <Compile Include="Formats\GFL2\Shader\GFFragShader.cs" />
+    <Compile Include="Formats\GFL2\Shader\GFShader.cs" />
     <Compile Include="Formats\GFL2\Texture\GFTexture.cs" />
     <Compile Include="Formats\GFL2\Texture\GFTextureFormat.cs" />
     <Compile Include="Formats\GFL\GF1MotionPack.cs" />

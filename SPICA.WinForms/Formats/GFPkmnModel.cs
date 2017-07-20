@@ -53,7 +53,22 @@ namespace SPICA.WinForms.Formats
                     {
                         Input.Seek(Entry.Address, SeekOrigin.Begin);
 
-                        MdlPack.FragShaders.Add(new GFFragShader(Reader));
+                        MdlPack.Shaders.Add(new GFShader(Reader));
+                    }
+
+                    //More shaders
+                    Input.Seek(Header.Entries[3].Address, SeekOrigin.Begin);
+
+                    if (GFPackage.IsValidPackage(Input))
+                    {
+                        GFPackage.Header PCHeader = GFPackage.GetPackageHeader(Input);
+
+                        foreach (GFPackage.Entry Entry in PCHeader.Entries)
+                        {
+                            Input.Seek(Entry.Address, SeekOrigin.Begin);
+
+                            MdlPack.Shaders.Add(new GFShader(Reader));
+                        }
                     }
 
                     Output = MdlPack.ToH3D();

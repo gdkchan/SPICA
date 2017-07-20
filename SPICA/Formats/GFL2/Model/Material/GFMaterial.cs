@@ -8,10 +8,10 @@ namespace SPICA.Formats.GFL2.Model.Material
 {
     public class GFMaterial
     {
-        public GFHashName MaterialName;
-        public GFHashName GeoShaderName;
-        public GFHashName VtxShaderName;
-        public GFHashName FragShaderName;
+        public string MaterialName;
+        public string ShaderName;
+        public string VtxShaderName;
+        public string FragShaderName;
 
         public uint LUT0HashId;
         public uint LUT1HashId;
@@ -117,17 +117,17 @@ namespace SPICA.Formats.GFL2.Model.Material
 
             long Position = Reader.BaseStream.Position;
 
-            GFHashName[] Names = new GFHashName[4];
+            GFHashName[] HNs = new GFHashName[4];
 
-            for (int i = 0; i < Names.Length; i++)
+            for (int i = 0; i < HNs.Length; i++)
             {
-                Names[i] = new GFHashName(Reader);
+                HNs[i] = new GFHashName(Reader);
             }
 
-            MaterialName   = Names[0];
-            GeoShaderName  = Names[1];
-            VtxShaderName  = Names[2];
-            FragShaderName = Names[3];
+            MaterialName   = HNs[0].Name;
+            ShaderName     = HNs[1].Name;
+            VtxShaderName  = HNs[2].Name;
+            FragShaderName = HNs[3].Name;
 
             LUT0HashId = Reader.ReadUInt32();
             LUT1HashId = Reader.ReadUInt32();

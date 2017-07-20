@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
+using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
@@ -115,12 +115,24 @@ namespace SPICA.Rendering
                 GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[4]"),     8);
                 GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[5]"),     9);
 
-                //Reset
-                for (int i = 0; i < 96; i++)
+                //Pokémon uses this
+                Vector4 ShaderParam = Vector4.Zero;
+
+                foreach (H3DMetaDataValue Value in Params.MetaData.Values)
                 {
-                    Shdr.SetVtxVector4(i, Vector4.UnitW);
-                    Shdr.SetGeoVector4(i, Vector4.UnitW);
+                    if (Value.Type == H3DMetaDataType.Single)
+                    {
+                        switch (Value.Name)
+                        {
+                            case "$ShaderParam0": ShaderParam.W = (float)Value[0]; break;
+                            case "$ShaderParam1": ShaderParam.Z = (float)Value[0]; break;
+                            case "$ShaderParam2": ShaderParam.Y = (float)Value[0]; break;
+                            case "$ShaderParam3": ShaderParam.X = (float)Value[0]; break;
+                        }
+                    }
                 }
+
+                Shdr.SetVtxVector4(85, ShaderParam);
 
                 //Send values from material matching register ids to names.
                 foreach (KeyValuePair<uint, System.Numerics.Vector4> KV in Params.VtxShaderUniforms)
@@ -143,7 +155,7 @@ namespace SPICA.Rendering
                     Params.DiffuseColor.R / 255f,
                     Params.DiffuseColor.G / 255f,
                     Params.DiffuseColor.B / 255f,
-                    Params.DiffuseColor.A / 255f);
+                    1f);
 
                 Vector4 TexCoordMap = new Vector4(
                     Params.TextureSources[0],
@@ -151,13 +163,12 @@ namespace SPICA.Rendering
                     Params.TextureSources[2],
                     Params.TextureSources[3]);
 
-                //Shdr.SetVtxVector4(DefaultShaderIds.HsLGCol, Vector4.UnitW);
-                //Shdr.SetVtxVector4(DefaultShaderIds.HsLSCol, Vector4.One);
-                //Shdr.SetVtxVector4(DefaultShaderIds.HsLSDir, new Vector4(Vector3.UnitY, 0.5f));
                 Shdr.SetVtxVector4(DefaultShaderIds.MatAmbi, MatAmbient);
                 Shdr.SetVtxVector4(DefaultShaderIds.MatDiff, MatDiffuse);
                 Shdr.SetVtxVector4(DefaultShaderIds.TexcMap, TexCoordMap);
             }
+
+            UpdateUniforms();
         }
 
         public void UpdateUniforms()

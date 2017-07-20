@@ -74,15 +74,15 @@
             this.SideIcons = new System.Windows.Forms.ToolStrip();
             this.ToolButtonExport = new System.Windows.Forms.ToolStripButton();
             this.ToolButtonImport = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonOpen = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonMerge = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonSave = new System.Windows.Forms.ToolStripButton();
+            this.TBtnOpen = new System.Windows.Forms.ToolStripButton();
+            this.TBtnMerge = new System.Windows.Forms.ToolStripButton();
+            this.TBtnSave = new System.Windows.Forms.ToolStripButton();
             this.MenuSeparatorShowHideJustIgnore = new System.Windows.Forms.ToolStripSeparator();
-            this.ToolButtonShowGrid = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonShowAxis = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonShowBones = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonShowInfo = new System.Windows.Forms.ToolStripButton();
-            this.ToolButtonShowSide = new System.Windows.Forms.ToolStripButton();
+            this.TBtnShowGrid = new System.Windows.Forms.ToolStripButton();
+            this.TBtnShowAxis = new System.Windows.Forms.ToolStripButton();
+            this.TBtnShowBones = new System.Windows.Forms.ToolStripButton();
+            this.TBtnShowInfo = new System.Windows.Forms.ToolStripButton();
+            this.TBtnShowSide = new System.Windows.Forms.ToolStripButton();
             this.TopIcons = new System.Windows.Forms.ToolStrip();
             this.TopMenu.SuspendLayout();
             this.AnimControlsPanel.SuspendLayout();
@@ -163,7 +163,7 @@
             this.MenuShowInfo,
             this.MenuWireframeMode});
             this.MenuRenderer.Name = "MenuRenderer";
-            this.MenuRenderer.Size = new System.Drawing.Size(146, 22);
+            this.MenuRenderer.Size = new System.Drawing.Size(152, 22);
             this.MenuRenderer.Text = "&Renderer";
             // 
             // MenuShowGrid
@@ -171,12 +171,14 @@
             this.MenuShowGrid.Name = "MenuShowGrid";
             this.MenuShowGrid.Size = new System.Drawing.Size(167, 22);
             this.MenuShowGrid.Text = "Show &grid";
+            this.MenuShowGrid.Click += new System.EventHandler(this.MenuShowGrid_Click);
             // 
             // MenuShowAxis
             // 
             this.MenuShowAxis.Name = "MenuShowAxis";
             this.MenuShowAxis.Size = new System.Drawing.Size(167, 22);
             this.MenuShowAxis.Text = "Show &axis";
+            this.MenuShowAxis.Click += new System.EventHandler(this.MenuShowAxis_Click);
             // 
             // MenuShowSkeleton
             // 
@@ -201,16 +203,15 @@
             this.MenuUserInterface.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuShowSide});
             this.MenuUserInterface.Name = "MenuUserInterface";
-            this.MenuUserInterface.Size = new System.Drawing.Size(146, 22);
+            this.MenuUserInterface.Size = new System.Drawing.Size(152, 22);
             this.MenuUserInterface.Text = "&User interface";
             // 
             // MenuShowSide
             // 
-            this.MenuShowSide.Checked = true;
-            this.MenuShowSide.CheckState = System.Windows.Forms.CheckState.Checked;
             this.MenuShowSide.Name = "MenuShowSide";
             this.MenuShowSide.Size = new System.Drawing.Size(161, 22);
             this.MenuShowSide.Text = "Show &side menu";
+            this.MenuShowSide.Click += new System.EventHandler(this.MenuShowSide_Click);
             // 
             // MenuHelpRoot
             // 
@@ -457,6 +458,7 @@
             this.TexturesList.ItemHeight = 16;
             this.TexturesList.Location = new System.Drawing.Point(3, 3);
             this.TexturesList.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.TexturesList.MultiSelect = false;
             this.TexturesList.Name = "TexturesList";
             this.TexturesList.SelectedIndex = -1;
             this.TexturesList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
@@ -504,6 +506,7 @@
             this.SklAnimsList.ItemHeight = 16;
             this.SklAnimsList.Location = new System.Drawing.Point(3, 3);
             this.SklAnimsList.Margin = new System.Windows.Forms.Padding(3, 7, 3, 7);
+            this.SklAnimsList.MultiSelect = false;
             this.SklAnimsList.Name = "SklAnimsList";
             this.SklAnimsList.SelectedIndex = -1;
             this.SklAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
@@ -533,6 +536,7 @@
             this.MatAnimsList.ItemHeight = 16;
             this.MatAnimsList.Location = new System.Drawing.Point(3, 3);
             this.MatAnimsList.Margin = new System.Windows.Forms.Padding(3, 9, 3, 9);
+            this.MatAnimsList.MultiSelect = false;
             this.MatAnimsList.Name = "MatAnimsList";
             this.MatAnimsList.SelectedIndex = -1;
             this.MatAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
@@ -572,101 +576,102 @@
             this.ToolButtonImport.Size = new System.Drawing.Size(28, 28);
             this.ToolButtonImport.ToolTipText = "Import...";
             // 
-            // ToolButtonOpen
+            // TBtnOpen
             // 
-            this.ToolButtonOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonOpen.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonOpen.Image")));
-            this.ToolButtonOpen.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonOpen.Name = "ToolButtonOpen";
-            this.ToolButtonOpen.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonOpen.ToolTipText = "Open...";
-            this.ToolButtonOpen.Click += new System.EventHandler(this.ToolButtonOpen_Click);
+            this.TBtnOpen.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnOpen.Image = ((System.Drawing.Image)(resources.GetObject("TBtnOpen.Image")));
+            this.TBtnOpen.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnOpen.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnOpen.Name = "TBtnOpen";
+            this.TBtnOpen.Size = new System.Drawing.Size(28, 27);
+            this.TBtnOpen.ToolTipText = "Open...";
+            this.TBtnOpen.Click += new System.EventHandler(this.TBtnOpen_Click);
             // 
-            // ToolButtonMerge
+            // TBtnMerge
             // 
-            this.ToolButtonMerge.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonMerge.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonMerge.Image")));
-            this.ToolButtonMerge.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonMerge.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonMerge.Name = "ToolButtonMerge";
-            this.ToolButtonMerge.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonMerge.ToolTipText = "Merge...";
-            this.ToolButtonMerge.Click += new System.EventHandler(this.ToolButtonMerge_Click);
+            this.TBtnMerge.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnMerge.Image = ((System.Drawing.Image)(resources.GetObject("TBtnMerge.Image")));
+            this.TBtnMerge.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnMerge.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnMerge.Name = "TBtnMerge";
+            this.TBtnMerge.Size = new System.Drawing.Size(28, 27);
+            this.TBtnMerge.ToolTipText = "Merge...";
+            this.TBtnMerge.Click += new System.EventHandler(this.TBtnMerge_Click);
             // 
-            // ToolButtonSave
+            // TBtnSave
             // 
-            this.ToolButtonSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonSave.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonSave.Image")));
-            this.ToolButtonSave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonSave.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonSave.Name = "ToolButtonSave";
-            this.ToolButtonSave.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonSave.ToolTipText = "Save...";
-            this.ToolButtonSave.Click += new System.EventHandler(this.ToolButtonSave_Click);
+            this.TBtnSave.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnSave.Image = ((System.Drawing.Image)(resources.GetObject("TBtnSave.Image")));
+            this.TBtnSave.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnSave.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnSave.Name = "TBtnSave";
+            this.TBtnSave.Size = new System.Drawing.Size(28, 27);
+            this.TBtnSave.ToolTipText = "Save...";
+            this.TBtnSave.Click += new System.EventHandler(this.TBtnSave_Click);
             // 
             // MenuSeparatorShowHideJustIgnore
             // 
             this.MenuSeparatorShowHideJustIgnore.Name = "MenuSeparatorShowHideJustIgnore";
             this.MenuSeparatorShowHideJustIgnore.Size = new System.Drawing.Size(6, 30);
             // 
-            // ToolButtonShowGrid
+            // TBtnShowGrid
             // 
-            this.ToolButtonShowGrid.CheckOnClick = true;
-            this.ToolButtonShowGrid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonShowGrid.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowGrid.Image")));
-            this.ToolButtonShowGrid.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonShowGrid.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonShowGrid.Name = "ToolButtonShowGrid";
-            this.ToolButtonShowGrid.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowGrid.ToolTipText = "Toggle grid";
+            this.TBtnShowGrid.CheckOnClick = true;
+            this.TBtnShowGrid.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnShowGrid.Image = ((System.Drawing.Image)(resources.GetObject("TBtnShowGrid.Image")));
+            this.TBtnShowGrid.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnShowGrid.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnShowGrid.Name = "TBtnShowGrid";
+            this.TBtnShowGrid.Size = new System.Drawing.Size(28, 27);
+            this.TBtnShowGrid.ToolTipText = "Toggle grid";
+            this.TBtnShowGrid.Click += new System.EventHandler(this.TBtnShowGrid_Click);
             // 
-            // ToolButtonShowAxis
+            // TBtnShowAxis
             // 
-            this.ToolButtonShowAxis.CheckOnClick = true;
-            this.ToolButtonShowAxis.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonShowAxis.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowAxis.Image")));
-            this.ToolButtonShowAxis.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonShowAxis.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonShowAxis.Name = "ToolButtonShowAxis";
-            this.ToolButtonShowAxis.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowAxis.ToolTipText = "Toggle axis";
+            this.TBtnShowAxis.CheckOnClick = true;
+            this.TBtnShowAxis.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnShowAxis.Image = ((System.Drawing.Image)(resources.GetObject("TBtnShowAxis.Image")));
+            this.TBtnShowAxis.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnShowAxis.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnShowAxis.Name = "TBtnShowAxis";
+            this.TBtnShowAxis.Size = new System.Drawing.Size(28, 27);
+            this.TBtnShowAxis.ToolTipText = "Toggle axis";
+            this.TBtnShowAxis.Click += new System.EventHandler(this.TBtnShowAxis_Click);
             // 
-            // ToolButtonShowBones
+            // TBtnShowBones
             // 
-            this.ToolButtonShowBones.CheckOnClick = true;
-            this.ToolButtonShowBones.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonShowBones.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowBones.Image")));
-            this.ToolButtonShowBones.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonShowBones.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonShowBones.Name = "ToolButtonShowBones";
-            this.ToolButtonShowBones.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowBones.ToolTipText = "Toggle skeleton";
+            this.TBtnShowBones.CheckOnClick = true;
+            this.TBtnShowBones.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnShowBones.Image = ((System.Drawing.Image)(resources.GetObject("TBtnShowBones.Image")));
+            this.TBtnShowBones.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnShowBones.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnShowBones.Name = "TBtnShowBones";
+            this.TBtnShowBones.Size = new System.Drawing.Size(28, 27);
+            this.TBtnShowBones.ToolTipText = "Toggle skeleton";
             // 
-            // ToolButtonShowInfo
+            // TBtnShowInfo
             // 
-            this.ToolButtonShowInfo.CheckOnClick = true;
-            this.ToolButtonShowInfo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonShowInfo.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowInfo.Image")));
-            this.ToolButtonShowInfo.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonShowInfo.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonShowInfo.Name = "ToolButtonShowInfo";
-            this.ToolButtonShowInfo.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowInfo.ToolTipText = "Toggle model info.";
+            this.TBtnShowInfo.CheckOnClick = true;
+            this.TBtnShowInfo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnShowInfo.Image = ((System.Drawing.Image)(resources.GetObject("TBtnShowInfo.Image")));
+            this.TBtnShowInfo.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnShowInfo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnShowInfo.Name = "TBtnShowInfo";
+            this.TBtnShowInfo.Size = new System.Drawing.Size(28, 27);
+            this.TBtnShowInfo.ToolTipText = "Toggle model info.";
             // 
-            // ToolButtonShowSide
+            // TBtnShowSide
             // 
-            this.ToolButtonShowSide.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.ToolButtonShowSide.Checked = true;
-            this.ToolButtonShowSide.CheckOnClick = true;
-            this.ToolButtonShowSide.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ToolButtonShowSide.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ToolButtonShowSide.Image = ((System.Drawing.Image)(resources.GetObject("ToolButtonShowSide.Image")));
-            this.ToolButtonShowSide.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.ToolButtonShowSide.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ToolButtonShowSide.Name = "ToolButtonShowSide";
-            this.ToolButtonShowSide.Size = new System.Drawing.Size(28, 27);
-            this.ToolButtonShowSide.ToolTipText = "Toggle side menu";
+            this.TBtnShowSide.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.TBtnShowSide.CheckOnClick = true;
+            this.TBtnShowSide.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.TBtnShowSide.Image = ((System.Drawing.Image)(resources.GetObject("TBtnShowSide.Image")));
+            this.TBtnShowSide.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.TBtnShowSide.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.TBtnShowSide.Name = "TBtnShowSide";
+            this.TBtnShowSide.Size = new System.Drawing.Size(28, 27);
+            this.TBtnShowSide.ToolTipText = "Toggle side menu";
+            this.TBtnShowSide.Click += new System.EventHandler(this.TBtnShowSide_Click);
             // 
             // TopIcons
             // 
@@ -674,15 +679,15 @@
             this.TopIcons.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
             this.TopIcons.ForeColor = System.Drawing.Color.White;
             this.TopIcons.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolButtonOpen,
-            this.ToolButtonMerge,
-            this.ToolButtonSave,
+            this.TBtnOpen,
+            this.TBtnMerge,
+            this.TBtnSave,
             this.MenuSeparatorShowHideJustIgnore,
-            this.ToolButtonShowGrid,
-            this.ToolButtonShowAxis,
-            this.ToolButtonShowBones,
-            this.ToolButtonShowInfo,
-            this.ToolButtonShowSide});
+            this.TBtnShowGrid,
+            this.TBtnShowAxis,
+            this.TBtnShowBones,
+            this.TBtnShowInfo,
+            this.TBtnShowSide});
             this.TopIcons.Location = new System.Drawing.Point(0, 24);
             this.TopIcons.Name = "TopIcons";
             this.TopIcons.Size = new System.Drawing.Size(944, 30);
@@ -762,15 +767,15 @@
         private System.Windows.Forms.ToolStripMenuItem MenuBatchExport;
         private System.Windows.Forms.ToolStripMenuItem MenuOptionsRoot;
         private System.Windows.Forms.ToolStripMenuItem MenuRenderer;
-        private System.Windows.Forms.ToolStripButton ToolButtonOpen;
-        private System.Windows.Forms.ToolStripButton ToolButtonMerge;
-        private System.Windows.Forms.ToolStripButton ToolButtonSave;
+        private System.Windows.Forms.ToolStripButton TBtnOpen;
+        private System.Windows.Forms.ToolStripButton TBtnMerge;
+        private System.Windows.Forms.ToolStripButton TBtnSave;
         private System.Windows.Forms.ToolStripSeparator MenuSeparatorShowHideJustIgnore;
-        private System.Windows.Forms.ToolStripButton ToolButtonShowGrid;
-        private System.Windows.Forms.ToolStripButton ToolButtonShowAxis;
-        private System.Windows.Forms.ToolStripButton ToolButtonShowBones;
-        private System.Windows.Forms.ToolStripButton ToolButtonShowInfo;
-        private System.Windows.Forms.ToolStripButton ToolButtonShowSide;
+        private System.Windows.Forms.ToolStripButton TBtnShowGrid;
+        private System.Windows.Forms.ToolStripButton TBtnShowAxis;
+        private System.Windows.Forms.ToolStripButton TBtnShowBones;
+        private System.Windows.Forms.ToolStripButton TBtnShowInfo;
+        private System.Windows.Forms.ToolStripButton TBtnShowSide;
         private System.Windows.Forms.ToolStrip TopIcons;
         private System.Windows.Forms.ToolStripMenuItem MenuShowGrid;
         private System.Windows.Forms.ToolStripMenuItem MenuShowAxis;

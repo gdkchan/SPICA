@@ -439,7 +439,7 @@ void proc_calc_color() {
 	Color.xyzw = max(vec4(0, 1, 2, 3).xxxx, reg_temp[9].xyzw);
 }
 
-void l_transform_matrix() {
+void proc_transform_matrix() {
 	reg_temp[15].xyz = IrScale[0].xxx * aPosition.xyz;
 	reg_temp[14].xyz = IrScale[0].yyy * aNormal.xyz;
 	reg_temp[13].xyz = IrScale[0].zzz * aTangent.xyz;
@@ -621,7 +621,7 @@ void l_transform_matrix() {
 }
 
 void main() {
-	l_transform_matrix();
+	proc_transform_matrix();
 	proc_calc_color();
 	proc_calc_texcoord0();
 	proc_calc_texcoord1();
