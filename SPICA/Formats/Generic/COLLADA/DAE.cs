@@ -317,8 +317,6 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             if (SM.Skinning == H3DSubMeshSkinning.Smooth)
                             {
-                                int TotalCount = 0;
-
                                 foreach (PICAVertex Vertex in Vertices)
                                 {
                                     int Count = 0;
@@ -349,11 +347,7 @@ namespace SPICA.Formats.Generic.COLLADA
                                     }
 
                                     vcount[vci++] = Count;
-
-                                    TotalCount += Count;
                                 }
-
-                                Array.Resize(ref v, TotalCount * 2);
                             }
                             else
                             {
@@ -367,6 +361,8 @@ namespace SPICA.Formats.Generic.COLLADA
 
                                 Weights.Add("1", 0);
                             }
+							
+							Array.Resize(ref v, vi);
 
                             Controller.skin.src.Add(new DAESource($"{Controller.name}_names", 1, BoneNames, "JOINT", "Name"));
                             Controller.skin.src.Add(new DAESource($"{Controller.name}_poses", 16, BindPoses, "TRANSFORM", "float4x4"));

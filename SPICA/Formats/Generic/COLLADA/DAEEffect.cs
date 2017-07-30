@@ -76,12 +76,11 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             switch (Wrap)
             {
+				default:
                 case PICATextureWrap.ClampToEdge:   return DAEWrap.CLAMP;
                 case PICATextureWrap.ClampToBorder: return DAEWrap.BORDER;
                 case PICATextureWrap.Repeat:        return DAEWrap.WRAP;
                 case PICATextureWrap.Mirror:        return DAEWrap.MIRROR;
-
-                default: throw new ArgumentException("Invalid Texture wrap!");
             }
         }
     }
@@ -92,14 +91,13 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             switch (Filter)
             {
+				default:
                 case H3DTextureMinFilter.Nearest:              return DAEFilter.NEAREST;
                 case H3DTextureMinFilter.NearestMipmapNearest: return DAEFilter.NEAREST_MIPMAP_NEAREST;
                 case H3DTextureMinFilter.NearestMipmapLinear:  return DAEFilter.NEAREST_MIPMAP_LINEAR;
                 case H3DTextureMinFilter.Linear:               return DAEFilter.LINEAR;
                 case H3DTextureMinFilter.LinearMipmapNearest:  return DAEFilter.LINEAR_MIPMAP_NEAREST;
                 case H3DTextureMinFilter.LinearMipmapLinear:   return DAEFilter.LINEAR_MIPMAP_LINEAR;
-
-                default: throw new ArgumentException("Invalid Minification filter!");
             }
         }
 
@@ -107,10 +105,9 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             switch (Filter)
             {
+				default:
                 case H3DTextureMagFilter.Nearest: return DAEFilter.NEAREST;
                 case H3DTextureMagFilter.Linear:  return DAEFilter.LINEAR;
-
-                default: throw new ArgumentException("Invalid Magnification filter!");
             }
         }
     }

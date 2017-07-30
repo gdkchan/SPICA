@@ -65,8 +65,8 @@ namespace SPICA.Formats.CtrGfx.Model.Material
                         MinFilter = (PICATextureFilter)((Param >>  2) & 1);
                         MipFilter = (PICATextureFilter)((Param >> 24) & 1);
 
-                        WrapV = (PICATextureWrap)((Param >>  8) & 7);
-                        WrapU = (PICATextureWrap)((Param >> 12) & 7);
+                        WrapV = (PICATextureWrap)((Param >>  8) & 3);
+                        WrapU = (PICATextureWrap)((Param >> 12) & 3);
                         break;
 
                     case PICARegister.GPUREG_TEXUNIT0_LOD:
