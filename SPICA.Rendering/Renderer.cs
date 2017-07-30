@@ -182,7 +182,7 @@ namespace SPICA.Rendering
 
         internal VertexShader GetShader(string ShaderName)
         {
-            if (!Shaders.TryGetValue(ShaderName, out VertexShader Output))
+            if (ShaderName == null || !Shaders.TryGetValue(ShaderName, out VertexShader Output))
             {
                 Output = DefaultShader;
             }
