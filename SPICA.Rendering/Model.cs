@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+
 using SPICA.Formats.Common;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
@@ -221,7 +222,7 @@ namespace SPICA.Rendering
             HashGen.Hash(Params.Constant4Color.GetHashCode());
             HashGen.Hash(Params.Constant5Color.GetHashCode());
 
-            HashGen.Hash(Params?.ShaderReference.GetHashCode() ?? 0);
+            HashGen.Hash(Params.ShaderReference?.GetHashCode() ?? 0);
 
             HashGen.Hash(Params.TranslucencyKind.GetHashCode());
 
