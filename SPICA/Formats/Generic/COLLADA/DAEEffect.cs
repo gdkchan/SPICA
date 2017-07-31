@@ -76,7 +76,7 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             switch (Wrap)
             {
-				default:
+                default:
                 case PICATextureWrap.ClampToEdge:   return DAEWrap.CLAMP;
                 case PICATextureWrap.ClampToBorder: return DAEWrap.BORDER;
                 case PICATextureWrap.Repeat:        return DAEWrap.WRAP;
@@ -91,7 +91,7 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             switch (Filter)
             {
-				default:
+                default:
                 case H3DTextureMinFilter.Nearest:              return DAEFilter.NEAREST;
                 case H3DTextureMinFilter.NearestMipmapNearest: return DAEFilter.NEAREST_MIPMAP_NEAREST;
                 case H3DTextureMinFilter.NearestMipmapLinear:  return DAEFilter.NEAREST_MIPMAP_LINEAR;
@@ -105,7 +105,7 @@ namespace SPICA.Formats.Generic.COLLADA
         {
             switch (Filter)
             {
-				default:
+                default:
                 case H3DTextureMagFilter.Nearest: return DAEFilter.NEAREST;
                 case H3DTextureMagFilter.Linear:  return DAEFilter.LINEAR;
             }

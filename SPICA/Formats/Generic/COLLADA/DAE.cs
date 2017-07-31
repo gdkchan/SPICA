@@ -361,8 +361,8 @@ namespace SPICA.Formats.Generic.COLLADA
 
                                 Weights.Add("1", 0);
                             }
-							
-							Array.Resize(ref v, vi);
+
+                            Array.Resize(ref v, vi);
 
                             Controller.skin.src.Add(new DAESource($"{Controller.name}_names", 1, BoneNames, "JOINT", "Name"));
                             Controller.skin.src.Add(new DAESource($"{Controller.name}_poses", 16, BindPoses, "TRANSFORM", "float4x4"));

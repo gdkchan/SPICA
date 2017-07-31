@@ -28,13 +28,13 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         public H3DMeshType Type
         {
             get => (H3DMeshType)BitUtils.GetBits(Flags, 0, 2);
-            set => Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 0, 2);
+            set => Flags = (byte)BitUtils.SetBits(Flags, (int)value, 0, 2);
         }
 
         public H3DMeshSkinning Skinning
         {
             get => (H3DMeshSkinning)BitUtils.GetBits(Flags, 2, 2);
-            set => Flags = (byte)BitUtils.SetBits(Flags, (uint)value, 2, 2);
+            set => Flags = (byte)BitUtils.SetBits(Flags, (int)value, 2, 2);
         }
 
         public int Priority

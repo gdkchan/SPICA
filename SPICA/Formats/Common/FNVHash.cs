@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace SPICA.Formats.Common
 {
-    class FNVHash
+    public class FNVHash
     {
         private const uint OffsetBasis = 0x811c9dc5;
         private const uint Prime = 16777619;

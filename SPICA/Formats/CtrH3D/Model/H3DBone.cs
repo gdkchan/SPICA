@@ -13,12 +13,12 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public H3DBoneFlags Flags
         {
-            get => (H3DBoneFlags)BitUtils.MaskOutBits((uint)_Flags, 16, 3);
+            get => (H3DBoneFlags)BitUtils.MaskOutBits((int)_Flags, 16, 3);
             set
             {
-                uint Value = BitUtils.MaskOutBits((uint)value, 16, 3);
+                int Value = BitUtils.MaskOutBits((int)value, 16, 3);
 
-                Value |= BitUtils.MaskBits((uint)_Flags, 16, 3);
+                Value |= BitUtils.MaskBits((int)_Flags, 16, 3);
 
                 _Flags = (H3DBoneFlags)Value;
             }
@@ -26,8 +26,8 @@ namespace SPICA.Formats.CtrH3D.Model
 
         public H3DBillboardMode BillboardMode
         {
-            get => (H3DBillboardMode)BitUtils.GetBits((uint)_Flags, 16, 3);
-            set => _Flags = (H3DBoneFlags)BitUtils.SetBits((uint)_Flags, (uint)value, 16, 3);
+            get => (H3DBillboardMode)BitUtils.GetBits((int)_Flags, 16, 3);
+            set => _Flags = (H3DBoneFlags)BitUtils.SetBits((int)_Flags, (int)value, 16, 3);
         }
 
         [Padding(4)] public short ParentIndex;

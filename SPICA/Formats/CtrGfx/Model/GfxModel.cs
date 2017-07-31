@@ -27,7 +27,7 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public readonly GfxDict<GfxMetaData> MetaData;
 
-        private uint BranchVisible;
+        private int BranchVisible;
 
         private bool _IsBranchVisible;
 
@@ -38,7 +38,7 @@ namespace SPICA.Formats.CtrGfx.Model
             {
                 _IsBranchVisible = value;
 
-                BranchVisible = (uint)BitUtils.SetBit(BranchVisible, value, 0);
+                BranchVisible = BitUtils.SetBit(BranchVisible, value, 0);
             }
         }
 

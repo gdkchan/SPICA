@@ -54,13 +54,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
         public H3DTranslucencyKind TranslucencyKind
         {
             get => (H3DTranslucencyKind)BitUtils.GetBits(LayerConfig, 0, 4);
-            set => LayerConfig = (byte)BitUtils.SetBits(LayerConfig, (uint)value, 0, 4);
+            set => LayerConfig = (byte)BitUtils.SetBits(LayerConfig, (int)value, 0, 4);
         }
 
         public H3DTexCoordConfig TexCoordConfig
         {
             get => (H3DTexCoordConfig)BitUtils.GetBits(LayerConfig, 4, 4);
-            set => LayerConfig = (byte)BitUtils.SetBits(LayerConfig, (uint)value, 4, 4);
+            set => LayerConfig = (byte)BitUtils.SetBits(LayerConfig, (int)value, 4, 4);
         }
 
         public H3DFresnelSelector FresnelSelector;
@@ -71,42 +71,42 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         [Inline, FixedLength(6)] private uint[] LUTConfigCommands;
 
-        private uint ConstantColors;
+        private int ConstantColors;
 
         public int Constant0Assignment
         {
             get => BitUtils.GetBits(ConstantColors, 0, 4);
-            set => ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 0, 4);
+            set => ConstantColors = BitUtils.SetBits(ConstantColors, value, 0, 4);
         }
 
         public int Constant1Assignment
         {
             get => BitUtils.GetBits(ConstantColors, 4, 4);
-            set => ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 4, 4);
+            set => ConstantColors = BitUtils.SetBits(ConstantColors, value, 4, 4);
         }
 
         public int Constant2Assignment
         {
             get => BitUtils.GetBits(ConstantColors, 8, 4);
-            set => ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 8, 4);
+            set => ConstantColors = BitUtils.SetBits(ConstantColors, value, 8, 4);
         }
 
         public int Constant3Assignment
         {
             get => BitUtils.GetBits(ConstantColors, 12, 4);
-            set => ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 12, 4);
+            set => ConstantColors = BitUtils.SetBits(ConstantColors, value, 12, 4);
         }
 
         public int Constant4Assignment
         {
             get => BitUtils.GetBits(ConstantColors, 16, 4);
-            set => ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 16, 4);
+            set => ConstantColors = BitUtils.SetBits(ConstantColors, value, 16, 4);
         }
 
         public int Constant5Assignment
         {
             get => BitUtils.GetBits(ConstantColors, 20, 4);
-            set => ConstantColors = (uint)BitUtils.SetBits(ConstantColors, value, 20, 4);
+            set => ConstantColors = BitUtils.SetBits(ConstantColors, value, 20, 4);
         }
 
         public float PolygonOffsetUnit;

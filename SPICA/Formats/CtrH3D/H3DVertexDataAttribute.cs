@@ -24,7 +24,7 @@ namespace SPICA.Formats.CtrH3D
         public PICAAttributeFormat Format
         {
             get => (PICAAttributeFormat)BitUtils.GetBits(Type, 0, 2);
-            set => Type = BitUtils.SetBits(Type, (uint)value, 0, 2);
+            set => Type = (byte)BitUtils.SetBits(Type, (int)value, 0, 2);
         }
 
         public int Elements
@@ -42,20 +42,20 @@ namespace SPICA.Formats.CtrH3D
                     throw Exceptions.GetGreaterThanException("Elements", 4);
                 }
 
-                Type = BitUtils.SetBits(Type, (uint)value - 1, 2, 2);
+                Type = (byte)BitUtils.SetBits(Type, value - 1, 2, 2);
             }
         }
 
         [Padding(2)] public byte Stride;
 
-        public bool IsFixed { get { return Stride == 0; } }
+        public bool IsFixed => Stride == 0;
 
-        private uint _Offset;
+        private int _Offset;
 
         public int Offset
         {
-            get => IsFixed ? 0 : (int)_Offset;
-            set => _Offset = (uint)value;
+            get => IsFixed ? 0 : _Offset;
+            set => _Offset = value;
         }
 
         [Ignore] public Vector4 FixedValue;
@@ -95,7 +95,7 @@ namespace SPICA.Formats.CtrH3D
                     Parent        = this,
                     Position      = Serializer.BaseStream.Position + 4,
                     Value         = RawBuffer,
-                    PointerOffset = _Offset
+                    PointerOffset = (uint)_Offset
                 });
             }
 

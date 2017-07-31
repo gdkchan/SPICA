@@ -24,12 +24,12 @@ namespace SPICA.Formats.CtrGfx.Model
 
         public GfxSkeletonScalingRule ScalingRule;
 
-        private uint Flags;
+        private int Flags;
 
         public bool IsTranslationAnimEnabled
         {
             get => BitUtils.GetBit(Flags, 1);
-            set => Flags = (uint)BitUtils.SetBit(Flags, value, 1);
+            set => Flags = BitUtils.SetBit(Flags, value, 1);
         }
     }
 }

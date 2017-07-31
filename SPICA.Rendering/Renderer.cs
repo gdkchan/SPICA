@@ -114,12 +114,15 @@ namespace SPICA.Rendering
 
         public void Merge(H3DDict<H3DShader> Shaders)
         {
-            foreach (H3DShader Shader in Shaders)
+            if (Shaders.Count > 0)
             {
-                this.Shaders.Add(Shader.Name, new VertexShader(Shader));
-            }
+                foreach (H3DShader Shader in Shaders)
+                {
+                    this.Shaders.Add(Shader.Name, new VertexShader(Shader));
+                }
 
-            UpdateAllShaders();
+                UpdateAllShaders();
+            }
         }
 
         public void DeleteAll()

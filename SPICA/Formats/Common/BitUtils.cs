@@ -34,9 +34,9 @@
             return Value != 0 && (Value & (Value - 1)) == 0;
         }
 
-        public static dynamic MaskBits(dynamic Value, int Start, int Count)
+        public static int MaskBits(int Value, int Start, int Count)
         {
-            uint Mask = (1u << Count) - 1;
+            int Mask = (1 << Count) - 1;
 
             Mask  <<= Start;
             Value &=  Mask;
@@ -44,9 +44,9 @@
             return Value;
         }
 
-        public static dynamic MaskOutBits(dynamic Value, int Start, int Count)
+        public static int MaskOutBits(int Value, int Start, int Count)
         {
-            uint Mask = (1u << Count) - 1;
+            int Mask = (1 << Count) - 1;
 
             Mask  <<= Start;
             Value &=  ~Mask;
@@ -54,9 +54,9 @@
             return Value;
         }
 
-        public static dynamic GetBits(dynamic Value, int Start, int Count)
+        public static dynamic GetBits(int Value, int Start, int Count)
         {
-            uint Mask = (1u << Count) - 1;
+            int Mask = (1 << Count) - 1;
 
             Value >>= Start;
             Value &=  Mask;
@@ -64,9 +64,9 @@
             return Value;
         }
 
-        public static dynamic SetBits(dynamic Value, dynamic Bits, int Start, int Count)
+        public static int SetBits(int Value, int Bits, int Start, int Count)
         {
-            uint Mask = (1u << Count) - 1;
+            int Mask = (1 << Count) - 1;
 
             Value &= ~(Mask << Start);
             Value |=   Bits << Start;
@@ -74,16 +74,16 @@
             return Value;
         }
 
-        public static bool GetBit(dynamic Value, int Start)
+        public static bool GetBit(int Value, int Start)
         {
             return ((Value >> Start) & 1) != 0;
         }
 
-        public static dynamic SetBit(dynamic Value, bool Bit, int Start)
+        public static int SetBit(int Value, bool Bit, int Start)
         {
             return Bit
-                ? Value |  (1u << Start)
-                : Value & ~(1u << Start);
+                ? Value |  (1 << Start)
+                : Value & ~(1 << Start);
         }
     }
 }
