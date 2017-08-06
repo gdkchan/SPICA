@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    [Inline]
     public class H3DAnimMtxTransform : H3DAnimationCurve
     {
         public readonly List<Matrix3x4> Frames;

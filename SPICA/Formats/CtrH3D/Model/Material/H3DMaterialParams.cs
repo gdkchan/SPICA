@@ -255,19 +255,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             UniqueId = HashGen.HashCode;
         }
 
-        public RGBA GetConstant(int Stage)
+        public int GetConstantIndex(int Stage)
         {
             if (Stage >= 0 && Stage < 6)
             {
-                switch ((ConstantColors >> Stage * 4) & 0xf)
-                {
-                    case 0: return Constant0Color;
-                    case 1: return Constant1Color;
-                    case 2: return Constant2Color;
-                    case 3: return Constant3Color;
-                    case 4: return Constant4Color;
-                    case 5: return Constant5Color;
-                }
+                return (ConstantColors >> Stage * 4) & 0xf;
             }
 
             throw new ArgumentOutOfRangeException(nameof(Stage));

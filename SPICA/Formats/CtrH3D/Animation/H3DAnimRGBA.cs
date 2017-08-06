@@ -3,17 +3,21 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    public class H3DAnimVector2D : ICustomSerialization
-    {
+	public class H3DAnimRGBA : ICustomSerialization
+	{
         [Ignore] private H3DFloatKeyFrameGroup[] Vector;
 
-        public H3DFloatKeyFrameGroup X => Vector[0];
-        public H3DFloatKeyFrameGroup Y => Vector[1];
+        public H3DFloatKeyFrameGroup R => Vector[0];
+        public H3DFloatKeyFrameGroup G => Vector[1];
+        public H3DFloatKeyFrameGroup B => Vector[2];
+        public H3DFloatKeyFrameGroup A => Vector[3];
 
-        public H3DAnimVector2D()
+        public H3DAnimRGBA()
         {
             Vector = new H3DFloatKeyFrameGroup[]
             {
+                new H3DFloatKeyFrameGroup(),
+                new H3DFloatKeyFrameGroup(),
                 new H3DFloatKeyFrameGroup(),
                 new H3DFloatKeyFrameGroup()
             };
@@ -30,5 +34,5 @@ namespace SPICA.Formats.CtrH3D.Animation
 
             return true;
         }
-    }
+	}
 }

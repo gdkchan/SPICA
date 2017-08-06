@@ -11,7 +11,6 @@ using System.Numerics;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    [Inline]
     public class H3DAnimQuatTransform : ICustomSerialization
     {
         private H3DAnimQuatTransformFlags Flags;
@@ -20,9 +19,9 @@ namespace SPICA.Formats.CtrH3D.Animation
         [Ignore] public readonly List<Quaternion> Rotations;
         [Ignore] public readonly List<Vector3>    Translations;
 
-        public bool HasScale       { get { return Scales.Count       > 0; } }
-        public bool HasRotation    { get { return Rotations.Count    > 0; } }
-        public bool HasTranslation { get { return Translations.Count > 0; } }
+        public bool HasScale       => Scales.Count       > 0;
+        public bool HasRotation    => Rotations.Count    > 0;
+        public bool HasTranslation => Translations.Count > 0;
 
         public H3DAnimQuatTransform()
         {

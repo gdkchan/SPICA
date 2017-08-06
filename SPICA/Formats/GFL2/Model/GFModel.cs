@@ -206,6 +206,10 @@ namespace SPICA.Formats.GFL2.Model
                 Params.Constant5Color = Material.Constant5Color;
                 Params.BlendColor     = Material.BlendColor;
 
+                //HACK: It's usually 0 on Sun/Moon, this causes issues on some
+                //models being rendered transparent (Shader differences).
+                Params.DiffuseColor.A = 0xff;
+
                 Params.ColorScale = 1f;
 
                 Params.LUTInputAbsolute  = Material.LUTInputAbsolute;

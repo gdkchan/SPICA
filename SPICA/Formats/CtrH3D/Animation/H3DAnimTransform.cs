@@ -3,11 +3,9 @@ using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
 using System.IO;
-using System.Numerics;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    [Inline]
     public class H3DAnimTransform : ICustomSerialization
     {
         private H3DAnimTransformFlags Flags;

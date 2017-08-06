@@ -20,23 +20,23 @@ namespace SPICA.Rendering
 {
     public class Model : IDisposable
     {
-        internal Renderer     Renderer;
-        internal H3DModel     BaseModel;
-        internal List<Mesh>   Meshes0;
-        internal List<Mesh>   Meshes1;
-        internal List<Mesh>   Meshes2;
-        internal List<Mesh>   Meshes3;
-        internal List<Shader> Shaders;
-        internal Matrix4[]    InverseTransforms;
-        internal Matrix4[]    SkeletonTransforms;
-        internal Matrix4[][]  MaterialTransforms;
+        internal Renderer        Renderer;
+        internal H3DModel        BaseModel;
+        internal List<Mesh>      Meshes0;
+        internal List<Mesh>      Meshes1;
+        internal List<Mesh>      Meshes2;
+        internal List<Mesh>      Meshes3;
+        internal List<Shader>    Shaders;
+        internal Matrix4[]       InverseTransforms;
+        internal Matrix4[]       SkeletonTransforms;
+        internal MaterialState[] MaterialStates;
 
         public SkeletalAnimation SkeletalAnim;
         public MaterialAnimation MaterialAnim;
 
-        public Matrix4 Transform;
-
         private Dictionary<int, int> ShaderHashes;
+
+        public Matrix4 Transform;
 
         public Model(Renderer Renderer, H3DModel BaseModel)
         {
@@ -208,20 +208,6 @@ namespace SPICA.Rendering
         {
             FNVHash HashGen = new FNVHash();
 
-            //TODO: Remove this once colors are passed by uniforms instead of being
-            //hardcoded into fragment shader code.
-            HashGen.Hash(Params.EmissionColor.GetHashCode());
-            HashGen.Hash(Params.AmbientColor.GetHashCode());
-            HashGen.Hash(Params.DiffuseColor.GetHashCode());
-            HashGen.Hash(Params.Specular0Color.GetHashCode());
-            HashGen.Hash(Params.Specular1Color.GetHashCode());
-            HashGen.Hash(Params.Constant0Color.GetHashCode());
-            HashGen.Hash(Params.Constant1Color.GetHashCode());
-            HashGen.Hash(Params.Constant2Color.GetHashCode());
-            HashGen.Hash(Params.Constant3Color.GetHashCode());
-            HashGen.Hash(Params.Constant4Color.GetHashCode());
-            HashGen.Hash(Params.Constant5Color.GetHashCode());
-
             HashGen.Hash(Params.ShaderReference?.GetHashCode() ?? 0);
 
             HashGen.Hash(Params.TranslucencyKind.GetHashCode());
@@ -300,6 +286,11 @@ namespace SPICA.Rendering
                 HashGen.Hash(Stage.UpdateColorBuffer.GetHashCode());
                 HashGen.Hash(Stage.UpdateAlphaBuffer.GetHashCode());
             }
+
+            HashGen.Hash(Params.TexEnvBufferColor.R.GetHashCode());
+            HashGen.Hash(Params.TexEnvBufferColor.G.GetHashCode());
+            HashGen.Hash(Params.TexEnvBufferColor.B.GetHashCode());
+            HashGen.Hash(Params.TexEnvBufferColor.A.GetHashCode());
 
             return (int)HashGen.HashCode;
         }
@@ -387,6 +378,11 @@ namespace SPICA.Rendering
                 Equals &= LHS.TexEnvStages[i].UpdateAlphaBuffer == RHS.TexEnvStages[i].UpdateAlphaBuffer;
             }
 
+            Equals &= LHS.TexEnvBufferColor.R == RHS.TexEnvBufferColor.R;
+            Equals &= LHS.TexEnvBufferColor.G == RHS.TexEnvBufferColor.G;
+            Equals &= LHS.TexEnvBufferColor.B == RHS.TexEnvBufferColor.B;
+            Equals &= LHS.TexEnvBufferColor.A == RHS.TexEnvBufferColor.A;
+
             return Equals;
         }
 
@@ -458,7 +454,7 @@ namespace SPICA.Rendering
             if (BaseModel.Meshes.Count > 0)
             {
                 SkeletonTransforms = SkeletalAnim.GetSkeletonTransforms(BaseModel.Skeleton);
-                MaterialTransforms = MaterialAnim.GetUVTransforms(BaseModel.Materials);
+                MaterialStates     = MaterialAnim.GetMaterialStates(BaseModel.Materials);
             }
         }
 
@@ -482,6 +478,48 @@ namespace SPICA.Rendering
                 Shader.SetVtx3x4Array(DefaultShaderIds.ViewMtx, Renderer.ViewMatrix * Transform);
                 Shader.SetVtx3x4Array(DefaultShaderIds.NormMtx, Transform.ClearScale());
                 Shader.SetVtx3x4Array(DefaultShaderIds.WrldMtx, Matrix4.Identity);
+
+                int MaterialIndex = Mesh.BaseMesh.MaterialIndex;
+
+                H3DMaterialParams MP = BaseModel.Materials[MaterialIndex].MaterialParams;
+
+                MaterialState MS = MaterialStates[Mesh.BaseMesh.MaterialIndex];
+
+                Vector4 MatAmbient = new Vector4(
+                    MS.Ambient.R,
+                    MS.Ambient.G,
+                    MS.Ambient.B,
+                    MP.ColorScale);
+
+                Vector4 MatDiffuse = new Vector4(
+                    MS.Diffuse.R,
+                    MS.Diffuse.G,
+                    MS.Diffuse.B,
+                    MS.Diffuse.A);
+
+                Shader.SetVtxVector4(DefaultShaderIds.MatAmbi, MatAmbient);
+                Shader.SetVtxVector4(DefaultShaderIds.MatDiff, MatDiffuse);
+                Shader.SetVtx3x4Array(DefaultShaderIds.TexMtx0, MS.Transforms[0]);
+                Shader.SetVtx3x4Array(DefaultShaderIds.TexMtx1, MS.Transforms[1]);
+                Shader.SetVtx2x4Array(DefaultShaderIds.TexMtx2, MS.Transforms[2]);
+
+                Shader.SetVtxVector4(DefaultShaderIds.TexTran, new Vector4(
+                    MS.Transforms[0].Row3.X,
+                    MS.Transforms[0].Row3.Y,
+                    MS.Transforms[1].Row3.X,
+                    MS.Transforms[1].Row3.Y));
+
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.EmissionUniform),  MS.Emission);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.AmbientUniform),   MS.Ambient);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.DiffuseUniform),   MS.Diffuse);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Specular0Uniform), MS.Specular0);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Specular1Uniform), MS.Specular1);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant0Uniform), MS.Constant0);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant1Uniform), MS.Constant1);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant2Uniform), MS.Constant2);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant3Uniform), MS.Constant3);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant4Uniform), MS.Constant4);
+                GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant5Uniform), MS.Constant5);
 
                 Mesh.Render();
             }

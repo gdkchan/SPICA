@@ -195,25 +195,6 @@ namespace SPICA.Rendering
                 Params.LUTReflecBTableName   ?? Params.LUTReflecRTableName, 
                 Params.LUTReflecBSamplerName ?? Params.LUTReflecRSamplerName);
 
-            //Setup texture transforms
-            Matrix4[] MaterialTransform = Parent.MaterialTransforms[BaseMesh.MaterialIndex];
-
-            for (int Index = 0; Index < MaterialTransform.Length; Index++)
-            {
-                switch (Index)
-                {
-                    case 0: Shader.SetVtx3x4Array(DefaultShaderIds.TexMtx0, MaterialTransform[Index]); break;
-                    case 1: Shader.SetVtx3x4Array(DefaultShaderIds.TexMtx1, MaterialTransform[Index]); break;
-                    case 2: Shader.SetVtx2x4Array(DefaultShaderIds.TexMtx2, MaterialTransform[Index]); break;
-                }
-            }
-
-            Shader.SetVtxVector4(DefaultShaderIds.TexTran, new Vector4(
-                MaterialTransform[0].Row3.X,
-                MaterialTransform[0].Row3.Y,
-                MaterialTransform[1].Row3.X,
-                MaterialTransform[1].Row3.Y));
-
             //Setup texture units
             if (Material.Texture0Name != null)
             {

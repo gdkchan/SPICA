@@ -1,64 +1,69 @@
 ﻿using SPICA.Formats.Common;
-using SPICA.Math3D;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
-namespace SPICA.Formats.CtrH3D.Animation
+namespace SPICA.Formats.CtrGfx.Animation
 {
-    public class H3DFloatKeyFrameGroup : H3DAnimationCurve, ICustomSerialization
+    public class GfxFloatKeyFrameGroup : ICustomSerialization
     {
-        [IfVersion(CmpOp.Gequal, 0x20)] public H3DInterpolationType InterpolationType;
-        [IfVersion(CmpOp.Gequal, 0x20)] public KeyFrameQuantization Quantization;
+        private float _StartFrame;
+        private float _EndFrame;
 
-        [IfVersion(CmpOp.Gequal, 0x20)] private ushort Count;
+        public GfxLoopType PreRepeat;
+        public GfxLoopType PostRepeat;
 
-        [IfVersion(CmpOp.Gequal, 0x20)] private float ValueScale;
-        [IfVersion(CmpOp.Gequal, 0x20)] private float ValueOffset;
-        [IfVersion(CmpOp.Gequal, 0x20)] private float FrameScale;
-        [IfVersion(CmpOp.Gequal, 0x20)] private float InvDuration;
+        private ushort Padding;
+
+        private uint CurveFlags;
+        private uint CurveCount;
+        private uint CurveRelPtr;
+
+        public float StartFrame;
+        public float EndFrame;
+
+        private uint FormatFlags;
+
+        private int KeysCount;
+
+        private float InvDuration;
+
+        [Ignore] public bool IsLinear;
+
+        [Ignore] public KeyFrameQuantization Quantization;
 
         [Ignore] public readonly List<KeyFrame> KeyFrames;
 
         public bool Exists => KeyFrames.Count > 0;
 
-        public H3DFloatKeyFrameGroup()
+        public GfxFloatKeyFrameGroup()
         {
             KeyFrames = new List<KeyFrame>();
         }
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            if (Deserializer.FileVersion < 0x20)
+            Quantization = (KeyFrameQuantization)(FormatFlags >> 5);
+
+            IsLinear = (FormatFlags & 4) != 0;
+
+            float ValueScale  = 1;
+            float ValueOffset = 0;
+            float FrameScale  = 1;
+
+            if (Quantization != KeyFrameQuantization.Hermite128       &&
+                Quantization != KeyFrameQuantization.UnifiedHermite96 &&
+                Quantization != KeyFrameQuantization.StepLinear64)
             {
-                /*
-                 * Older version have a pointer within the curve data,
-                 * instead of storing it directly. So we read it below...
-                 */
-                Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
-
-                //We don't need this since it's already stored on Curve
-                float StartFrame = Deserializer.Reader.ReadSingle();
-                float EndFrame   = Deserializer.Reader.ReadSingle();
-
-                InterpolationType = (H3DInterpolationType)Deserializer.Reader.ReadByte();
-                Quantization      = (KeyFrameQuantization)Deserializer.Reader.ReadByte();
-
-                Count = Deserializer.Reader.ReadUInt16();
-
-                InvDuration = Deserializer.Reader.ReadSingle();
                 ValueScale  = Deserializer.Reader.ReadSingle();
                 ValueOffset = Deserializer.Reader.ReadSingle();
                 FrameScale  = Deserializer.Reader.ReadSingle();
             }
 
-            Deserializer.BaseStream.Seek(Deserializer.Reader.ReadUInt32(), SeekOrigin.Begin);
-
-            for (int Index = 0; Index < Count; Index++)
+            for (int Index = 0; Index < KeysCount; Index++)
             {
                 KeyFrame KF;
 
@@ -87,14 +92,14 @@ namespace SPICA.Formats.CtrH3D.Animation
         {
             if (Exists)
             {
-                Count = (ushort)KeyFrames.Count;
+                KeysCount = KeyFrames.Count;
 
                 float MinFrame = KeyFrames[0].Frame;
                 float MaxFrame = KeyFrames[0].Frame;
                 float MinValue = KeyFrames[0].Value;
                 float MaxValue = KeyFrames[0].Value;
 
-                for (int Index = 1; Index < Count; Index++)
+                for (int Index = 1; Index < KeysCount; Index++)
                 {
                     KeyFrame KF = KeyFrames[Index];
 
@@ -104,9 +109,11 @@ namespace SPICA.Formats.CtrH3D.Animation
                     if (KF.Value > MaxValue) MaxValue = KF.Value;
                 }
 
-                ValueScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxValue - MinValue);
-                FrameScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxFrame - MinFrame);
-                ValueOffset = MinValue;
+                float ValueScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxValue - MinValue);
+                float FrameScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxFrame - MinFrame);
+
+                float ValueOffset = MinValue;
+
                 InvDuration = 1f / EndFrame;
 
                 if (ValueScale == 1)
@@ -118,21 +125,30 @@ namespace SPICA.Formats.CtrH3D.Animation
                     ValueOffset = 0;
                 }
 
+                _StartFrame = StartFrame;
+                _EndFrame   = EndFrame;
+
+                CurveFlags  = KeyFrames.Count == 0 ? 2u : 4u;
+                CurveCount  = 1;
+                CurveRelPtr = 4;
+
+                FormatFlags = ((uint)Quantization << 5) | (KeyFrames.Count == 1 ? 1u : 0u);
+
+                if (Quantization >= KeyFrameQuantization.StepLinear64)
+                {
+                    FormatFlags |= IsLinear ? 4u : 0u;
+                }
+                else
+                {
+                    FormatFlags |= 8;
+                }
+
                 Serializer.WriteValue(this);
 
-                if (Serializer.FileVersion < 0x20)
+                if (Quantization != KeyFrameQuantization.Hermite128       &&
+                    Quantization != KeyFrameQuantization.UnifiedHermite96 &&
+                    Quantization != KeyFrameQuantization.StepLinear64)
                 {
-                    Serializer.WritePointer((uint)Serializer.BaseStream.Position + 4);
-
-                    Serializer.Writer.Write(StartFrame);
-                    Serializer.Writer.Write(EndFrame);
-
-                    Serializer.Writer.Write((byte)InterpolationType);
-                    Serializer.Writer.Write((byte)Quantization);
-
-                    Serializer.Writer.Write(Count);
-
-                    Serializer.Writer.Write(InvDuration);
                     Serializer.Writer.Write(ValueScale);
                     Serializer.Writer.Write(ValueOffset);
                     Serializer.Writer.Write(FrameScale);
@@ -164,9 +180,9 @@ namespace SPICA.Formats.CtrH3D.Animation
             return true;
         }
 
-        internal static H3DFloatKeyFrameGroup ReadGroup(BinaryDeserializer Deserializer, bool Constant)
+        internal static GfxFloatKeyFrameGroup ReadGroup(BinaryDeserializer Deserializer, bool Constant)
         {
-            H3DFloatKeyFrameGroup FrameGrp = new H3DFloatKeyFrameGroup();
+            GfxFloatKeyFrameGroup FrameGrp = new GfxFloatKeyFrameGroup();
 
             if (Constant)
             {
@@ -174,53 +190,14 @@ namespace SPICA.Formats.CtrH3D.Animation
             }
             else
             {
-                uint Address = Deserializer.Reader.ReadUInt32();
+                uint Address = Deserializer.ReadPointer();
 
                 Deserializer.BaseStream.Seek(Address, SeekOrigin.Begin);
 
-                FrameGrp = Deserializer.Deserialize<H3DFloatKeyFrameGroup>();
+                FrameGrp = Deserializer.Deserialize<GfxFloatKeyFrameGroup>();
             }
 
             return FrameGrp;
-        }
-
-        public float GetFrameValue(float Frame)
-        {
-            if (KeyFrames.Count == 0) return 0;
-            if (KeyFrames.Count == 1) return KeyFrames[0].Value;
-
-            KeyFrame LHS = KeyFrames.First();
-            KeyFrame RHS = KeyFrames.Last();
-
-            foreach (KeyFrame KF in KeyFrames)
-            {
-                if (KF.Frame <= Frame) LHS = KF;
-                if (KF.Frame >= Frame && KF.Frame < RHS.Frame) RHS = KF;
-            }
-
-            if (LHS.Frame != RHS.Frame)
-            {
-                float FrameDiff = Frame - LHS.Frame;
-                float Weight    = FrameDiff / (RHS.Frame - LHS.Frame);
-
-                switch (InterpolationType)
-                {
-                    case H3DInterpolationType.Step: return LHS.Value;
-                    case H3DInterpolationType.Linear: return Interpolation.Lerp(LHS.Value, RHS.Value, Weight);
-                    case H3DInterpolationType.Hermite:
-                        return Interpolation.Herp(
-                            LHS.Value,    RHS.Value,
-                            LHS.OutSlope, RHS.InSlope,
-                            FrameDiff,
-                            Weight);
-
-                    default: throw new InvalidOperationException($"Invalid Interpolation type {InterpolationType}!");
-                }
-            }
-            else
-            {
-                return LHS.Value;
-            }
         }
     }
 }

@@ -11,6 +11,18 @@ namespace SPICA.Rendering.Shaders
 {
     class FragmentShaderGenerator
     {
+        public const string EmissionUniform  = "u_EmissionColor";
+        public const string AmbientUniform   = "u_AmbientColor";
+        public const string DiffuseUniform   = "u_DiffuseColor";
+        public const string Specular0Uniform = "u_Specular0Color";
+        public const string Specular1Uniform = "u_Specular1Color";
+        public const string Constant0Uniform = "u_Constant0Color";
+        public const string Constant1Uniform = "u_Constant1Color";
+        public const string Constant2Uniform = "u_Constant2Color";
+        public const string Constant3Uniform = "u_Constant3Color";
+        public const string Constant4Uniform = "u_Constant4Color";
+        public const string Constant5Uniform = "u_Constant5Color";
+
         private StringBuilder SB;
 
         private H3DMaterialParams Params;
@@ -35,6 +47,18 @@ namespace SPICA.Rendering.Shaders
             SB.AppendLine();
             SB.AppendLine();
             SB.AppendLine("//SPICA auto-generated Fragment Shader");
+            SB.AppendLine($"uniform vec4 {EmissionUniform};");
+            SB.AppendLine($"uniform vec4 {AmbientUniform};");
+            SB.AppendLine($"uniform vec4 {DiffuseUniform};");
+            SB.AppendLine($"uniform vec4 {Specular0Uniform};");
+            SB.AppendLine($"uniform vec4 {Specular1Uniform};");
+            SB.AppendLine($"uniform vec4 {Constant0Uniform};");
+            SB.AppendLine($"uniform vec4 {Constant1Uniform};");
+            SB.AppendLine($"uniform vec4 {Constant2Uniform};");
+            SB.AppendLine($"uniform vec4 {Constant3Uniform};");
+            SB.AppendLine($"uniform vec4 {Constant4Uniform};");
+            SB.AppendLine($"uniform vec4 {Constant5Uniform};");
+            SB.AppendLine();
             SB.AppendLine($"in vec4 {ShaderOutputRegName.QuatNormal};");
             SB.AppendLine($"in vec4 {ShaderOutputRegName.Color};");
             SB.AppendLine($"in vec4 {ShaderOutputRegName.TexCoord0};");
@@ -56,7 +80,18 @@ namespace SPICA.Rendering.Shaders
                 string[] ColorArgs = new string[3];
                 string[] AlphaArgs = new string[3];
 
-                string Constant = GetVec4(Params.GetConstant(Index++));
+                string Constant;
+
+                switch (Params.GetConstantIndex(Index++))
+                {
+                    default:
+                    case 0: Constant = Constant0Uniform; break;
+                    case 1: Constant = Constant1Uniform; break;
+                    case 2: Constant = Constant2Uniform; break;
+                    case 3: Constant = Constant3Uniform; break;
+                    case 4: Constant = Constant4Uniform; break;
+                    case 5: Constant = Constant5Uniform; break;
+                }
 
                 for (int Param = 0; Param < 3; Param++)
                 {
@@ -169,7 +204,7 @@ namespace SPICA.Rendering.Shaders
             string ReflecG = GetLUTInput(Params.LUTInputSelection.ReflecG, Params.LUTInputScale.ReflecG, 4);
             string ReflecB = GetLUTInput(Params.LUTInputSelection.ReflecB, Params.LUTInputScale.ReflecB, 5);
 
-            string Color = $"{GetVec4(Params.EmissionColor)} + {GetVec4(Params.AmbientColor)} * SAmbient";
+            string Color = $"{EmissionUniform} + {AmbientUniform} * SAmbient";
 
             SB.AppendLine($"\tvec4 FragPriColor = vec4(({Color}).rgb, 1);");
             SB.AppendLine("\tvec4 FragSecColor = vec4(0, 0, 0, 1);");
@@ -212,8 +247,8 @@ namespace SPICA.Rendering.Shaders
 
             string ClampHighLight = string.Empty;
 
-            string Specular0Color = GetVec4(Params.Specular0Color);
-            string Specular1Color = GetVec4(Params.Specular1Color);
+            string Specular0Color = Specular0Uniform;
+            string Specular1Color = Specular1Uniform;
 
             if ((Params.FragmentFlags & H3DFragmentFlags.IsClampHighLightEnabled) != 0)
             {
@@ -256,8 +291,8 @@ namespace SPICA.Rendering.Shaders
                 SB.AppendLine("\t\tfloat g = CosLightNormal / abs(dot(Half, Half));");
 
             SB.AppendLine("\t\tvec4 Diffuse =");
-            SB.AppendLine($"\t\t\t{GetVec4(Params.AmbientColor)} * Lights[i].Ambient +");
-            SB.AppendLine($"\t\t\t{GetVec4(Params.DiffuseColor)} * Lights[i].Diffuse * CosLightNormal;");
+            SB.AppendLine($"\t\t\t{AmbientUniform} * Lights[i].Ambient +");
+            SB.AppendLine($"\t\t\t{DiffuseUniform} * Lights[i].Diffuse * CosLightNormal;");
             SB.AppendLine($"\t\tvec4 Specular = ({Specular0Color} + {Specular1Color}) * Lights[i].Specular;");
             SB.AppendLine($"\t\tFragPriColor.rgb += {ClampHighLight}Diffuse.rgb;");
             SB.AppendLine($"\t\tFragSecColor.rgb += {ClampHighLight}Specular.rgb;");

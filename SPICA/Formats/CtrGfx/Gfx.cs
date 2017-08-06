@@ -558,6 +558,16 @@ namespace SPICA.Formats.CtrGfx
                 Output.LUTs.Add(L);
             }
 
+            foreach (GfxAnimation SklAnim in SkeletalAnimations)
+            {
+                Output.SkeletalAnimations.Add(SklAnim.ToH3DAnimation());
+            }
+
+            foreach (GfxAnimation MatAnim in MaterialAnimations)
+            {
+                Output.MaterialAnimations.Add(MatAnim.ToH3DAnimation());
+            }
+
             Output.CopyMaterials();
 
             return Output;
