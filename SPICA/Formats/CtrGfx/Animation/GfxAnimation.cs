@@ -28,8 +28,11 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         public GfxMetaData MetaData;
 
-        const string MatColorREx    = @"Materials\[""(.+)""\]\.MaterialColor\.(\w+)";
-        const string MatMapperBCREx = @"Materials\[""(.+)""\]\.TextureMappers\[""(\d)""\]\.Sampler\.BorderColor";
+        const string MatCoordScaleREx = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Scale";
+        const string MatCoordRotREx   = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Rotate";
+        const string MatCoordTransREx = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Translate";
+        const string MatColorREx      = @"Materials\[""(.+)""\]\.MaterialColor\.(\w+)";
+        const string MatMapperBCREx   = @"Materials\[""(.+)""\]\.TextureMappers\[(\d)\]\.Sampler\.BorderColor";
 
         public GfxAnimation()
         {
@@ -59,7 +62,90 @@ namespace SPICA.Formats.CtrGfx.Animation
             {
                 switch (Elem.PrimitiveType)
             	{
-        			case GfxPrimitiveType.Transform:
+                    case GfxPrimitiveType.Float:
+                        {
+                            H3DAnimFloat Float = new H3DAnimFloat();
+
+                            CopyKeyFrames(((GfxAnimFloat)Elem.Content).Value, Float.Value);
+
+                            Match Path = Regex.Match(Elem.Name, MatCoordRotREx);
+
+                            if (Path.Success && int.TryParse(Path.Groups[2].Value, out int CoordIdx))
+                            {
+                                H3DTargetType TargetType = 0;
+
+                                switch (CoordIdx)
+                                {
+                                    case 0: TargetType = H3DTargetType.MaterialTexCoord0Rot; break;
+                                    case 1: TargetType = H3DTargetType.MaterialTexCoord1Rot; break;
+                                    case 2: TargetType = H3DTargetType.MaterialTexCoord2Rot; break;
+                                }
+
+                                if (TargetType != 0)
+                                {
+                                    string Name = Path.Groups[1].Value;
+
+                                    Output.Elements.Add(new H3DAnimationElement()
+                                    {
+                                        Name          = Name,
+                                        Content       = Float,
+                                        PrimitiveType = H3DPrimitiveType.Float,
+                                        TargetType    = TargetType
+                                    });
+                                }
+                            }
+                        }
+                        break;
+
+                    case GfxPrimitiveType.Vector2D:
+                        {
+                            H3DAnimVector2D Vector = new H3DAnimVector2D();
+
+                            CopyKeyFrames(((GfxAnimVector2D)Elem.Content).X, Vector.X);
+                            CopyKeyFrames(((GfxAnimVector2D)Elem.Content).Y, Vector.Y);
+
+                            Match Path = Regex.Match(Elem.Name, MatCoordScaleREx);
+
+                            bool IsTranslation = !Path.Success;
+
+                            if (IsTranslation)
+                            {
+                                Path = Regex.Match(Elem.Name, MatCoordTransREx);
+                            }
+
+                            if (Path.Success && int.TryParse(Path.Groups[2].Value, out int CoordIdx))
+                            {
+                                H3DTargetType TargetType = 0;
+
+                                switch (CoordIdx)
+                                {
+                                    case 0: TargetType = H3DTargetType.MaterialTexCoord0Scale; break;
+                                    case 1: TargetType = H3DTargetType.MaterialTexCoord1Scale; break;
+                                    case 2: TargetType = H3DTargetType.MaterialTexCoord2Scale; break;
+                                }
+
+                                if (TargetType != 0)
+                                {
+                                    string Name = Path.Groups[1].Value;
+
+                                    if (IsTranslation)
+                                    {
+                                        TargetType += 2;
+                                    }
+
+                                    Output.Elements.Add(new H3DAnimationElement()
+                                    {
+                                        Name          = Name,
+                                        Content       = Vector,
+                                        PrimitiveType = H3DPrimitiveType.Vector2D,
+                                        TargetType    = TargetType
+                                    });
+                                }
+                            }
+                        }
+                        break;
+
+                    case GfxPrimitiveType.Transform:
                         {
                             H3DAnimTransform Transform = new H3DAnimTransform();
 
@@ -130,7 +216,7 @@ namespace SPICA.Formats.CtrGfx.Animation
                                 }
                             }
 
-                            if (Path.Success)
+                            if (Path.Success && TargetType != 0)
                             {
                                 string Name = Path.Groups[1].Value;
 
