@@ -1,7 +1,5 @@
 #version 150
 
-precision highp float;
-
 uniform sampler2D LUTs[6];
 
 uniform sampler2D Textures[3];

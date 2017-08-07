@@ -9,8 +9,8 @@ using System.Numerics;
 
 namespace SPICA.Formats.CtrGfx.Animation
 {
-	public class GfxAnimQuatTransform : ICustomSerialization
-	{
+    public class GfxAnimQuatTransform : ICustomSerialization
+    {
         [Ignore] public readonly List<Vector3>    Scales;
         [Ignore] public readonly List<Quaternion> Rotations;
         [Ignore] public readonly List<Vector3>    Translations;
@@ -28,12 +28,12 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-        	Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
-        	
-        	uint Flags = Deserializer.Reader.ReadUInt32();
-        	
-        	Deserializer.BaseStream.Seek(8, SeekOrigin.Current);
-        	
+            Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
+
+            uint Flags = Deserializer.Reader.ReadUInt32();
+
+            Deserializer.BaseStream.Seek(8, SeekOrigin.Current);
+
             uint[] Addresses = new uint[3];
 
             uint ConstantMask = (uint)GfxAnimQuatTransformFlags.IsScaleConstant;
@@ -158,5 +158,5 @@ namespace SPICA.Formats.CtrGfx.Animation
 
             return true;
         }
-	}
+    }
 }

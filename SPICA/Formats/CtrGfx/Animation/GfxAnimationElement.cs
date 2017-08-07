@@ -38,7 +38,7 @@ namespace SPICA.Formats.CtrGfx.Animation
                 Type ValueType = value.GetType();
 
                 if (ValueType != typeof(GfxAnimFloat)         &&
-                	ValueType != typeof(GfxAnimVector2D)      &&
+                    ValueType != typeof(GfxAnimVector2D)      &&
                     ValueType != typeof(GfxAnimTransform)     &&
                     ValueType != typeof(GfxAnimRGBA)          &&
                     ValueType != typeof(GfxAnimQuatTransform) &&

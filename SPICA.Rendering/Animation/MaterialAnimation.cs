@@ -1,5 +1,5 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK.Graphics;
+
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.Model.Material;

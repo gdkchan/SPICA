@@ -3,8 +3,8 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Animation
 {
-	public class GfxAnimFloat : ICustomSerialization
-	{
+    public class GfxAnimFloat : ICustomSerialization
+    {
         [Ignore] private GfxFloatKeyFrameGroup _Value;
 
         public GfxFloatKeyFrameGroup Value => _Value;
@@ -25,5 +25,5 @@ namespace SPICA.Formats.CtrGfx.Animation
 
             return true;
         }
-	}
+    }
 }

@@ -3,8 +3,8 @@ using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-	public class H3DAnimRGBA : ICustomSerialization
-	{
+    public class H3DAnimRGBA : ICustomSerialization
+    {
         [Ignore] private H3DFloatKeyFrameGroup[] Vector;
 
         public H3DFloatKeyFrameGroup R => Vector[0];
@@ -34,5 +34,5 @@ namespace SPICA.Formats.CtrH3D.Animation
 
             return true;
         }
-	}
+    }
 }

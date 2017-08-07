@@ -1,6 +1,4 @@
-﻿using SPICA.Serialization.Attributes;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SPICA.Formats.CtrH3D.Animation

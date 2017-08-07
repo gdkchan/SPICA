@@ -38,7 +38,7 @@ namespace SPICA.Formats.CtrH3D.Animation
                 Type ValueType = value.GetType();
 
                 if (ValueType != typeof(H3DAnimFloat)         &&
-                	ValueType != typeof(H3DAnimVector2D)      &&
+                    ValueType != typeof(H3DAnimVector2D)      &&
                     ValueType != typeof(H3DAnimTransform)     &&
                     ValueType != typeof(H3DAnimRGBA)          &&
                     ValueType != typeof(H3DAnimQuatTransform) &&

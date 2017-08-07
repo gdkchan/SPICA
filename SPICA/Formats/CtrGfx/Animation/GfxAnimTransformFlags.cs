@@ -2,7 +2,7 @@
 
 namespace SPICA.Formats.CtrGfx.Animation
 {
-	[Flags]
+    [Flags]
     enum GfxAnimTransformFlags
     {
         IsIdentity               = 1 << 0,

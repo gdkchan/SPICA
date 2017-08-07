@@ -138,13 +138,18 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             bool Quat  = Attributes.Any(x => x.Name == PICAAttributeName.Normal);
             bool VertA = Attributes.Any(x => x.Name == PICAAttributeName.Color);
             bool BoneW = Attributes.Any(x => x.Name == PICAAttributeName.BoneWeight);
-            
+
             bool UVMap0 = Params.TextureCoords[0].MappingType == H3DTextureMappingType.UvCoordinateMap;
             bool UVMap1 = Params.TextureCoords[1].MappingType == H3DTextureMappingType.UvCoordinateMap;
             bool UVMap2 = Params.TextureCoords[2].MappingType == H3DTextureMappingType.UvCoordinateMap;
 
             bool IsTex1 = Material.EnabledTextures[1];
             bool IsTex2 = Material.EnabledTextures[2];
+
+            if (BoneW)
+            {
+                BoneW = Attributes.First(x => x.Name == PICAAttributeName.BoneWeight).Elements == 4;
+            }
 
             foreach (H3DSubMesh SM in SubMeshes)
             {

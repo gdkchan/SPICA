@@ -5,14 +5,14 @@ using System.IO;
 
 namespace SPICA.Formats.CtrGfx.Animation
 {
-	static class GfxAnimVector
-	{
-		public static void SetVector(BinaryDeserializer Deserializer, GfxFloatKeyFrameGroup[] Vector)
+    static class GfxAnimVector
+    {
+        public static void SetVector(BinaryDeserializer Deserializer, GfxFloatKeyFrameGroup[] Vector)
         {
             long Position = Deserializer.BaseStream.Position;
-            
+
             Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
-            
+
             uint Flags = Deserializer.Reader.ReadUInt32();
 
             uint ConstantMask = 1u;
@@ -39,12 +39,12 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         public static void SetVector(BinaryDeserializer Deserializer, GfxFloatKeyFrameGroup Vector)
         {
-        	Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
-            
+            Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
+
             uint Flags = Deserializer.Reader.ReadUInt32();
-            
+
             Deserializer.BaseStream.Seek(8, SeekOrigin.Current);
-            
+
             bool Constant = (Flags & 1) != 0;
             bool Exists   = (Flags & 2) == 0;
 
@@ -101,5 +101,5 @@ namespace SPICA.Formats.CtrGfx.Animation
         {
             WriteVector(Serializer, new GfxFloatKeyFrameGroup[] { Vector });
         }
-	}
+    }
 }

@@ -22,7 +22,6 @@ namespace SPICA.Rendering.Shaders
             Output.AppendLine("//SPICA auto-generated code");
             Output.AppendLine("//This code was translated from a MAESTRO Geometry Shader");
             Output.AppendLine("#version 330 core");
-            Output.AppendLine("precision highp float;");
 
             Output.AppendLine();
 

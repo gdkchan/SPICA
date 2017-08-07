@@ -1,6 +1,6 @@
 ﻿namespace SPICA.Formats.CtrGfx.Animation
 {
-	public enum GfxPrimitiveType : uint
+    public enum GfxPrimitiveType : uint
     {
         Float,
         Integer,

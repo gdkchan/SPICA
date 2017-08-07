@@ -2,13 +2,12 @@
 using SPICA.Serialization.Attributes;
 using SPICA.Serialization.Serializer;
 
-using System;
 using System.IO;
 
 namespace SPICA.Formats.CtrGfx.Animation
 {
-	public class GfxAnimTransform : ICustomSerialization
-	{
+    public class GfxAnimTransform : ICustomSerialization
+    {
         [Ignore] private GfxFloatKeyFrameGroup _ScaleX;
         [Ignore] private GfxFloatKeyFrameGroup _ScaleY;
         [Ignore] private GfxFloatKeyFrameGroup _ScaleZ;
@@ -39,8 +38,8 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         public bool TranslationExists => _TranslationX.Exists || _TranslationY.Exists || _TranslationZ.Exists;
 
-		public GfxAnimTransform()
-		{
+        public GfxAnimTransform()
+        {
             _ScaleX       = new GfxFloatKeyFrameGroup();
             _ScaleY       = new GfxFloatKeyFrameGroup();
             _ScaleZ       = new GfxFloatKeyFrameGroup();
@@ -52,15 +51,15 @@ namespace SPICA.Formats.CtrGfx.Animation
             _TranslationX = new GfxFloatKeyFrameGroup();
             _TranslationY = new GfxFloatKeyFrameGroup();
             _TranslationZ = new GfxFloatKeyFrameGroup();
-		}
-		
-		void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
+        }
+
+        void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-			long Position = Deserializer.BaseStream.Position;
-			
-			Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
-			
-			uint Flags = Deserializer.Reader.ReadUInt32();
+            long Position = Deserializer.BaseStream.Position;
+
+            Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
+
+            uint Flags = Deserializer.Reader.ReadUInt32();
 
             uint ConstantMask = (uint)GfxAnimTransformFlags.IsScaleXConstant;
             uint NotExistMask = (uint)GfxAnimTransformFlags.IsScaleXInexistent;
@@ -131,9 +130,9 @@ namespace SPICA.Formats.CtrGfx.Animation
 
                 if (FrameGrp == null)
                 {
-                	Flags |= (GfxAnimTransformFlags)NotExistMask;
-                	
-                	Serializer.Writer.Write(0u);
+                    Flags |= (GfxAnimTransformFlags)NotExistMask;
+
+                    Serializer.Writer.Write(0u);
                 }
                 else if (FrameGrp.KeyFrames.Count == 1)
                 {
@@ -171,5 +170,5 @@ namespace SPICA.Formats.CtrGfx.Animation
 
             return true;
         }
-	}
+    }
 }
