@@ -5,7 +5,7 @@ using System;
 
 namespace SPICA.Formats.CtrH3D.Animation
 {
-    public class H3DAnimationElement
+    public class H3DAnimationElement : INamed
     {
         private string _Name;
 

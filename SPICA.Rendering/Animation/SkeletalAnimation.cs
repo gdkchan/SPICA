@@ -45,12 +45,10 @@ namespace SPICA.Rendering.Animation
                     Translation = Bone.Translation.ToVector3()
                 };
 
-                int Elem = Animation?.Elements.FindIndex(x => x.Name == Bone.Name) ?? -1;
+                H3DAnimationElement Element = Animation?.GetElement(Bone.Name);
 
-                if (Elem != -1 && State != AnimationState.Stopped)
+                if (Element != null && State != AnimationState.Stopped)
                 {
-                    H3DAnimationElement Element = Animation.Elements[Elem];
-
                     switch (Element.PrimitiveType)
                     {
                         case H3DPrimitiveType.Transform:

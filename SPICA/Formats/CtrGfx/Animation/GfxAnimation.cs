@@ -1,6 +1,7 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Formats.CtrH3D.Animation;
 
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace SPICA.Formats.CtrGfx.Animation
@@ -62,13 +63,13 @@ namespace SPICA.Formats.CtrGfx.Animation
                         {
                             H3DAnimTransform Transform = new H3DAnimTransform();
 
-                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).ScaleX, Transform.ScaleX);
-                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).ScaleY, Transform.ScaleY);
-                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).ScaleZ, Transform.ScaleZ);
+                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).ScaleX,       Transform.ScaleX);
+                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).ScaleY,       Transform.ScaleY);
+                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).ScaleZ,       Transform.ScaleZ);
 
-                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).RotationX, Transform.RotationX);
-                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).RotationY, Transform.RotationY);
-                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).RotationZ, Transform.RotationZ);
+                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).RotationX,    Transform.RotationX);
+                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).RotationY,    Transform.RotationY);
+                            CopyKeyFrames(((GfxAnimTransform)Elem.Content).RotationZ,    Transform.RotationZ);
 
                             CopyKeyFrames(((GfxAnimTransform)Elem.Content).TranslationX, Transform.TranslationX);
                             CopyKeyFrames(((GfxAnimTransform)Elem.Content).TranslationY, Transform.TranslationY);
@@ -143,6 +144,48 @@ namespace SPICA.Formats.CtrGfx.Animation
                             }
                         }
                         break;
+
+                    case GfxPrimitiveType.QuatTransform:
+                        {
+                            H3DAnimQuatTransform QuatTransform = new H3DAnimQuatTransform();
+
+                            CopyList(((GfxAnimQuatTransform)Elem.Content).Scales,       QuatTransform.Scales);
+                            CopyList(((GfxAnimQuatTransform)Elem.Content).Rotations,    QuatTransform.Rotations);
+                            CopyList(((GfxAnimQuatTransform)Elem.Content).Translations, QuatTransform.Translations);
+
+                            Output.Elements.Add(new H3DAnimationElement()
+                            {
+                                Name          = Elem.Name,
+                                Content       = QuatTransform,
+                                PrimitiveType = H3DPrimitiveType.QuatTransform,
+                                TargetType    = H3DTargetType.Bone
+                            });
+                        }
+                        break;
+
+                    case GfxPrimitiveType.MtxTransform:
+                        {
+                            H3DAnimMtxTransform MtxTransform = new H3DAnimMtxTransform();
+
+                            GfxAnimMtxTransform Source = (GfxAnimMtxTransform)Elem.Content;
+
+                            MtxTransform.StartFrame = Source.StartFrame;
+                            MtxTransform.EndFrame   = Source.EndFrame;
+
+                            MtxTransform.PreRepeat  = (H3DLoopType)Source.PreRepeat;
+                            MtxTransform.PostRepeat = (H3DLoopType)Source.PostRepeat;
+
+                            CopyList(Source.Frames, MtxTransform.Frames);
+
+                            Output.Elements.Add(new H3DAnimationElement()
+                            {
+                                Name          = Elem.Name,
+                                Content       = MtxTransform,
+                                PrimitiveType = H3DPrimitiveType.MtxTransform,
+                                TargetType    = H3DTargetType.Bone
+                            });
+                        }
+                        break;
                 }
             }
 
@@ -154,11 +197,34 @@ namespace SPICA.Formats.CtrGfx.Animation
             Target.StartFrame = Source.StartFrame;
             Target.EndFrame   = Source.EndFrame;
 
-            Target.InterpolationType = H3DInterpolationType.Hermite;
+            Target.PreRepeat  = (H3DLoopType)Source.PreRepeat;
+            Target.PostRepeat = (H3DLoopType)Source.PostRepeat;
+
+            Target.Quantization = Source.Quantization;
+
+            if (Source.Quantization == KeyFrameQuantization.StepLinear32 ||
+                Source.Quantization == KeyFrameQuantization.StepLinear64)
+            {
+                Target.InterpolationType = Source.IsLinear
+                    ? H3DInterpolationType.Linear
+                    : H3DInterpolationType.Step;
+            }
+            else
+            {
+                Target.InterpolationType = H3DInterpolationType.Hermite;
+            }
 
             foreach (KeyFrame KF in Source.KeyFrames)
             {
                 Target.KeyFrames.Add(KF);
+            }
+        }
+
+        private void CopyList<T>(List<T> Source, List<T> Target)
+        {
+            foreach (T Item in Source)
+            {
+                Target.Add(Item);
             }
         }
     }
