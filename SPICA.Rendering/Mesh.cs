@@ -177,10 +177,10 @@ namespace SPICA.Rendering
 
             GL.PolygonOffset(0, Params.PolygonOffsetUnit);
 
-            RenderUtils.SetState(EnableCap.Blend,       Params.ColorOperation.BlendMode == PICABlendMode.Blend);
-            RenderUtils.SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
-            RenderUtils.SetState(EnableCap.DepthTest,   Params.DepthColorMask.Enabled);
-            RenderUtils.SetState(EnableCap.CullFace,    Params.FaceCulling != PICAFaceCulling.Never);
+            SetState(EnableCap.Blend,       Params.ColorOperation.BlendMode == PICABlendMode.Blend);
+            SetState(EnableCap.StencilTest, Params.StencilTest.Enabled);
+            SetState(EnableCap.DepthTest,   Params.DepthColorMask.Enabled);
+            SetState(EnableCap.CullFace,    Params.FaceCulling != PICAFaceCulling.Never);
 
             Parent.Renderer.TryBindLUT(4, Params.LUTDist0TableName,   Params.LUTDist0SamplerName);
             Parent.Renderer.TryBindLUT(5, Params.LUTDist1TableName,   Params.LUTDist1SamplerName);
@@ -380,6 +380,14 @@ namespace SPICA.Rendering
 
                 default: throw new ArgumentException("Invalid magnification filter!");
             }
+        }
+
+        private static void SetState(EnableCap Cap, bool Value)
+        {
+            if (Value)
+                GL.Enable(Cap);
+            else
+                GL.Disable(Cap);
         }
 
         private bool Disposed;

@@ -9,6 +9,9 @@ namespace SPICA.Formats.CtrGfx.Model.Material
     {
         private GfxRevHeader Header;
 
+        [FixedLength(48), Inline] private byte[] Content; //TODO
+
+        /*
         public byte[] ProgramData;
 
         private uint[] GLShaderKinds;
@@ -22,5 +25,6 @@ namespace SPICA.Formats.CtrGfx.Model.Material
 
         private uint ProgramInfo;
         private uint CommandAlloc;
+        */
     }
 }

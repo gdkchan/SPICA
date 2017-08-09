@@ -163,10 +163,12 @@ namespace SPICA.Formats.GFL.Motion
 
         public H3DAnimation ToH3DSkeletalAnimation(H3DDict<H3DBone> Skeleton)
         {
-            H3DAnimation Output = new H3DAnimation();
-
-            Output.Name        = "GFMotion";
-            Output.FramesCount = FramesCount;
+            H3DAnimation Output = new H3DAnimation()
+            {
+                Name          = "GFMotion",
+                FramesCount   = FramesCount,
+                AnimationType = H3DAnimationType.Skeletal
+            };
 
             foreach (GF1MotBoneTransform Bone in Bones)
             {

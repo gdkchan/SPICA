@@ -13,7 +13,9 @@ using SPICA.WinForms.GUI.Viewport;
 using SPICA.WinForms.Properties;
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SPICA.WinForms
@@ -32,12 +34,9 @@ namespace SPICA.WinForms
         private Renderer Renderer;
         private Shader   Shader;
 
-        private H3DAnimation SklAnim;
-        private H3DAnimation MatAnim;
-
-        private AnimationControl AnimCtrl;
-
         private H3D Scene;
+
+        private AnimationGroup AnimGrp;
 
         private float Dimension;
 
@@ -66,8 +65,6 @@ namespace SPICA.WinForms
             InitializeComponent();
 
             MainContainer.Panel1.Controls.Add(Viewport);
-
-            AnimCtrl = new AnimationControl();
 
             TopMenu.Renderer   = new ToolsRenderer(TopMenu.BackColor);
             TopIcons.Renderer  = new ToolsRenderer(TopIcons.BackColor);
@@ -109,6 +106,8 @@ namespace SPICA.WinForms
             Renderer = new Renderer(Viewport.Width, Viewport.Height);
 
             Renderer.SetBackgroundColor(Color.Gray);
+
+            AnimGrp = new AnimationGroup(Renderer.Models);
 
             Shader = new Shader();
 
@@ -337,10 +336,8 @@ namespace SPICA.WinForms
                         LblAnimLoopMode.Text = string.Empty;
                         AnimSeekBar.Value    = 0;
                         AnimSeekBar.Maximum  = 0;
-                        AnimCtrl.Frame       = 0;
-                        AnimCtrl.Animation   = null;
-                        SklAnim              = null;
-                        MatAnim              = null;
+                        AnimGrp.Frame        = 0;
+                        AnimGrp.FramesCount  = 0;
 
                         if (Scene.Models.Count > 0)
                         {
@@ -409,9 +406,7 @@ namespace SPICA.WinForms
         #region Side menu events
         private void ModelsList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int SelectedIndices = ModelsList.SelectedIndices.Length;
-
-            if (SelectedIndices > 0)
+            if (ModelsList.SelectedIndices.Length > 0)
             {
                 int Index = ModelsList.SelectedIndex;
 
@@ -437,7 +432,6 @@ namespace SPICA.WinForms
                     Renderer.Models[i].UpdateUniforms();
                 }
 
-                SyncAnimationStates();
                 UpdateTransforms();
             }
         }
@@ -468,88 +462,82 @@ namespace SPICA.WinForms
         #region Animation related + playback controls
         private void Animator_Tick(object sender, EventArgs e)
         {
-            AnimCtrl.AdvanceFrame();
+            AnimGrp.AdvanceFrame();
 
-            AnimSeekBar.Value = AnimCtrl.Frame;
+            AnimSeekBar.Value = AnimGrp.Frame;
 
-            SyncAnimationStates();
+            UpdateAnimationTransforms();
 
             Viewport.Invalidate();
         }
 
-        private void SetAnimation(int Index, AnimationType Type)
+        private void UpdateAnimationTransforms()
         {
-            AnimCtrl.Animation = null;
+            foreach (int i in ModelsList.SelectedIndices)
+            {
+                Renderer.Models[i].UpdateAnimationTransforms();
+            }
+        }
+
+        private void SetAnimation(int[] Indices, AnimationType Type)
+        {
+            List<H3DAnimation> Animations = new List<H3DAnimation>(Indices.Length);
 
             switch (Type)
             {
                 case AnimationType.Skeletal:
-                    SklAnim = AnimCtrl.Animation = (Index != -1 ? Scene.SkeletalAnimations[Index] : null);
+                    foreach (int i in Indices)
+                    {
+                        Animations.Add(Scene.SkeletalAnimations[i]);
+                    }
                     break;
 
                 case AnimationType.Material:
-                    MatAnim = AnimCtrl.Animation = (Index != -1 ? Scene.MaterialAnimations[Index] : null);
+                    foreach (int i in Indices)
+                    {
+                        Animations.Add(Scene.MaterialAnimations[i]);
+                    }
                     break;
             }
 
-            if (Index != -1)
+            if (Type == AnimationType.Skeletal && Indices.Length == 1)
             {
-                if (Type == AnimationType.Skeletal)
+                foreach (H3DAnimation SklAnim in Animations)
                 {
-                    int MIndex = Scene.MaterialAnimations.FindIndex(AnimCtrl.Animation.Name);
+                    int MIndex = Scene.MaterialAnimations.FindIndex(SklAnim.Name);
 
-                    if (MIndex != -1)
+                    if (MIndex != -1 && !MatAnimsList.SelectedIndices.Contains(MIndex))
                     {
                         MatAnimsList.Select(MIndex);
                     }
                 }
             }
 
-            if      ((SklAnim?.FramesCount ?? 0) > AnimCtrl.FramesCount)
-            {
-                AnimCtrl.Animation = SklAnim;
-            }
-            else if ((MatAnim?.FramesCount ?? 0) > AnimCtrl.FramesCount)
-            {
-                AnimCtrl.Animation = MatAnim;
-            }
+            AnimGrp.Frame = 0;
 
-            AnimCtrl.Frame = 0;
+            AnimGrp.SetAnimations(Animations, Type);
 
-            AnimSeekBar.Value   = AnimCtrl.Frame;
-            AnimSeekBar.Maximum = AnimCtrl.FramesCount;
+            AnimGrp.UpdateState();
 
-            SyncAnimationStates();
+            AnimSeekBar.Value   = AnimGrp.Frame;
+            AnimSeekBar.Maximum = AnimGrp.FramesCount;
+
+            UpdateAnimationTransforms();
             UpdateAnimLbls();
             UpdateViewport();
         }
 
-        private void SyncAnimationStates()
-        {
-            foreach (int i in ModelsList.SelectedIndices)
-            {
-                Renderer.Models[i].SkeletalAnim.CopyState(AnimCtrl);
-                Renderer.Models[i].MaterialAnim.CopyState(AnimCtrl);
-
-                Renderer.Models[i].SkeletalAnim.Animation = SklAnim;
-                Renderer.Models[i].MaterialAnim.Animation = MatAnim;
-
-                Renderer.Models[i].UpdateAnimationTransforms();
-            }
-        }
-
         private void UpdateAnimLbls()
         {
-            LblAnimSpeed.Text = $"{Math.Abs(AnimCtrl.Step).ToString("N2")}x";
+            LblAnimSpeed.Text = $"{Math.Abs(AnimGrp.Step).ToString("N2")}x";
 
-            LblAnimLoopMode.Text = AnimCtrl.IsLooping ? "LOOP" : "1 GO";
+            LblAnimLoopMode.Text = AnimGrp.IsLooping ? "LOOP" : "1 GO";
         }
 
         private void EnableAnimator()
         {
             Animator.Enabled = true;
 
-            SyncAnimationStates();
             UpdateAnimLbls();
         }
 
@@ -557,62 +545,70 @@ namespace SPICA.WinForms
         {
             Animator.Enabled = false;
 
-            SyncAnimationStates();
             UpdateViewport();
         }
 
         private void UpdateViewport()
         {
-            if (!Animator.Enabled) Viewport.Invalidate();
+            if (!Animator.Enabled)
+            {
+                Viewport.Invalidate();
+            }
         }
 
         private void SklAnimsList_Selected(object sender, EventArgs e)
         {
-            SetAnimation(SklAnimsList.SelectedIndex, AnimationType.Skeletal);
+            SetAnimation(SklAnimsList.SelectedIndices, AnimationType.Skeletal);
         }
 
         private void MatAnimsList_Selected(object sender, EventArgs e)
         {
-            SetAnimation(MatAnimsList.SelectedIndex, AnimationType.Material);
+            SetAnimation(MatAnimsList.SelectedIndices, AnimationType.Material);
         }
 
         private void AnimButtonPlayBackward_Click(object sender, EventArgs e)
         {
-            AnimCtrl.Play(-Math.Abs(AnimCtrl.Step)); EnableAnimator();
+            AnimGrp.Play(-Math.Abs(AnimGrp.Step));
+
+            EnableAnimator();
         }
 
         private void AnimButtonPlayForward_Click(object sender, EventArgs e)
         {
-            AnimCtrl.Play(Math.Abs(AnimCtrl.Step)); EnableAnimator();
+            AnimGrp.Play(Math.Abs(AnimGrp.Step));
+
+            EnableAnimator();
         }
 
         private void AnimButtonPause_Click(object sender, EventArgs e)
         {
-            AnimCtrl.Pause(); DisableAnimator();
+            AnimGrp.Pause();
+
+            DisableAnimator();
         }
 
         private void AnimButtonStop_Click(object sender, EventArgs e)
         {
-            AnimCtrl.Stop();
+            AnimGrp.Stop();
 
             DisableAnimator();
+
+            UpdateAnimationTransforms();
 
             AnimSeekBar.Value = 0;
         }
 
         private void AnimButtonSlowDown_Click(object sender, EventArgs e)
         {
-            AnimCtrl.SlowDown();
-            
-            SyncAnimationStates();
+            AnimGrp.SlowDown();
+
             UpdateAnimLbls();
         }
 
         private void AnimButtonSpeedUp_Click(object sender, EventArgs e)
         {
-            AnimCtrl.SpeedUp();
+            AnimGrp.SpeedUp();
 
-            SyncAnimationStates();
             UpdateAnimLbls();
         }
 
@@ -630,19 +626,17 @@ namespace SPICA.WinForms
 
         private void AnimSeekBar_Seek(object sender, EventArgs e)
         {
-            AnimCtrl.Pause();
+            AnimGrp.Pause();
 
-            AnimCtrl.Frame = AnimSeekBar.Value;
+            AnimGrp.Frame = AnimSeekBar.Value;
 
-            SyncAnimationStates();
+            UpdateAnimationTransforms();
             UpdateViewport();
         }
 
         private void AnimSeekBar_MouseUp(object sender, MouseEventArgs e)
         {
-            AnimCtrl.Play();
-
-            SyncAnimationStates();
+            AnimGrp.Play();
         }
         #endregion
     }

@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Animation\AnimationControl.cs" />
     <Compile Include="Animation\AnimationState.cs" />
+    <Compile Include="Animation\IAnimationControl.cs" />
     <Compile Include="Animation\MaterialAnimation.cs" />
     <Compile Include="Animation\MaterialState.cs" />
     <Compile Include="Animation\SkeletalAnimation.cs" />
@@ -60,7 +61,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Renderer.cs" />
-    <Compile Include="RenderUtils.cs" />
     <Compile Include="Shaders\DefaultShaderIds.cs" />
     <Compile Include="VertexShader.cs" />
     <Compile Include="Shaders\FragmentShaderGenerator.cs" />

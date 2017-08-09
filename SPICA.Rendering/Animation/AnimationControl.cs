@@ -1,14 +1,13 @@
 ﻿using SPICA.Formats.CtrH3D.Animation;
 
 using System;
+using System.Collections.Generic;
 
 namespace SPICA.Rendering.Animation
 {
-    public class AnimationControl
+    public class AnimationControl : IAnimationControl
     {
-        public H3DAnimation Animation;
-
-        protected AnimationState State;
+        public AnimationState State { get; set; }
 
         private float _Frame;
 
@@ -26,39 +25,30 @@ namespace SPICA.Rendering.Animation
             }
         }
 
-        public bool  IsLooping   { get; set; }
         public float Step        { get; set; }
-        public bool  HasData     { get { return Animation != null; } }
-        public float FramesCount { get { return Animation?.FramesCount ?? 0; } }
+        public float FramesCount { get; protected set; }
+        public bool  IsLooping   { get; protected set; }
 
         public AnimationControl()
         {
             Step = 1;
         }
 
-        public void CopyState(AnimationControl Control)
-        {
-            State     = Control.State;
-            Frame     = Control.Frame;
-            IsLooping = Control.IsLooping;
-            Step      = Control.Step;
-        }
+        public virtual void SetAnimations(IEnumerable<H3DAnimation> Animations) { }
 
         public void AdvanceFrame()
         {
-            if (Animation != null &&
-                Animation.FramesCount >= Math.Abs(Step) &&
-                State == AnimationState.Playing)
+            if (FramesCount >= Math.Abs(Step) && State == AnimationState.Playing)
             {
                 _Frame += Step;
 
                 if (_Frame < 0)
                 {
-                    _Frame += Animation.FramesCount;
+                    _Frame += FramesCount;
                 }
-                else if (_Frame >= Animation.FramesCount)
+                else if (_Frame >= FramesCount)
                 {
-                    _Frame -= Animation.FramesCount;
+                    _Frame -= FramesCount;
                 }
             }
         }

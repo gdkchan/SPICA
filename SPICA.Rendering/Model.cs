@@ -31,8 +31,8 @@ namespace SPICA.Rendering
         internal Matrix4[]       SkeletonTransforms;
         internal MaterialState[] MaterialStates;
 
-        public SkeletalAnimation SkeletalAnim;
-        public MaterialAnimation MaterialAnim;
+        public readonly SkeletalAnimation SkeletalAnim;
+        public readonly MaterialAnimation MaterialAnim;
 
         private Dictionary<int, int> ShaderHashes;
 
@@ -65,8 +65,8 @@ namespace SPICA.Rendering
             AddMeshes(Meshes2, BaseModel.MeshesLayer2);
             AddMeshes(Meshes3, BaseModel.MeshesLayer3);
 
-            SkeletalAnim = new SkeletalAnimation();
-            MaterialAnim = new MaterialAnimation();
+            SkeletalAnim = new SkeletalAnimation(BaseModel.Skeleton);
+            MaterialAnim = new MaterialAnimation(BaseModel.Materials);
 
             Transform = Matrix4.Identity;
 
@@ -453,8 +453,8 @@ namespace SPICA.Rendering
         {
             if (BaseModel.Meshes.Count > 0)
             {
-                SkeletonTransforms = SkeletalAnim.GetSkeletonTransforms(BaseModel.Skeleton);
-                MaterialStates     = MaterialAnim.GetMaterialStates(BaseModel.Materials);
+                SkeletonTransforms = SkeletalAnim.GetSkeletonTransforms();
+                MaterialStates     = MaterialAnim.GetMaterialStates();
             }
         }
 

@@ -506,7 +506,7 @@
             this.SklAnimsList.ItemHeight = 16;
             this.SklAnimsList.Location = new System.Drawing.Point(3, 3);
             this.SklAnimsList.Margin = new System.Windows.Forms.Padding(3, 7, 3, 7);
-            this.SklAnimsList.MultiSelect = false;
+            this.SklAnimsList.MultiSelect = true;
             this.SklAnimsList.Name = "SklAnimsList";
             this.SklAnimsList.SelectedIndex = -1;
             this.SklAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
@@ -536,7 +536,7 @@
             this.MatAnimsList.ItemHeight = 16;
             this.MatAnimsList.Location = new System.Drawing.Point(3, 3);
             this.MatAnimsList.Margin = new System.Windows.Forms.Padding(3, 9, 3, 9);
-            this.MatAnimsList.MultiSelect = false;
+            this.MatAnimsList.MultiSelect = true;
             this.MatAnimsList.Name = "MatAnimsList";
             this.MatAnimsList.SelectedIndex = -1;
             this.MatAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));

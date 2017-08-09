@@ -59,18 +59,6 @@ namespace SPICA.WinForms.GUI
             set => ListScroll.BarColorHover = value;
         }
 
-        [Category("Behavior"), Description("The fixed height of each list Item.")]
-        public int ItemHeight
-        {
-            get => _ItemHeight;
-            set
-            {
-                _ItemHeight = value;
-
-                Invalidate();
-            }
-        }
-
         [Category("Appearance"), Description("The background color of a selected Item.")]
         public Color SelectionColor
         {
@@ -78,6 +66,18 @@ namespace SPICA.WinForms.GUI
             set
             {
                 _SelectionColor = value;
+
+                Invalidate();
+            }
+        }
+
+        [Category("Behavior"), Description("The fixed height of each list Item.")]
+        public int ItemHeight
+        {
+            get => _ItemHeight;
+            set
+            {
+                _ItemHeight = value;
 
                 Invalidate();
             }
