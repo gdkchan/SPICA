@@ -296,15 +296,13 @@ namespace SPICA.Formats.Generic.COLLADA
                             Controller.skin.source = $"#{Geometry.id}";
                             Controller.skin.vertex_weights.count = (uint)Vertices.Length;
 
-                            string[] BoneNames = new string[SM.BoneIndices.Length];
-                            string[] BindPoses = new string[SM.BoneIndices.Length];
+                            string[] BoneNames = new string[Mdl.Skeleton.Count];
+                            string[] BindPoses = new string[Mdl.Skeleton.Count];
 
-                            for (int Index = 0; Index < SM.BoneIndices.Length; Index++)
+                            for (int Index = 0; Index < Mdl.Skeleton.Count; Index++)
                             {
-                                if (SM.BoneIndices[Index] >= Mdl.Skeleton.Count) break;
-
-                                BoneNames[Index] = Mdl.Skeleton[SM.BoneIndices[Index]].Name;
-                                BindPoses[Index] = DAEUtils.MatrixStr(Mdl.Skeleton[SM.BoneIndices[Index]].InverseTransform);
+                                BoneNames[Index] = Mdl.Skeleton[Index].Name;
+                                BindPoses[Index] = DAEUtils.MatrixStr(Mdl.Skeleton[Index].InverseTransform);
                             }
 
                             //4 is the max number of bones per vertex
@@ -327,6 +325,11 @@ namespace SPICA.Formats.Generic.COLLADA
                                         float Weight = Vertex.Weights[Index];
 
                                         if (Weight == 0) break;
+
+                                        if (BIndex < SM.BoneIndices.Length && BIndex > -1)
+                                            BIndex = SM.BoneIndices[BIndex];
+                                        else
+                                            BIndex = 0;
 
                                         string WStr = Weight.ToString(CultureInfo.InvariantCulture);
 
@@ -353,7 +356,14 @@ namespace SPICA.Formats.Generic.COLLADA
                             {
                                 foreach (PICAVertex Vertex in Vertices)
                                 {
-                                    v[vi++] = Vertex.Indices[0];
+                                    int BIndex = Vertex.Indices[0];
+
+                                    if (BIndex < SM.BoneIndices.Length && BIndex > -1)
+                                        BIndex = SM.BoneIndices[BIndex];
+                                    else
+                                        BIndex = 0;
+
+                                    v[vi++] = BIndex;
                                     v[vi++] = 0;
 
                                     vcount[vci++] = 1;

@@ -265,8 +265,17 @@ namespace SPICA.Formats.GFL2.Model
                 Params.Constant4Assignment = Material.Constant4Assignment;
                 Params.Constant5Assignment = Material.Constant5Assignment;
 
-                Params.ShaderReference = "0@" + Material.VtxShaderName;
-                Params.ModelReference = $"{Mat.Name}@{Name}";
+                string VtxShaderName = Material.VtxShaderName;
+
+                //Make shader names match X/Y/OR/AS shader names.
+                if (VtxShaderName == "Poke" ||
+                    VtxShaderName == "PokeNormal")
+                {
+                    VtxShaderName = "PokePack";
+                }
+
+                Params.ShaderReference = $"0@{VtxShaderName}";
+                Params.ModelReference  = $"{Mat.Name}@{Name}";
 
                 /*
                  * Add those for compatibility with the older BCH models.
@@ -302,6 +311,8 @@ namespace SPICA.Formats.GFL2.Model
                 Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam1",       Material.ShaderParam1));
                 Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam2",       Material.ShaderParam2));
                 Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam3",       Material.ShaderParam3));
+
+                
 
                 Output.Materials.Add(Mat);
             }
