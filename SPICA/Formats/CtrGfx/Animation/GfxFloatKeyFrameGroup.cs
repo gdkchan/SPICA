@@ -46,7 +46,7 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            Quantization = (KeyFrameQuantization)(FormatFlags >> 5);
+            Quantization = (KeyFrameQuantization)((FormatFlags >> 5) & 7);
 
             IsLinear = (FormatFlags & 4) != 0;
 
