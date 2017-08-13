@@ -1,8 +1,8 @@
 ﻿using SPICA.Formats.Common;
 
-namespace SPICA.Formats.CtrGfx.Model.AnimGroup
+namespace SPICA.Formats.CtrGfx.AnimGroup
 {
-    class GfxAnimGroupMaterialColor : GfxAnimGroupElement
+    class GfxAnimGroupBlendOp : GfxAnimGroupElement
     {
         private string _MaterialName;
 
@@ -14,9 +14,9 @@ namespace SPICA.Formats.CtrGfx.Model.AnimGroup
 
         private GfxAnimGroupObjType ObjType2;
 
-        public GfxAnimGroupMaterialColor()
+        public GfxAnimGroupBlendOp()
         {
-            ObjType = ObjType2 = GfxAnimGroupObjType.MaterialColor;
+            ObjType = ObjType2 = GfxAnimGroupObjType.BlendOperation;
         }
     }
 }

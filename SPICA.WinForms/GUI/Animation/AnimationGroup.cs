@@ -39,33 +39,41 @@ namespace SPICA.WinForms.GUI.Animation
             }
         }
 
-        private List<Model> Models;
+        private Renderer Renderer;
 
-        public AnimationGroup(List<Model> Models)
+        public AnimationGroup(Renderer Renderer)
         {
-            this.Models = Models;
+            this.Renderer = Renderer;
 
             _Step = 1;
         }
 
         private IEnumerable<AnimationControl> EnumerateAnimations()
         {
-            foreach (Model Model in Models)
+            foreach (Model Model in Renderer.Models)
             {
                 yield return Model.SkeletalAnim;
                 yield return Model.MaterialAnim;
             }
+
+            yield return Renderer.Camera.Animation;
         }
 
         public void SetAnimations(IEnumerable<H3DAnimation> Animations, AnimationType Type)
         {
-            foreach (Model Model in Models)
+            switch (Type)
             {
-                switch (Type)
-                {
-                    case AnimationType.Skeletal: CopyState(Animations, Model.SkeletalAnim); break;
-                    case AnimationType.Material: CopyState(Animations, Model.MaterialAnim); break;
-                }
+                case AnimationType.Skeletal:
+                    foreach (Model Model in Renderer.Models) CopyState(Animations, Model.SkeletalAnim);
+                    break;
+
+                case AnimationType.Material:
+                    foreach (Model Model in Renderer.Models) CopyState(Animations, Model.MaterialAnim);
+                    break;
+
+                case AnimationType.Camera:
+                    CopyState(Animations, Renderer.Camera.Animation);
+                    break;
             }
         }
 
@@ -149,6 +157,11 @@ namespace SPICA.WinForms.GUI.Animation
             if (State == AnimationState.Playing && Math.Abs(_Step) < 8) _Step *= 2;
 
             UpdateStep();
+        }
+
+        public void Continue()
+        {
+            Play(_Step);
         }
 
         public void Play(float Step = 1)

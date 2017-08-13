@@ -1,4 +1,4 @@
-﻿namespace SPICA.Formats.CtrGfx.Model.AnimGroup
+﻿namespace SPICA.Formats.CtrGfx.AnimGroup
 {
     class GfxAnimGroupModel : GfxAnimGroupElement
     {

@@ -7,20 +7,8 @@ using System.Numerics;
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
     [TypeChoice(0x10000001u, typeof(GfxShape))]
-    public class GfxShape : INamed
+    public class GfxShape : GfxObject, INamed
     {
-        private GfxRevHeader Header;
-
-        private string _Name;
-
-        public string Name
-        {
-            get => _Name;
-            set => _Name = value ?? throw Exceptions.GetNullException("Name");
-        }
-
-        public readonly GfxDict<GfxMetaData> MetaData;
-
         private uint Flags;
 
         public readonly GfxBoundingBox BoundingBox;
@@ -37,8 +25,6 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
 
         public GfxShape()
         {
-            MetaData = new GfxDict<GfxMetaData>();
-
             BoundingBox = new GfxBoundingBox();
 
             SubMeshes = new List<GfxSubMesh>();

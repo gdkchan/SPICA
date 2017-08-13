@@ -1,7 +1,7 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Serialization.Attributes;
 
-namespace SPICA.Formats.CtrGfx.Model.AnimGroup
+namespace SPICA.Formats.CtrGfx.AnimGroup
 {
     [TypeChoice(0x80000000u, typeof(GfxAnimGroup))]
     public class GfxAnimGroup : INamed

@@ -23,6 +23,7 @@ namespace SPICA.Formats.CtrGfx.Animation
         [TypeChoiceName("PrimitiveType")]
         [TypeChoice((uint)GfxPrimitiveType.Float,         typeof(GfxAnimFloat))]
         [TypeChoice((uint)GfxPrimitiveType.Vector2D,      typeof(GfxAnimVector2D))]
+        [TypeChoice((uint)GfxPrimitiveType.Vector3D,      typeof(GfxAnimVector3D))]
         [TypeChoice((uint)GfxPrimitiveType.Transform,     typeof(GfxAnimTransform))]
         [TypeChoice((uint)GfxPrimitiveType.RGBA,          typeof(GfxAnimRGBA))]
         [TypeChoice((uint)GfxPrimitiveType.QuatTransform, typeof(GfxAnimQuatTransform))]
@@ -39,6 +40,7 @@ namespace SPICA.Formats.CtrGfx.Animation
 
                 if (ValueType != typeof(GfxAnimFloat)         &&
                     ValueType != typeof(GfxAnimVector2D)      &&
+                    ValueType != typeof(GfxAnimVector3D)      &&
                     ValueType != typeof(GfxAnimTransform)     &&
                     ValueType != typeof(GfxAnimRGBA)          &&
                     ValueType != typeof(GfxAnimQuatTransform) &&

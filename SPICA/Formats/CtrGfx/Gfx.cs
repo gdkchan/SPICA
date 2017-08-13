@@ -234,9 +234,9 @@ namespace SPICA.Formats.CtrGfx
                     Mat.EnabledTextures[1] = Material.TextureMappers[1] != null;
                     Mat.EnabledTextures[2] = Material.TextureMappers[2] != null;
 
-                    Mat.Texture0Name = Material.TextureMappers[0]?.Texture.TextureName;
-                    Mat.Texture1Name = Material.TextureMappers[1]?.Texture.TextureName;
-                    Mat.Texture2Name = Material.TextureMappers[2]?.Texture.TextureName;
+                    Mat.Texture0Name = Material.TextureMappers[0]?.Texture.Path;
+                    Mat.Texture1Name = Material.TextureMappers[1]?.Texture.Path;
+                    Mat.Texture2Name = Material.TextureMappers[2]?.Texture.Path;
 
                     GfxFragmentFlags SrcFlags = Material.FragmentShader.Lighting.Flags;
                     H3DFragmentFlags DstFlags = 0;
@@ -558,6 +558,11 @@ namespace SPICA.Formats.CtrGfx
                 Output.LUTs.Add(L);
             }
 
+            foreach (GfxCamera Camera in Cameras)
+            {
+                Output.Cameras.Add(Camera.ToH3DCamera());
+            }
+
             foreach (GfxAnimation SklAnim in SkeletalAnimations)
             {
                 Output.SkeletalAnimations.Add(SklAnim.ToH3DAnimation());
@@ -566,6 +571,11 @@ namespace SPICA.Formats.CtrGfx
             foreach (GfxAnimation MatAnim in MaterialAnimations)
             {
                 Output.MaterialAnimations.Add(MatAnim.ToH3DAnimation());
+            }
+
+            foreach (GfxAnimation CamAnim in CameraAnimations)
+            {
+                Output.CameraAnimations.Add(CamAnim.ToH3DAnimation());
             }
 
             Output.CopyMaterials();

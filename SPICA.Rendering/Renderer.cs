@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 
 using SPICA.Formats.CtrH3D;
@@ -18,8 +17,6 @@ namespace SPICA.Rendering
 {
     public class Renderer : IDisposable
     {
-        public const float ClipDistance = 100000f;
-
         public readonly List<Model> Models;
         public readonly List<Light> Lights;
 
@@ -27,14 +24,13 @@ namespace SPICA.Rendering
         public readonly Dictionary<string, LUT>          LUTs;
         public readonly Dictionary<string, VertexShader> Shaders;
 
-        public Matrix4 ProjectionMatrix;
-        public Matrix4 ViewMatrix;
-
         public Color4 SceneAmbient;
 
         private VertexShader DefaultShader;
 
-        private int Width, Height;
+        public readonly Camera Camera;
+
+        internal int Width, Height;
 
         public Renderer(int Width, int Height)
         {
@@ -54,7 +50,7 @@ namespace SPICA.Rendering
 
             DefaultShader = new VertexShader(VertexShaderHandle);
 
-            ViewMatrix = Matrix4.Identity;
+            Camera = new Camera(this);
 
             Resize(Width, Height);
 
@@ -68,11 +64,7 @@ namespace SPICA.Rendering
 
             GL.Viewport(0, 0, Width, Height);
 
-            ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
-                (float)Math.PI * 0.25f,
-                (float)Width / Height,
-                0.25f,
-                ClipDistance);
+            Camera.RecalculateMatrices();
         }
 
         public void SetBackgroundColor(Color Color)

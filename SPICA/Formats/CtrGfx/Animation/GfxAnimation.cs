@@ -28,11 +28,14 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         public GfxMetaData MetaData;
 
-        const string MatCoordScaleREx = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Scale";
-        const string MatCoordRotREx   = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Rotate";
-        const string MatCoordTransREx = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Translate";
-        const string MatColorREx      = @"Materials\[""(.+)""\]\.MaterialColor\.(\w+)";
-        const string MatMapperBCREx   = @"Materials\[""(.+)""\]\.TextureMappers\[(\d)\]\.Sampler\.BorderColor";
+        private const string MatCoordScaleREx = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Scale";
+        private const string MatCoordRotREx   = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Rotate";
+        private const string MatCoordTransREx = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Translate";
+        private const string MatColorREx      = @"Materials\[""(.+)""\]\.MaterialColor\.(\w+)";
+        private const string MatMapperBCREx   = @"Materials\[""(.+)""\]\.TextureMappers\[(\d)\]\.Sampler\.BorderColor";
+
+        private const string ViewUpdaterTarget = "ViewUpdater.TargetPosition";
+        private const string ViewUpdaterUpVec  = "ViewUpdater.UpwardVector";
 
         public GfxAnimation()
         {
@@ -60,6 +63,9 @@ namespace SPICA.Formats.CtrGfx.Animation
 
             foreach (GfxAnimationElement Elem in Elements)
             {
+                System.Diagnostics.Debug.WriteLine(Elem.Name + " - " + Elem.PrimitiveType);
+
+
                 switch (Elem.PrimitiveType)
             	{
                     case GfxPrimitiveType.Float:
@@ -145,6 +151,35 @@ namespace SPICA.Formats.CtrGfx.Animation
                         }
                         break;
 
+                    case GfxPrimitiveType.Vector3D:
+                        {
+                            H3DAnimVector3D Vector = new H3DAnimVector3D();
+
+                            CopyKeyFrames(((GfxAnimVector3D)Elem.Content).X, Vector.X);
+                            CopyKeyFrames(((GfxAnimVector3D)Elem.Content).Y, Vector.Y);
+                            CopyKeyFrames(((GfxAnimVector3D)Elem.Content).Z, Vector.Z);
+
+                            H3DTargetType TargetType = 0;
+
+                            switch (Elem.Name)
+                            {
+                                case ViewUpdaterTarget: TargetType = H3DTargetType.CameraTargetPos; break;
+                                case ViewUpdaterUpVec:  TargetType = H3DTargetType.CameraUpVector;  break;
+                            }
+
+                            if (TargetType != 0)
+                            {
+                                Output.Elements.Add(new H3DAnimationElement()
+                                {
+                                    Name          = Elem.Name,
+                                    Content       = Vector,
+                                    PrimitiveType = H3DPrimitiveType.Vector3D,
+                                    TargetType    = TargetType
+                                });
+                            }
+                        }
+                        break;
+
                     case GfxPrimitiveType.Transform:
                         {
                             H3DAnimTransform Transform = new H3DAnimTransform();
@@ -161,12 +196,21 @@ namespace SPICA.Formats.CtrGfx.Animation
                             CopyKeyFrames(((GfxAnimTransform)Elem.Content).TranslationY, Transform.TranslationY);
                             CopyKeyFrames(((GfxAnimTransform)Elem.Content).TranslationZ, Transform.TranslationZ);
 
+                            H3DTargetType TargetType = 0;
+
+                            switch (Output.AnimationType)
+                            {
+                                case H3DAnimationType.Skeletal: TargetType = H3DTargetType.Bone;            break;
+                                case H3DAnimationType.Camera:   TargetType = H3DTargetType.CameraTransform; break;
+                                case H3DAnimationType.Light:    TargetType = H3DTargetType.LightTransform;  break;
+                            }
+
                             Output.Elements.Add(new H3DAnimationElement()
                             {
                                 Name          = Elem.Name,
                                 Content       = Transform,
                                 PrimitiveType = H3DPrimitiveType.Transform,
-                                TargetType    = H3DTargetType.Bone
+                                TargetType    = TargetType
                             });
                         }
                         break;

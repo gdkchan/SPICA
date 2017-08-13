@@ -23,6 +23,7 @@ namespace SPICA.Formats.CtrH3D.Animation
         [TypeChoiceName("PrimitiveType")]
         [TypeChoice((uint)H3DPrimitiveType.Float,         typeof(H3DAnimFloat))]
         [TypeChoice((uint)H3DPrimitiveType.Vector2D,      typeof(H3DAnimVector2D))]
+        [TypeChoice((uint)H3DPrimitiveType.Vector3D,      typeof(H3DAnimVector3D))]
         [TypeChoice((uint)H3DPrimitiveType.Transform,     typeof(H3DAnimTransform))]
         [TypeChoice((uint)H3DPrimitiveType.RGBA,          typeof(H3DAnimRGBA))]
         [TypeChoice((uint)H3DPrimitiveType.QuatTransform, typeof(H3DAnimQuatTransform))]
@@ -39,6 +40,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 
                 if (ValueType != typeof(H3DAnimFloat)         &&
                     ValueType != typeof(H3DAnimVector2D)      &&
+                    ValueType != typeof(H3DAnimVector3D)      &&
                     ValueType != typeof(H3DAnimTransform)     &&
                     ValueType != typeof(H3DAnimRGBA)          &&
                     ValueType != typeof(H3DAnimQuatTransform) &&

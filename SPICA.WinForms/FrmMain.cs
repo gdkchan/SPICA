@@ -5,7 +5,6 @@ using SPICA.Formats;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Rendering;
-using SPICA.Rendering.Animation;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
 using SPICA.WinForms.GUI.Animation;
@@ -23,20 +22,18 @@ namespace SPICA.WinForms
     public partial class FrmMain : Form
     {
         #region Declarations
-        private GLControl Viewport;
-        private GridLines UIGrid;
-        private AxisLines UIAxis;
-
         private Vector2 InitialMov;
         private Vector3 MdlCenter;
+        private Vector3 Translation;
         private Matrix4 Transform;
 
-        private Renderer Renderer;
-        private Shader   Shader;
-
-        private H3D Scene;
-
+        private GLControl      Viewport;
+        private GridLines      UIGrid;
+        private AxisLines      UIAxis;
         private AnimationGroup AnimGrp;
+        private H3D            Scene;
+        private Renderer       Renderer;
+        private Shader         Shader;
 
         private float Dimension;
 
@@ -107,7 +104,7 @@ namespace SPICA.WinForms
 
             Renderer.SetBackgroundColor(Color.Gray);
 
-            AnimGrp = new AnimationGroup(Renderer.Models);
+            AnimGrp = new AnimationGroup(Renderer);
 
             Shader = new Shader();
 
@@ -132,16 +129,18 @@ namespace SPICA.WinForms
         {
             if (!IgnoreClicks && e.Button != 0)
             {
-                Vector3 Translation = Transform.Row3.Xyz;
-
-                Transform.Row3.Xyz = Vector3.Zero;
-
                 if ((e.Button & MouseButtons.Left) != 0)
                 {
                     float X = (float)(((e.X - InitialMov.X) / Width)  * Math.PI);
                     float Y = (float)(((e.Y - InitialMov.Y) / Height) * Math.PI);
 
-                    Transform *= Matrix4.CreateRotationX(Y) * Matrix4.CreateRotationY(X);
+                    Transform.Row3.Xyz -= Translation;
+
+                    Transform *=
+                        Matrix4.CreateRotationX(Y) *
+                        Matrix4.CreateRotationY(X);
+
+                    Transform.Row3.Xyz += Translation;
                 }
 
                 if ((e.Button & MouseButtons.Right) != 0)
@@ -149,10 +148,12 @@ namespace SPICA.WinForms
                     float X = (InitialMov.X - e.X) * Dimension * 0.005f;
                     float Y = (InitialMov.Y - e.Y) * Dimension * 0.005f;
 
-                    Transform.Row3.Xyz += new Vector3(-X, Y, 0);
-                }
+                    Vector3 Offset = new Vector3(-X, Y, 0);
 
-                Transform.Row3.Xyz += Translation;
+                    Translation += Offset;
+
+                    Transform *= Matrix4.CreateTranslation(Offset);
+                }
 
                 InitialMov = new Vector2(e.X, e.Y);
 
@@ -167,6 +168,8 @@ namespace SPICA.WinForms
                 float Step = e.Delta > 0
                     ?  Dimension * 0.025f
                     : -Dimension * 0.025f;
+
+                Translation.Z += Step;
 
                 Transform *= Matrix4.CreateTranslation(0, 0, Step);
 
@@ -328,8 +331,10 @@ namespace SPICA.WinForms
 
                         ModelsList.Bind(Scene.Models);
                         TexturesList.Bind(Scene.Textures);
+                        CamerasList.Bind(Scene.Cameras);
                         SklAnimsList.Bind(Scene.SkeletalAnimations);
                         MatAnimsList.Bind(Scene.MaterialAnimations);
+                        CamAnimsList.Bind(Scene.CameraAnimations);
 
                         Animator.Enabled     = false;
                         LblAnimSpeed.Text    = string.Empty;
@@ -389,15 +394,9 @@ namespace SPICA.WinForms
 
         private void UpdateTransforms()
         {
-            Matrix4 Centered = Matrix4.CreateTranslation(MdlCenter) * Transform;
+            Renderer.Camera.ViewMatrix = Transform;
 
-            foreach (int i in ModelsList.SelectedIndices)
-            {
-                Renderer.Models[i].Transform = Centered;
-            }
-
-            UIGrid.Transform = Centered;
-            UIAxis.Transform = Transform;
+            UIAxis.Transform = Matrix4.CreateTranslation(-MdlCenter);
 
             UpdateViewport();
         }
@@ -422,7 +421,11 @@ namespace SPICA.WinForms
 
                 Dimension *= 2;
 
-                Transform = Matrix4.CreateTranslation(0, 0, -Dimension);
+                Translation = new Vector3(0, 0, -Dimension);
+
+                Transform =
+                    Matrix4.CreateTranslation(MdlCenter) *
+                    Matrix4.CreateTranslation(Translation);
 
                 Renderer.Lights[0].Position.Y = AABB.Center.Y;
                 Renderer.Lights[0].Position.Z = Dimension;
@@ -457,6 +460,39 @@ namespace SPICA.WinForms
                 TextureInfo.Text = string.Empty;
             }
         }
+
+        private void CamerasList_Selected(object sender, EventArgs e)
+        {
+            if (CamerasList.SelectedIndex != -1)
+            {
+                Renderer.Camera.Set(Scene.Cameras[CamerasList.SelectedIndex]);
+
+                Transform = Renderer.Camera.ViewMatrix;
+            }
+            else
+            {
+                Renderer.Camera.Set(null);
+
+                ResetTransforms();
+            }
+
+            UpdateViewport();
+        }
+
+        private void SklAnimsList_Selected(object sender, EventArgs e)
+        {
+            SetAnimation(SklAnimsList.SelectedIndices, AnimationType.Skeletal);
+        }
+
+        private void MatAnimsList_Selected(object sender, EventArgs e)
+        {
+            SetAnimation(MatAnimsList.SelectedIndices, AnimationType.Material);
+        }
+
+        private void CamAnimsList_Selected(object sender, EventArgs e)
+        {
+            SetAnimation(CamAnimsList.SelectedIndex, AnimationType.Camera);
+        }
         #endregion
 
         #region Animation related + playback controls
@@ -477,6 +513,23 @@ namespace SPICA.WinForms
             {
                 Renderer.Models[i].UpdateAnimationTransforms();
             }
+
+            if (CamAnimsList.SelectedIndex != -1)
+            {
+                Renderer.Camera.RecalculateMatrices();
+            }
+        }
+
+        private void SetAnimation(int Index, AnimationType Type)
+        {
+            if (Index != -1)
+            {
+                SetAnimation(new int[] { Index }, Type);
+            }
+            else
+            {
+                SetAnimation(new int[0], Type);
+            }
         }
 
         private void SetAnimation(int[] Indices, AnimationType Type)
@@ -496,6 +549,13 @@ namespace SPICA.WinForms
                     foreach (int i in Indices)
                     {
                         Animations.Add(Scene.MaterialAnimations[i]);
+                    }
+                    break;
+
+                case AnimationType.Camera:
+                    foreach (int i in Indices)
+                    {
+                        Animations.Add(Scene.CameraAnimations[i]);
                     }
                     break;
             }
@@ -531,7 +591,9 @@ namespace SPICA.WinForms
         {
             LblAnimSpeed.Text = $"{Math.Abs(AnimGrp.Step).ToString("N2")}x";
 
-            LblAnimLoopMode.Text = AnimGrp.IsLooping ? "LOOP" : "1 GO";
+            LblAnimLoopMode.Text = AnimGrp.IsLooping
+                ? "LOOP"
+                : "1 GO";
         }
 
         private void EnableAnimator()
@@ -554,16 +616,6 @@ namespace SPICA.WinForms
             {
                 Viewport.Invalidate();
             }
-        }
-
-        private void SklAnimsList_Selected(object sender, EventArgs e)
-        {
-            SetAnimation(SklAnimsList.SelectedIndices, AnimationType.Skeletal);
-        }
-
-        private void MatAnimsList_Selected(object sender, EventArgs e)
-        {
-            SetAnimation(MatAnimsList.SelectedIndices, AnimationType.Material);
         }
 
         private void AnimButtonPlayBackward_Click(object sender, EventArgs e)
@@ -636,7 +688,7 @@ namespace SPICA.WinForms
 
         private void AnimSeekBar_MouseUp(object sender, MouseEventArgs e)
         {
-            AnimGrp.Play();
+            AnimGrp.Continue();
         }
         #endregion
     }

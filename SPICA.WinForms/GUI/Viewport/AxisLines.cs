@@ -63,8 +63,8 @@ namespace SPICA.WinForms.GUI.Viewport
                 int ViewMtxLocation = GL.GetUniformLocation(Shader.Handle, "ViewMatrix");
                 int WrldMtxLocation = GL.GetUniformLocation(Shader.Handle, "ModelMatrix");
 
-                GL.UniformMatrix4(ProjMtxLocation, false, ref Renderer.ProjectionMatrix);
-                GL.UniformMatrix4(ViewMtxLocation, false, ref Renderer.ViewMatrix);
+                GL.UniformMatrix4(ProjMtxLocation, false, ref Renderer.Camera.ProjectionMatrix);
+                GL.UniformMatrix4(ViewMtxLocation, false, ref Renderer.Camera.ViewMatrix);
                 GL.UniformMatrix4(WrldMtxLocation, false, ref Transform);
 
                 GL.LineWidth(2);

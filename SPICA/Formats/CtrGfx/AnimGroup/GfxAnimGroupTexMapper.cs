@@ -1,8 +1,8 @@
 ﻿using SPICA.Formats.Common;
 
-namespace SPICA.Formats.CtrGfx.Model.AnimGroup
+namespace SPICA.Formats.CtrGfx.AnimGroup
 {
-    class GfxAnimGroupBlendOp : GfxAnimGroupElement
+    class GfxAnimGroupTexMapper : GfxAnimGroupElement
     {
         private string _MaterialName;
 
@@ -12,11 +12,13 @@ namespace SPICA.Formats.CtrGfx.Model.AnimGroup
             set => _MaterialName = value ?? throw Exceptions.GetNullException("MaterialName");
         }
 
+        public int TexMapperIndex;
+
         private GfxAnimGroupObjType ObjType2;
 
-        public GfxAnimGroupBlendOp()
+        public GfxAnimGroupTexMapper()
         {
-            ObjType = ObjType2 = GfxAnimGroupObjType.BlendOperation;
+            ObjType = ObjType2 = GfxAnimGroupObjType.TexMapper;
         }
     }
 }

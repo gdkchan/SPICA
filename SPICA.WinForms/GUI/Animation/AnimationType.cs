@@ -4,6 +4,9 @@
     {
         Skeletal,
         Material,
-        Visibility
+        Visibility,
+        Light,
+        Camera,
+        Fog
     }
 }

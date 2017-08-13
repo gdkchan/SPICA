@@ -45,11 +45,14 @@
   <ItemGroup>
     <Compile Include="Animation\AnimationControl.cs" />
     <Compile Include="Animation\AnimationState.cs" />
+    <Compile Include="Animation\CameraAnimation.cs" />
+    <Compile Include="Animation\CameraState.cs" />
     <Compile Include="Animation\IAnimationControl.cs" />
     <Compile Include="Animation\MaterialAnimation.cs" />
     <Compile Include="Animation\MaterialState.cs" />
     <Compile Include="Animation\SkeletalAnimation.cs" />
     <Compile Include="BoundingBox.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="LUT.cs" />
     <Compile Include="Mesh.cs" />

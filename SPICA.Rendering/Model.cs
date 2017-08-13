@@ -474,8 +474,8 @@ namespace SPICA.Rendering
 
                 GL.UseProgram(Shader.Handle);
 
-                Shader.SetVtx4x4Array(DefaultShaderIds.ProjMtx, Renderer.ProjectionMatrix);
-                Shader.SetVtx3x4Array(DefaultShaderIds.ViewMtx, Renderer.ViewMatrix * Transform);
+                Shader.SetVtx4x4Array(DefaultShaderIds.ProjMtx, Renderer.Camera.ProjectionMatrix);
+                Shader.SetVtx3x4Array(DefaultShaderIds.ViewMtx, Renderer.Camera.ViewMatrix * Transform);
                 Shader.SetVtx3x4Array(DefaultShaderIds.NormMtx, Transform.ClearScale());
                 Shader.SetVtx3x4Array(DefaultShaderIds.WrldMtx, Matrix4.Identity);
 

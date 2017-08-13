@@ -1,30 +1,19 @@
-﻿using SPICA.Serialization.Attributes;
-
-using System.Collections.Generic;
+﻿using SPICA.Formats.Common;
+using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
     [TypeChoice(0x80000001u, typeof(GfxShaderReference))]
-    public class GfxShaderReference
+    public class GfxShaderReference : GfxObject
     {
-        private GfxRevHeader Header;
+        private string _Path;
 
-        [FixedLength(48), Inline] private byte[] Content; //TODO
+        public string Path
+        {
+            get => _Path;
+            set => _Path = value ?? throw Exceptions.GetNullException("Path");
+        }
 
-        /*
-        public byte[] ProgramData;
-
-        private uint[] GLShaderKinds;
-
-        public List<GfxShaderDesc> Descriptors;
-
-        private uint[] ShaderObjs; //Same size as above
-
-        private uint CommandCachePtr;
-        private uint CommandCacheLength;
-
-        private uint ProgramInfo;
-        private uint CommandAlloc;
-        */
+        private uint ShaderPtr;
     }
 }

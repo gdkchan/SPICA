@@ -4,20 +4,8 @@ using SPICA.Serialization.Attributes;
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
     [TypeChoice(0x01000000u, typeof(GfxMesh))]
-    public class GfxMesh
+    public class GfxMesh : GfxObject
     {
-        private GfxRevHeader Header;
-
-        private string _Name;
-
-        public string Name
-        {
-            get => _Name;
-            set => _Name = value ?? throw Exceptions.GetNullException("Name");
-        }
-
-        public readonly GfxDict<GfxMetaData> MetaData;
-
         public int ShapeIndex;
         public int MaterialIndex;
 
@@ -56,15 +44,10 @@ namespace SPICA.Formats.CtrGfx.Model.Mesh
         public string MeshNodeName
         {
             get => _MeshNodeName;
-            set => _MeshNodeName = value ?? throw Exceptions.GetNullException("Name");
+            set => _MeshNodeName = value ?? throw Exceptions.GetNullException("MeshNodeName");
         }
 
         private ulong RenderKeyCache;
-        private uint CommandAlloc;
-
-        public GfxMesh()
-        {
-            MetaData = new GfxDict<GfxMetaData>();
-        }
+        private uint  CommandAlloc;
     }
 }

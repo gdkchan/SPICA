@@ -6,26 +6,8 @@ namespace SPICA.Formats.CtrGfx.Texture
 {
     [TypeChoice(0x20000009u, typeof(GfxTextureCube))]
     [TypeChoice(0x20000011u, typeof(GfxTextureImage))]
-    public class GfxTexture : INamed
+    public class GfxTexture : GfxObject, INamed
     {
-        private GfxRevHeader Header;
-
-        private string _Name;
-
-        public string Name
-        {
-            get
-            {
-                return _Name;
-            }
-            set
-            {
-                _Name = value ?? throw Exceptions.GetNullException("Name");
-            }
-        }
-
-        public readonly GfxDict<GfxMetaData> MetaData;
-
         public int Height;
         public int Width;
 

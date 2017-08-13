@@ -1,6 +1,6 @@
 ﻿using SPICA.Formats.Common;
 
-namespace SPICA.Formats.CtrGfx.Model.AnimGroup
+namespace SPICA.Formats.CtrGfx.AnimGroup
 {
     class GfxAnimGroupMeshNodeVis : GfxAnimGroupElement
     {

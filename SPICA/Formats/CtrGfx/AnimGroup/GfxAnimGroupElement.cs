@@ -1,7 +1,7 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Serialization.Attributes;
 
-namespace SPICA.Formats.CtrGfx.Model.AnimGroup
+namespace SPICA.Formats.CtrGfx.AnimGroup
 {
     [TypeChoice(0x00080000u, typeof(GfxAnimGroupMeshNodeVis))]
     [TypeChoice(0x01000000u, typeof(GfxAnimGroupMesh))]

@@ -10,20 +10,8 @@ using System.Security.Cryptography;
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
     [TypeChoice(0x08000000u, typeof(GfxMaterial))]
-    public class GfxMaterial : INamed, ICustomSerialization
+    public class GfxMaterial : GfxObject, INamed, ICustomSerialization
     {
-        private GfxRevHeader Header;
-
-        private string _Name;
-
-        public string Name
-        {
-            get => _Name;
-            set => _Name = value ?? throw Exceptions.GetNullException("Name");
-        }
-
-        public readonly GfxDict<GfxMetaData> MetaData;
-
         public GfxMaterialFlags Flags;
 
         public GfxTexCoordConfig   TexCoordConfig;

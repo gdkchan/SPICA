@@ -4,20 +4,8 @@ using SPICA.Serialization.Attributes;
 namespace SPICA.Formats.CtrGfx.Model
 {
     [TypeChoice(0x02000000u, typeof(GfxSkeleton))]
-    public class GfxSkeleton : INamed
+    public class GfxSkeleton : GfxObject, INamed
     {
-        private GfxRevHeader Header;
-
-        private string _Name;
-
-        public string Name
-        {
-            get => _Name;
-            set => _Name = value ?? throw Exceptions.GetNullException("Name");
-        }
-
-        public readonly GfxDict<GfxMetaData> MetaData;
-
         public readonly GfxDict<GfxBone> Bones;
 
         public GfxBone RootBone;

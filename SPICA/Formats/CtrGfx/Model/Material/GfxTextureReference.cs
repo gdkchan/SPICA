@@ -4,26 +4,14 @@ using SPICA.Serialization.Attributes;
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
     [TypeChoice(0x20000004u, typeof(GfxTextureReference))]
-    public class GfxTextureReference
+    public class GfxTextureReference : GfxObject
     {
-        private GfxRevHeader Header;
+        private string _Path;
 
-        private string _Name;
-
-        public string Name
+        public string Path
         {
-            get => _Name;
-            set => _Name = value ?? throw Exceptions.GetNullException("Name");
-        }
-
-        public readonly GfxDict<GfxMetaData> MetaData;
-
-        private string _TextureName;
-
-        public string TextureName
-        {
-            get => _TextureName;
-            set => _TextureName = value ?? throw Exceptions.GetNullException("TextureName");
+            get => _Path;
+            set => _Path = value ?? throw Exceptions.GetNullException("Path");
         }
 
         private uint TexturePtr;
