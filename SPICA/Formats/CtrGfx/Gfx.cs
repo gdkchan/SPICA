@@ -20,7 +20,7 @@ using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Serialization;
 using SPICA.Serialization.Serializer;
-
+using System;
 using System.IO;
 using System.Numerics;
 
@@ -436,32 +436,32 @@ namespace SPICA.Formats.CtrGfx
                     {
                         foreach (GfxFace Face in SubMesh.Faces)
                         {
-                            H3DSubMesh SM = new H3DSubMesh();
-
-                            SM.BoneIndicesCount = (ushort)SubMesh.BoneIndices.Count;
-
-                            for (int i = 0; i < SubMesh.BoneIndices.Count; i++)
+                            foreach (GfxFaceDescriptor Desc in Face.FaceDescriptors)
                             {
-                                SM.BoneIndices[i] = (ushort)SubMesh.BoneIndices[i];
+                                H3DSubMesh SM = new H3DSubMesh();
+
+                                SM.BoneIndicesCount = (ushort)SubMesh.BoneIndices.Count;
+
+                                for (int i = 0; i < SubMesh.BoneIndices.Count; i++)
+                                {
+                                    SM.BoneIndices[i] = (ushort)SubMesh.BoneIndices[i];
+                                }
+
+                                switch (SubMesh.Skinning)
+                                {
+                                    case GfxSubMeshSkinning.None:   SM.Skinning = H3DSubMeshSkinning.None;   break;
+                                    case GfxSubMeshSkinning.Rigid:  SM.Skinning = H3DSubMeshSkinning.Rigid;  break;
+                                    case GfxSubMeshSkinning.Smooth: SM.Skinning = H3DSubMeshSkinning.Smooth; break;
+                                }
+
+                                SM.Indices = Desc.Indices;
+
+                                SM.Indices = new ushort[Desc.Indices.Length];
+
+                                Array.Copy(Desc.Indices, SM.Indices, SM.Indices.Length);
+
+                                M.SubMeshes.Add(SM);
                             }
-
-                            switch (SubMesh.Skinning)
-                            {
-                                case GfxSubMeshSkinning.None:   SM.Skinning = H3DSubMeshSkinning.None;   break;
-                                case GfxSubMeshSkinning.Rigid:  SM.Skinning = H3DSubMeshSkinning.Rigid;  break;
-                                case GfxSubMeshSkinning.Smooth: SM.Skinning = H3DSubMeshSkinning.Smooth; break;
-                            }
-
-                            SM.Indices = Face.FaceDescriptors[0].Indices;
-
-                            SM.Indices = new ushort[Face.FaceDescriptors[0].Indices.Length];
-
-                            for (int i = 0; i < Face.FaceDescriptors[0].Indices.Length; i++)
-                            {
-                                SM.Indices[i] = Face.FaceDescriptors[0].Indices[i];
-                            }
-
-                            M.SubMeshes.Add(SM);
                         }
 
                         if (SubMesh.Skinning == GfxSubMeshSkinning.Smooth)

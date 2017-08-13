@@ -22,13 +22,13 @@ namespace SPICA.Formats.CtrGfx
             }
         }
 
-        public readonly List<GfxNode> Childs;
+        public readonly List<GfxObject> Childs;
 
         public readonly GfxDict<GfxAnimGroup> AnimationsGroup;
 
         public GfxNode()
         {
-            Childs = new List<GfxNode>();
+            Childs = new List<GfxObject>();
 
             AnimationsGroup = new GfxDict<GfxAnimGroup>();
         }
