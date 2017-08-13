@@ -40,8 +40,28 @@ namespace SPICA.Rendering.Animation
 
                 if (BaseCamera.View is H3DCameraViewLookAt LookAtView)
                 {
-                    CamState.UpVector = LookAtView.UpVector      .ToVector3();
-                    CamState.Target   = LookAtView.TargetPosition.ToVector3();
+                    CamState.Target   = LookAtView.Target  .ToVector3();
+                    CamState.UpVector = LookAtView.UpVector.ToVector3();
+                }
+                else if (BaseCamera.View is H3DCameraViewAim AimView)
+                {
+                    CamState.Target = AimView.Target.ToVector3();
+                    CamState.Twist  = AimView.Twist;
+                }
+                else if (BaseCamera.View is H3DCameraViewRotation RotView)
+                {
+                    CamState.ViewRotation = RotView.Rotation.ToVector3();
+                }
+
+                if (BaseCamera.Projection is H3DCameraProjectionPerspective PerspProj)
+                {
+                    CamState.ZNear = PerspProj.ZNear;
+                    CamState.ZFar  = PerspProj.ZFar;
+                }
+                else if (BaseCamera.Projection is H3DCameraProjectionOrthogonal OrthoProj)
+                {
+                    CamState.ZNear = OrthoProj.ZNear;
+                    CamState.ZFar  = OrthoProj.ZFar;
                 }
             }
         }
@@ -94,8 +114,24 @@ namespace SPICA.Rendering.Animation
 
                     switch (Elem.TargetType)
                     {
-                        case H3DTargetType.CameraUpVector:  SetVector3(Vector, ref CamState.UpVector); break;
-                        case H3DTargetType.CameraTargetPos: SetVector3(Vector, ref CamState.Target);   break;
+                        case H3DTargetType.CameraUpVector:     SetVector3(Vector, ref CamState.UpVector);     break;
+                        case H3DTargetType.CameraTargetPos:    SetVector3(Vector, ref CamState.Target);       break;
+                        case H3DTargetType.CameraViewRotation: SetVector3(Vector, ref CamState.ViewRotation); break;
+                    }
+                }
+                else if (Elem.PrimitiveType == H3DPrimitiveType.Float)
+                {
+                    H3DFloatKeyFrameGroup Float = ((H3DAnimFloat)Elem.Content).Value;
+
+                    if (!Float.Exists) continue;
+
+                    float Value = Float.GetFrameValue(Frame);
+
+                    switch (Elem.TargetType)
+                    {
+                        case H3DTargetType.CameraZNear: CamState.ZNear = Value; break;
+                        case H3DTargetType.CameraZFar:  CamState.ZFar  = Value; break;
+                        case H3DTargetType.CameraTwist: CamState.Twist = Value; break;
                     }
                 }
             }

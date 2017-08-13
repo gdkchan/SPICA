@@ -36,6 +36,12 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         private const string ViewUpdaterTarget = "ViewUpdater.TargetPosition";
         private const string ViewUpdaterUpVec  = "ViewUpdater.UpwardVector";
+        private const string ViewUpdaterRotate = "ViewUpdater.ViewRotate";
+        private const string ViewUpdaterTwist  = "ViewUpdater.Twist";
+
+        private const string ProjectionUpdaterNear = "ProjectionUpdater.Near";
+        private const string ProjectionUpdaterFar  = "ProjectionUpdater.Far";
+        private const string ProjectionUpdaterFOVY = "ProjectionUpdater.Fovy";
 
         public GfxAnimation()
         {
@@ -63,9 +69,6 @@ namespace SPICA.Formats.CtrGfx.Animation
 
             foreach (GfxAnimationElement Elem in Elements)
             {
-                System.Diagnostics.Debug.WriteLine(Elem.Name + " - " + Elem.PrimitiveType);
-
-
                 switch (Elem.PrimitiveType)
             	{
                     case GfxPrimitiveType.Float:
@@ -74,31 +77,48 @@ namespace SPICA.Formats.CtrGfx.Animation
 
                             CopyKeyFrames(((GfxAnimFloat)Elem.Content).Value, Float.Value);
 
-                            Match Path = Regex.Match(Elem.Name, MatCoordRotREx);
+                            H3DTargetType TargetType = 0;
 
-                            if (Path.Success && int.TryParse(Path.Groups[2].Value, out int CoordIdx))
+                            string Name = Elem.Name;
+
+                            if (Elem.Name == ProjectionUpdaterNear)
                             {
-                                H3DTargetType TargetType = 0;
+                                TargetType = H3DTargetType.CameraZNear;
+                            }
+                            else if (Elem.Name == ProjectionUpdaterFar)
+                            {
+                                TargetType = H3DTargetType.CameraZFar;
+                            }
+                            else if (Elem.Name == ViewUpdaterTwist)
+                            {
+                                TargetType = H3DTargetType.CameraTwist;
+                            }
+                            else
+                            {
+                                Match Path = Regex.Match(Elem.Name, MatCoordRotREx);
 
-                                switch (CoordIdx)
+                                if (Path.Success && int.TryParse(Path.Groups[2].Value, out int CoordIdx))
                                 {
-                                    case 0: TargetType = H3DTargetType.MaterialTexCoord0Rot; break;
-                                    case 1: TargetType = H3DTargetType.MaterialTexCoord1Rot; break;
-                                    case 2: TargetType = H3DTargetType.MaterialTexCoord2Rot; break;
-                                }
+                                    Name = Path.Groups[1].Value;
 
-                                if (TargetType != 0)
-                                {
-                                    string Name = Path.Groups[1].Value;
-
-                                    Output.Elements.Add(new H3DAnimationElement()
+                                    switch (CoordIdx)
                                     {
-                                        Name          = Name,
-                                        Content       = Float,
-                                        PrimitiveType = H3DPrimitiveType.Float,
-                                        TargetType    = TargetType
-                                    });
+                                        case 0: TargetType = H3DTargetType.MaterialTexCoord0Rot; break;
+                                        case 1: TargetType = H3DTargetType.MaterialTexCoord1Rot; break;
+                                        case 2: TargetType = H3DTargetType.MaterialTexCoord2Rot; break;
+                                    }                                    
                                 }
+                            }
+
+                            if (TargetType != 0)
+                            {
+                                Output.Elements.Add(new H3DAnimationElement()
+                                {
+                                    Name          = Name,
+                                    Content       = Float,
+                                    PrimitiveType = H3DPrimitiveType.Float,
+                                    TargetType    = TargetType
+                                });
                             }
                         }
                         break;
@@ -163,8 +183,9 @@ namespace SPICA.Formats.CtrGfx.Animation
 
                             switch (Elem.Name)
                             {
-                                case ViewUpdaterTarget: TargetType = H3DTargetType.CameraTargetPos; break;
-                                case ViewUpdaterUpVec:  TargetType = H3DTargetType.CameraUpVector;  break;
+                                case ViewUpdaterTarget: TargetType = H3DTargetType.CameraTargetPos;    break;
+                                case ViewUpdaterUpVec:  TargetType = H3DTargetType.CameraUpVector;     break;
+                                case ViewUpdaterRotate: TargetType = H3DTargetType.CameraViewRotation; break;
                             }
 
                             if (TargetType != 0)

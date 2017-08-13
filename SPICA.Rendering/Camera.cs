@@ -59,9 +59,10 @@ namespace SPICA.Rendering
                     Matrix4.CreateRotationZ(CamState.Rotation.Z) *
                     Matrix4.CreateTranslation(CamState.Translation);
 
+                Vector3 Eye = Transform.Row3.Xyz;
+
                 if (BaseCamera.View is H3DCameraViewLookAt LookAtView)
                 {
-                    Vector3 Eye    = Transform.Row3.Xyz;
                     Vector3 Up     = CamState.UpVector;
                     Vector3 Target = CamState.Target;
 
@@ -82,22 +83,70 @@ namespace SPICA.Rendering
 
                     ViewMatrix = Matrix4.LookAt(Eye, Target, Up);
                 }
+                else if (BaseCamera.View is H3DCameraViewAim AimView)
+                {
+                    Vector3 Target = CamState.Target;
+                    Vector3 EyeDir = Vector3.Normalize(Eye - Target);
+                    Vector3 Twist  = Vector3.Normalize(new Vector3(EyeDir.Z, 0, -EyeDir.X));
+                    Vector3 Cross  = Vector3.Cross(EyeDir, Twist);
+
+                    float ST = (float)Math.Sin(CamState.Twist);
+                    float CT = (float)Math.Cos(CamState.Twist);
+
+                    Vector3 Up = new Vector3(
+                        Cross.X * CT - Twist.X * ST,
+                        Cross.Y * CT - Twist.Y * ST,
+                        Cross.Z * CT - Twist.Z * ST);
+
+                    if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetRotation) != 0)
+                    {
+                        Up     = Vector3.Transform(new Matrix3(Transform), Up);
+                        Target = Vector3.Transform(new Matrix3(Transform), Target);
+                    }
+
+                    if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetTranslation) != 0)
+                    {
+                        Target += Eye;
+                    }
+
+                    ViewMatrix = Matrix4.LookAt(Eye, Target, Up);
+                }
+                else if (BaseCamera.View is H3DCameraViewRotation RotView)
+                {
+                    Matrix3 Rotation =
+                        Matrix3.CreateRotationZ(CamState.ViewRotation.Z) *
+                        Matrix3.CreateRotationX(CamState.ViewRotation.X) *
+                        Matrix3.CreateRotationY(CamState.ViewRotation.Y);
+
+                    Vector3 Up     = Vector3.UnitY;
+                    Vector3 Target = Vector3.Transform(Rotation, new Vector3(0, 0, -1));
+
+                    if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetRotation) != 0)
+                    {
+                        Up     = Vector3.Transform(new Matrix3(Transform), Up);
+                        Target = Vector3.Transform(new Matrix3(Transform), Target);
+                    }
+
+                    Target += Eye;
+
+                    ViewMatrix = Matrix4.LookAt(Eye, Target, Up);
+                }
 
                 if (BaseCamera.Projection is H3DCameraProjectionPerspective PerspProj)
                 {
                     ProjectionMatrix = Matrix4.CreatePerspectiveFieldOfView(
                         PerspProj.FOVY,
                         AspectRatio,
-                        PerspProj.ZNear,
-                        PerspProj.ZFar);
+                        CamState.ZNear,
+                        CamState.ZFar);
                 }
                 else if (BaseCamera.Projection is H3DCameraProjectionOrthogonal OrthoProj)
                 {
                     ProjectionMatrix = Matrix4.CreateOrthographic(
                         Renderer.Width,
                         Renderer.Height,
-                        OrthoProj.ZNear,
-                        OrthoProj.ZFar);
+                        CamState.ZNear,
+                        CamState.ZFar);
                 }
             }
             else

@@ -48,8 +48,8 @@ namespace SPICA.Formats.CtrGfx.Camera
             {
                 Output.View = new H3DCameraViewAim()
                 {
-                    TargetPosition = ViewAim.TargetPosition,
-                    Twist          = ViewAim.Twist
+                    Target = ViewAim.Target,
+                    Twist  = ViewAim.Twist
                 };
 
                 InheritTargetRot   = (ViewAim.Flags & GfxCameraViewAimFlags.IsInheritingTargetRotation)    != 0;
@@ -59,8 +59,8 @@ namespace SPICA.Formats.CtrGfx.Camera
             {
                 Output.View = new H3DCameraViewLookAt()
                 {
-                    TargetPosition = ViewLookAt.TargetPosition,
-                    UpVector       = ViewLookAt.UpVector
+                    Target   = ViewLookAt.Target,
+                    UpVector = ViewLookAt.UpVector
                 };
 
                 InheritUpRot       = (ViewLookAt.Flags & GfxCameraViewLookAtFlags.IsInheritingUpRotation)        != 0;

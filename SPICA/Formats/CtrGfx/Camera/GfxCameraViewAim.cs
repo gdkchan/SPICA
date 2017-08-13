@@ -6,7 +6,7 @@ namespace SPICA.Formats.CtrGfx.Camera
     {
         public GfxCameraViewAimFlags Flags;
 
-        public Vector3 TargetPosition;
+        public Vector3 Target;
 
         public float Twist;
     }

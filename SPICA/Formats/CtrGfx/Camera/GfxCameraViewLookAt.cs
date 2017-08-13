@@ -6,7 +6,7 @@ namespace SPICA.Formats.CtrGfx.Camera
     {
         public GfxCameraViewLookAtFlags Flags;
 
-        public Vector3 TargetPosition;
+        public Vector3 Target;
         public Vector3 UpVector;
     }
 }
