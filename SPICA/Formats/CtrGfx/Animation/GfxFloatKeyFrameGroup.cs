@@ -20,16 +20,9 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         private uint CurveFlags;
         private uint CurveCount;
-        private uint CurveRelPtr;
 
-        public float StartFrame;
-        public float EndFrame;
-
-        private uint FormatFlags;
-
-        private int KeysCount;
-
-        private float InvDuration;
+        [Ignore] public float StartFrame;
+        [Ignore] public float EndFrame;
 
         [Ignore] public bool IsLinear;
 
@@ -46,7 +39,16 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            Quantization = (KeyFrameQuantization)((FormatFlags >> 5) & 7);
+            Deserializer.BaseStream.Seek(Deserializer.ReadPointer(), SeekOrigin.Begin);
+
+            StartFrame = Deserializer.Reader.ReadSingle();
+            EndFrame   = Deserializer.Reader.ReadSingle();
+
+            uint  FormatFlags = Deserializer.Reader.ReadUInt32();
+            int   KeysCount   = Deserializer.Reader.ReadInt32();
+            float InvDuration = Deserializer.Reader.ReadSingle();
+
+            Quantization = (KeyFrameQuantization)(FormatFlags >> 5);
 
             IsLinear = (FormatFlags & 4) != 0;
 
@@ -92,14 +94,12 @@ namespace SPICA.Formats.CtrGfx.Animation
         {
             if (Exists)
             {
-                KeysCount = KeyFrames.Count;
-
                 float MinFrame = KeyFrames[0].Frame;
                 float MaxFrame = KeyFrames[0].Frame;
                 float MinValue = KeyFrames[0].Value;
                 float MaxValue = KeyFrames[0].Value;
 
-                for (int Index = 1; Index < KeysCount; Index++)
+                for (int Index = 1; Index < KeyFrames.Count; Index++)
                 {
                     KeyFrame KF = KeyFrames[Index];
 
@@ -114,7 +114,7 @@ namespace SPICA.Formats.CtrGfx.Animation
 
                 float ValueOffset = MinValue;
 
-                InvDuration = 1f / EndFrame;
+                float InvDuration = 1f / EndFrame;
 
                 if (ValueScale == 1)
                 {
@@ -125,14 +125,13 @@ namespace SPICA.Formats.CtrGfx.Animation
                     ValueOffset = 0;
                 }
 
-                _StartFrame = StartFrame;
-                _EndFrame   = EndFrame;
+                _StartFrame = StartFrame = MinFrame;
+                _EndFrame   = EndFrame   = MaxFrame;
 
                 CurveFlags  = KeyFrames.Count == 0 ? 2u : 4u;
                 CurveCount  = 1;
-                CurveRelPtr = 4;
 
-                FormatFlags = ((uint)Quantization << 5) | (KeyFrames.Count == 1 ? 1u : 0u);
+                uint FormatFlags = ((uint)Quantization << 5) | (KeyFrames.Count == 1 ? 1u : 0u);
 
                 if (Quantization >= KeyFrameQuantization.StepLinear64)
                 {
@@ -144,6 +143,14 @@ namespace SPICA.Formats.CtrGfx.Animation
                 }
 
                 Serializer.WriteValue(this);
+
+                Serializer.Writer.Write(4u); //Curve Rel Ptr
+
+                Serializer.Writer.Write(StartFrame);
+                Serializer.Writer.Write(EndFrame);
+                Serializer.Writer.Write(FormatFlags);
+                Serializer.Writer.Write(KeyFrames.Count);
+                Serializer.Writer.Write(InvDuration);
 
                 if (Quantization != KeyFrameQuantization.Hermite128       &&
                     Quantization != KeyFrameQuantization.UnifiedHermite96 &&
