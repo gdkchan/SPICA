@@ -18,8 +18,13 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         private ushort Padding;
 
-        private uint CurveFlags;
-        private uint CurveCount;
+        private enum KeyFrameCurveFlags : uint
+        {
+            IsConstantValue  = 1 << 1,
+            IsQuantizedCurve = 1 << 2
+        }
+
+        private KeyFrameCurveFlags CurveFlags;
 
         [Ignore] public float StartFrame;
         [Ignore] public float EndFrame;
@@ -39,6 +44,17 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
+            if ((CurveFlags & KeyFrameCurveFlags.IsConstantValue) != 0)
+            {
+                float Value = Deserializer.Reader.ReadSingle();
+
+                KeyFrames.Add(new KeyFrame(0, Value));
+
+                return;
+            }
+
+            int CurveCount = Deserializer.Reader.ReadInt32();
+
             Deserializer.BaseStream.Seek(Deserializer.ReadPointer(), SeekOrigin.Begin);
 
             StartFrame = Deserializer.Reader.ReadSingle();
@@ -92,97 +108,106 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)
         {
-            if (Exists)
+            float MinFrame = KeyFrames.Count > 0 ? KeyFrames[0].Frame : 0;
+            float MaxFrame = KeyFrames.Count > 0 ? KeyFrames[0].Frame : 0;
+            float MinValue = KeyFrames.Count > 0 ? KeyFrames[0].Value : 0;
+            float MaxValue = KeyFrames.Count > 0 ? KeyFrames[0].Value : 0;
+
+            for (int Index = 1; Index < KeyFrames.Count; Index++)
             {
-                float MinFrame = KeyFrames[0].Frame;
-                float MaxFrame = KeyFrames[0].Frame;
-                float MinValue = KeyFrames[0].Value;
-                float MaxValue = KeyFrames[0].Value;
+                KeyFrame KF = KeyFrames[Index];
 
-                for (int Index = 1; Index < KeyFrames.Count; Index++)
-                {
-                    KeyFrame KF = KeyFrames[Index];
-
-                    if (KF.Frame < MinFrame) MinFrame = KF.Frame;
-                    if (KF.Frame > MaxFrame) MaxFrame = KF.Frame;
-                    if (KF.Value < MinValue) MinValue = KF.Value;
-                    if (KF.Value > MaxValue) MaxValue = KF.Value;
-                }
-
-                float ValueScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxValue - MinValue);
-                float FrameScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxFrame - MinFrame);
-
-                float ValueOffset = MinValue;
-
-                float InvDuration = 1f / EndFrame;
-
-                if (ValueScale == 1)
-                {
-                    /*
-                     * Quantizations were the value scale is not needed (like the ones that already stores the value
-                     * as float) will ignore the offset aswell, so we need to set to to zero.
-                     */
-                    ValueOffset = 0;
-                }
-
-                _StartFrame = StartFrame = MinFrame;
-                _EndFrame   = EndFrame   = MaxFrame;
-
-                CurveFlags  = KeyFrames.Count == 0 ? 2u : 4u;
-                CurveCount  = 1;
-
-                uint FormatFlags = ((uint)Quantization << 5) | (KeyFrames.Count == 1 ? 1u : 0u);
-
-                if (Quantization >= KeyFrameQuantization.StepLinear64)
-                {
-                    FormatFlags |= IsLinear ? 4u : 0u;
-                }
-                else
-                {
-                    FormatFlags |= 8;
-                }
-
-                Serializer.WriteValue(this);
-
-                Serializer.Writer.Write(4u); //Curve Rel Ptr
-
-                Serializer.Writer.Write(StartFrame);
-                Serializer.Writer.Write(EndFrame);
-                Serializer.Writer.Write(FormatFlags);
-                Serializer.Writer.Write(KeyFrames.Count);
-                Serializer.Writer.Write(InvDuration);
-
-                if (Quantization != KeyFrameQuantization.Hermite128       &&
-                    Quantization != KeyFrameQuantization.UnifiedHermite96 &&
-                    Quantization != KeyFrameQuantization.StepLinear64)
-                {
-                    Serializer.Writer.Write(ValueScale);
-                    Serializer.Writer.Write(ValueOffset);
-                    Serializer.Writer.Write(FrameScale);
-                }
-
-                foreach (KeyFrame Key in KeyFrames)
-                {
-                    KeyFrame KF = Key;
-
-                    KF.Frame = (KF.Frame / FrameScale);
-                    KF.Value = (KF.Value - ValueOffset) / ValueScale;                   
-
-                    switch (Quantization)
-                    {
-                        case KeyFrameQuantization.Hermite128:       Serializer.Writer.WriteHermite128(KF);       break;
-                        case KeyFrameQuantization.Hermite64:        Serializer.Writer.WriteHermite64(KF);        break;
-                        case KeyFrameQuantization.Hermite48:        Serializer.Writer.WriteHermite48(KF);        break;
-                        case KeyFrameQuantization.UnifiedHermite96: Serializer.Writer.WriteUnifiedHermite96(KF); break;
-                        case KeyFrameQuantization.UnifiedHermite48: Serializer.Writer.WriteUnifiedHermite48(KF); break;
-                        case KeyFrameQuantization.UnifiedHermite32: Serializer.Writer.WriteUnifiedHermite32(KF); break;
-                        case KeyFrameQuantization.StepLinear64:     Serializer.Writer.WriteStepLinear64(KF);     break;
-                        case KeyFrameQuantization.StepLinear32:     Serializer.Writer.WriteStepLinear32(KF);     break;
-                    }
-                }
-
-                while ((Serializer.BaseStream.Position & 3) != 0) Serializer.BaseStream.WriteByte(0);
+                if (KF.Frame < MinFrame) MinFrame = KF.Frame;
+                if (KF.Frame > MaxFrame) MaxFrame = KF.Frame;
+                if (KF.Value < MinValue) MinValue = KF.Value;
+                if (KF.Value > MaxValue) MaxValue = KF.Value;
             }
+
+            float ValueScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxValue - MinValue);
+            float FrameScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxFrame - MinFrame);
+
+            float ValueOffset = MinValue;
+
+            float InvDuration = 1f / EndFrame;
+
+            if (ValueScale == 1)
+            {
+                /*
+                    * Quantizations were the value scale is not needed (like the ones that already stores the value
+                    * as float) will ignore the offset aswell, so we need to set to to zero.
+                    */
+                ValueOffset = 0;
+            }
+
+            _StartFrame = StartFrame;
+            _EndFrame   = EndFrame;
+
+            CurveFlags = KeyFrames.Count < 2
+                ? KeyFrameCurveFlags.IsConstantValue
+                : KeyFrameCurveFlags.IsQuantizedCurve;
+
+            uint FormatFlags = ((uint)Quantization << 5) | (KeyFrames.Count == 1 ? 1u : 0u);
+
+            if (Quantization >= KeyFrameQuantization.StepLinear64)
+            {
+                FormatFlags |= IsLinear ? 4u : 0u;
+            }
+            else
+            {
+                FormatFlags |= 8;
+            }
+
+            Serializer.WriteValue(this);
+
+            if (KeyFrames.Count < 2)
+            {
+                if (KeyFrames.Count > 0)
+                    Serializer.Writer.Write(KeyFrames[0].Value);
+                else
+                    Serializer.Writer.Write(0f);
+
+                return true;
+            }
+
+            Serializer.Writer.Write(1); //Curve Count
+            Serializer.Writer.Write(4); //Curve Rel Ptr
+
+            Serializer.Writer.Write(StartFrame);
+            Serializer.Writer.Write(EndFrame);
+            Serializer.Writer.Write(FormatFlags);
+            Serializer.Writer.Write(KeyFrames.Count);
+            Serializer.Writer.Write(InvDuration);
+
+            if (Quantization != KeyFrameQuantization.Hermite128       &&
+                Quantization != KeyFrameQuantization.UnifiedHermite96 &&
+                Quantization != KeyFrameQuantization.StepLinear64)
+            {
+                Serializer.Writer.Write(ValueScale);
+                Serializer.Writer.Write(ValueOffset);
+                Serializer.Writer.Write(FrameScale);
+            }
+
+            foreach (KeyFrame Key in KeyFrames)
+            {
+                KeyFrame KF = Key;
+
+                KF.Frame = (KF.Frame / FrameScale);
+                KF.Value = (KF.Value - ValueOffset) / ValueScale;                   
+
+                switch (Quantization)
+                {
+                    case KeyFrameQuantization.Hermite128:       Serializer.Writer.WriteHermite128(KF);       break;
+                    case KeyFrameQuantization.Hermite64:        Serializer.Writer.WriteHermite64(KF);        break;
+                    case KeyFrameQuantization.Hermite48:        Serializer.Writer.WriteHermite48(KF);        break;
+                    case KeyFrameQuantization.UnifiedHermite96: Serializer.Writer.WriteUnifiedHermite96(KF); break;
+                    case KeyFrameQuantization.UnifiedHermite48: Serializer.Writer.WriteUnifiedHermite48(KF); break;
+                    case KeyFrameQuantization.UnifiedHermite32: Serializer.Writer.WriteUnifiedHermite32(KF); break;
+                    case KeyFrameQuantization.StepLinear64:     Serializer.Writer.WriteStepLinear64(KF);     break;
+                    case KeyFrameQuantization.StepLinear32:     Serializer.Writer.WriteStepLinear32(KF);     break;
+                }
+            }
+
+            while ((Serializer.BaseStream.Position & 3) != 0) Serializer.BaseStream.WriteByte(0);
 
             return true;
         }
