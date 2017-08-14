@@ -472,19 +472,37 @@ namespace SPICA.Formats.Generic.COLLADA
 
                         bool IsRotation = i > 0 && i < 4; //1, 2, 3
 
-                        if (Elem.PrimitiveType == H3DPrimitiveType.Transform)
+                        bool Skip =
+                            Elem.PrimitiveType != H3DPrimitiveType.Transform &&
+                            Elem.PrimitiveType != H3DPrimitiveType.QuatTransform;
+
+                        if (!Skip)
                         {
-                            if (SklBone == null) break;
-
-                            if (IsRotation)
+                            if (Elem.Content is H3DAnimTransform Transform)
                             {
-                                if (i == 1 && !((H3DAnimTransform)Elem.Content).RotationX.Exists) i++;
-                                if (i == 2 && !((H3DAnimTransform)Elem.Content).RotationY.Exists) i++;
-                                if (i == 3 && !((H3DAnimTransform)Elem.Content).RotationZ.Exists) i++;
-
-                                IsRotation = i < 4;
+                                switch (i)
+                                {
+                                    case 0: Skip = !Transform.TranslationExists; break;
+                                    case 1: Skip = !Transform.RotationX.Exists;  break;
+                                    case 2: Skip = !Transform.RotationY.Exists;  break;
+                                    case 3: Skip = !Transform.RotationZ.Exists;  break;
+                                    case 4: Skip = !Transform.ScaleExists;       break;
+                                }
+                            }
+                            else if (Elem.Content is H3DAnimQuatTransform QuatTransform)
+                            {
+                                switch (i)
+                                {
+                                    case 0: Skip = !QuatTransform.HasTranslation; break;
+                                    case 1: Skip = !QuatTransform.HasRotation;    break;
+                                    case 2: Skip = !QuatTransform.HasRotation;    break;
+                                    case 3: Skip = !QuatTransform.HasRotation;    break;
+                                    case 4: Skip = !QuatTransform.HasScale;       break;
+                                }
                             }
                         }
+
+                        if (Skip) continue;
 
                         for (int Frame = 0; Frame < FramesCount; Frame++)
                         {
@@ -494,86 +512,75 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             Vector3 InvScale = Vector3.One;
 
-                            switch (Elem.PrimitiveType)
+                            if (Elem.Content is H3DAnimTransform Transform)
                             {
-                                case H3DPrimitiveType.Transform:
-                                    H3DAnimTransform Transform = (H3DAnimTransform)Elem.Content;
-
-                                    //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                //Compensate parent bone scale (basically, don't inherit scales)
+                                if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                {
+                                    if (PElem != null)
                                     {
-                                        if (PElem != null)
-                                        {
-                                            H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
+                                        H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
 
-                                            InvScale /= new Vector3(
-                                                PTrans.ScaleX.Exists ? PTrans.ScaleX.GetFrameValue(Frame) : Parent.Scale.X,
-                                                PTrans.ScaleY.Exists ? PTrans.ScaleY.GetFrameValue(Frame) : Parent.Scale.Y,
-                                                PTrans.ScaleZ.Exists ? PTrans.ScaleZ.GetFrameValue(Frame) : Parent.Scale.Z);
-                                        }
-                                        else
-                                        {
-                                            InvScale /= Parent.Scale;
-                                        }
+                                        InvScale /= new Vector3(
+                                            PTrans.ScaleX.Exists ? PTrans.ScaleX.GetFrameValue(Frame) : Parent.Scale.X,
+                                            PTrans.ScaleY.Exists ? PTrans.ScaleY.GetFrameValue(Frame) : Parent.Scale.Y,
+                                            PTrans.ScaleZ.Exists ? PTrans.ScaleZ.GetFrameValue(Frame) : Parent.Scale.Z);
                                     }
-
-                                    switch (i)
+                                    else
                                     {
-                                        //Translation
-                                        case 0:
-                                            StrTrans = DAEUtils.VectorStr(new Vector3(
-                                                Transform.TranslationX.Exists //X
-                                                ? Transform.TranslationX.GetFrameValue(Frame) : SklBone.Translation.X,
-                                                Transform.TranslationY.Exists //Y
-                                                ? Transform.TranslationY.GetFrameValue(Frame) : SklBone.Translation.Y,
-                                                Transform.TranslationZ.Exists //Z
-                                                ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z));
-                                            break;
-
-                                        //Scale
-                                        case 4:
-                                            StrTrans = DAEUtils.VectorStr(InvScale * new Vector3(
-                                                Transform.ScaleX.Exists //X
-                                                ? Transform.ScaleX.GetFrameValue(Frame) : SklBone.Scale.X,
-                                                Transform.ScaleY.Exists //Y
-                                                ? Transform.ScaleY.GetFrameValue(Frame) : SklBone.Scale.Y,
-                                                Transform.ScaleZ.Exists //Z
-                                                ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z));
-                                            break;
-
-                                        //Rotation
-                                        case 1: StrTrans = DAEUtils.RadToDegStr(Transform.RotationX.GetFrameValue(Frame)); break;
-                                        case 2: StrTrans = DAEUtils.RadToDegStr(Transform.RotationY.GetFrameValue(Frame)); break;
-                                        case 3: StrTrans = DAEUtils.RadToDegStr(Transform.RotationZ.GetFrameValue(Frame)); break;
+                                        InvScale /= Parent.Scale;
                                     }
-                                    break;
+                                }
 
-                                case H3DPrimitiveType.QuatTransform:
-                                    H3DAnimQuatTransform QuatTransform = (H3DAnimQuatTransform)Elem.Content;
+                                switch (i)
+                                {
+                                    //Translation
+                                    case 0:
+                                        StrTrans = DAEUtils.VectorStr(new Vector3(
+                                            Transform.TranslationX.Exists //X
+                                            ? Transform.TranslationX.GetFrameValue(Frame) : SklBone.Translation.X,
+                                            Transform.TranslationY.Exists //Y
+                                            ? Transform.TranslationY.GetFrameValue(Frame) : SklBone.Translation.Y,
+                                            Transform.TranslationZ.Exists //Z
+                                            ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z));
+                                        break;
 
-                                    Vector3 Rotation = Vector3.Zero;
+                                    //Scale
+                                    case 4:
+                                        StrTrans = DAEUtils.VectorStr(InvScale * new Vector3(
+                                            Transform.ScaleX.Exists //X
+                                            ? Transform.ScaleX.GetFrameValue(Frame) : SklBone.Scale.X,
+                                            Transform.ScaleY.Exists //Y
+                                            ? Transform.ScaleY.GetFrameValue(Frame) : SklBone.Scale.Y,
+                                            Transform.ScaleZ.Exists //Z
+                                            ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z));
+                                        break;
 
-                                    //TODO: ToEuler is expensive, ideally call it only once per bone
-                                    if (IsRotation) Rotation = QuatTransform.GetRotationValue(Frame).ToEuler();
+                                    //Rotation
+                                    case 1: StrTrans = DAEUtils.RadToDegStr(Transform.RotationX.GetFrameValue(Frame)); break;
+                                    case 2: StrTrans = DAEUtils.RadToDegStr(Transform.RotationY.GetFrameValue(Frame)); break;
+                                    case 3: StrTrans = DAEUtils.RadToDegStr(Transform.RotationZ.GetFrameValue(Frame)); break;
+                                }
+                            }
+                            else if (Elem.Content is H3DAnimQuatTransform QuatTransform)
+                            {
+                                //Compensate parent bone scale (basically, don't inherit scales)
+                                if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                {
+                                    if (PElem != null)
+                                        InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
+                                    else
+                                        InvScale /= Parent.Scale;
+                                }
 
-                                    //Compensate parent bone scale (basically, don't inherit scales)
-                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
-                                    {
-                                        if (PElem != null)
-                                            InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
-                                        else
-                                            InvScale /= Parent.Scale;
-                                    }
-
-                                    switch (i)
-                                    {
-                                        case 0: StrTrans = DAEUtils.VectorStr(QuatTransform.GetTranslationValue(Frame)); break;
-                                        case 1: StrTrans = DAEUtils.RadToDegStr(Rotation.X); break;
-                                        case 2: StrTrans = DAEUtils.RadToDegStr(Rotation.Y); break;
-                                        case 3: StrTrans = DAEUtils.RadToDegStr(Rotation.Z); break;
-                                        case 4: StrTrans = DAEUtils.VectorStr(InvScale * QuatTransform.GetScaleValue(Frame)); break;
-                                    }
-                                    break;
+                                switch (i)
+                                {
+                                    case 0: StrTrans = DAEUtils.VectorStr(QuatTransform.GetTranslationValue(Frame));            break;
+                                    case 1: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().X); break;
+                                    case 2: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().Y); break;
+                                    case 3: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().Z); break;
+                                    case 4: StrTrans = DAEUtils.VectorStr(InvScale * QuatTransform.GetScaleValue(Frame));       break;
+                                }
                             }
 
                             //This is the Time in seconds, so we divide by the target FPS
@@ -587,7 +594,7 @@ namespace SPICA.Formats.Generic.COLLADA
                         Anim.name = $"{SklAnim.Name}_{Elem.Name}_{AnimElemNames[i]}";
                         Anim.id   = $"{Anim.name}_id";
 
-                        Anim.src.Add(new DAESource($"{Anim.name}_frame", 1, AnimTimes, "TIME", "float"));
+                        Anim.src.Add(new DAESource($"{Anim.name}_frame",  1, AnimTimes, "TIME",          "float"));
                         Anim.src.Add(new DAESource($"{Anim.name}_interp", 1, AnimLerps, "INTERPOLATION", "Name"));
 
                         Anim.src.Add(IsRotation
