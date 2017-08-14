@@ -220,7 +220,7 @@ namespace SPICA.Formats.GFL.Motion
                     Vector3[] LocalTrans = new Vector3[FramesCount + 1];
                     Vector3[] ParentRot  = new Vector3[FramesCount + 1];
 
-                    int    BoneIndex   = Skeleton.FindIndex(Bone.Name);
+                    int    BoneIndex   = Skeleton.Find(Bone.Name);
                     int    ParentIndex = Skeleton[BoneIndex].ParentIndex;
                     string ParentName  = Skeleton[ParentIndex].Name;
 

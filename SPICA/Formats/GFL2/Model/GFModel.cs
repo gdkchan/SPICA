@@ -287,30 +287,30 @@ namespace SPICA.Formats.GFL2.Model
                  */
                 Params.MetaData = new H3DMetaData();
 
-                Params.MetaData.Values.Add(new H3DMetaDataValue("EdgeType",           Material.EdgeType));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("IDEdgeEnable",       Material.IDEdgeEnable));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("EdgeID",             Material.EdgeID));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("ProjectionType",     Material.ProjectionType));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("RimPow",             Material.RimPower));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("RimScale",           Material.RimScale));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("PhongPow",           Material.PhongPower));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("PhongScale",         Material.PhongScale));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("IDEdgeOffsetEnable", Material.IDEdgeOffsetEnable));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("EdgeMapAlphaMask",   Material.EdgeMapAlphaMask));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeTexture0",       Material.BakeTexture0));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeTexture1",       Material.BakeTexture1));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeTexture2",       Material.BakeTexture2));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant0",      Material.BakeConstant0));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant1",      Material.BakeConstant1));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant2",      Material.BakeConstant2));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant3",      Material.BakeConstant3));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant4",      Material.BakeConstant4));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("BakeConstant5",      Material.BakeConstant5));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("VertexShaderType",   Material.VertexShaderType));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam0",       Material.ShaderParam0 * 3));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam1",       Material.ShaderParam1));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam2",       Material.ShaderParam2));
-                Params.MetaData.Values.Add(new H3DMetaDataValue("ShaderParam3",       Material.ShaderParam3));
+                Params.MetaData.Add(new H3DMetaDataValue("EdgeType",           Material.EdgeType));
+                Params.MetaData.Add(new H3DMetaDataValue("IDEdgeEnable",       Material.IDEdgeEnable));
+                Params.MetaData.Add(new H3DMetaDataValue("EdgeID",             Material.EdgeID));
+                Params.MetaData.Add(new H3DMetaDataValue("ProjectionType",     Material.ProjectionType));
+                Params.MetaData.Add(new H3DMetaDataValue("RimPow",             Material.RimPower));
+                Params.MetaData.Add(new H3DMetaDataValue("RimScale",           Material.RimScale));
+                Params.MetaData.Add(new H3DMetaDataValue("PhongPow",           Material.PhongPower));
+                Params.MetaData.Add(new H3DMetaDataValue("PhongScale",         Material.PhongScale));
+                Params.MetaData.Add(new H3DMetaDataValue("IDEdgeOffsetEnable", Material.IDEdgeOffsetEnable));
+                Params.MetaData.Add(new H3DMetaDataValue("EdgeMapAlphaMask",   Material.EdgeMapAlphaMask));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeTexture0",       Material.BakeTexture0));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeTexture1",       Material.BakeTexture1));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeTexture2",       Material.BakeTexture2));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeConstant0",      Material.BakeConstant0));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeConstant1",      Material.BakeConstant1));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeConstant2",      Material.BakeConstant2));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeConstant3",      Material.BakeConstant3));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeConstant4",      Material.BakeConstant4));
+                Params.MetaData.Add(new H3DMetaDataValue("BakeConstant5",      Material.BakeConstant5));
+                Params.MetaData.Add(new H3DMetaDataValue("VertexShaderType",   Material.VertexShaderType));
+                Params.MetaData.Add(new H3DMetaDataValue("ShaderParam0",       Material.ShaderParam0 * 3));
+                Params.MetaData.Add(new H3DMetaDataValue("ShaderParam1",       Material.ShaderParam1));
+                Params.MetaData.Add(new H3DMetaDataValue("ShaderParam2",       Material.ShaderParam2));
+                Params.MetaData.Add(new H3DMetaDataValue("ShaderParam3",       Material.ShaderParam3));
 
                 
 

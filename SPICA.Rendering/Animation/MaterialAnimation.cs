@@ -15,10 +15,6 @@ namespace SPICA.Rendering.Animation
 
         private MaterialState[] States;
 
-        private List<int> Indices;
-
-        private List<H3DAnimationElement> Elements;
-
         public MaterialAnimation(H3DDict<H3DMaterial> Materials)
         {
             this.Materials = Materials;
@@ -29,45 +25,13 @@ namespace SPICA.Rendering.Animation
             {
                 States[i] = new MaterialState();
             }
-
-            Indices = new List<int>();
-
-            Elements = new List<H3DAnimationElement>();
         }
 
         public override void SetAnimations(IEnumerable<H3DAnimation> Animations)
         {
             ResetStates();
 
-            Indices.Clear();
-            Elements.Clear();
-
-            float FC = 0;
-
-            HashSet<string> UsedNames = new HashSet<string>();
-
-            foreach (H3DAnimation Anim in Animations)
-            {
-                if (FC < Anim.FramesCount)
-                    FC = Anim.FramesCount;
-
-                foreach (H3DAnimationElement Elem in Anim.Elements)
-                {
-                    if (UsedNames.Contains(Elem.Name)) continue;
-
-                    UsedNames.Add(Elem.Name);
-
-                    int Index = Materials.FindIndex(Elem.Name);
-
-                    if (Index != -1)
-                    {
-                        Indices.Add(Index);
-                        Elements.Add(Elem);
-                    }
-                }
-            }
-
-            FramesCount = FC;
+            SetAnimations(Animations, Materials);
         }
 
         private void ResetStates()

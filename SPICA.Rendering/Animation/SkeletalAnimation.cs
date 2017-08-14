@@ -46,12 +46,6 @@ namespace SPICA.Rendering.Animation
 
         private Matrix4[] Transforms;
 
-        private List<int> Indices;
-
-        private List<H3DAnimationElement> Elements;
-
-        private const string InvalidPrimitiveTypeEx = "Invalid Primitive type used on Skeleton Bone {0}!";
-
         public SkeletalAnimation(H3DDict<H3DBone> Skeleton)
         {
             this.Skeleton = Skeleton;
@@ -76,10 +70,6 @@ namespace SPICA.Rendering.Animation
                     FrameSkeleton[i].Parent = FrameSkeleton[Skeleton[i].ParentIndex];
                 }
             }
-
-            Indices = new List<int>();
-
-            Elements = new List<H3DAnimationElement>();
         }
 
         public override void SetAnimations(IEnumerable<H3DAnimation> Animations)
@@ -95,35 +85,7 @@ namespace SPICA.Rendering.Animation
 
             ResetTransforms();
 
-            Indices.Clear();
-            Elements.Clear();
-
-            float FC = 0;
-
-            HashSet<string> UsedNames = new HashSet<string>();
-
-            foreach (H3DAnimation Anim in Animations)
-            {
-                if (FC < Anim.FramesCount)
-                    FC = Anim.FramesCount;
-
-                foreach (H3DAnimationElement Elem in Anim.Elements)
-                {
-                    if (UsedNames.Contains(Elem.Name)) continue;
-
-                    UsedNames.Add(Elem.Name);
-
-                    int Index = Skeleton.FindIndex(Elem.Name);
-
-                    if (Index != -1)
-                    {
-                        Indices.Add(Index);
-                        Elements.Add(Elem);
-                    }
-                }
-            }
-
-            FramesCount = FC;
+            SetAnimations(Animations, Skeleton);
         }
 
         private void ResetTransforms()
@@ -176,8 +138,6 @@ namespace SPICA.Rendering.Animation
                         Skip[Index] = true;
 
                         break;
-
-                    default: throw new InvalidOperationException(string.Format(InvalidPrimitiveTypeEx, Elem.Name));
                 }
             }
 

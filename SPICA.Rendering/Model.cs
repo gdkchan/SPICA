@@ -30,9 +30,11 @@ namespace SPICA.Rendering
         internal Matrix4[]       InverseTransforms;
         internal Matrix4[]       SkeletonTransforms;
         internal MaterialState[] MaterialStates;
+        internal bool[]          Visibilities;
 
-        public readonly SkeletalAnimation SkeletalAnim;
-        public readonly MaterialAnimation MaterialAnim;
+        public readonly SkeletalAnimation   SkeletalAnim;
+        public readonly MaterialAnimation   MaterialAnim;
+        public readonly VisibilityAnimation VisibilityAnim;
 
         private Dictionary<int, int> ShaderHashes;
 
@@ -65,8 +67,11 @@ namespace SPICA.Rendering
             AddMeshes(Meshes2, BaseModel.MeshesLayer2);
             AddMeshes(Meshes3, BaseModel.MeshesLayer3);
 
-            SkeletalAnim = new SkeletalAnimation(BaseModel.Skeleton);
-            MaterialAnim = new MaterialAnimation(BaseModel.Materials);
+            SkeletalAnim   = new SkeletalAnimation(BaseModel.Skeleton);
+            MaterialAnim   = new MaterialAnimation(BaseModel.Materials);
+            VisibilityAnim = new VisibilityAnimation(
+                BaseModel.MeshNodesTree,
+                BaseModel.MeshNodesVisibility);
 
             Transform = Matrix4.Identity;
 
@@ -75,7 +80,7 @@ namespace SPICA.Rendering
 
         private void AddMeshes(List<Mesh> Dst, List<H3DMesh> Src)
         {
-            foreach (H3DMesh Mesh in Src)
+            foreach (H3DMesh Mesh in Src.OrderBy(x => x.Priority))
             {
                 Dst.Add(new Mesh(this, Mesh));
             }
@@ -150,16 +155,16 @@ namespace SPICA.Rendering
 
                 if (Params.MetaData != null)
                 {
-                    foreach (H3DMetaDataValue Value in Params.MetaData.Values)
+                    foreach (H3DMetaDataValue MD in Params.MetaData)
                     {
-                        if (Value.Type == H3DMetaDataType.Single)
+                        if (MD.Type == H3DMetaDataType.Single)
                         {
-                            switch (Value.Name)
+                            switch (MD.Name)
                             {
-                                case "$ShaderParam0": ShaderParam.W = (float)Value[0]; break;
-                                case "$ShaderParam1": ShaderParam.Z = (float)Value[0]; break;
-                                case "$ShaderParam2": ShaderParam.Y = (float)Value[0]; break;
-                                case "$ShaderParam3": ShaderParam.X = (float)Value[0]; break;
+                                case "$ShaderParam0": ShaderParam.W = (float)MD.Values[0]; break;
+                                case "$ShaderParam1": ShaderParam.Z = (float)MD.Values[0]; break;
+                                case "$ShaderParam2": ShaderParam.Y = (float)MD.Values[0]; break;
+                                case "$ShaderParam3": ShaderParam.X = (float)MD.Values[0]; break;
                             }
                         }
                     }
@@ -454,7 +459,10 @@ namespace SPICA.Rendering
             if (BaseModel.Meshes.Count > 0)
             {
                 SkeletonTransforms = SkeletalAnim.GetSkeletonTransforms();
-                MaterialStates     = MaterialAnim.GetMaterialStates();
+
+                MaterialStates = MaterialAnim.GetMaterialStates();
+
+                Visibilities = VisibilityAnim.GetMeshVisibilities();
             }
         }
 
@@ -466,10 +474,17 @@ namespace SPICA.Rendering
             RenderMeshes(Meshes3);
         }
 
-        private void RenderMeshes(List<Mesh> Meshes)
+        private void RenderMeshes(IEnumerable<Mesh> Meshes)
         {
-            foreach (Mesh Mesh in Meshes.OrderBy(x => x.BaseMesh.Priority))
+            foreach (Mesh Mesh in Meshes)
             {
+                int n = Mesh.BaseMesh.NodeIndex;
+
+                if (n < Visibilities.Length && !Visibilities[n])
+                {
+                    continue;
+                }
+
                 Shader Shader = Shaders[Mesh.BaseMesh.MaterialIndex];
 
                 GL.UseProgram(Shader.Handle);

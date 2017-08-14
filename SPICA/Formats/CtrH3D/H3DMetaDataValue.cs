@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace SPICA.Formats.CtrH3D
 {
     [Inline]
-    public class H3DMetaDataValue : IEnumerable, INamed
+    public class H3DMetaDataValue : INamed
     {
         private string _Name;
 
@@ -29,15 +29,7 @@ namespace SPICA.Formats.CtrH3D
         [TypeChoice((uint)H3DMetaDataType.BoundingBox,   typeof(List<H3DBoundingBox>))]
         [TypeChoice((uint)H3DMetaDataType.VertexData,    typeof(List<H3DVertexData>))]
         [CustomLength(LengthPos.BeforePtr, LengthSize.Short)]
-        private IList Values;
-
-        public int Count { get { return Values.Count; } }
-
-        public object this[int Index]
-        {
-            get => Values[Index];
-            set => Values[Index] = value;
-        }
+        public IList Values;
 
         public H3DMetaDataValue() { }
 
@@ -92,16 +84,6 @@ namespace SPICA.Formats.CtrH3D
             Type = H3DMetaDataType.BoundingBox;
 
             Values = new List<H3DBoundingBox> { OBB };
-        }
-
-        public IEnumerator GetEnumerator()
-        {
-            return Values.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

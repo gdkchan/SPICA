@@ -5,6 +5,7 @@ using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
 using SPICA.Formats.CtrH3D.Model.Mesh;
 using SPICA.PICA.Commands;
+using SPICA.PICA.Converters;
 using SPICA.Rendering.Shaders;
 using SPICA.Rendering.SPICA_GL;
 
@@ -15,9 +16,8 @@ namespace SPICA.Rendering
 {
     public class Mesh : IDisposable
     {
-        private int  VBOHandle;
-        private int  VAOHandle;
-        public  bool Visible;
+        private int VBOHandle;
+        private int VAOHandle;
         
         private  Model       Parent;
         internal H3DMesh     BaseMesh;
@@ -26,11 +26,10 @@ namespace SPICA.Rendering
         private  Vector4     Scales1;
         private  Vector4     PosOffs;
 
-        public Mesh(Model Parent, H3DMesh BaseMesh, bool Visible = true)
+        public Mesh(Model Parent, H3DMesh BaseMesh)
         {
             this.Parent   = Parent;
             this.BaseMesh = BaseMesh;
-            this.Visible  = Visible;
 
             Material = Parent.BaseModel.Materials[BaseMesh.MaterialIndex];
 

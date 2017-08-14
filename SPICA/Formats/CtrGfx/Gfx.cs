@@ -430,6 +430,17 @@ namespace SPICA.Formats.CtrGfx
                     M.Layer          = Layer;
                     M.Priority       = Mesh.RenderPriority;
 
+                    H3DBoundingBox OBB = new H3DBoundingBox()
+                    {
+                        Center      = Shape.BoundingBox.Center,
+                        Orientation = Shape.BoundingBox.Orientation,
+                        Size        = Shape.BoundingBox.Size
+                    };
+
+                    M.MetaData = new H3DMetaData();
+
+                    M.MetaData.Add(new H3DMetaDataValue(OBB));
+
                     int SmoothCount = 0;
 
                     foreach (GfxSubMesh SubMesh in Shape.SubMeshes)
@@ -482,6 +493,17 @@ namespace SPICA.Formats.CtrGfx
                     M.UpdateBoolUniforms(Mdl.Materials[Mesh.MaterialIndex]);
 
                     Mdl.AddMesh(M);
+                }
+
+                //Workaround to fix blending problems until I can find a proper way.
+                Mdl.MeshesLayer1.Reverse();
+
+                Mdl.MeshNodesTree = new H3DPatriciaTree();
+
+                foreach (GfxMeshNodeVisibility MeshNode in Model.MeshNodeVisibilities)
+                {
+                    Mdl.MeshNodesTree.Add(MeshNode.Name);
+                    Mdl.MeshNodesVisibility.Add(MeshNode.IsVisible);
                 }
 
                 if (Model is GfxModelSkeletal)
@@ -571,6 +593,11 @@ namespace SPICA.Formats.CtrGfx
             foreach (GfxAnimation MatAnim in MaterialAnimations)
             {
                 Output.MaterialAnimations.Add(MatAnim.ToH3DAnimation());
+            }
+
+            foreach (GfxAnimation VisAnim in VisibilityAnimations)
+            {
+                Output.VisibilityAnimations.Add(VisAnim.ToH3DAnimation());
             }
 
             foreach (GfxAnimation CamAnim in CameraAnimations)

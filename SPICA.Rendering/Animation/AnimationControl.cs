@@ -1,4 +1,5 @@
-﻿using SPICA.Formats.CtrH3D.Animation;
+﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D.Animation;
 
 using System;
 using System.Collections.Generic;
@@ -29,12 +30,53 @@ namespace SPICA.Rendering.Animation
         public float FramesCount { get; protected set; }
         public bool  IsLooping   { get; protected set; }
 
+        protected List<int> Indices;
+
+        protected List<H3DAnimationElement> Elements;
+
         public AnimationControl()
         {
             Step = 1;
+
+            Indices = new List<int>();
+
+            Elements = new List<H3DAnimationElement>();
         }
 
         public virtual void SetAnimations(IEnumerable<H3DAnimation> Animations) { }
+
+        protected void SetAnimations(IEnumerable<H3DAnimation> Animations, INameIndexed Dictionary)
+        {
+            Indices.Clear();
+            Elements.Clear();
+
+            float FC = 0;
+
+            HashSet<string> UsedNames = new HashSet<string>();
+
+            foreach (H3DAnimation Anim in Animations)
+            {
+                if (FC < Anim.FramesCount)
+                    FC = Anim.FramesCount;
+
+                foreach (H3DAnimationElement Elem in Anim.Elements)
+                {
+                    if (UsedNames.Contains(Elem.Name)) continue;
+
+                    UsedNames.Add(Elem.Name);
+
+                    int Index = Dictionary.Find(Elem.Name);
+
+                    if (Index != -1)
+                    {
+                        Indices.Add(Index);
+                        Elements.Add(Elem);
+                    }
+                }
+            }
+
+            FramesCount = FC;
+        }
 
         public void AdvanceFrame()
         {

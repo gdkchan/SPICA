@@ -18,7 +18,9 @@ namespace SPICA.Formats.CtrGfx
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public int Count { get { return Contents.Count; } }
+        public bool IsReadOnly => false;
+
+        public int Count => Contents.Count;
 
         public T this[int Index]
         {
@@ -69,6 +71,21 @@ namespace SPICA.Formats.CtrGfx
             return Contents.Contains(Name);
         }
 
+        public bool Contains(T Value)
+        {
+            return Contents.Contains(Value);
+        }
+
+        public int Find(string Name)
+        {
+            return Contents.Find(Name);
+        }
+
+        public void CopyTo(T[] Array, int Index)
+        {
+            Contents.CopyTo(Array, Index);
+        }
+
         public void Add(T Value)
         {
             Contents.Add(Value);
@@ -83,11 +100,13 @@ namespace SPICA.Formats.CtrGfx
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, Value, Index);
         }
 
-        public void Remove(T Value)
+        public bool Remove(T Value)
         {
-            Contents.Remove(Value);
+            bool Removed = Contents.Remove(Value);
 
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, Value);
+
+            return Removed;
         }
 
         public void Clear()

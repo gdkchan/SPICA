@@ -25,7 +25,9 @@ namespace SPICA.Formats.CtrH3D
             set => Values[NameTree.Find(Name)] = value;
         }
 
-        public int Count { get { return Values.Count; } }
+        public bool IsReadOnly => false;
+
+        public int Count => Values.Count;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -69,13 +71,15 @@ namespace SPICA.Formats.CtrH3D
             OnCollectionChanged(NotifyCollectionChangedAction.Replace, Value, Index);
         }
 
-        public void Remove(T Value)
+        public bool Remove(T Value)
         {
-            Values.Remove(Value);
+            bool Removed = Values.Remove(Value);
 
             NameTree.Remove(((INamed)Value).Name);
 
             OnCollectionChanged(NotifyCollectionChangedAction.Remove, Value);
+
+            return Removed;
         }
 
         public void Clear()
@@ -87,7 +91,7 @@ namespace SPICA.Formats.CtrH3D
             OnCollectionChanged(NotifyCollectionChangedAction.Reset, default(T));
         }
 
-        public int FindIndex(string Name)
+        public int Find(string Name)
         {
             return NameTree.Find(Name);
         }
@@ -95,6 +99,11 @@ namespace SPICA.Formats.CtrH3D
         public bool Contains(string Name)
         {
             return NameTree.Contains(Name);
+        }
+
+        public bool Contains(T Value)
+        {
+            return Values.Contains(Value);
         }
 
         public void Remove(int Index)
@@ -105,6 +114,11 @@ namespace SPICA.Formats.CtrH3D
         public void Remove(string Name)
         {
             Remove(this[Name]);
+        }
+
+        public void CopyTo(T[] Array, int Index)
+        {
+            Values.CopyTo(Array, Index);
         }
     }
 }

@@ -334,6 +334,7 @@ namespace SPICA.WinForms
                         CamerasList.Bind(Scene.Cameras);
                         SklAnimsList.Bind(Scene.SkeletalAnimations);
                         MatAnimsList.Bind(Scene.MaterialAnimations);
+                        VisAnimsList.Bind(Scene.VisibilityAnimations);
                         CamAnimsList.Bind(Scene.CameraAnimations);
 
                         Animator.Enabled     = false;
@@ -481,17 +482,22 @@ namespace SPICA.WinForms
 
         private void SklAnimsList_Selected(object sender, EventArgs e)
         {
-            SetAnimation(SklAnimsList.SelectedIndices, AnimationType.Skeletal);
+            SetAnimation(SklAnimsList.SelectedIndices, Scene.SkeletalAnimations, AnimationType.Skeletal);
         }
 
         private void MatAnimsList_Selected(object sender, EventArgs e)
         {
-            SetAnimation(MatAnimsList.SelectedIndices, AnimationType.Material);
+            SetAnimation(MatAnimsList.SelectedIndices, Scene.MaterialAnimations, AnimationType.Material);
+        }
+
+        private void VisAnimsList_Selected(object sender, EventArgs e)
+        {
+            SetAnimation(VisAnimsList.SelectedIndices, Scene.VisibilityAnimations, AnimationType.Visibility);
         }
 
         private void CamAnimsList_Selected(object sender, EventArgs e)
         {
-            SetAnimation(CamAnimsList.SelectedIndex, AnimationType.Camera);
+            SetAnimation(CamAnimsList.SelectedIndex, Scene.CameraAnimations, AnimationType.Camera);
         }
         #endregion
 
@@ -520,51 +526,32 @@ namespace SPICA.WinForms
             }
         }
 
-        private void SetAnimation(int Index, AnimationType Type)
+        private void SetAnimation(int Index, H3DDict<H3DAnimation> SrcAnims, AnimationType Type)
         {
             if (Index != -1)
             {
-                SetAnimation(new int[] { Index }, Type);
+                SetAnimation(new int[] { Index }, SrcAnims, Type);
             }
             else
             {
-                SetAnimation(new int[0], Type);
+                SetAnimation(new int[0], SrcAnims, Type);
             }
         }
 
-        private void SetAnimation(int[] Indices, AnimationType Type)
+        private void SetAnimation(int[] Indices, H3DDict<H3DAnimation> SrcAnims, AnimationType Type)
         {
             List<H3DAnimation> Animations = new List<H3DAnimation>(Indices.Length);
 
-            switch (Type)
+            foreach (int i in Indices)
             {
-                case AnimationType.Skeletal:
-                    foreach (int i in Indices)
-                    {
-                        Animations.Add(Scene.SkeletalAnimations[i]);
-                    }
-                    break;
-
-                case AnimationType.Material:
-                    foreach (int i in Indices)
-                    {
-                        Animations.Add(Scene.MaterialAnimations[i]);
-                    }
-                    break;
-
-                case AnimationType.Camera:
-                    foreach (int i in Indices)
-                    {
-                        Animations.Add(Scene.CameraAnimations[i]);
-                    }
-                    break;
+                Animations.Add(SrcAnims[i]);
             }
 
             if (Type == AnimationType.Skeletal && Indices.Length == 1)
             {
                 foreach (H3DAnimation SklAnim in Animations)
                 {
-                    int MIndex = Scene.MaterialAnimations.FindIndex(SklAnim.Name);
+                    int MIndex = Scene.MaterialAnimations.Find(SklAnim.Name);
 
                     if (MIndex != -1 && !MatAnimsList.SelectedIndices.Contains(MIndex))
                     {

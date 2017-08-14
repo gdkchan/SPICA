@@ -33,6 +33,7 @@ namespace SPICA.Formats.CtrGfx.Animation
         private const string MatCoordTransREx = @"Materials\[""(.+)""\]\.TextureCoordinators\[(\d)\]\.Translate";
         private const string MatColorREx      = @"Materials\[""(.+)""\]\.MaterialColor\.(\w+)";
         private const string MatMapperBCREx   = @"Materials\[""(.+)""\]\.TextureMappers\[(\d)\]\.Sampler\.BorderColor";
+        private const string MeshNodeVisREx   = @"MeshNodeVisibilities\[""(.+)""\]\.IsVisible";
 
         private const string ViewUpdaterTarget = "ViewUpdater.TargetPosition";
         private const string ViewUpdaterUpVec  = "ViewUpdater.UpwardVector";
@@ -81,15 +82,15 @@ namespace SPICA.Formats.CtrGfx.Animation
 
                             string Name = Elem.Name;
 
-                            if (Elem.Name == ProjectionUpdaterNear)
+                            if (Name == ProjectionUpdaterNear)
                             {
                                 TargetType = H3DTargetType.CameraZNear;
                             }
-                            else if (Elem.Name == ProjectionUpdaterFar)
+                            else if (Name == ProjectionUpdaterFar)
                             {
                                 TargetType = H3DTargetType.CameraZFar;
                             }
-                            else if (Elem.Name == ViewUpdaterTwist)
+                            else if (Name == ViewUpdaterTwist)
                             {
                                 TargetType = H3DTargetType.CameraTwist;
                             }
@@ -117,6 +118,44 @@ namespace SPICA.Formats.CtrGfx.Animation
                                     Name          = Name,
                                     Content       = Float,
                                     PrimitiveType = H3DPrimitiveType.Float,
+                                    TargetType    = TargetType
+                                });
+                            }
+                        }
+                        break;
+
+                    case GfxPrimitiveType.Boolean:
+                        {
+                            H3DAnimBoolean Bool = new H3DAnimBoolean();
+
+                            GfxAnimBoolean Source = (GfxAnimBoolean)Elem.Content;
+
+                            Bool.StartFrame = Source.StartFrame;
+                            Bool.EndFrame   = Source.EndFrame;
+
+                            Bool.PreRepeat  = (H3DLoopType)Source.PreRepeat;
+                            Bool.PostRepeat = (H3DLoopType)Source.PostRepeat;
+
+                            CopyList(Source.Values, Bool.Values);
+
+                            H3DTargetType TargetType = 0;
+
+                            Match Path = Regex.Match(Elem.Name, MeshNodeVisREx);
+
+                            if (Path.Success)
+                            {
+                                TargetType = H3DTargetType.MeshNodeVisibility;
+                            }
+
+                            if (Path.Success && TargetType != 0)
+                            {
+                                string Name = Path.Groups[1].Value;
+
+                                Output.Elements.Add(new H3DAnimationElement()
+                                {
+                                    Name          = Name,
+                                    Content       = Bool,
+                                    PrimitiveType = H3DPrimitiveType.Boolean,
                                     TargetType    = TargetType
                                 });
                             }

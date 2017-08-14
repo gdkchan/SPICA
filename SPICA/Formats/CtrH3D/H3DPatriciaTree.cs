@@ -8,7 +8,7 @@ using System.Collections;
 
 namespace SPICA.Formats.CtrH3D
 {
-    public class H3DPatriciaTree : ICustomSerialization, IEnumerable<string>
+    public class H3DPatriciaTree : ICustomSerialization, IEnumerable<string>, INameIndexed
     {
         [Ignore] private List<H3DPatriciaTreeNode> Nodes;
         [Ignore] private List<string>              Names;
@@ -97,30 +97,30 @@ namespace SPICA.Formats.CtrH3D
 
         public void Add(string Name)
         {
-            Names.Add(Name);
-
             TreeNeedsRebuild = true;
+
+            Names.Add(Name);
         }
 
         public void Insert(int Index, string Name)
         {
-            Names.Insert(Index, Name);
-
             TreeNeedsRebuild = true;
+
+            Names.Insert(Index, Name);
         }
 
         public void Remove(string Name)
         {
-            Names.Remove(Name);
-
             TreeNeedsRebuild = true;
+
+            Names.Remove(Name);
         }
 
         public void Clear()
         {
-            Names.Clear();
-
             TreeNeedsRebuild = true;
+
+            Names.Clear();
         }
 
         private void RebuildTree()

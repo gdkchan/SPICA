@@ -45,6 +45,7 @@
     <Compile Include="Formats\Common\Exceptions.cs" />
     <Compile Include="Formats\Common\FNVHash.cs" />
     <Compile Include="Formats\Common\INamed.cs" />
+    <Compile Include="Formats\Common\INameIndexed.cs" />
     <Compile Include="Formats\Common\InvalidMagicException.cs" />
     <Compile Include="Formats\Common\IOUtils.cs" />
     <Compile Include="Formats\Common\IPatriciaDict.cs" />

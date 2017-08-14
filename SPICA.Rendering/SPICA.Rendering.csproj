@@ -51,6 +51,7 @@
     <Compile Include="Animation\MaterialAnimation.cs" />
     <Compile Include="Animation\MaterialState.cs" />
     <Compile Include="Animation\SkeletalAnimation.cs" />
+    <Compile Include="Animation\VisibilityAnimation.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Light.cs" />

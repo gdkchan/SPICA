@@ -54,6 +54,7 @@ namespace SPICA.WinForms.GUI.Animation
             {
                 yield return Model.SkeletalAnim;
                 yield return Model.MaterialAnim;
+                yield return Model.VisibilityAnim;
             }
 
             yield return Renderer.Camera.Animation;
@@ -69,6 +70,10 @@ namespace SPICA.WinForms.GUI.Animation
 
                 case AnimationType.Material:
                     foreach (Model Model in Renderer.Models) CopyState(Animations, Model.MaterialAnim);
+                    break;
+
+                case AnimationType.Visibility:
+                    foreach (Model Model in Renderer.Models) CopyState(Animations, Model.VisibilityAnim);
                     break;
 
                 case AnimationType.Camera:

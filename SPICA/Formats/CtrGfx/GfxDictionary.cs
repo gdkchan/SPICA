@@ -7,14 +7,16 @@ using System.Collections.Generic;
 
 namespace SPICA.Formats.CtrGfx
 {
-    class GfxDictionary<T> : ICustomSerialization, IEnumerable<T> where T : INamed
+    class GfxDictionary<T> : ICustomSerialization, ICollection<T>, INameIndexed where T : INamed
     {
         [Ignore] private List<GfxDictionaryNode<T>> Nodes;
         [Ignore] private List<T>                    Values;
 
         [Ignore] private bool TreeNeedsRebuild;
 
-        public int Count { get { return Values.Count; } }
+        public bool IsReadOnly => false;
+
+        public int Count => Values.Count;
 
         public T this[int Index]
         {
@@ -80,6 +82,16 @@ namespace SPICA.Formats.CtrGfx
             return Find(Name) != -1;
         }
 
+        public bool Contains(T Value)
+        {
+            return Values.Contains(Value);
+        }
+
+        public void CopyTo(T[] Array, int Index)
+        {
+            Values.CopyTo(Array, Index);
+        }
+
         public int Find(string Name)
         {
             if (Name == null) return -1;
@@ -100,30 +112,30 @@ namespace SPICA.Formats.CtrGfx
 
         public void Add(T Value)
         {
-            Values.Add(Value);
-
             TreeNeedsRebuild = true;
+
+            Values.Add(Value);
         }
 
         public void Insert(int Index, T Value)
         {
-            Values.Insert(Index, Value);
-
             TreeNeedsRebuild = true;
+
+            Values.Insert(Index, Value);
         }
 
-        public void Remove(T Value)
+        public bool Remove(T Value)
         {
-            Values.Remove(Value);
-
             TreeNeedsRebuild = true;
+
+            return Values.Remove(Value);
         }
 
         public void Clear()
         {
-            Values.Clear();
-
             TreeNeedsRebuild = true;
+
+            Values.Clear();
         }
 
         private void RebuildTree()

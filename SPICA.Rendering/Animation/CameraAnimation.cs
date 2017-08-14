@@ -14,13 +14,9 @@ namespace SPICA.Rendering.Animation
 
         private H3DCamera BaseCamera;
 
-        private List<H3DAnimationElement> Elements;
-
         public CameraAnimation()
         {
             CamState = new CameraState();
-
-            Elements = new List<H3DAnimationElement>();
         }
 
         public void SetCamera(H3DCamera Camera)
@@ -71,8 +67,6 @@ namespace SPICA.Rendering.Animation
             Elements.Clear();
 
             float FC = 0;
-
-            HashSet<string> UsedNames = new HashSet<string>();
 
             foreach (H3DAnimation Anim in Animations)
             {
