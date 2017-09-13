@@ -37,9 +37,9 @@ namespace SPICA.Formats.CtrH3D
         public int UnInitDataLength;
         public int UnInitCommandsLength;
 
-        [IfVersion(CmpOp.Gequal, 0x20), Padding(2)] public H3DFlags Flags;
+        [IfVersion(CmpOp.Gequal, 8), Padding(2)] public H3DFlags Flags;
 
-        [IfVersion(CmpOp.Gequal, 0x20)] public ushort AddressCount;
+        [IfVersion(CmpOp.Gequal, 8)] public ushort AddressCount;
 
         public H3DHeader()
         {

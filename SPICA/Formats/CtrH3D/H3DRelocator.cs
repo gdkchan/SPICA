@@ -38,10 +38,7 @@ namespace SPICA.Formats.CtrH3D
                 H3DSection Target = (H3DSection)((Value >> 25) & 0xf);
                 H3DSection Source = (H3DSection)(Value >> 29);
 
-                //Take into account sections that didn't existed in older BCH versions.
-                if (Header.BackwardCompatibility < 7 &&
-                    Target >= H3DSection.CommandsSrc)
-                    Target++;
+                Target += GetLegacyRelocDiff(Target);
 
                 if (Target != H3DSection.Strings) PtrAddress <<= 2;
 
@@ -109,12 +106,9 @@ namespace SPICA.Formats.CtrH3D
 
                 if (Target != H3DSection.Strings) PointerAddress >>= 2;
 
-                //Take into account sections that didn't existed in older BCH versions.
-                if (Header.BackwardCompatibility < 7 &&
-                    Target >= H3DSection.CommandsSrc)
-                    Target--;
-
                 Writer.Write(ToRelative(TargetAddress, Target));
+
+                Target -= GetLegacyRelocDiff(Target);
 
                 uint Flags;
 
@@ -135,6 +129,29 @@ namespace SPICA.Formats.CtrH3D
             }
 
             Header.RelocationLength = (int)(BaseStream.Length - Header.RelocationAddress);
+        }
+
+        private int GetLegacyRelocDiff(H3DSection Section)
+        {
+            //The enumeration for older H3D version was different because some sections
+            //didn't exist at the time, so we need to account for that.
+            //This is done returning an offset to be applied to the enumeration value,
+            //when the data is deserialized, this offset is added from the value on
+            //the file, and when it's serialized it is subtracted to the value computed by
+            //the serializer.
+            if      (Header.BackwardCompatibility < 7    && Section >= H3DSection.CommandsSrc)
+            {
+                return 1;
+            }
+            else if (Header.BackwardCompatibility < 0x21 && Section >= H3DSection.RawDataVertex)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
+
         }
 
         public static void AddCmdReloc(BinarySerializer Serializer, H3DSection Target, long Pointer)
