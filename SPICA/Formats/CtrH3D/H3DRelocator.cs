@@ -38,7 +38,7 @@ namespace SPICA.Formats.CtrH3D
                 H3DSection Target = (H3DSection)((Value >> 25) & 0xf);
                 H3DSection Source = (H3DSection)(Value >> 29);
 
-                Target += GetLegacyRelocDiff(Target);
+                Target += GetLegacyRelocDiff(Target, Header.BackwardCompatibility);
 
                 if (Target != H3DSection.Strings) PtrAddress <<= 2;
 
@@ -108,7 +108,7 @@ namespace SPICA.Formats.CtrH3D
 
                 Writer.Write(ToRelative(TargetAddress, Target));
 
-                Target -= GetLegacyRelocDiff(Target);
+                Target -= GetLegacyRelocDiff(Target, Header.BackwardCompatibility);
 
                 uint Flags;
 
@@ -131,29 +131,6 @@ namespace SPICA.Formats.CtrH3D
             Header.RelocationLength = (int)(BaseStream.Length - Header.RelocationAddress);
         }
 
-        private int GetLegacyRelocDiff(H3DSection Section)
-        {
-            //The enumeration for older H3D version was different because some sections
-            //didn't exist at the time, so we need to account for that.
-            //This is done returning an offset to be applied to the enumeration value,
-            //when the data is deserialized, this offset is added from the value on
-            //the file, and when it's serialized it is subtracted to the value computed by
-            //the serializer.
-            if      (Header.BackwardCompatibility < 7    && Section >= H3DSection.CommandsSrc)
-            {
-                return 1;
-            }
-            else if (Header.BackwardCompatibility < 0x21 && Section >= H3DSection.RawDataVertex)
-            {
-                return -1;
-            }
-            else
-            {
-                return 0;
-            }
-
-        }
-
         public static void AddCmdReloc(BinarySerializer Serializer, H3DSection Target, long Pointer)
         {
             Section Commands   = Serializer.Sections[(uint)H3DSectionId.Commands];
@@ -161,8 +138,7 @@ namespace SPICA.Formats.CtrH3D
 
             uint PointerAddress = (uint)(Pointer - Commands.Position) >> 2;
 
-            //Take into account sections that didn't existed in older BCH versions.
-            if (Serializer.FileVersion < 7) Target--;
+            Target -= GetLegacyRelocDiff(Target, Serializer.FileVersion);
 
             uint Flags;
 
@@ -172,6 +148,28 @@ namespace SPICA.Formats.CtrH3D
             CheckPtrOvr(PointerAddress);
 
             Relocation.Values.Add(new RefValue(PointerAddress | (Flags << 25)));
+        }
+
+        private static int GetLegacyRelocDiff(H3DSection Section, int BC)
+        {
+            //The enumeration for older H3D versions was different because some sections
+            //didn't exist at the time, so we need to account for that.
+            //This is done returning an offset to be applied to the enumeration value,
+            //when the data is deserialized, this offset is added to the value from
+            //the file, and when it's serialized it is subtracted from the value computed by
+            //the serializer.
+            if (BC > 7 && BC < 0x21 && Section >= H3DSection.RawDataVertex)
+            {
+                return -1;
+            }
+            else if (BC < 7 && Section >= H3DSection.CommandsSrc)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         private static void CheckPtrOvr(uint PointerAddress)
