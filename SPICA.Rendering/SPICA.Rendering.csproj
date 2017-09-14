@@ -55,6 +55,7 @@
     <Compile Include="BoundingBox.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Light.cs" />
+    <Compile Include="LightType.cs" />
     <Compile Include="LUT.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Model.cs" />

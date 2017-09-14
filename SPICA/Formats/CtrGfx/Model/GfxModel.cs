@@ -1,6 +1,4 @@
-﻿using SPICA.Formats.Common;
-using SPICA.Formats.CtrGfx.AnimGroup;
-using SPICA.Formats.CtrGfx.Model.Material;
+﻿using SPICA.Formats.CtrGfx.Model.Material;
 using SPICA.Formats.CtrGfx.Model.Mesh;
 using SPICA.PICA.Commands;
 using SPICA.Serialization.Attributes;
@@ -11,7 +9,7 @@ namespace SPICA.Formats.CtrGfx.Model
 {
     [TypeChoice(0x40000012u, typeof(GfxModel))]
     [TypeChoice(0x40000092u, typeof(GfxModelSkeletal))]
-    public class GfxModel : GfxNodeTransform, INamed
+    public class GfxModel : GfxNodeTransform
     {
         public readonly List<GfxMesh> Meshes;
 

@@ -1,11 +1,10 @@
-﻿using SPICA.Formats.Common;
-using SPICA.Formats.CtrH3D.Camera;
+﻿using SPICA.Formats.CtrH3D.Camera;
 using SPICA.Serialization.Attributes;
 
 namespace SPICA.Formats.CtrGfx.Camera
 {
     [TypeChoice(0x4000000au, typeof(GfxCamera))]
-    public class GfxCamera : GfxNodeTransform, INamed
+    public class GfxCamera : GfxNodeTransform
     {
         public GfxCameraViewType ViewType;
 

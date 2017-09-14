@@ -110,6 +110,13 @@ namespace SPICA.Rendering
 
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBOHandle);
 
+                //Short and Float types needs to be aligned into 2 bytes boundaries.
+                if (Attrib.Format != PICAAttributeFormat.Byte &&
+                    Attrib.Format != PICAAttributeFormat.Ubyte)
+                {
+                    Offset += Offset & 1;
+                }
+
                 GL.VertexAttribPointer(AttribIndex, Attrib.Elements, Type, false, Stride, Offset);
 
                 SetScale(Attrib.Name, Attrib.Scale);

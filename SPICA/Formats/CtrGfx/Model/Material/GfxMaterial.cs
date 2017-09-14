@@ -1,5 +1,4 @@
-﻿using SPICA.Formats.Common;
-using SPICA.Math3D;
+﻿using SPICA.Math3D;
 using SPICA.Serialization;
 using SPICA.Serialization.Attributes;
 
@@ -10,7 +9,7 @@ using System.Security.Cryptography;
 namespace SPICA.Formats.CtrGfx.Model.Material
 {
     [TypeChoice(0x08000000u, typeof(GfxMaterial))]
-    public class GfxMaterial : GfxObject, INamed, ICustomSerialization
+    public class GfxMaterial : GfxObject, ICustomSerialization
     {
         public GfxMaterialFlags Flags;
 

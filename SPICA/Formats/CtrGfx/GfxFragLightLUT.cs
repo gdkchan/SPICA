@@ -1,6 +1,6 @@
 ﻿using SPICA.PICA.Commands;
 
-namespace SPICA.Formats.CtrGfx.Model.Material
+namespace SPICA.Formats.CtrGfx
 {
     public class GfxFragLightLUT
     {

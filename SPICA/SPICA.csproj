@@ -105,7 +105,15 @@
     <Compile Include="Formats\CtrGfx\GfxStringUtf16LE.cs" />
     <Compile Include="Formats\CtrGfx\GfxStringUtf8.cs" />
     <Compile Include="Formats\CtrGfx\GfxNodeTransform.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxAmbientLight.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxFragmentLight.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxFragmentLightFlags.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxHemisphereLight.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxHemisphereLightFlags.cs" />
     <Compile Include="Formats\CtrGfx\Light\GfxLight.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxLightType.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxVertexLight.cs" />
+    <Compile Include="Formats\CtrGfx\Light\GfxVertexLightFlags.cs" />
     <Compile Include="Formats\CtrGfx\LUT\GfxLUT.cs" />
     <Compile Include="Formats\CtrGfx\LUT\GfxLUTSampler.cs" />
     <Compile Include="Formats\CtrGfx\AnimGroup\GfxAnimEvaluationTiming.cs" />
@@ -134,7 +142,7 @@
     <Compile Include="Formats\CtrGfx\Model\Material\GfxBumpMode.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxFaceCulling.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxFragLight.cs" />
-    <Compile Include="Formats\CtrGfx\Model\Material\GfxFragLightLUT.cs" />
+    <Compile Include="Formats\CtrGfx\GfxFragLightLUT.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxFragLightLUTs.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxFragmentFlags.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxFragOp.cs" />
@@ -146,7 +154,7 @@
     <Compile Include="Formats\CtrGfx\Model\Material\GfxFragShader.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxFresnelSelector.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxLogicalOp.cs" />
-    <Compile Include="Formats\CtrGfx\Model\Material\GfxLUTReference.cs" />
+    <Compile Include="Formats\CtrGfx\GfxLUTReference.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxMaterial.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxMaterialColor.cs" />
     <Compile Include="Formats\CtrGfx\Model\Material\GfxMaterialFlags.cs" />
@@ -238,7 +246,13 @@
     <Compile Include="Formats\CtrH3D\H3DVertexData.cs" />
     <Compile Include="Formats\CtrH3D\H3DVertexDataAttribute.cs" />
     <Compile Include="Formats\CtrH3D\H3DVertexDataIndices.cs" />
+    <Compile Include="Formats\CtrH3D\Light\H3DAmbientLight.cs" />
+    <Compile Include="Formats\CtrH3D\Light\H3DFragmentLight.cs" />
+    <Compile Include="Formats\CtrH3D\Light\H3DHemisphereLight.cs" />
     <Compile Include="Formats\CtrH3D\Light\H3DLight.cs" />
+    <Compile Include="Formats\CtrH3D\Light\H3DLightFlags.cs" />
+    <Compile Include="Formats\CtrH3D\Light\H3DLightType.cs" />
+    <Compile Include="Formats\CtrH3D\Light\H3DVertexLight.cs" />
     <Compile Include="Formats\CtrH3D\LUT\H3DLUT.cs" />
     <Compile Include="Formats\CtrH3D\LUT\H3DLUTFlags.cs" />
     <Compile Include="Formats\CtrH3D\LUT\H3DLUTSampler.cs" />
@@ -253,7 +267,6 @@
     <Compile Include="Formats\CtrH3D\Model\Material\H3DFresnelSelector.cs" />
     <Compile Include="Formats\CtrH3D\Model\Material\H3DMaterial.cs" />
     <Compile Include="Formats\CtrH3D\Model\Material\H3DMaterialFlags.cs" />
-    <Compile Include="Formats\CtrH3D\Model\Material\H3DMaterialLUT.cs" />
     <Compile Include="Formats\CtrH3D\Model\Material\H3DMaterialParams.cs" />
     <Compile Include="Formats\CtrH3D\Model\Material\H3DMaterialShader.cs" />
     <Compile Include="Formats\CtrH3D\Model\Material\H3DTexCoordConfig.cs" />

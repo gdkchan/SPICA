@@ -1,4 +1,5 @@
 ﻿using SPICA.Formats.Common;
+using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Math3D;
 using SPICA.PICA;
 using SPICA.PICA.Commands;
@@ -42,12 +43,12 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         public float ColorScale;
 
-        public H3DMaterialLUT Dist0LUT;
-        public H3DMaterialLUT Dist1LUT;
-        public H3DMaterialLUT FresnelLUT;
-        public H3DMaterialLUT ReflecRLUT;
-        public H3DMaterialLUT ReflecGLUT;
-        public H3DMaterialLUT ReflecBLUT;
+        private uint Dist0SamplerPtr;
+        private uint Dist1SamplerPtr;
+        private uint FresnelSamplerPtr;
+        private uint ReflecRSamplerPtr;
+        private uint ReflecGSamplerPtr;
+        private uint ReflecBSamplerPtr;
 
         private byte LayerConfig;
 

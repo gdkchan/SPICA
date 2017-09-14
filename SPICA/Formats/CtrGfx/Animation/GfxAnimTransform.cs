@@ -57,9 +57,7 @@ namespace SPICA.Formats.CtrGfx.Animation
         {
             long Position = Deserializer.BaseStream.Position;
 
-            Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
-
-            uint Flags = Deserializer.Reader.ReadUInt32();
+            uint Flags = GfxAnimVector.GetFlagsFromElem(Deserializer, Position);
 
             uint ConstantMask = (uint)GfxAnimTransformFlags.IsScaleXConstant;
             uint NotExistMask = (uint)GfxAnimTransformFlags.IsScaleXInexistent;
@@ -162,9 +160,7 @@ namespace SPICA.Formats.CtrGfx.Animation
                 NotExistMask <<= 1;
             }
 
-            Serializer.BaseStream.Seek(Position - 0xc, SeekOrigin.Begin);
-
-            Serializer.Writer.Write((uint)Flags);
+            GfxAnimVector.WriteFlagsToElem(Serializer, Position, (uint)Flags);
 
             Serializer.BaseStream.Seek(Position + 4 + 9 * 4, SeekOrigin.Begin);
 

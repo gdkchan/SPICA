@@ -73,6 +73,8 @@
             this.SklAnimsList = new SPICA.WinForms.GUI.SUIList();
             this.TabPageMatAnims = new System.Windows.Forms.TabPage();
             this.MatAnimsList = new SPICA.WinForms.GUI.SUIList();
+            this.TabPageVisAnims = new System.Windows.Forms.TabPage();
+            this.VisAnimsList = new SPICA.WinForms.GUI.SUIList();
             this.TabPageCamAnims = new System.Windows.Forms.TabPage();
             this.CamAnimsList = new SPICA.WinForms.GUI.SUIList();
             this.SideIcons = new System.Windows.Forms.ToolStrip();
@@ -88,8 +90,8 @@
             this.TBtnShowInfo = new System.Windows.Forms.ToolStripButton();
             this.TBtnShowSide = new System.Windows.Forms.ToolStripButton();
             this.TopIcons = new System.Windows.Forms.ToolStrip();
-            this.TabPageVisAnims = new System.Windows.Forms.TabPage();
-            this.VisAnimsList = new SPICA.WinForms.GUI.SUIList();
+            this.TabPageLights = new System.Windows.Forms.TabPage();
+            this.LightsList = new SPICA.WinForms.GUI.SUIList();
             this.TopMenu.SuspendLayout();
             this.AnimControlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MainContainer)).BeginInit();
@@ -102,10 +104,11 @@
             this.TabPageCameras.SuspendLayout();
             this.TabPageSklAnims.SuspendLayout();
             this.TabPageMatAnims.SuspendLayout();
+            this.TabPageVisAnims.SuspendLayout();
             this.TabPageCamAnims.SuspendLayout();
             this.SideIcons.SuspendLayout();
             this.TopIcons.SuspendLayout();
-            this.TabPageVisAnims.SuspendLayout();
+            this.TabPageLights.SuspendLayout();
             this.SuspendLayout();
             // 
             // TopMenu
@@ -375,10 +378,11 @@
             this.TabIcons.Images.SetKeyName(0, "sui_cube.png");
             this.TabIcons.Images.SetKeyName(1, "sui_eye.png");
             this.TabIcons.Images.SetKeyName(2, "sui_camera.png");
-            this.TabIcons.Images.SetKeyName(3, "sui_bone_film.png");
-            this.TabIcons.Images.SetKeyName(4, "sui_rainbow_film.png");
-            this.TabIcons.Images.SetKeyName(5, "sui_transparent_film.png");
-            this.TabIcons.Images.SetKeyName(6, "sui_cam_film.png");
+            this.TabIcons.Images.SetKeyName(3, "sui_lightbulb.png");
+            this.TabIcons.Images.SetKeyName(4, "sui_bone_film.png");
+            this.TabIcons.Images.SetKeyName(5, "sui_rainbow_film.png");
+            this.TabIcons.Images.SetKeyName(6, "sui_transparent_film.png");
+            this.TabIcons.Images.SetKeyName(7, "sui_cam_film.png");
             // 
             // MainContainer
             // 
@@ -400,6 +404,7 @@
             this.SideTabs.Controls.Add(this.TabPageModels);
             this.SideTabs.Controls.Add(this.TabPageTextures);
             this.SideTabs.Controls.Add(this.TabPageCameras);
+            this.SideTabs.Controls.Add(this.TabPageLights);
             this.SideTabs.Controls.Add(this.TabPageSklAnims);
             this.SideTabs.Controls.Add(this.TabPageMatAnims);
             this.SideTabs.Controls.Add(this.TabPageVisAnims);
@@ -588,6 +593,35 @@
             this.MatAnimsList.TabIndex = 4;
             this.MatAnimsList.Selected += new System.EventHandler(this.MatAnimsList_Selected);
             // 
+            // TabPageVisAnims
+            // 
+            this.TabPageVisAnims.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
+            this.TabPageVisAnims.Controls.Add(this.VisAnimsList);
+            this.TabPageVisAnims.ImageKey = "sui_transparent_film.png";
+            this.TabPageVisAnims.Location = new System.Drawing.Point(4, 28);
+            this.TabPageVisAnims.Name = "TabPageVisAnims";
+            this.TabPageVisAnims.Size = new System.Drawing.Size(234, 414);
+            this.TabPageVisAnims.TabIndex = 6;
+            this.TabPageVisAnims.ToolTipText = "Visibility animations";
+            // 
+            // VisAnimsList
+            // 
+            this.VisAnimsList.BackColor = System.Drawing.Color.Transparent;
+            this.VisAnimsList.BarColor = System.Drawing.Color.White;
+            this.VisAnimsList.BarColorHover = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(183)))), ((int)(((byte)(123)))));
+            this.VisAnimsList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.VisAnimsList.ForeColor = System.Drawing.Color.White;
+            this.VisAnimsList.ItemHeight = 16;
+            this.VisAnimsList.Location = new System.Drawing.Point(0, 0);
+            this.VisAnimsList.Margin = new System.Windows.Forms.Padding(3, 12, 3, 12);
+            this.VisAnimsList.MultiSelect = true;
+            this.VisAnimsList.Name = "VisAnimsList";
+            this.VisAnimsList.SelectedIndex = -1;
+            this.VisAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
+            this.VisAnimsList.Size = new System.Drawing.Size(234, 414);
+            this.VisAnimsList.TabIndex = 5;
+            this.VisAnimsList.Selected += new System.EventHandler(this.VisAnimsList_Selected);
+            // 
             // TabPageCamAnims
             // 
             this.TabPageCamAnims.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
@@ -766,34 +800,35 @@
             this.TopIcons.Size = new System.Drawing.Size(944, 30);
             this.TopIcons.TabIndex = 3;
             // 
-            // TabPageVisAnims
+            // TabPageLights
             // 
-            this.TabPageVisAnims.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
-            this.TabPageVisAnims.Controls.Add(this.VisAnimsList);
-            this.TabPageVisAnims.ImageKey = "sui_transparent_film.png";
-            this.TabPageVisAnims.Location = new System.Drawing.Point(4, 28);
-            this.TabPageVisAnims.Name = "TabPageVisAnims";
-            this.TabPageVisAnims.Size = new System.Drawing.Size(234, 414);
-            this.TabPageVisAnims.TabIndex = 6;
-            this.TabPageVisAnims.ToolTipText = "Visibility animations";
+            this.TabPageLights.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(53)))), ((int)(((byte)(48)))));
+            this.TabPageLights.Controls.Add(this.LightsList);
+            this.TabPageLights.ImageIndex = 3;
+            this.TabPageLights.Location = new System.Drawing.Point(4, 28);
+            this.TabPageLights.Name = "TabPageLights";
+            this.TabPageLights.Padding = new System.Windows.Forms.Padding(3);
+            this.TabPageLights.Size = new System.Drawing.Size(234, 414);
+            this.TabPageLights.TabIndex = 7;
+            this.TabPageLights.ToolTipText = "Lights";
             // 
-            // VisAnimsList
+            // LightsList
             // 
-            this.VisAnimsList.BackColor = System.Drawing.Color.Transparent;
-            this.VisAnimsList.BarColor = System.Drawing.Color.White;
-            this.VisAnimsList.BarColorHover = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(183)))), ((int)(((byte)(123)))));
-            this.VisAnimsList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.VisAnimsList.ForeColor = System.Drawing.Color.White;
-            this.VisAnimsList.ItemHeight = 16;
-            this.VisAnimsList.Location = new System.Drawing.Point(0, 0);
-            this.VisAnimsList.Margin = new System.Windows.Forms.Padding(3, 12, 3, 12);
-            this.VisAnimsList.MultiSelect = true;
-            this.VisAnimsList.Name = "VisAnimsList";
-            this.VisAnimsList.SelectedIndex = -1;
-            this.VisAnimsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
-            this.VisAnimsList.Size = new System.Drawing.Size(234, 414);
-            this.VisAnimsList.TabIndex = 5;
-            this.VisAnimsList.Selected += new System.EventHandler(this.VisAnimsList_Selected);
+            this.LightsList.BackColor = System.Drawing.Color.Transparent;
+            this.LightsList.BarColor = System.Drawing.Color.White;
+            this.LightsList.BarColorHover = System.Drawing.Color.FromArgb(((int)(((byte)(188)))), ((int)(((byte)(183)))), ((int)(((byte)(123)))));
+            this.LightsList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LightsList.ForeColor = System.Drawing.Color.White;
+            this.LightsList.ItemHeight = 16;
+            this.LightsList.Location = new System.Drawing.Point(3, 3);
+            this.LightsList.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
+            this.LightsList.MultiSelect = true;
+            this.LightsList.Name = "LightsList";
+            this.LightsList.SelectedIndex = -1;
+            this.LightsList.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(134)))), ((int)(((byte)(106)))));
+            this.LightsList.Size = new System.Drawing.Size(228, 408);
+            this.LightsList.TabIndex = 1;
+            this.LightsList.Selected += new System.EventHandler(this.LightsList_Selected);
             // 
             // FrmMain
             // 
@@ -825,12 +860,13 @@
             this.TabPageCameras.ResumeLayout(false);
             this.TabPageSklAnims.ResumeLayout(false);
             this.TabPageMatAnims.ResumeLayout(false);
+            this.TabPageVisAnims.ResumeLayout(false);
             this.TabPageCamAnims.ResumeLayout(false);
             this.SideIcons.ResumeLayout(false);
             this.SideIcons.PerformLayout();
             this.TopIcons.ResumeLayout(false);
             this.TopIcons.PerformLayout();
-            this.TabPageVisAnims.ResumeLayout(false);
+            this.TabPageLights.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -898,5 +934,7 @@
         private GUI.SUIList CamAnimsList;
         private System.Windows.Forms.TabPage TabPageVisAnims;
         private GUI.SUIList VisAnimsList;
+        private System.Windows.Forms.TabPage TabPageLights;
+        private GUI.SUIList LightsList;
     }
 }

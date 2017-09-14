@@ -2,7 +2,7 @@
 using SPICA.Formats.CtrGfx.LUT;
 using SPICA.Serialization.Attributes;
 
-namespace SPICA.Formats.CtrGfx.Model.Material
+namespace SPICA.Formats.CtrGfx
 {
     [TypeChoice(0x40000000u, typeof(GfxLUTReference))]
     public class GfxLUTReference

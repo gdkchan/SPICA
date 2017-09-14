@@ -150,6 +150,14 @@ namespace SPICA.Rendering
                 GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[4]"),     8);
                 GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, "LUTs[5]"),     9);
 
+                for (int i = 0; i < 3; i++)
+                {
+                    int j = i * 2;
+
+                    GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, $"LUTs[{6 + j}]"), 10 + j);
+                    GL.Uniform1(GL.GetUniformLocation(Shdr.Handle, $"LUTs[{7 + j}]"), 11 + j);
+                }
+
                 //Pokémon uses this
                 Vector4 ShaderParam = Vector4.Zero;
 
@@ -397,27 +405,66 @@ namespace SPICA.Rendering
             {
                 GL.UseProgram(Shader.Handle);
 
-                int Index = 0;
+                int fi = 0;
 
-                foreach (Light Light in Renderer.Lights.Where(x => x.Enabled))
+                for (int i = 0; i < Renderer.Lights.Count; i++)
                 {
-                    int LightPositionLocation = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Position");
-                    int LightAmbientLocation  = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Ambient");
-                    int LightDiffuseLocation  = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Diffuse");
-                    int LightSpecularLocation = GL.GetUniformLocation(Shader.Handle, $"Lights[{Index}].Specular");
+                    if (!Renderer.Lights[i].Enabled) continue;
 
-                    GL.Uniform3(LightPositionLocation, Renderer.Lights[Index].Position);
-                    GL.Uniform4(LightAmbientLocation,  Renderer.Lights[Index].Ambient);
-                    GL.Uniform4(LightDiffuseLocation,  Renderer.Lights[Index].Diffuse);
-                    GL.Uniform4(LightSpecularLocation, Renderer.Lights[Index].Specular);
-
-                    if (++Index == 8) break;
+                    switch (Renderer.Lights[i].Type)
+                    {
+                        case LightType.PerFragment:
+                            if (fi < 3)
+                            {
+                                SetFragmentLight(Shader, Renderer.Lights[i], fi++);
+                            }
+                            break;
+                    }
                 }
 
                 int LightsCountLocation  = GL.GetUniformLocation(Shader.Handle, "LightsCount");
 
-                GL.Uniform1(LightsCountLocation, Index);
+                GL.Uniform1(LightsCountLocation, fi);
             }
+        }
+
+        private void SetFragmentLight(Shader Shader, Light Light, int fi)
+        {
+            int PositionLocation     = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].Position");
+            int DirectionLocation    = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].Direction");
+            int AmbientLocation      = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].Ambient");
+            int DiffuseLocation      = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].Diffuse");
+            int Specular0Location    = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].Specular0");
+            int Specular1Location    = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].Specular1");
+            int LUTInputLocation     = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].AngleLUTInput");
+            int LUTScaleLocation     = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].AngleLUTScale");
+            int AttScaleLocation     = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].AttScale");
+            int AttBiasLocation      = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].AttBias");
+            int DistAttEnbLocation   = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].DistAttEnb");
+            int TwoSidedDiffLocation = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].TwoSidedDiff");
+            int DirectionalLocation  = GL.GetUniformLocation(Shader.Handle, $"Lights[{fi}].Directional");
+
+            GL.Uniform3(PositionLocation,     Light.Position);
+            GL.Uniform3(DirectionLocation,    Light.Direction);
+            GL.Uniform4(AmbientLocation,      Light.Ambient);
+            GL.Uniform4(DiffuseLocation,      Light.Diffuse);
+            GL.Uniform4(Specular0Location,    Light.Specular0);
+            GL.Uniform4(Specular1Location,    Light.Specular1);
+            GL.Uniform1(LUTInputLocation,     Light.AngleLUTInput);
+            GL.Uniform1(LUTScaleLocation,     Light.AngleLUTScale);
+            GL.Uniform1(AttScaleLocation,     Light.AttenuationScale);
+            GL.Uniform1(AttBiasLocation,      Light.AttenuationBias);
+            GL.Uniform1(DistAttEnbLocation,   Light.DistAttEnabled  ? 1 : 0);
+            GL.Uniform1(TwoSidedDiffLocation, Light.TwoSidedDiffuse ? 1 : 0);
+            GL.Uniform1(DirectionalLocation,  Light.Directional     ? 1 : 0);
+
+            Renderer.TryBindLUT(10 + fi * 2,
+                Light.AngleLUTTableName,
+                Light.AngleLUTSamplerName);
+
+            Renderer.TryBindLUT(11 + fi * 2,
+                Light.DistanceLUTTableName,
+                Light.DistanceLUTSamplerName);
         }
 
         public BoundingBox GetModelAABB()

@@ -4,21 +4,42 @@ uniform sampler2D LUTs[6];
 
 uniform sampler2D Textures[3];
 
+uniform sampler2D LightDistanceLUT[3];
+
+uniform sampler2D LightAngleLUT[3];
+
 uniform samplerCube TextureCube;
 
 struct Light_t {
 	vec3 Position;
+	vec3 Direction;
 	vec4 Ambient;
 	vec4 Diffuse;
-	vec4 Specular;
+	vec4 Specular0;
+	vec4 Specular1;
+	float AttScale;
+	float AttBias;
+	float AngleLUTScale;
+	int AngleLUTInput;
+	int SpotAttEnb;
+	int DistAttEnb;
+	int TwoSidedDiff;
+	int Directional;
 };
 
 uniform int LightsCount;
 
-uniform Light_t Lights[8];
+uniform Light_t Lights[3];
 
 uniform vec4 SAmbient;
 
 vec3 QuatRotate(vec4 q, vec3 v) {
     return v + 2 * cross(q.xyz, cross(q.xyz, v) + q.w * v);
+}
+
+float SampleLUT(int lidx, float idx, float s) {
+	float x = (idx + 1) * 0.5;
+	float r = texture(LUTs[lidx], vec2(x, 0)).r;
+
+	return min(r * s, 1);
 }

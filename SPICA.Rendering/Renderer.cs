@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 
 using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Light;
 using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Shader;
@@ -77,6 +78,7 @@ namespace SPICA.Rendering
             Merge(Scene.Models);
             Merge(Scene.Textures);
             Merge(Scene.LUTs);
+            Merge(Scene.Lights);
             Merge(Scene.Shaders);
         }
 
@@ -101,6 +103,14 @@ namespace SPICA.Rendering
             foreach (H3DLUT LUT in LUTs)
             {
                 this.LUTs.Add(LUT.Name, new LUT(LUT));
+            }
+        }
+
+        public void Merge(H3DDict<H3DLight> Lights)
+        {
+            foreach (H3DLight Light in Lights)
+            {
+                this.Lights.Add(new Light(Light));
             }
         }
 
@@ -150,6 +160,14 @@ namespace SPICA.Rendering
             foreach (Model Model in Models)
             {
                 Model.UpdateShaders();
+            }
+        }
+
+        public void UpdateAllUniforms()
+        {
+            foreach (Model Model in Models)
+            {
+                Model.UpdateUniforms();
             }
         }
 

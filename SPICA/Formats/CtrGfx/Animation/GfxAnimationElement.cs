@@ -18,6 +18,10 @@ namespace SPICA.Formats.CtrGfx.Animation
             set => _Name = value ?? throw Exceptions.GetNullException("Name");
         }
 
+        [IfVersion(CmpOp.Lequal, 0x05000000)] private string Name2;
+
+        [IfVersion(CmpOp.Lequal, 0x05000000)] private uint Dummy;
+
         public GfxPrimitiveType PrimitiveType;
         
         [Inline]

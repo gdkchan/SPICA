@@ -33,6 +33,13 @@ namespace SPICA.PICA.Converters
 
                     foreach (PICAAttribute Attrib in Mesh.Attributes)
                     {
+                        //Short and Float types needs to be aligned into 2 bytes boundaries.
+                        if (Attrib.Format != PICAAttributeFormat.Byte &&
+                            Attrib.Format != PICAAttributeFormat.Ubyte)
+                        {
+                            MS.Position += MS.Position & 1;
+                        }
+
                         for (int Elem = 0; Elem < Attrib.Elements; Elem++)
                         {
                             switch (Attrib.Format)

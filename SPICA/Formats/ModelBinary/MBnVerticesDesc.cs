@@ -50,17 +50,13 @@ namespace SPICA.Formats.ModelBinary
                  * needs to be aligned to a 2 byte boundary, so we insert a 1 byte dummy element to force alignment.
                  * Attributes of the same type doesn't need to be aligned however.
                  * For example:
-                 * A byte Vector3 Normal followed by a Byte Vector4 Color, followed by a Short Vector2 TexCoord is
+                 * A Byte Vector3 Normal followed by a Byte Vector4 Color, followed by a Short Vector2 TexCoord is
                  * stored like this: NX NY NZ CR CG CB CA <Padding0> TX TX TY TY
                  */
-                if (!(
-                    AttrFormat == MBnAttributeFormat.Ubyte ||
-                    AttrFormat == MBnAttributeFormat.Byte) &&
-                    (VertexStride & 1) != 0)
+                if (AttrFormat != MBnAttributeFormat.Ubyte &&
+                    AttrFormat != MBnAttributeFormat.Byte)
                 {
-                    Attributes.Add(GetDummyAttribute());
-
-                    VertexStride++;
+                    VertexStride += VertexStride & 1;
                 }
 
                 int Size = Elements;
@@ -82,27 +78,22 @@ namespace SPICA.Formats.ModelBinary
                 });
             }
 
-            if ((VertexStride & 1) != 0) VertexStride++;
+            VertexStride += VertexStride & 1;
 
             BufferLength = Reader.ReadInt32();
 
-            if (HasBuffer) ReadBuffer(Reader, false);
-        }
-
-        private PICAAttribute GetDummyAttribute()
-        {
-            return new PICAAttribute()
+            if (HasBuffer)
             {
-                Name     = PICAAttributeName.UserAttribute0,
-                Format   = PICAAttributeFormat.Byte,
-                Elements = 1,
-                Scale    = 1
-            };
+                ReadBuffer(Reader, false);
+            }
         }
 
         public void ReadBuffer(BinaryReader Reader, bool NeedsAlign)
         {
-            if (NeedsAlign) Reader.Align(0x20);
+            if (NeedsAlign)
+            {
+                Reader.Align(0x20);
+            }
 
             RawBuffer = Reader.ReadBytes(BufferLength);
 

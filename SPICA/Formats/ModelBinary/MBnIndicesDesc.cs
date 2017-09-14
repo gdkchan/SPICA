@@ -24,12 +24,18 @@ namespace SPICA.Formats.ModelBinary
 
             PrimitivesCount = Reader.ReadUInt32();
 
-            if (HasBuffer) ReadBuffer(Reader, false);
+            if (HasBuffer)
+            {
+                ReadBuffer(Reader, false);
+            }
         }
 
         public void ReadBuffer(BinaryReader Reader, bool NeedsAlign)
         {
-            if (NeedsAlign) Reader.Align(0x20);
+            if (NeedsAlign)
+            {
+                Reader.Align(0x20);
+            }
 
             Indices = new ushort[PrimitivesCount];
 

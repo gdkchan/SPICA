@@ -585,6 +585,11 @@ namespace SPICA.Formats.CtrGfx
                 Output.Cameras.Add(Camera.ToH3DCamera());
             }
 
+            foreach (GfxLight Light in Lights)
+            {
+                Output.Lights.Add(Light.ToH3DLight());
+            }
+
             foreach (GfxAnimation SklAnim in SkeletalAnimations)
             {
                 Output.SkeletalAnimations.Add(SklAnim.ToH3DAnimation());

@@ -7,7 +7,7 @@ using System.Numerics;
 namespace SPICA.Formats.CtrGfx.Model.Mesh
 {
     [TypeChoice(0x10000001u, typeof(GfxShape))]
-    public class GfxShape : GfxObject, INamed
+    public class GfxShape : GfxObject
     {
         private uint Flags;
 

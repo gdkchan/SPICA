@@ -317,10 +317,12 @@ namespace SPICA.WinForms
 
                         Renderer.Lights.Add(new Light()
                         {
-                            Ambient  = Color4.Black,
-                            Diffuse  = Color4.Gainsboro,
-                            Specular = Color4.Gainsboro,
-                            Enabled  = true
+                            Ambient         = new Color4(0.1f, 0.1f, 0.1f, 1.0f),
+                            Diffuse         = new Color4(0.9f, 0.9f, 0.9f, 1.0f),
+                            Specular0       = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
+                            Specular1       = new Color4(0.4f, 0.4f, 0.4f, 1.0f),
+                            TwoSidedDiffuse = true,
+                            Enabled         = true
                         });
 
                         ResetTransforms();
@@ -332,6 +334,7 @@ namespace SPICA.WinForms
                         ModelsList.Bind(Scene.Models);
                         TexturesList.Bind(Scene.Textures);
                         CamerasList.Bind(Scene.Cameras);
+                        LightsList.Bind(Scene.Lights);
                         SklAnimsList.Bind(Scene.SkeletalAnimations);
                         MatAnimsList.Bind(Scene.MaterialAnimations);
                         VisAnimsList.Bind(Scene.VisibilityAnimations);
@@ -476,6 +479,23 @@ namespace SPICA.WinForms
 
                 ResetTransforms();
             }
+
+            UpdateViewport();
+        }
+
+        private void LightsList_Selected(object sender, EventArgs e)
+        {
+            if (LightsList.SelectedIndices.Length > 0)
+            {
+                Renderer.Lights[0].Enabled = false;
+            }
+
+            for (int i = 1; i < Renderer.Lights.Count; i++)
+            {
+                Renderer.Lights[i].Enabled = LightsList.SelectedIndices.Contains(i - 1);
+            }
+
+            Renderer.UpdateAllUniforms();
 
             UpdateViewport();
         }

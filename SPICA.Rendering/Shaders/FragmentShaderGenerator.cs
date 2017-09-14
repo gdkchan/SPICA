@@ -209,41 +209,109 @@ namespace SPICA.Rendering.Shaders
             SB.AppendLine($"\tvec4 FragPriColor = vec4(({Color}).rgb, 1);");
             SB.AppendLine("\tvec4 FragSecColor = vec4(0, 0, 0, 1);");
 
-            if (Params.BumpMode == H3DBumpMode.AsBump && Params.BumpTexture < 3)
+            if (Params.BumpMode == H3DBumpMode.AsBump ||
+                Params.BumpMode == H3DBumpMode.AsTangent)
             {
                 if (!HasTexColor[Params.BumpTexture])
                 {
                     GenTexColor(Params.BumpTexture);
                     HasTexColor[Params.BumpTexture] = true;
                 }
-
-                SB.AppendLine($"\tvec3 SurfNormal = Color{Params.BumpTexture}.xyz * 2 - 1;");
-
-                if ((Params.FragmentFlags & H3DFragmentFlags.IsBumpRenormalizeEnabled) != 0)
-                {
-                    //Recalculates the Z axis on the normal to give more precision
-                    SB.AppendLine("\tSurfNormal.z = sqrt(max(1 - dot(SurfNormal.xy, SurfNormal.xy), 0));");
-                }
             }
-            else
+
+            string BumpColor = $"Color{Params.BumpTexture}.xyz * 2 - 1";
+
+            switch (Params.BumpMode)
             {
-                SB.AppendLine("\tvec3 SurfNormal = vec3(0, 0, 1);");
+                case H3DBumpMode.AsBump:
+                    SB.AppendLine($"\tvec3 SurfNormal = {BumpColor};");
+                    SB.AppendLine("\tvec3 SurfTangent = vec3(1, 0, 0);");
+                    break;
+
+                case H3DBumpMode.AsTangent:
+                    SB.AppendLine("\tvec3 SurfNormal = vec3(0, 0, 1);");
+                    SB.AppendLine($"\tvec3 SurfTangent = {BumpColor};");
+                    break;
+
+                default: /* NotUsed */
+                    SB.AppendLine("\tvec3 SurfNormal = vec3(0, 0, 1);");
+                    SB.AppendLine("\tvec3 SurfTangent = vec3(1, 0, 0);");
+                    break;
             }
+
+            //Recalculates the Z axis on the normal to give more precision.
+            //For Tangent it was reported that the 3DS doesn't recalculate Z
+            //(or maybe it just doesn't matter for the final formula where it is used).
+            if ((Params.FragmentFlags & H3DFragmentFlags.IsBumpRenormalizeEnabled) != 0)
+            {
+                SB.AppendLine("\tSurfNormal.z = sqrt(max(1 - dot(SurfNormal.xy, SurfNormal.xy), 0));");
+            }
+
+            string HalfProj = "Half - Normal / dot(Normal, Normal) * dot(Normal, Half)";
 
             string QuatNormal = $"{ShaderOutputRegName.QuatNormal}";
             string View       = $"{ShaderOutputRegName.View}";
 
-            SB.AppendLine($"\tvec3 Normal = QuatRotate({QuatNormal}, SurfNormal);");
+            SB.AppendLine($"\tvec4 NormQuat = normalize({QuatNormal});");
+            SB.AppendLine($"\tvec3 Normal = QuatRotate(NormQuat, SurfNormal);");
+            SB.AppendLine($"\tvec3 Tangent = QuatRotate(NormQuat, SurfTangent);");
 
             //Lights loop start
             SB.AppendLine();
             SB.AppendLine("\tfor (int i = 0; i < LightsCount; i++) {");
-            SB.AppendLine($"\t\tvec3 Light = normalize(Lights[i].Position + {View}.xyz);");
-            SB.AppendLine($"\t\tvec3 Half = normalize({View}.xyz) + Light;");
+
+            SB.AppendLine("\t\tvec3 Light = (Lights[i].Directional != 0)" +
+                 " ? normalize(Lights[i].Position)" +
+                $" : normalize(Lights[i].Position + {View}.xyz);");
+
+            SB.AppendLine($"\t\tvec3 Half = normalize(normalize({View}.xyz) + Light);");
             SB.AppendLine("\t\tfloat CosNormalHalf = dot(Normal, Half);");
             SB.AppendLine($"\t\tfloat CosViewHalf = dot(normalize({View}.xyz), Half);");
             SB.AppendLine($"\t\tfloat CosNormalView = dot(Normal, normalize({View}.xyz));");
             SB.AppendLine("\t\tfloat CosLightNormal = dot(Light, Normal);");
+            SB.AppendLine("\t\tfloat CosLightSpot = dot(Light, Lights[i].Direction);");
+            SB.AppendLine($"\t\tfloat CosPhi = dot({HalfProj}, Tangent);");
+
+            SB.AppendLine("\t\tfloat ln = (Lights[i].TwoSidedDiff != 0)" +
+                " ? abs(CosLightNormal)" +
+                " : max(CosLightNormal, 0);");
+
+            SB.AppendLine("\t\tfloat SpotAtt = 1;");
+            SB.AppendLine();
+
+            SB.AppendLine("\t\tif (Lights[i].SpotAttEnb != 0) {");
+            SB.AppendLine("\t\t\tfloat SpotIndex;");
+            SB.AppendLine();
+
+            SB.AppendLine("\t\t\tswitch (Lights[i].AngleLUTInput) {");
+            SB.AppendLine("\t\t\tcase 0: SpotIndex = CosNormalHalf; break;");
+            SB.AppendLine("\t\t\tcase 1: SpotIndex = CosViewHalf; break;");
+            SB.AppendLine("\t\t\tcase 2: SpotIndex = CosNormalView; break;");
+            SB.AppendLine("\t\t\tcase 3: SpotIndex = CosLightNormal; break;");
+            SB.AppendLine("\t\t\tcase 4: SpotIndex = CosLightSpot; break;");
+            SB.AppendLine("\t\t\tcase 5: SpotIndex = CosPhi; break;");
+            SB.AppendLine("\t\t\t}");
+            SB.AppendLine();
+
+            SB.AppendLine("\t\t\tSpotAtt = SampleLUT(" +
+                "6 + i * 2, SpotIndex, Lights[i].AngleLUTScale);");
+
+            SB.AppendLine("\t\t}");
+            SB.AppendLine();
+
+            SB.AppendLine("\t\tfloat DistAtt = 1;");
+            SB.AppendLine();
+
+            SB.AppendLine("\t\tif (Lights[i].DistAttEnb != 0) {");
+
+            string DistAttIdx;
+
+            DistAttIdx = $"length(-{View}.xyz - Lights[i].Position) * Lights[i].AttScale";
+            DistAttIdx = $"clamp({DistAttIdx} + Lights[i].AttBias, 0, 1)";
+
+            SB.AppendLine($"\t\t\tDistAtt = SampleLUT(7 + i * 2, {DistAttIdx}, 1);");
+            SB.AppendLine("\t\t}");
+            SB.AppendLine();
 
             string ClampHighLight = string.Empty;
 
@@ -252,7 +320,7 @@ namespace SPICA.Rendering.Shaders
 
             if ((Params.FragmentFlags & H3DFragmentFlags.IsClampHighLightEnabled) != 0)
             {
-                ClampHighLight = "fi * ";
+                ClampHighLight = " * fi";
 
                 SB.AppendLine("\t\tfloat fi = (CosLightNormal < 0) ? 0 : 1;");
             }
@@ -288,20 +356,22 @@ namespace SPICA.Rendering.Shaders
                 Specular1Color += " * g";
 
             if ((Params.FragmentFlags & H3DFragmentFlags.IsLUTGeoFactorEnabled) != 0)
-                SB.AppendLine("\t\tfloat g = CosLightNormal / abs(dot(Half, Half));");
+                SB.AppendLine("\t\tfloat g = ln / abs(dot(Half, Half));");
 
             SB.AppendLine("\t\tvec4 Diffuse =");
             SB.AppendLine($"\t\t\t{AmbientUniform} * Lights[i].Ambient +");
-            SB.AppendLine($"\t\t\t{DiffuseUniform} * Lights[i].Diffuse * CosLightNormal;");
-            SB.AppendLine($"\t\tvec4 Specular = ({Specular0Color} + {Specular1Color}) * Lights[i].Specular;");
-            SB.AppendLine($"\t\tFragPriColor.rgb += {ClampHighLight}Diffuse.rgb;");
-            SB.AppendLine($"\t\tFragSecColor.rgb += {ClampHighLight}Specular.rgb;");
+            SB.AppendLine($"\t\t\t{DiffuseUniform} * Lights[i].Diffuse * clamp(ln, 0, 1);");
+            SB.AppendLine($"\t\tvec4 Specular = " +
+                $"{Specular0Color} * Lights[i].Specular0 + " +
+                $"{Specular1Color} * Lights[i].Specular1;");
+            SB.AppendLine($"\t\tFragPriColor.rgb += Diffuse.rgb * SpotAtt * DistAtt;");
+            SB.AppendLine($"\t\tFragSecColor.rgb += Specular.rgb * SpotAtt * DistAtt{ClampHighLight};");
 
             if ((Params.FresnelSelector & H3DFresnelSelector.Pri) != 0)
-                SB.AppendLine($"\t\tFragPriColor.a = min(FragPriColor.a * {Fresnel}, 1);");
+                SB.AppendLine($"\t\tFragPriColor.a = {Fresnel};");
 
             if ((Params.FresnelSelector & H3DFresnelSelector.Sec) != 0)
-                SB.AppendLine($"\t\tFragSecColor.a = min(FragSecColor.a * {Fresnel}, 1);");
+                SB.AppendLine($"\t\tFragSecColor.a = {Fresnel};");
 
             //Lights loop end
             SB.AppendLine("\t}");
@@ -322,6 +392,8 @@ namespace SPICA.Rendering.Shaders
                 case PICALUTInput.CosViewHalf:    InputStr = "CosViewHalf";    break;
                 case PICALUTInput.CosNormalView:  InputStr = "CosNormalView";  break;
                 case PICALUTInput.CosLightNormal: InputStr = "CosLightNormal"; break;
+                case PICALUTInput.CosLightSpot:   InputStr = "CosLightSpot";   break;
+                case PICALUTInput.CosPhi:         InputStr = "CosPhi";         break;
             }
 
             string Output = $"texture(LUTs[{LUT}], vec2(({InputStr} + 1) * 0.5, 0)).r";

@@ -11,9 +11,7 @@ namespace SPICA.Formats.CtrGfx.Animation
         {
             long Position = Deserializer.BaseStream.Position;
 
-            Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
-
-            uint Flags = Deserializer.Reader.ReadUInt32();
+            uint Flags = GetFlagsFromElem(Deserializer, Position);
 
             uint ConstantMask = 1u;
             uint NotExistMask = 1u << Vector.Length;
@@ -39,11 +37,7 @@ namespace SPICA.Formats.CtrGfx.Animation
 
         public static void SetVector(BinaryDeserializer Deserializer, GfxFloatKeyFrameGroup Vector)
         {
-            Deserializer.BaseStream.Seek(-0xc, SeekOrigin.Current);
-
-            uint Flags = Deserializer.Reader.ReadUInt32();
-
-            Deserializer.BaseStream.Seek(8, SeekOrigin.Current);
+            uint Flags = GetFlagsFromElem(Deserializer, Deserializer.BaseStream.Position);
 
             bool Constant = (Flags & 1) != 0;
             bool Exists   = (Flags & 2) == 0;
@@ -52,6 +46,20 @@ namespace SPICA.Formats.CtrGfx.Animation
             {
                 Vector = GfxFloatKeyFrameGroup.ReadGroup(Deserializer, Constant);
             }
+        }
+
+        public static uint GetFlagsFromElem(BinaryDeserializer Deserializer, long Position)
+        {
+            SeekToFlags(
+                Deserializer.BaseStream,
+                Deserializer.FileVersion,
+                Position);
+
+            uint Flags = Deserializer.Reader.ReadUInt32();
+
+            Deserializer.BaseStream.Seek(Position, SeekOrigin.Begin);
+
+            return Flags;
         }
 
         public static void WriteVector(BinarySerializer Serializer, GfxFloatKeyFrameGroup[] Vector)
@@ -100,6 +108,26 @@ namespace SPICA.Formats.CtrGfx.Animation
         public static void WriteVector(BinarySerializer Serializer, GfxFloatKeyFrameGroup Vector)
         {
             WriteVector(Serializer, new GfxFloatKeyFrameGroup[] { Vector });
+        }
+
+        public static void WriteFlagsToElem(BinarySerializer Serializer, long Position, uint Flags)
+        {
+            SeekToFlags(
+                Serializer.BaseStream,
+                Serializer.FileVersion,
+                Position);
+
+            Serializer.Writer.Write(Flags);
+        }
+
+        private static void SeekToFlags(Stream BaseStream, int Revision, long Position)
+        {
+            BaseStream.Seek(Position - 0xc, SeekOrigin.Begin);
+
+            if (Revision <= 0x05000000)
+            {
+                BaseStream.Seek(-8, SeekOrigin.Current);
+            }
         }
     }
 }
