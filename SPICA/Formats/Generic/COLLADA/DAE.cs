@@ -172,7 +172,13 @@ namespace SPICA.Formats.Generic.COLLADA
                     {
                         H3DSubMesh SM = Mesh.SubMeshes[SMIndex];
 
-                        string ShortName = Mdl.MeshNodesTree?.Find(Mesh.NodeIndex);
+                        string ShortName = string.Empty;
+
+                        if (Mdl.MeshNodesTree != null && Mesh.NodeIndex < Mdl.MeshNodesTree.Count)
+                        {
+                            ShortName = Mdl.MeshNodesTree.Find(Mesh.NodeIndex);
+                        }
+
                         string MeshName = $"{ShortName}_{MeshIndex}_{SMIndex}";
 
                         DAEGeometry Geometry = new DAEGeometry();
