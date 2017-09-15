@@ -319,7 +319,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             int vi = 0, vci = 0;
 
-                            if (SM.Skinning == H3DSubMeshSkinning.Smooth)
+                            if (SM.Skinning == H3DSubMeshSkinning.Smooth || true)
                             {
                                 foreach (PICAVertex Vertex in Vertices)
                                 {

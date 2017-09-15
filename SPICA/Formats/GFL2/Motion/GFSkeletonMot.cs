@@ -81,12 +81,20 @@ namespace SPICA.Formats.GFL2.Motion
                     Quaternion QuatRotation;
 
                     if (Bone.IsAxisAngle)
-                        QuatRotation = Quaternion.CreateFromAxisAngle(Vector3.Normalize(Rotation), Rotation.Length() * 2);
+                    {
+                        float Angle = Rotation.Length() * 2;
+
+                        QuatRotation = Angle > 0
+                            ? Quaternion.CreateFromAxisAngle(Vector3.Normalize(Rotation), Angle)
+                            : Quaternion.Identity;
+                    }
                     else
+                    {
                         QuatRotation =
                             Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Rotation.Z) *
                             Quaternion.CreateFromAxisAngle(Vector3.UnitY, Rotation.Y) *
                             Quaternion.CreateFromAxisAngle(Vector3.UnitX, Rotation.X);
+                    }
 
                     QuatTransform.Scales.Add(Scale);
                     QuatTransform.Rotations.Add(QuatRotation);
