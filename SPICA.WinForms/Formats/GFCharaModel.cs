@@ -2,6 +2,7 @@
 using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.GFL2;
 using SPICA.Formats.GFL2.Motion;
+using SPICA.Formats.GFL2.Texture;
 
 using System.IO;
 
@@ -50,6 +51,25 @@ namespace SPICA.WinForms.Formats
                     VisAnim.Name = $"Motion_{Mot.Index}";
 
                     Output.VisibilityAnimations.Add(VisAnim);
+                }
+            }
+
+            //Texture
+            if (Header.Entries.Length > 3 && Header.Entries[3].Length >= 4)
+            {
+                Input.Seek(Header.Entries[3].Address, SeekOrigin.Begin);
+
+                BinaryReader Reader = new BinaryReader(Input);
+
+                uint MagicNum = Reader.ReadUInt32();
+
+                if (MagicNum == 0x15041213)
+                {
+                    Input.Seek(-4, SeekOrigin.Current);
+
+                    GFTexture Tex = new GFTexture(Reader);
+
+                    Output.Textures.Add(Tex.ToH3DTexture());
                 }
             }
 

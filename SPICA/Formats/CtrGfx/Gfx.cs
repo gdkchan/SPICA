@@ -20,6 +20,7 @@ using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
 using SPICA.Serialization;
 using SPICA.Serialization.Serializer;
+
 using System;
 using System.IO;
 using System.Numerics;
