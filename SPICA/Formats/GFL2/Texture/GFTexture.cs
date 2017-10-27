@@ -1,7 +1,9 @@
 ﻿using SPICA.Formats.Common;
 using SPICA.Formats.CtrH3D.Texture;
-
+using SPICA.PICA.Commands;
+using System;
 using System.IO;
+using System.Text;
 
 namespace SPICA.Formats.GFL2.Texture
 {
@@ -15,7 +17,14 @@ namespace SPICA.Formats.GFL2.Texture
         public GFTextureFormat Format;
         public ushort MipmapSize;
 
-        public GFTexture() { }
+        public GFTexture(H3DTexture tex) {
+			Name = tex.Name;
+			RawBuffer = tex.RawBuffer;
+			Width = (ushort)tex.Width;
+			Height = (ushort)tex.Height;
+			Format = H3DTextureFormatExtensions.ToGFTextureFormat(tex.Format);
+			MipmapSize = tex.MipmapSize;
+		}
 
         public GFTexture(BinaryReader Reader)
         {
@@ -52,5 +61,24 @@ namespace SPICA.Formats.GFL2.Texture
                 MipmapSize    = (byte)MipmapSize
             };
         }
+
+		public void Write(BinaryWriter Writer) 
+		{
+			Writer.Write(0x15041213);
+			Writer.Write(1);
+			new GFSection("texture", (uint)RawBuffer.Length + 0x68).Write(Writer);
+			Writer.Write(RawBuffer.Length);
+			Writer.WritePaddedString("", 0x0C);
+			Writer.WritePaddedString(Name, 0x40);
+			Writer.Write(Width);
+			Writer.Write(Height);
+			Writer.Write((Int16)Format);
+			Writer.Write(MipmapSize);
+			Writer.Write(0xFFFFFFFF);
+			Writer.Write(0xFFFFFFFF);
+			Writer.Write(0xFFFFFFFF);
+			Writer.Write(0xFFFFFFFF);
+			Writer.Write(RawBuffer);
+		}
     }
 }

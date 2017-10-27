@@ -12,9 +12,10 @@ namespace SPICA.Formats.GFL2
 
         public GFSection() { }
 
-        public GFSection(string Magic)
+        public GFSection(string magic, uint length)
         {
-            this.Magic = Magic;
+            Magic = magic;
+			Length = length;
         }
 
         public GFSection(BinaryReader Reader)

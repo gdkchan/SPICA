@@ -142,13 +142,14 @@ namespace SPICA.Formats.Common
         {
             int Index = 0;
 
-            if (Value != null)
+            if (Value != null && Value.Length > 0)
             {
-                while (Index < Value.Length && Index++ < Length)
-                {
-                    Writer.Write(Value[Index]);
-                }
-            }
+				do 
+				{
+					Writer.Write(Value[Index]);
+				} while (Index++ < Length && Index < Value.Length);
+
+			}
 
             while (Index++ < Length) Writer.Write((byte)0);
         }

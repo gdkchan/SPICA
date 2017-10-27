@@ -2,11 +2,20 @@
 
 using System.IO;
 using System.Text;
+using System;
+using SPICA.Formats.GFL2.Texture;
+using SPICA.Formats.CtrH3D.Texture;
 
 namespace SPICA.WinForms.Formats
 {
     class GFPackedTexture
     {
+		private GFTexture Texture;
+
+		public GFPackedTexture(H3D Scene, int index) {
+			Texture = new GFTexture(Scene.Textures[index]);
+		}
+
         public static H3D OpenAsH3D(Stream Input, GFPackage.Header Header, int StartIndex)
         {
             H3D Output = new H3D();
@@ -30,5 +39,11 @@ namespace SPICA.WinForms.Formats
 
             return Output;
         }
-    }
+
+		public void Save(string FileName) {
+			using (BinaryWriter br = new BinaryWriter(new FileStream(FileName, FileMode.Create))) {
+				Texture.Write(br);
+			}
+		}
+	}
 }
