@@ -3,7 +3,6 @@ using SPICA.Formats.CtrH3D.Texture;
 using SPICA.PICA.Commands;
 using System;
 using System.IO;
-using System.Text;
 
 namespace SPICA.Formats.GFL2.Texture
 {

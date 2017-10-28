@@ -99,14 +99,18 @@ namespace SPICA.WinForms.Formats
                 using (SaveFileDialog SaveDlg = new SaveFileDialog())
                 {
                     SaveDlg.Filter = "Portable Network Graphics|*.png|"	+
-									 "GFTexture|*.bin";
+									 "GFTexture|*.*;*.pc;*.bin";
                     SaveDlg.FileName = Scene.Textures[Index].Name;
 
-                    if (SaveDlg.ShowDialog() == DialogResult.OK)
+					if (SaveDlg.ShowDialog() == DialogResult.OK)
                     {
 						switch (SaveDlg.FilterIndex) {
-							case 1: TextureManager.GetTexture(Index).Save(SaveDlg.FileName); break;
-							case 2: new GFPackedTexture(Scene, Index).Save(SaveDlg.FileName); break;
+							case 1:	//PNG
+								TextureManager.GetTexture(Index).Save(SaveDlg.FileName);
+								break;
+							case 2:	//GFTexture
+								new GFPackedTexture(Scene, Index).Save(SaveDlg.FileName);
+								break;
 						}
                     }
                 }

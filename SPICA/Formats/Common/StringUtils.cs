@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SPICA.Formats.Common
 {
-    static class StringUtils
+    public static class StringUtils
     {
         //Read
         public static byte[] ReadNullTerminatedByteArray(this BinaryReader Reader)
