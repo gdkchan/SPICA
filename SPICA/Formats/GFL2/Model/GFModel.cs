@@ -117,13 +117,6 @@ namespace SPICA.Formats.GFL2.Model
                     }
                 }
             }
-
-            using (FileStream fs = new FileStream("D:\\gflt_" + Name + ".bin", FileMode.Create))
-            {
-                BinaryWriter bw = new BinaryWriter(fs);
-
-                Write(bw);
-            }
         }
 
         private GFHashName[] ReadHashTable(BinaryReader Reader)
