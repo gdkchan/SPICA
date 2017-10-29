@@ -85,6 +85,12 @@
     <Compile Include="FrmExport.Designer.cs">
       <DependentUpon>FrmExport.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmGFTFormat.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmGFTFormat.Designer.cs">
+      <DependentUpon>FrmGFTFormat.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +126,9 @@
     <Compile Include="TextureManager.cs" />
     <EmbeddedResource Include="FrmExport.resx">
       <DependentUpon>FrmExport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmGFTFormat.resx">
+      <DependentUpon>FrmGFTFormat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmMain.resx">
       <DependentUpon>FrmMain.cs</DependentUpon>

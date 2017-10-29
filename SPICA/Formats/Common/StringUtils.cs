@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SPICA.Formats.Common
 {
-    static class StringUtils
+    public static class StringUtils
     {
         //Read
         public static byte[] ReadNullTerminatedByteArray(this BinaryReader Reader)
@@ -143,7 +143,7 @@ namespace SPICA.Formats.Common
         {
             int Index = 0;
 
-            if (Value != null)
+            if (Value != null && Value.Length > 0)
             {
                 while (Index < Math.Min(Value.Length, Length))
                 {

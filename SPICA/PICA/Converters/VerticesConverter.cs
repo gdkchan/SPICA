@@ -8,7 +8,7 @@ using System.Numerics;
 
 namespace SPICA.PICA.Converters
 {
-    static class VerticesConverter
+    public static class VerticesConverter
     {
         public static PICAVertex[] GetVertices(H3DMesh Mesh)
         {
@@ -142,7 +142,7 @@ namespace SPICA.PICA.Converters
                                 case PICAAttributeName.BoneIndex:  Write(Writer, Attrib, Vertex.Indices[bi++]); break;
                                 case PICAAttributeName.BoneWeight: Write(Writer, Attrib, Vertex.Weights[wi++]); break;
 
-                                default: Write(Writer, Attrib, 0); break;
+								default: Write(Writer, Attrib, 0); break;
                             }
                         }
                     }

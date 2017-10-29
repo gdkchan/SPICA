@@ -3,6 +3,7 @@ using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.Generic.COLLADA;
 using SPICA.Formats.Generic.StudioMdl;
+using SPICA.Formats.GFL2.Model;
 using SPICA.Rendering;
 
 using System.IO;
@@ -97,12 +98,20 @@ namespace SPICA.WinForms.Formats
                 //Export one
                 using (SaveFileDialog SaveDlg = new SaveFileDialog())
                 {
-                    SaveDlg.Filter = "Portable Network Graphics|*.png";
-                    SaveDlg.FileName = $"{Scene.Textures[Index].Name}.png";
+                    SaveDlg.Filter = "Portable Network Graphics|*.png|"	+
+									 "GFTexture|*.*;*.pc;*.bin";
+                    SaveDlg.FileName = Scene.Textures[Index].Name;
 
-                    if (SaveDlg.ShowDialog() == DialogResult.OK)
+					if (SaveDlg.ShowDialog() == DialogResult.OK)
                     {
-                        TextureManager.GetTexture(Index).Save(SaveDlg.FileName);
+						switch (SaveDlg.FilterIndex) {
+							case 1:	//PNG
+								TextureManager.GetTexture(Index).Save(SaveDlg.FileName);
+								break;
+							case 2:	//GFTexture
+								new GFPackedTexture(Scene, Index).Save(SaveDlg.FileName);
+								break;
+						}
                     }
                 }
             }
