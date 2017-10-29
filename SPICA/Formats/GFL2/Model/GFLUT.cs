@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SPICA.Formats.GFL2.Model
 {
-    public class GFLUT
+    public class GFLUT : INamed
     {
         public PICALUTType Type;
 
@@ -31,18 +31,39 @@ namespace SPICA.Formats.GFL2.Model
             }
         }
 
-        public uint   Hash;
-        public string Name;
+        public uint HashId { get; private set; }
+
+        private string _Name;
+
+        public string Name {
+            get => _Name;
+            set
+            {
+                _Name = value;
+
+                if (_Name != null)
+                {
+                    GFNV1 FNV = new GFNV1();
+
+                    FNV.Hash(_Name);
+
+                    HashId = FNV.HashCode;
+                }
+                else
+                {
+                    HashId = 0;
+                }
+            }
+        }
 
         public GFLUT()
         {
             _Table = new float[256];
         }
 
-        public GFLUT(BinaryReader Reader, string SamplerName, int Length) : this()
+        public GFLUT(BinaryReader Reader, int Length) : this()
         {
-            Hash = Reader.ReadUInt32();
-            Name = SamplerName;
+            HashId = Reader.ReadUInt32();
 
             Reader.BaseStream.Seek(0xc, SeekOrigin.Current);
 
@@ -63,7 +84,8 @@ namespace SPICA.Formats.GFL2.Model
 
                 if (Cmd.Register == PICARegister.GPUREG_LIGHTING_LUT_INDEX)
                 {
-                    Index = Cmd.Parameters[0] & 0xff;
+                    Index =               Cmd.Parameters[0] & 0xff;
+                    Type  = (PICALUTType)(Cmd.Parameters[0] >> 8);
                 }
                 else if (
                     Cmd.Register >= PICARegister.GPUREG_LIGHTING_LUT_DATA0 &&
@@ -79,7 +101,40 @@ namespace SPICA.Formats.GFL2.Model
 
         public void Write(BinaryWriter Writer)
         {
-            //TODO
+            Writer.Write(HashId);
+
+            Writer.BaseStream.Seek(0xc, SeekOrigin.Current);
+
+            uint[] QuantizedValues = new uint[256];
+
+            for (int Index = 0; Index < _Table.Length; Index++)
+            {
+                float Difference = 0;
+
+                if (Index < _Table.Length - 1)
+                {
+                    Difference = _Table[Index + 1] - _Table[Index];
+                }
+
+                int Value = (int)(_Table[Index] * 0xfff);
+                int Diff  = (int)(Difference    * 0x7ff);
+
+                QuantizedValues[Index] = (uint)(Value | (Diff << 12)) & 0xffffff;
+            }
+
+            PICACommandWriter CmdWriter = new PICACommandWriter();
+
+            CmdWriter.SetCommand(PICARegister.GPUREG_LIGHTING_LUT_INDEX, (uint)Type << 8);
+            CmdWriter.SetCommands(PICARegister.GPUREG_LIGHTING_LUT_DATA0, false, 0xf, QuantizedValues);
+
+            CmdWriter.WriteEnd();
+
+            uint[] Commands = CmdWriter.GetBuffer();
+
+            foreach (uint Cmd in Commands)
+            {
+                Writer.Write(Cmd);
+            }
         }
     }
 }

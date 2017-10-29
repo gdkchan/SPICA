@@ -9,9 +9,14 @@ namespace SPICA.Formats.GFL2.Model
         public uint   Hash;
         public string Name;
 
-        public GFHashName(uint Hash, string Name)
+        public GFHashName(string Name)
         {
-            this.Hash = Hash;
+            GFNV1 FNV = new GFNV1();
+
+            FNV.Hash(Name);
+
+            Hash = FNV.HashCode;
+
             this.Name = Name;
         }
 
@@ -19,6 +24,12 @@ namespace SPICA.Formats.GFL2.Model
         {
             Hash = Reader.ReadUInt32();
             Name = Reader.ReadByteLengthString();
+        }
+
+        public void Write(BinaryWriter Writer)
+        {
+            Writer.Write(Hash);
+            Writer.WriteByteLengthString(Name);
         }
     }
 }

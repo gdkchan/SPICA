@@ -2,19 +2,19 @@
 
 namespace SPICA.Formats.Common
 {
-    public class FNVHash
+    public class FNV1a
     {
         private const uint OffsetBasis = 0x811c9dc5;
         private const uint Prime = 16777619;
 
         public uint HashCode { get; private set; }
 
-        public FNVHash()
+        public FNV1a()
         {
             HashCode = OffsetBasis;
         }
 
-        public FNVHash(uint BaseHash)
+        public FNV1a(uint BaseHash)
         {
             HashCode = BaseHash;
         }

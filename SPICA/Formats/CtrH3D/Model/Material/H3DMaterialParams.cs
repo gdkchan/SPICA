@@ -195,65 +195,65 @@ namespace SPICA.Formats.CtrH3D.Model.Material
 
         private void GenerateUniqueId()
         {
-            FNVHash HashGen = new FNVHash();
+            FNV1a FNV = new FNV1a();
 
-            HashGen.Hash((ushort)(Flags | H3DMaterialFlags.IsParamCommandSourceAccessible));
-            HashGen.Hash((byte)FragmentFlags);
+            FNV.Hash((ushort)(Flags | H3DMaterialFlags.IsParamCommandSourceAccessible));
+            FNV.Hash((byte)FragmentFlags);
 
             foreach (H3DTextureCoord TexCoord in TextureCoords)
             {
-                HashGen.Hash((byte)TexCoord.Flags);
-                HashGen.Hash((byte)TexCoord.TransformType);
-                HashGen.Hash((byte)TexCoord.MappingType);
-                HashGen.Hash(TexCoord.ReferenceCameraIndex);
-                HashGen.Hash(TexCoord.Scale.X);
-                HashGen.Hash(TexCoord.Scale.Y);
-                HashGen.Hash(TexCoord.Rotation);
-                HashGen.Hash(TexCoord.Translation.X);
-                HashGen.Hash(TexCoord.Translation.Y);
+                FNV.Hash((byte)TexCoord.Flags);
+                FNV.Hash((byte)TexCoord.TransformType);
+                FNV.Hash((byte)TexCoord.MappingType);
+                FNV.Hash(TexCoord.ReferenceCameraIndex);
+                FNV.Hash(TexCoord.Scale.X);
+                FNV.Hash(TexCoord.Scale.Y);
+                FNV.Hash(TexCoord.Rotation);
+                FNV.Hash(TexCoord.Translation.X);
+                FNV.Hash(TexCoord.Translation.Y);
             }
 
-            HashGen.Hash(LightSetIndex);
-            HashGen.Hash(FogIndex);
-            HashGen.Hash(EmissionColor.ToUInt32());
-            HashGen.Hash(AmbientColor.ToUInt32());
-            HashGen.Hash(DiffuseColor.ToUInt32());
-            HashGen.Hash(Specular0Color.ToUInt32());
-            HashGen.Hash(Specular1Color.ToUInt32());
-            HashGen.Hash(Constant0Color.ToUInt32());
-            HashGen.Hash(Constant1Color.ToUInt32());
-            HashGen.Hash(Constant2Color.ToUInt32());
-            HashGen.Hash(Constant3Color.ToUInt32());
-            HashGen.Hash(Constant4Color.ToUInt32());
-            HashGen.Hash(Constant5Color.ToUInt32());
-            HashGen.Hash(BlendColor.ToUInt32());
-            HashGen.Hash(ColorScale);
-            HashGen.Hash(LayerConfig);
-            HashGen.Hash((byte)FresnelSelector);
-            HashGen.Hash((byte)BumpMode);
-            HashGen.Hash(BumpTexture);
-            HashGen.Hash(LUTConfigCommands);
-            HashGen.Hash(ConstantColors);
-            HashGen.Hash(PolygonOffsetUnit);
-            HashGen.Hash(FragmentShaderCommands);
+            FNV.Hash(LightSetIndex);
+            FNV.Hash(FogIndex);
+            FNV.Hash(EmissionColor.ToUInt32());
+            FNV.Hash(AmbientColor.ToUInt32());
+            FNV.Hash(DiffuseColor.ToUInt32());
+            FNV.Hash(Specular0Color.ToUInt32());
+            FNV.Hash(Specular1Color.ToUInt32());
+            FNV.Hash(Constant0Color.ToUInt32());
+            FNV.Hash(Constant1Color.ToUInt32());
+            FNV.Hash(Constant2Color.ToUInt32());
+            FNV.Hash(Constant3Color.ToUInt32());
+            FNV.Hash(Constant4Color.ToUInt32());
+            FNV.Hash(Constant5Color.ToUInt32());
+            FNV.Hash(BlendColor.ToUInt32());
+            FNV.Hash(ColorScale);
+            FNV.Hash(LayerConfig);
+            FNV.Hash((byte)FresnelSelector);
+            FNV.Hash((byte)BumpMode);
+            FNV.Hash(BumpTexture);
+            FNV.Hash(LUTConfigCommands);
+            FNV.Hash(ConstantColors);
+            FNV.Hash(PolygonOffsetUnit);
+            FNV.Hash(FragmentShaderCommands);
 
-            HashGen.Hash(LUTDist0TableName);
-            HashGen.Hash(LUTDist1TableName);
-            HashGen.Hash(LUTFresnelTableName);
-            HashGen.Hash(LUTReflecRTableName);
-            HashGen.Hash(LUTReflecGTableName);
-            HashGen.Hash(LUTReflecBTableName);
+            FNV.Hash(LUTDist0TableName);
+            FNV.Hash(LUTDist1TableName);
+            FNV.Hash(LUTFresnelTableName);
+            FNV.Hash(LUTReflecRTableName);
+            FNV.Hash(LUTReflecGTableName);
+            FNV.Hash(LUTReflecBTableName);
 
-            HashGen.Hash(LUTDist0SamplerName);
-            HashGen.Hash(LUTDist1SamplerName);
-            HashGen.Hash(LUTFresnelSamplerName);
-            HashGen.Hash(LUTReflecRSamplerName);
-            HashGen.Hash(LUTReflecGSamplerName);
-            HashGen.Hash(LUTReflecBSamplerName);
+            FNV.Hash(LUTDist0SamplerName);
+            FNV.Hash(LUTDist1SamplerName);
+            FNV.Hash(LUTFresnelSamplerName);
+            FNV.Hash(LUTReflecRSamplerName);
+            FNV.Hash(LUTReflecGSamplerName);
+            FNV.Hash(LUTReflecBSamplerName);
 
-            HashGen.Hash(ShaderReference);
+            FNV.Hash(ShaderReference);
 
-            UniqueId = HashGen.HashCode;
+            UniqueId = FNV.HashCode;
         }
 
         public int GetConstantIndex(int Stage)
@@ -469,9 +469,13 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             for (int Unit = 0; Unit < 3; Unit++)
             {
                 if (TextureCoords[Unit].Scale != Vector2.Zero)
+                {
                     TexMtx[Unit] = TextureCoords[Unit].GetTransform();
+                }
                 else
+                {
                     TexMtx[Unit] = new Matrix3x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                }
             }
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, 0x8000000bu);
@@ -486,7 +490,11 @@ namespace SPICA.Formats.CtrH3D.Model.Material
                 TexMtx[2].M41, TexMtx[2].M31, TexMtx[2].M21, TexMtx[2].M11,
                 TexMtx[2].M42, TexMtx[2].M32, TexMtx[2].M22, TexMtx[2].M12);
 
-            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000013u, 0, 0, 0, 0);
+            Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x80000013u,
+                IOUtils.ToUInt32(TextureCoords[1].Translation.Y),
+                IOUtils.ToUInt32(TextureCoords[1].Translation.X),
+                IOUtils.ToUInt32(TextureCoords[0].Translation.Y),
+                IOUtils.ToUInt32(TextureCoords[0].Translation.X));      
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_FLOATUNIFORM_INDEX, true, 0x8000000au,
                 IOUtils.ToUInt32(TextureSources[3]),

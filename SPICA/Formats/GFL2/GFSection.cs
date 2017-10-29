@@ -10,9 +10,12 @@ namespace SPICA.Formats.GFL2
         public  uint   Length;
         private uint   Padding;
 
-        public GFSection() { }
+        public GFSection()
+        {
+            Padding = 0xffffffff;
+        }
 
-        public GFSection(string Magic)
+        public GFSection(string Magic) : this()
         {
             this.Magic = Magic;
         }
@@ -31,9 +34,12 @@ namespace SPICA.Formats.GFL2
             Writer.Write(0xffffffffu);
         }
 
-        public static void SkipPadding(BinaryReader Reader)
+        public static void SkipPadding(Stream BaseStream)
         {
-            while ((Reader.BaseStream.Position & 0xf) != 0) Reader.ReadByte();
+            if ((BaseStream.Position & 0xf) != 0)
+            {
+                BaseStream.Seek(0x10 - (BaseStream.Position & 0xf), SeekOrigin.Current);
+            }
         }
     }
 }

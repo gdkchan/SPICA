@@ -33,12 +33,7 @@ namespace SPICA.PICA.Converters
 
                     foreach (PICAAttribute Attrib in Mesh.Attributes)
                     {
-                        //Short and Float types needs to be aligned into 2 bytes boundaries.
-                        if (Attrib.Format != PICAAttributeFormat.Byte &&
-                            Attrib.Format != PICAAttributeFormat.Ubyte)
-                        {
-                            MS.Position += MS.Position & 1;
-                        }
+                        AlignStream(MS, Attrib.Format);
 
                         for (int Elem = 0; Elem < Attrib.Elements; Elem++)
                         {
@@ -131,6 +126,8 @@ namespace SPICA.PICA.Converters
 
                     foreach (PICAAttribute Attrib in Attributes)
                     {
+                        AlignStream(MS, Attrib.Format);
+
                         for (int i = 0; i < Attrib.Elements; i++)
                         {
                             switch (Attrib.Name)
@@ -184,6 +181,17 @@ namespace SPICA.PICA.Converters
                 case PICAAttributeFormat.Ubyte: Writer.Write((byte)Value);  break;
                 case PICAAttributeFormat.Short: Writer.Write((short)Value); break;
                 case PICAAttributeFormat.Float: Writer.Write(Value);        break;
+            }
+        }
+
+        private static void AlignStream(Stream Strm, PICAAttributeFormat Fmt)
+        {
+            //Short and Float types needs to be aligned into 2 bytes boundaries.
+            //TODO: Float may actually need a 4 bytes alignment, need to test later.
+            if (Fmt != PICAAttributeFormat.Byte &&
+                Fmt != PICAAttributeFormat.Ubyte)
+            {
+                Strm.Position += Strm.Position & 1;
             }
         }
     }

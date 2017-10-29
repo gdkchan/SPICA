@@ -44,7 +44,8 @@ namespace SPICA.Formats.GFL2.Shader
             uint MagicNumber = Reader.ReadUInt32();
             uint ShaderCount = Reader.ReadUInt32();
 
-            GFSection.SkipPadding(Reader);
+            GFSection.SkipPadding(Reader.BaseStream);
+
             GFSection ShaderSection = new GFSection(Reader);
 
             Name = Reader.ReadPaddedString(0x40);
@@ -52,7 +53,7 @@ namespace SPICA.Formats.GFL2.Shader
             uint Hash  = Reader.ReadUInt32();
             uint Count = Reader.ReadUInt32();
 
-            GFSection.SkipPadding(Reader);
+            GFSection.SkipPadding(Reader.BaseStream);
 
             uint CommandsLength = Reader.ReadUInt32();
             uint CommandsCount  = Reader.ReadUInt32();

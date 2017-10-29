@@ -5,12 +5,15 @@ using SPICA.PICA.Commands;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model.Mesh
 {
-    public class GFMesh
+    public class GFMesh : INamed
     {
+        private const string MagicStr = "mesh";
+
         private static float[] Scales =
         {
             1f / sbyte.MaxValue,
@@ -19,8 +22,7 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             1
         };
 
-        public uint   Hash;
-        public string Name;
+        public string Name { get; set; }
 
         public Vector4 BBoxMinVector;
         public Vector4 BBoxMaxVector;
@@ -28,6 +30,14 @@ namespace SPICA.Formats.GFL2.Model.Mesh
         public int BoneIndicesPerVertex;
 
         public List<GFSubMesh> SubMeshes;
+
+        private struct SubMeshSize
+        {
+            public int IndicesCount;
+            public int IndicesLength;
+            public int VerticesCount;
+            public int VerticesLength;
+        }
 
         public GFMesh()
         {
@@ -40,13 +50,15 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
             long Position = Reader.BaseStream.Position;
 
-            Hash = Reader.ReadUInt32();
-            Name = Reader.ReadPaddedString(0x40);
+            uint   NameHash = Reader.ReadUInt32();
+            string NameStr  = Reader.ReadPaddedString(0x40);
+
+            Name = NameStr;
 
             Reader.ReadUInt32();
 
-            BBoxMinVector = Reader.ReadVector4();
-            BBoxMaxVector = Reader.ReadVector4();
+            BBoxMinVector = Reader.ReadVector4(); //Is it right? seems to be 0, 0, 0, 1
+            BBoxMaxVector = Reader.ReadVector4(); //Is it right? seems to be 0, 0, 0, 1
 
             uint SubMeshesCount = Reader.ReadUInt32();
 
@@ -79,35 +91,33 @@ namespace SPICA.Formats.GFL2.Model.Mesh
             }
             while (CommandIndex < CommandsCount - 1);
 
-            //Add SubMesh with Hash, Name and Bone Indices
-            //The rest is added latter (because the data is split inside the file)
+            SubMeshSize[] SMSizes = new SubMeshSize[SubMeshesCount];
+
+            //Add SubMesh with Hash, Name and Bone Indices.
+            //The rest is added latter (because the data is split inside the file).
             for (int MeshIndex = 0; MeshIndex < SubMeshesCount; MeshIndex++)
             {
-                uint   Hash = Reader.ReadUInt32();
-                string Name = Reader.ReadIntLengthString();
+                GFSubMesh SM = new GFSubMesh();
 
-                byte BoneIndicesCount = Reader.ReadByte();
+                uint SMNameHash = Reader.ReadUInt32();
 
-                byte[] BoneIndices = new byte[0x1f];
+                SM.Name             = Reader.ReadIntLengthString();
+                SM.BoneIndicesCount = Reader.ReadByte();
 
-                for (int Bone = 0; Bone < BoneIndices.Length; Bone++)
+                for (int Bone = 0; Bone < 0x1f; Bone++)
                 {
-                    BoneIndices[Bone] = Reader.ReadByte();
+                    SM.BoneIndices[Bone] = Reader.ReadByte();
                 }
 
-                SubMeshes.Add(new GFSubMesh()
+                SMSizes[MeshIndex] = new SubMeshSize()
                 {
-                    BoneIndices      = BoneIndices,
-                    BoneIndicesCount = BoneIndicesCount,
+                    VerticesCount  = Reader.ReadInt32(),
+                    IndicesCount   = Reader.ReadInt32(),
+                    VerticesLength = Reader.ReadInt32(),
+                    IndicesLength  = Reader.ReadInt32()
+                };
 
-                    VerticesCount  = Reader.ReadUInt32(),
-                    IndicesCount   = Reader.ReadUInt32(),
-                    VerticesLength = Reader.ReadUInt32(),
-                    IndicesLength  = Reader.ReadUInt32(),
-
-                    Hash = Hash,
-                    Name = Name
-                });
+                SubMeshes.Add(SM);
             }
 
             for (int MeshIndex = 0; MeshIndex < SubMeshesCount; MeshIndex++)
@@ -129,7 +139,6 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                 ulong BufferPermutation = 0;
                 int   AttributesCount   = 0;
                 int   AttributesTotal   = 0;
-                int   VertexStride      = 0;
 
                 int FixedIndex = 0;
 
@@ -137,25 +146,33 @@ namespace SPICA.Formats.GFL2.Model.Mesh
                 {
                     PICACommand Cmd = CmdReader.GetCommand();
 
-                    ulong Param = Cmd.Parameters[0];
+                    uint Param = Cmd.Parameters[0];
 
                     switch (Cmd.Register)
                     {
-                        case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_LOW:  BufferFormats |= Param <<  0; break;
-                        case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_HIGH: BufferFormats |= Param << 32; break;
-                        case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG1: BufferAttributes |= Param; break;
-                        case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG2:
-                            BufferAttributes |= (Param & 0xffff) << 32;
-                            VertexStride    = (byte)(Param >> 16);
-                            AttributesCount =  (int)(Param >> 28);
+                        case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_LOW:  BufferFormats |= (ulong)Param <<  0; break;
+                        case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_HIGH: BufferFormats |= (ulong)Param << 32; break;
+
+                        case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG1:
+                            BufferAttributes |= Param;
                             break;
+
+                        case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG2:
+                            BufferAttributes |= (ulong)(Param & 0xffff) << 32;
+                            SM.VertexStride   =  (byte)(Param >> 16);
+                            AttributesCount   =   (int)(Param >> 28);
+                            break;
+
                         case PICARegister.GPUREG_FIXEDATTRIB_INDEX: FixedIndex = (int)Param; break;
-                        case PICARegister.GPUREG_FIXEDATTRIB_DATA0: Fixed[FixedIndex].Word0 = (uint)Param; break;
-                        case PICARegister.GPUREG_FIXEDATTRIB_DATA1: Fixed[FixedIndex].Word1 = (uint)Param; break;
-                        case PICARegister.GPUREG_FIXEDATTRIB_DATA2: Fixed[FixedIndex].Word2 = (uint)Param; break;
+
+                        case PICARegister.GPUREG_FIXEDATTRIB_DATA0: Fixed[FixedIndex].Word0 = Param; break;
+                        case PICARegister.GPUREG_FIXEDATTRIB_DATA1: Fixed[FixedIndex].Word1 = Param; break;
+                        case PICARegister.GPUREG_FIXEDATTRIB_DATA2: Fixed[FixedIndex].Word2 = Param; break;
+
                         case PICARegister.GPUREG_VSH_NUM_ATTR: AttributesTotal = (int)(Param + 1); break;
-                        case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW:  BufferPermutation |= Param <<  0; break;
-                        case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH: BufferPermutation |= Param << 32; break;
+
+                        case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW:  BufferPermutation |= (ulong)Param <<  0; break;
+                        case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH: BufferPermutation |= (ulong)Param << 32; break;
                     }
                 }
 
@@ -197,8 +214,8 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
                 CmdReader = new PICACommandReader(IndexCommands);
 
-                bool IndexFormat = false;
-                uint PrimitivesCount = 0;
+                uint BufferAddress = 0;
+                uint BufferCount   = 0;
 
                 while (CmdReader.HasCommand)
                 {
@@ -208,30 +225,271 @@ namespace SPICA.Formats.GFL2.Model.Mesh
 
                     switch (Cmd.Register)
                     {
-                        case PICARegister.GPUREG_INDEXBUFFER_CONFIG: IndexFormat = (Param >> 31) != 0; break;
-                        case PICARegister.GPUREG_NUMVERTICES: PrimitivesCount = Param; break;
+                        case PICARegister.GPUREG_INDEXBUFFER_CONFIG: BufferAddress = Param; break;
+                        case PICARegister.GPUREG_NUMVERTICES:        BufferCount   = Param; break;
+                        case PICARegister.GPUREG_PRIMITIVE_CONFIG:
+                            SM.PrimitiveMode = (PICAPrimitiveMode)(Param >> 8);
+                            break;
                     }
                 }
 
-                SM.RawBuffer    = Reader.ReadBytes((int)SM.VerticesLength);
-                SM.VertexStride = VertexStride;
+                SM.RawBuffer = Reader.ReadBytes(SMSizes[MeshIndex].VerticesLength);
 
-                SM.Indices = new ushort[PrimitivesCount];
+                SM.Indices = new ushort[BufferCount];
 
                 long IndexAddress = Reader.BaseStream.Position;
 
-                for (int Index = 0; Index < PrimitivesCount; Index++)
+                for (int Index = 0; Index < BufferCount; Index++)
                 {
-                    if (IndexFormat)
+                    if ((BufferAddress >> 31) != 0)
                         SM.Indices[Index] = Reader.ReadUInt16();
                     else
                         SM.Indices[Index] = Reader.ReadByte();
                 }
 
-                Reader.BaseStream.Seek(IndexAddress + SM.IndicesLength, SeekOrigin.Begin);
+                Reader.BaseStream.Seek(IndexAddress + SMSizes[MeshIndex].IndicesLength, SeekOrigin.Begin);
             }
 
             Reader.BaseStream.Seek(Position + MeshSection.Length, SeekOrigin.Begin);
         }
+
+        public void Write(BinaryWriter Writer)
+        {
+            long StartPosition = Writer.BaseStream.Position;
+
+            new GFSection(MagicStr).Write(Writer);
+
+            GFNV1 FNV = new GFNV1();
+
+            FNV.Hash(Name);
+
+            Writer.Write(FNV.HashCode);
+            Writer.WritePaddedString(Name, 0x40);
+
+            Writer.Write(0u);
+
+            Writer.Write(BBoxMinVector);
+            Writer.Write(BBoxMaxVector);
+
+            Writer.Write((uint)SubMeshes.Count);
+
+            Writer.Write(BoneIndicesPerVertex);
+
+            Writer.Write(0xfffffffffffffffful);
+            Writer.Write(0xfffffffffffffffful);
+
+            for (int Index = 0; Index < SubMeshes.Count; Index++)
+            {
+                GFSubMesh SM = SubMeshes[Index];
+
+                PICACommandWriter CmdWriter;
+
+                /* Enable commands */
+                CmdWriter = new PICACommandWriter();
+
+                ulong BufferFormats     = 0;
+                ulong BufferAttributes  = 0;
+                ulong BufferPermutation = 0;
+                int   AttributesTotal   = 0;
+
+                //Normal Attributes
+                for (int Attr = 0; Attr < SM.Attributes.Count; Attr++)
+                {
+                    PICAAttribute Attrib = SM.Attributes[Attr];
+
+                    int Shift = AttributesTotal++ * 4;
+
+                    ulong AttribFmt;
+
+                    AttribFmt  = (ulong)Attrib.Format;
+                    AttribFmt |= (ulong)((Attrib.Elements - 1) & 3) << 2;
+
+                    BufferFormats     |=        AttribFmt   << Shift;
+                    BufferPermutation |= (ulong)Attrib.Name << Shift;
+                    BufferAttributes  |= (ulong)Attr        << Shift;
+                }
+
+                BufferAttributes |= (ulong)(SM.VertexStride & 0xff) << 48;
+                BufferAttributes |= (ulong)SM.Attributes.Count << 60;
+
+                //Fixed Attributes
+                foreach (PICAFixedAttribute Attrib in SM.FixedAttributes)
+                {
+                    BufferFormats |= 1ul << (48 + AttributesTotal);
+
+                    BufferPermutation |= (ulong)Attrib.Name << AttributesTotal++ * 4;
+                }
+
+                BufferFormats |= (ulong)(AttributesTotal - 1) << 60;
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_VSH_INPUTBUFFER_CONFIG, 0xa0000000u | (uint)(AttributesTotal - 1), 0xb);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_VSH_NUM_ATTR, (uint)(AttributesTotal - 1), 1);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW,  (uint)(BufferPermutation >>  0));
+                CmdWriter.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH, (uint)(BufferPermutation >> 32));
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_ATTRIBBUFFERS_LOC, true,
+                    0x03000000u, //Base Address (Place holder)
+                    (uint)(BufferFormats >>  0),
+                    (uint)(BufferFormats >> 32),
+                    0x99999999u, //Attributes Buffer Address (Place holder)
+                    (uint)(BufferAttributes >>  0),
+                    (uint)(BufferAttributes >> 32));
+
+                for (int Attr = 0; Attr < SM.FixedAttributes.Count; Attr++)
+                {
+                    PICAFixedAttribute Attrib = SM.FixedAttributes[Attr];
+
+                    CmdWriter.SetCommand(PICARegister.GPUREG_FIXEDATTRIB_INDEX, true,
+                        (uint)(SM.Attributes.Count + Attr),
+                        Attrib.Value.Word0,
+                        Attrib.Value.Word1,
+                        Attrib.Value.Word2);
+                }
+
+                CmdWriter.WriteEnd();
+
+                WriteCmdsBuff(Writer, CmdWriter.GetBuffer(), Index * 3);
+
+                /* Disable commands */
+                CmdWriter = new PICACommandWriter();
+
+                //Assuming that the Position isn't used as Fixed Attribute since this doesn't make sense.
+                CmdWriter.SetCommand(PICARegister.GPUREG_ATTRIBBUFFER0_OFFSET, true, 0, 0, 0);
+
+                for (int Attr = 1; Attr < 12; Attr++)
+                {
+                    CmdWriter.SetCommand(PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG2 + Attr * 3, 0);
+
+                    if (SM.FixedAttributes?.Any(x => (int)x.Name == Attr) ?? false)
+                    {
+                        CmdWriter.SetCommand(PICARegister.GPUREG_FIXEDATTRIB_INDEX, true, (uint)Attr, 0, 0, 0);
+                    }
+                }
+
+                CmdWriter.WriteEnd();
+
+                WriteCmdsBuff(Writer, CmdWriter.GetBuffer(), Index * 3 + 1);
+
+                /* Index commands */
+                CmdWriter = new PICACommandWriter();
+
+                uint IdxFmtAddr = SM.IsIdx8Bits
+                    ? 0x01999999u
+                    : 0x81999999u;
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_RESTART_PRIMITIVE, true);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_INDEXBUFFER_CONFIG, IdxFmtAddr);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_NUMVERTICES, (uint)SM.Indices.Length);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, false, 1);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_DRAWELEMENTS, true);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, true, 1);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_VTX_FUNC, true);
+
+                CmdWriter.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, (uint)SM.PrimitiveMode << 8, 8);
+                CmdWriter.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, (uint)SM.PrimitiveMode << 8, 8);
+
+                CmdWriter.WriteEnd();
+
+                WriteCmdsBuff(Writer, CmdWriter.GetBuffer(), Index * 3 + 2);
+            }
+
+            foreach (GFSubMesh SM in SubMeshes)
+            {
+                FNV = new GFNV1();
+
+                FNV.Hash(SM.Name);
+
+                Writer.Write(FNV.HashCode);
+                Writer.Write(GetPaddedLen4(SM.Name.Length));
+                Writer.WritePaddedString(SM.Name, GetPaddedLen4(SM.Name.Length));
+
+                Writer.Write(SM.BoneIndicesCount);
+
+                byte[] BoneIndices = new byte[0x1f];
+
+                SM.BoneIndices.CopyTo(BoneIndices, 0);
+
+                Writer.Write(BoneIndices);
+
+                int VerticesCount = 0;
+
+                if (SM.VertexStride != 0)
+                {
+                    VerticesCount = SM.RawBuffer.Length / SM.VertexStride;
+                }
+
+                int VtxBuffLen = SM.RawBuffer.Length;
+                int IdxBuffLen = SM.Indices.Length * (SM.IsIdx8Bits ? 1 : 2);
+
+                Writer.Write(VerticesCount);
+                Writer.Write(SM.Indices.Length);
+                Writer.Write(GetPaddedLen4(VtxBuffLen));
+                Writer.Write(GetPaddedLen16(IdxBuffLen));
+            }
+
+            foreach (GFSubMesh SM in SubMeshes)
+            {
+                long Position = Writer.BaseStream.Position;
+
+                Writer.Write(SM.RawBuffer);
+
+                while (((Writer.BaseStream.Position - Position) & 3) != 0)
+                {
+                    Writer.Write((byte)0);
+                }
+
+                Position = Writer.BaseStream.Position;
+
+                foreach (ushort Idx in SM.Indices)
+                {
+                    if (SM.IsIdx8Bits)
+                        Writer.Write((byte)Idx);
+                    else
+                        Writer.Write(Idx);
+                }
+
+                while (((Writer.BaseStream.Position - Position) & 0xf) != 0)
+                {
+                    Writer.Write((byte)0);
+                }
+            }
+
+            Writer.Align(0x10, 0);
+
+            Writer.Write(0ul);
+            Writer.Write(0ul);
+
+            long EndPosition = Writer.BaseStream.Position;
+
+            Writer.BaseStream.Seek(StartPosition + 8, SeekOrigin.Begin);
+
+            Writer.Write((uint)(EndPosition - StartPosition - 0x10));
+
+            Writer.BaseStream.Seek(EndPosition, SeekOrigin.Begin);
+        }
+
+        private void WriteCmdsBuff(BinaryWriter Writer, uint[] Cmds, int Index)
+        {
+            Writer.Write((uint)Cmds.Length * 4);
+            Writer.Write((uint)Index);
+            Writer.Write((uint)SubMeshes.Count * 3);
+            Writer.Write(0u);
+
+            foreach (uint Cmd in Cmds)
+            {
+                Writer.Write(Cmd);
+            }
+        }
+
+        private int GetPaddedLen4(int Length)  => (Length + 0x3) & ~0x3;
+        private int GetPaddedLen16(int Length) => (Length + 0xf) & ~0xf;
     }
 }

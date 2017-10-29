@@ -104,16 +104,16 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
                 switch (Cmd.Register)
                 {
                     case PICARegister.GPUREG_VSH_BOOLUNIFORM:    BoolUniforms  = (ushort)Param; break;
-                    case PICARegister.GPUREG_INDEXBUFFER_CONFIG: BufferAddress = Param; break;
-                    case PICARegister.GPUREG_NUMVERTICES:        BufferCount   = Param; break;
+                    case PICARegister.GPUREG_INDEXBUFFER_CONFIG: BufferAddress =         Param; break;
+                    case PICARegister.GPUREG_NUMVERTICES:        BufferCount   =         Param; break;
                     case PICARegister.GPUREG_PRIMITIVE_CONFIG:
                         PrimitiveMode = (PICAPrimitiveMode)(Param >> 8);
                         break;
                 }
             }
 
-            bool Format = (BufferAddress >> 31) != 0;
-            long Position = Deserializer.BaseStream.Position;
+            bool Is16BitsIdx = (BufferAddress >> 31) != 0;
+            long Position    = Deserializer.BaseStream.Position;
 
             Indices = new ushort[BufferCount];
 
@@ -121,7 +121,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             for (int Index = 0; Index < BufferCount; Index++)
             {
-                if (Format)
+                if (Is16BitsIdx)
                     Indices[Index] = Deserializer.Reader.ReadUInt16();
                 else
                     Indices[Index] = Deserializer.Reader.ReadByte();
@@ -134,18 +134,24 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
         {
             PICACommandWriter Writer = new PICACommandWriter();
 
-            uint PrimitiveConfig = (uint)PrimitiveMode << 8;
-
             Writer.SetCommand(PICARegister.GPUREG_VSH_BOOLUNIFORM, BoolUniforms | 0x7fff0000u);
+
             Writer.SetCommand(PICARegister.GPUREG_RESTART_PRIMITIVE, true);
+
             Writer.SetCommand(PICARegister.GPUREG_INDEXBUFFER_CONFIG, 0);
+
             Writer.SetCommand(PICARegister.GPUREG_NUMVERTICES, (uint)Indices.Length);
+
             Writer.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, false, 1);
+
             Writer.SetCommand(PICARegister.GPUREG_DRAWELEMENTS, true);
+
             Writer.SetCommand(PICARegister.GPUREG_START_DRAW_FUNC0, true, 1);
+
             Writer.SetCommand(PICARegister.GPUREG_VTX_FUNC, true);
-            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, PrimitiveConfig, 8);
-            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, PrimitiveConfig, 8);
+
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, (uint)PrimitiveMode << 8, 8);
+            Writer.SetCommand(PICARegister.GPUREG_PRIMITIVE_CONFIG, (uint)PrimitiveMode << 8, 8);
 
             Writer.WriteEnd();
 

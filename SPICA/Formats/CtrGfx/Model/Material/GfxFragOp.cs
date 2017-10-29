@@ -24,9 +24,13 @@ namespace SPICA.Formats.CtrGfx.Model.Material
                 Writer.Write(Blend.Color.ToVector4());
 
                 if (Blend.Mode == GfxFragOpBlendMode.LogicalOp)
+                {
                     Writer.Write((uint)Blend.LogicalOperation.ToGfxLogicalOp());
+                }
                 else
+                {
                     Writer.Write((uint)GfxLogicalOp.Copy);
+                }
 
                 switch (Blend.Mode)
                 {

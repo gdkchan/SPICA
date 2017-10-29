@@ -183,38 +183,26 @@ namespace SPICA.Formats.CtrH3D.Model.Material
             Writer.SetCommands(PICARegister.GPUREG_TEXUNIT_CONFIG, false, 0, 0, 0, 0);
             Writer.SetCommand(PICARegister.GPUREG_TEXUNIT_CONFIG, TexUnitConfig);
 
-            for (int Unit = 0; Unit < 3; Unit++)
-            {
-                switch (Unit)
-                {
-                    case 0:
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_DIM, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_PARAM, 0x2220);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_LOD, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_ADDR1, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_TYPE, 0xc);
-                        break;
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_BORDER_COLOR, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_DIM, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_PARAM, 0x2220);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_LOD, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_ADDR1, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT0_TYPE, 0xc);
 
-                    case 1:
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_DIM, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_PARAM, 0x2220);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_LOD, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_ADDR, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_TYPE, 0xc);
-                        break;
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_BORDER_COLOR, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_DIM, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_PARAM, 0x2220);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_LOD, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_ADDR, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT1_TYPE, 0xc);
 
-                    case 2:
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_DIM, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_PARAM, 0x2220);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_LOD, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_ADDR, 0);
-                        Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_TYPE, 0xc);
-                        break;
-                }
-            }
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_BORDER_COLOR, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_DIM, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_PARAM, 0x2220);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_LOD, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_ADDR, 0);
+            Writer.SetCommand(PICARegister.GPUREG_TEXUNIT2_TYPE, 0xc);
 
             Writer.WriteEnd();
 

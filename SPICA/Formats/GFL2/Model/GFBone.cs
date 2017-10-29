@@ -26,5 +26,16 @@ namespace SPICA.Formats.GFL2.Model
             Rotation    = Reader.ReadVector3();
             Translation = Reader.ReadVector3();
         }
+
+        public void Write(BinaryWriter Writer)
+        {
+            Writer.WriteByteLengthString(Name);
+            Writer.WriteByteLengthString(Parent);
+            Writer.Write(Flags);
+
+            Writer.Write(Scale);
+            Writer.Write(Rotation);
+            Writer.Write(Translation);
+        }
     }
 }

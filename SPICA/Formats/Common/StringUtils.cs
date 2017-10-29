@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace SPICA.Formats.Common
@@ -125,17 +126,17 @@ namespace SPICA.Formats.Common
         //Write
         public static void WriteNullTerminatedStringUtf8(this BinaryWriter Writer, string Value)
         {
-            Writer.Write(Encoding.UTF8.GetBytes(Value + '\0'));
+            Writer.Write(Encoding.UTF8.GetBytes(Value ?? "" + '\0'));
         }
 
         public static void WriteNullTerminatedStringUtf16LE(this BinaryWriter Writer, string Value)
         {
-            Writer.Write(Encoding.Unicode.GetBytes(Value + '\0'));
+            Writer.Write(Encoding.Unicode.GetBytes(Value ?? "" + '\0'));
         }
 
         public static void WriteNullTerminatedStringUtf16BE(this BinaryWriter Writer, string Value)
         {
-            Writer.Write(IOUtils.ByteSwap16(Encoding.Unicode.GetBytes(Value + '\0')));
+            Writer.Write(IOUtils.ByteSwap16(Encoding.Unicode.GetBytes(Value ?? "" + '\0')));
         }
 
         public static void WritePaddedString(this BinaryWriter Writer, string Value, int Length)
@@ -144,9 +145,9 @@ namespace SPICA.Formats.Common
 
             if (Value != null)
             {
-                while (Index < Value.Length && Index++ < Length)
+                while (Index < Math.Min(Value.Length, Length))
                 {
-                    Writer.Write(Value[Index]);
+                    Writer.Write(Value[Index++]);
                 }
             }
 
@@ -155,14 +156,20 @@ namespace SPICA.Formats.Common
 
         public static void WriteIntLengthString(this BinaryWriter Writer, string Value)
         {
-            Writer.Write(Value.Length);
-            WritePaddedString(Writer, Value, Value.Length);
+            int Length = Value?.Length ?? 0;
+
+            Writer.Write(Length);
+
+            WritePaddedString(Writer, Value, Length);
         }
 
         public static void WriteByteLengthString(this BinaryWriter Writer, string Value)
         {
-            Writer.Write((byte)Value.Length);
-            WritePaddedString(Writer, Value, Value.Length);
+            int Length = Value?.Length ?? 0;
+
+            Writer.Write((byte)Length);
+
+            WritePaddedString(Writer, Value, Length);
         }
 
         public static void WriteStringArray(this BinaryWriter Writer, string[] Values)

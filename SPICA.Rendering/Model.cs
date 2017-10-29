@@ -219,7 +219,7 @@ namespace SPICA.Rendering
 
         private static int GetMaterialShaderHash(H3DMaterialParams Params)
         {
-            FNVHash HashGen = new FNVHash();
+            FNV1a HashGen = new FNV1a();
 
             HashGen.Hash(Params.ShaderReference?.GetHashCode() ?? 0);
 

@@ -43,7 +43,7 @@
     <Compile Include="Formats\Common\BitUtils.cs" />
     <Compile Include="Formats\Common\CRC32Hash.cs" />
     <Compile Include="Formats\Common\Exceptions.cs" />
-    <Compile Include="Formats\Common\FNVHash.cs" />
+    <Compile Include="Formats\Common\FNV1a.cs" />
     <Compile Include="Formats\Common\INamed.cs" />
     <Compile Include="Formats\Common\INameIndexed.cs" />
     <Compile Include="Formats\Common\InvalidMagicException.cs" />
@@ -56,6 +56,8 @@
     <Compile Include="Formats\Common\MeshTransform.cs" />
     <Compile Include="Formats\Common\PatriciaTree.cs" />
     <Compile Include="Formats\Common\StringUtils.cs" />
+    <Compile Include="Formats\Common\TextureTransform.cs" />
+    <Compile Include="Formats\Common\TextureTransformType.cs" />
     <Compile Include="Formats\CtrGfx\Animation\GfxAnimation.cs" />
     <Compile Include="Formats\CtrGfx\Animation\GfxAnimationElement.cs" />
     <Compile Include="Formats\CtrGfx\Animation\GfxAnimBoolean.cs" />
@@ -317,6 +319,7 @@
     <Compile Include="Formats\Generic\WavefrontOBJ\OBJMesh.cs" />
     <Compile Include="Formats\GFL2\GFModelPack.cs" />
     <Compile Include="Formats\GFL2\GFMotionPack.cs" />
+    <Compile Include="Formats\GFL2\GFNV1.cs" />
     <Compile Include="Formats\GFL2\GFSection.cs" />
     <Compile Include="Formats\GFL2\Model\GFBone.cs" />
     <Compile Include="Formats\GFL2\Model\GFHashName.cs" />

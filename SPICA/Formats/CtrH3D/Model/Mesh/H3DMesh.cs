@@ -193,26 +193,31 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             {
                 PICACommand Cmd = Reader.GetCommand();
 
-                ulong Param = Cmd.Parameters[0];
+                uint Param = Cmd.Parameters[0];
 
                 switch (Cmd.Register)
                 {
-                    case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_LOW:  BufferFormats |= Param <<  0; break;
-                    case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_HIGH: BufferFormats |= Param << 32; break;
-                    case PICARegister.GPUREG_ATTRIBBUFFER0_OFFSET: BufferAddress = (uint)Param; break;
+                    case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_LOW:  BufferFormats |= (ulong)Param <<  0; break;
+                    case PICARegister.GPUREG_ATTRIBBUFFERS_FORMAT_HIGH: BufferFormats |= (ulong)Param << 32; break;
+
+                    case PICARegister.GPUREG_ATTRIBBUFFER0_OFFSET:  BufferAddress     = Param; break;
                     case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG1: BufferAttributes |= Param; break;
                     case PICARegister.GPUREG_ATTRIBBUFFER0_CONFIG2:
-                        BufferAttributes |= (Param & 0xffff) << 32;
-                        VertexStride    = (byte)(Param >> 16);
-                        AttributesCount =  (int)(Param >> 28);
+                        BufferAttributes |= (ulong)(Param & 0xffff) << 32;
+                        VertexStride      =  (byte)(Param >> 16);
+                        AttributesCount   =   (int)(Param >> 28);
                         break;
+
                     case PICARegister.GPUREG_FIXEDATTRIB_INDEX: FixedIndex = (int)Param; break;
-                    case PICARegister.GPUREG_FIXEDATTRIB_DATA0: Fixed[FixedIndex].Word0 = (uint)Param; break;
-                    case PICARegister.GPUREG_FIXEDATTRIB_DATA1: Fixed[FixedIndex].Word1 = (uint)Param; break;
-                    case PICARegister.GPUREG_FIXEDATTRIB_DATA2: Fixed[FixedIndex].Word2 = (uint)Param; break;
+
+                    case PICARegister.GPUREG_FIXEDATTRIB_DATA0: Fixed[FixedIndex].Word0 = Param; break;
+                    case PICARegister.GPUREG_FIXEDATTRIB_DATA1: Fixed[FixedIndex].Word1 = Param; break;
+                    case PICARegister.GPUREG_FIXEDATTRIB_DATA2: Fixed[FixedIndex].Word2 = Param; break;
+
                     case PICARegister.GPUREG_VSH_NUM_ATTR: AttributesTotal = (int)(Param + 1); break;
-                    case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW:  BufferPermutation |= Param <<  0; break;
-                    case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH: BufferPermutation |= Param << 32; break;
+
+                    case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW:  BufferPermutation |= (ulong)Param <<  0; break;
+                    case PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH: BufferPermutation |= (ulong)Param << 32; break;
                 }
             }
 
@@ -298,14 +303,14 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
                 int Shift = AttributesTotal++ * 4;
 
-                ulong AttributeFmt;
+                ulong AttribFmt;
 
-                AttributeFmt  = (ulong)Attrib.Format;
-                AttributeFmt |= (ulong)((Attrib.Elements - 1) & 3) << 2;
+                AttribFmt  = (ulong)Attrib.Format;
+                AttribFmt |= (ulong)((Attrib.Elements - 1) & 3) << 2;
 
-                BufferFormats     |= AttributeFmt << Shift;
+                BufferFormats     |=        AttribFmt   << Shift;
                 BufferPermutation |= (ulong)Attrib.Name << Shift;
-                BufferAttributes  |= (ulong)Index << Shift;
+                BufferAttributes  |= (ulong)Index       << Shift;
 
                 switch (Attrib.Name)
                 {
@@ -324,11 +329,10 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             BufferAttributes |= (ulong)Attributes.Count << 60;
 
             //Fixed Attributes
-            for (int Index = 0; Index < FixedAttributes.Count; Index++)
+            foreach (PICAFixedAttribute Attrib in FixedAttributes)
             {
-                PICAFixedAttribute Attrib = FixedAttributes[Index];
+                BufferFormats |= 1ul << (48 + AttributesTotal);
 
-                BufferFormats     |= 1ul << (48 + AttributesTotal); 
                 BufferPermutation |= (ulong)Attrib.Name << AttributesTotal++ * 4;
             }
 
@@ -337,9 +341,12 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
             Writer = new PICACommandWriter();
 
             Writer.SetCommand(PICARegister.GPUREG_VSH_INPUTBUFFER_CONFIG, 0xa0000000u | (uint)(AttributesTotal - 1), 0xb);
+
             Writer.SetCommand(PICARegister.GPUREG_VSH_NUM_ATTR, (uint)(AttributesTotal - 1), 1);
+
             Writer.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_LOW,  (uint)(BufferPermutation >>  0));
             Writer.SetCommand(PICARegister.GPUREG_VSH_ATTRIBUTES_PERMUTATION_HIGH, (uint)(BufferPermutation >> 32));
+
             Writer.SetCommand(PICARegister.GPUREG_ATTRIBBUFFERS_LOC, true,
                 0, //Base Address (Place holder)
                 (uint)(BufferFormats >>  0),
@@ -376,7 +383,7 @@ namespace SPICA.Formats.CtrH3D.Model.Mesh
 
             Writer = new PICACommandWriter();
 
-            //Assuming that the Position isn't used as Fixed Attribute since this doesn't make sense
+            //Assuming that the Position isn't used as Fixed Attribute since this doesn't make sense.
             Writer.SetCommand(PICARegister.GPUREG_ATTRIBBUFFER0_OFFSET, true, 0, 0, 0);
 
             for (int Index = 1; Index < 12; Index++)

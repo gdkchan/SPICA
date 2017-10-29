@@ -6,10 +6,11 @@ using System.Numerics;
 
 namespace SPICA.Formats.GFL2.Model.Material
 {
-    public struct GFTextureCoord
+    public struct GFTextureCoord : INamed
     {
-        public uint   Hash;
-        public string Name;
+        public string Name { get; set; }
+
+        public byte UnitIndex;
 
         public GFTextureMappingType MappingType;
 
@@ -27,10 +28,9 @@ namespace SPICA.Formats.GFL2.Model.Material
 
         public GFTextureCoord(BinaryReader Reader)
         {
-            Hash = Reader.ReadUInt32();
-            Name = Reader.ReadByteLengthString();
+            Name = new GFHashName(Reader).Name;
 
-            byte UnitIndex = Reader.ReadByte();
+            UnitIndex = Reader.ReadByte();
 
             MappingType = (GFTextureMappingType)Reader.ReadByte();
 
@@ -45,6 +45,36 @@ namespace SPICA.Formats.GFL2.Model.Material
             MinFilter = (GFMinFilter)Reader.ReadUInt32(); //Not sure
 
             MinLOD = Reader.ReadUInt32(); //Not sure
+        }
+
+        public Matrix3x4 GetTransform()
+        {
+            return TextureTransform.GetTransform(
+                Scale,
+                Rotation,
+                Translation,
+                TextureTransformType.DccMaya);
+        }
+
+        public void Write(BinaryWriter Writer)
+        {
+            new GFHashName(Name).Write(Writer);
+
+            Writer.Write(UnitIndex);
+
+            Writer.Write((byte)MappingType);
+
+            Writer.Write(Scale);
+            Writer.Write(Rotation);
+            Writer.Write(Translation);
+
+            Writer.Write((uint)WrapU);
+            Writer.Write((uint)WrapV);
+
+            Writer.Write((uint)MagFilter);
+            Writer.Write((uint)MinFilter);
+
+            Writer.Write(MinLOD);
         }
     }
 }
