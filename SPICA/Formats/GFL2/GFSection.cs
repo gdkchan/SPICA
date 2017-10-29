@@ -15,14 +15,15 @@ namespace SPICA.Formats.GFL2
             Padding = 0xffffffff;
         }
 
-<<<<<<< HEAD
         public GFSection(string Magic) : this()
-=======
-        public GFSection(string magic, uint length)
->>>>>>> ca59ba8d42bfa4bd096e4061f63acd01a77a125c
         {
-            Magic = magic;
-			Length = length;
+            this.Magic = Magic;
+        }
+
+        public GFSection(string Magic, uint Length) : this()
+        {
+            this.Magic  = Magic;
+            this.Length = Length;
         }
 
         public GFSection(BinaryReader Reader)
