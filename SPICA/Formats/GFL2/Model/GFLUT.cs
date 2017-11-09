@@ -65,6 +65,8 @@ namespace SPICA.Formats.GFL2.Model
         {
             HashId = Reader.ReadUInt32();
 
+            _Name = $"LUT_{HashId:X8}";
+
             Reader.BaseStream.Seek(0xc, SeekOrigin.Current);
 
             uint[] Commands = new uint[Length >> 2];
