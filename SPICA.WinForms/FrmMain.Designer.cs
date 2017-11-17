@@ -832,6 +832,7 @@
             // 
             // FrmMain
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(66)))), ((int)(((byte)(61)))));
@@ -846,6 +847,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SPICA";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.FrmMain_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.FrmMain_DragEnter);
             this.TopMenu.ResumeLayout(false);
             this.TopMenu.PerformLayout();
             this.AnimControlsPanel.ResumeLayout(false);
