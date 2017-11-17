@@ -76,6 +76,79 @@ namespace SPICA.WinForms
 
             SaveSettings();
         }
+        
+        private void FileOpen(string[] Files, bool MergeMode)
+        {
+            if (!MergeMode)
+            {
+                Renderer.DeleteAll();
+
+                Renderer.Lights.Add(new Light()
+                {
+                    Ambient         = new Color4(0.1f, 0.1f, 0.1f, 1.0f),
+                    Diffuse         = new Color4(0.9f, 0.9f, 0.9f, 1.0f),
+                    Specular0       = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
+                    Specular1       = new Color4(0.4f, 0.4f, 0.4f, 1.0f),
+                    TwoSidedDiffuse = true,
+                    Enabled         = true
+                });
+
+                ResetTransforms();
+
+                Scene = FileIO.Merge(Files, Renderer);
+
+                TextureManager.Textures = Scene.Textures;
+
+                ModelsList.Bind(Scene.Models);
+                TexturesList.Bind(Scene.Textures);
+                CamerasList.Bind(Scene.Cameras);
+                LightsList.Bind(Scene.Lights);
+                SklAnimsList.Bind(Scene.SkeletalAnimations);
+                MatAnimsList.Bind(Scene.MaterialAnimations);
+                VisAnimsList.Bind(Scene.VisibilityAnimations);
+                CamAnimsList.Bind(Scene.CameraAnimations);
+
+                Animator.Enabled     = false;
+                LblAnimSpeed.Text    = string.Empty;
+                LblAnimLoopMode.Text = string.Empty;
+                AnimSeekBar.Value    = 0;
+                AnimSeekBar.Maximum  = 0;
+                AnimGrp.Frame        = 0;
+                AnimGrp.FramesCount  = 0;
+
+                if (Scene.Models.Count > 0)
+                {
+                    ModelsList.Select(0);
+                }
+                else
+                {
+                    UpdateTransforms();
+                }
+            }
+            else
+            {
+                Scene = FileIO.Merge(Files, Renderer, Scene);
+            }
+        }
+        
+        private void FrmMain_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+        }
+        
+        private void FrmMain_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] Files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            
+            if (Files.Length > 0)
+            {
+                FileOpen(Files, ModifierKeys.HasFlag(Keys.Alt) && Scene != null);
+                UpdateViewport();
+            }
+        }
 
         private void LoadSettings()
         {
@@ -311,56 +384,7 @@ namespace SPICA.WinForms
 
                 if (OpenDlg.ShowDialog() == DialogResult.OK && OpenDlg.FileNames.Length > 0)
                 {
-                    if (!MergeMode)
-                    {
-                        Renderer.DeleteAll();
-
-                        Renderer.Lights.Add(new Light()
-                        {
-                            Ambient         = new Color4(0.1f, 0.1f, 0.1f, 1.0f),
-                            Diffuse         = new Color4(0.9f, 0.9f, 0.9f, 1.0f),
-                            Specular0       = new Color4(0.8f, 0.8f, 0.8f, 1.0f),
-                            Specular1       = new Color4(0.4f, 0.4f, 0.4f, 1.0f),
-                            TwoSidedDiffuse = true,
-                            Enabled         = true
-                        });
-
-                        ResetTransforms();
-
-                        Scene = FileIO.Merge(OpenDlg.FileNames, Renderer);
-
-                        TextureManager.Textures = Scene.Textures;
-
-                        ModelsList.Bind(Scene.Models);
-                        TexturesList.Bind(Scene.Textures);
-                        CamerasList.Bind(Scene.Cameras);
-                        LightsList.Bind(Scene.Lights);
-                        SklAnimsList.Bind(Scene.SkeletalAnimations);
-                        MatAnimsList.Bind(Scene.MaterialAnimations);
-                        VisAnimsList.Bind(Scene.VisibilityAnimations);
-                        CamAnimsList.Bind(Scene.CameraAnimations);
-
-                        Animator.Enabled     = false;
-                        LblAnimSpeed.Text    = string.Empty;
-                        LblAnimLoopMode.Text = string.Empty;
-                        AnimSeekBar.Value    = 0;
-                        AnimSeekBar.Maximum  = 0;
-                        AnimGrp.Frame        = 0;
-                        AnimGrp.FramesCount  = 0;
-
-                        if (Scene.Models.Count > 0)
-                        {
-                            ModelsList.Select(0);
-                        }
-                        else
-                        {
-                            UpdateTransforms();
-                        }
-                    }
-                    else
-                    {
-                        Scene = FileIO.Merge(OpenDlg.FileNames, Renderer, Scene);
-                    }
+                    FileOpen(OpenDlg.FileNames, MergeMode);
                 }
             }
 
