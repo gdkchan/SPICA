@@ -11,6 +11,7 @@ using SPICA.Formats.CtrGfx.Scene;
 using SPICA.Formats.CtrGfx.Shader;
 using SPICA.Formats.CtrGfx.Texture;
 using SPICA.Formats.CtrH3D;
+using SPICA.Formats.CtrH3D.Animation;
 using SPICA.Formats.CtrH3D.LUT;
 using SPICA.Formats.CtrH3D.Model;
 using SPICA.Formats.CtrH3D.Model.Material;
@@ -598,7 +599,7 @@ namespace SPICA.Formats.CtrGfx
 
             foreach (GfxAnimation MatAnim in MaterialAnimations)
             {
-                Output.MaterialAnimations.Add(MatAnim.ToH3DAnimation());
+                Output.MaterialAnimations.Add(new H3DMaterialAnim(MatAnim.ToH3DAnimation()));
             }
 
             foreach (GfxAnimation VisAnim in VisibilityAnimations)

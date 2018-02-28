@@ -219,6 +219,7 @@
     <Compile Include="Formats\CtrH3D\Animation\H3DFloatKeyFrameGroup.cs" />
     <Compile Include="Formats\CtrH3D\Animation\H3DInterpolationType.cs" />
     <Compile Include="Formats\CtrH3D\Animation\H3DLoopType.cs" />
+    <Compile Include="Formats\CtrH3D\Animation\H3DMaterialAnim.cs" />
     <Compile Include="Formats\CtrH3D\Animation\H3DPrimitiveType.cs" />
     <Compile Include="Formats\CtrH3D\Animation\H3DTargetType.cs" />
     <Compile Include="Formats\CtrH3D\Camera\H3DCamera.cs" />

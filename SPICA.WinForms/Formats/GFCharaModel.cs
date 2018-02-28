@@ -28,9 +28,9 @@ namespace SPICA.WinForms.Formats
 
             foreach (GFMotion Mot in MotPack)
             {
-                H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation(MdlPack.Models[0].Skeleton);
-                H3DAnimation MatAnim = Mot.ToH3DMaterialAnimation();
-                H3DAnimation VisAnim = Mot.ToH3DVisibilityAnimation();
+                H3DAnimation    SklAnim = Mot.ToH3DSkeletalAnimation(MdlPack.Models[0].Skeleton);
+                H3DMaterialAnim MatAnim = Mot.ToH3DMaterialAnimation();
+                H3DAnimation    VisAnim = Mot.ToH3DVisibilityAnimation();
 
                 if (SklAnim != null)
                 {

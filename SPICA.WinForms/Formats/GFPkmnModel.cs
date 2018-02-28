@@ -103,9 +103,9 @@ namespace SPICA.WinForms.Formats
 
                         GFMotion Mot = new GFMotion(Reader, Index);
 
-                        H3DAnimation SklAnim = Mot.ToH3DSkeletalAnimation(Skeleton);
-                        H3DAnimation MatAnim = Mot.ToH3DMaterialAnimation();
-                        H3DAnimation VisAnim = Mot.ToH3DVisibilityAnimation();
+                        H3DAnimation    SklAnim = Mot.ToH3DSkeletalAnimation(Skeleton);
+                        H3DMaterialAnim MatAnim = Mot.ToH3DMaterialAnimation();
+                        H3DAnimation    VisAnim = Mot.ToH3DVisibilityAnimation();
 
                         if (SklAnim != null)
                         {

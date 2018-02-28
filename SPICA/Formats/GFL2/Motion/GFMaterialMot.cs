@@ -42,9 +42,9 @@ namespace SPICA.Formats.GFL2.Motion
             }
         }
 
-        public H3DAnimation ToH3DAnimation(GFMotion Motion)
+        public H3DMaterialAnim ToH3DAnimation(GFMotion Motion)
         {
-            H3DAnimation Output = new H3DAnimation()
+            H3DMaterialAnim Output = new H3DMaterialAnim()
             {
                 Name           = "GFMotion",
                 FramesCount    = Motion.FramesCount,

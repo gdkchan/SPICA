@@ -531,7 +531,7 @@ namespace SPICA.WinForms
 
         private void MatAnimsList_Selected(object sender, EventArgs e)
         {
-            SetAnimation(MatAnimsList.SelectedIndices, Scene.MaterialAnimations, AnimationType.Material);
+            SetAnimation(MatAnimsList.SelectedIndices, Scene.MaterialAnimations);
         }
 
         private void VisAnimsList_Selected(object sender, EventArgs e)
@@ -611,6 +611,29 @@ namespace SPICA.WinForms
             AnimGrp.UpdateState();
 
             AnimSeekBar.Value   = AnimGrp.Frame;
+            AnimSeekBar.Maximum = AnimGrp.FramesCount;
+
+            UpdateAnimationTransforms();
+            UpdateAnimLbls();
+            UpdateViewport();
+        }
+
+        private void SetAnimation(int[] Indices, H3DDict<H3DMaterialAnim> SrcAnims)
+        {
+            List<H3DAnimation> Animations = new List<H3DAnimation>(Indices.Length);
+
+            foreach (int i in Indices)
+            {
+                Animations.Add(SrcAnims[i]);
+            }
+
+            AnimGrp.Frame = 0;
+
+            AnimGrp.SetAnimations(Animations, AnimationType.Material);
+
+            AnimGrp.UpdateState();
+
+            AnimSeekBar.Value = AnimGrp.Frame;
             AnimSeekBar.Maximum = AnimGrp.FramesCount;
 
             UpdateAnimationTransforms();

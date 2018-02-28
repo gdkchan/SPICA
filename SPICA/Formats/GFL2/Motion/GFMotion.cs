@@ -118,7 +118,7 @@ namespace SPICA.Formats.GFL2.Motion
             return SkeletalAnimation?.ToH3DAnimation(Skeleton, this);
         }
 
-        public H3DAnimation ToH3DMaterialAnimation()
+        public H3DMaterialAnim ToH3DMaterialAnimation()
         {
             return MaterialAnimation?.ToH3DAnimation(this);
         }

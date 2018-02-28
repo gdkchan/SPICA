@@ -36,8 +36,8 @@ namespace SPICA.WinForms.Formats
 
             foreach (GFMotion Mot in MotPack)
             {
-                H3DAnimation MatAnim = Mot.ToH3DMaterialAnimation();
-                H3DAnimation VisAnim = Mot.ToH3DVisibilityAnimation();
+                H3DMaterialAnim MatAnim = Mot.ToH3DMaterialAnimation();
+                H3DAnimation    VisAnim = Mot.ToH3DVisibilityAnimation();
 
                 if (MatAnim != null)
                 {

@@ -39,7 +39,7 @@ namespace SPICA.Formats.CtrH3D
         public readonly H3DDict<H3DCamera>         Cameras;
         public readonly H3DDict<H3DFog>            Fogs;
         public readonly H3DDict<H3DAnimation>      SkeletalAnimations;
-        public readonly H3DDict<H3DAnimation>      MaterialAnimations;
+        public readonly H3DDict<H3DMaterialAnim>   MaterialAnimations;
         public readonly H3DDict<H3DAnimation>      VisibilityAnimations;
         public readonly H3DDict<H3DAnimation>      LightAnimations;
         public readonly H3DDict<H3DAnimation>      CameraAnimations;
@@ -64,7 +64,7 @@ namespace SPICA.Formats.CtrH3D
             Cameras              = new H3DDict<H3DCamera>();
             Fogs                 = new H3DDict<H3DFog>();
             SkeletalAnimations   = new H3DDict<H3DAnimation>();
-            MaterialAnimations   = new H3DDict<H3DAnimation>();
+            MaterialAnimations   = new H3DDict<H3DMaterialAnim>();
             VisibilityAnimations = new H3DDict<H3DAnimation>();
             LightAnimations      = new H3DDict<H3DAnimation>();
             CameraAnimations     = new H3DDict<H3DAnimation>();
