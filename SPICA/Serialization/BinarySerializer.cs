@@ -107,18 +107,25 @@ namespace SPICA.Serialization
 
         private RefValue CurrentValue;
 
-        private void WriteSection(List<RefValue> Values)
+        private void WriteSection(List<RefValue> Values, int Start = 0)
         {
-            foreach (RefValue Value in Values)
+            for (int Index = Start; Index < Values.Count; Index++)
             {
-                CurrentValue = Value;
+                CurrentValue = Values[Index];
 
-                WriteValue(Value);
+                WriteValue(Values[Index]);
             }
 
-            foreach (RefValue Value in Values)
+            int LastIndex = Values.Count;
+
+            for (int Index = Start; Index < Values.Count; Index++)
             {
-                WriteSection(Value.Childs);
+                WriteSection(Values[Index].Childs);
+            }
+
+            if (Values.Count > LastIndex)
+            {
+                WriteSection(Values, LastIndex);
             }
         }
 

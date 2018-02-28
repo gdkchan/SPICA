@@ -110,13 +110,19 @@ namespace SPICA.Formats.CtrH3D.Animation
             if (ValueScale == 1)
             {
                 /*
-                    * Quantizations were the value scale is not needed (like the ones that already stores the value
-                    * as float) will ignore the offset aswell, so we need to set to to zero.
-                    */
+                 * Quantizations were the value scale is not needed (like the ones that already stores the value
+                 * as float) will ignore the offset aswell, so we need to set to to zero.
+                 */
                 ValueOffset = 0;
             }
 
-            Serializer.WriteValue(this);
+            Serializer.Writer.Write(StartFrame);
+            Serializer.Writer.Write(EndFrame);
+
+            Serializer.Writer.Write((byte)PreRepeat);
+            Serializer.Writer.Write((byte)PostRepeat);
+
+            Serializer.Writer.Write(CurveIndex);
 
             if (Serializer.FileVersion < 0x20)
             {
@@ -135,6 +141,20 @@ namespace SPICA.Formats.CtrH3D.Animation
                 Serializer.Writer.Write(ValueOffset);
                 Serializer.Writer.Write(FrameScale);
             }
+            else
+            {
+                Serializer.Writer.Write((byte)InterpolationType);
+                Serializer.Writer.Write((byte)Quantization);
+
+                Serializer.Writer.Write(Count);
+
+                Serializer.Writer.Write(ValueScale);
+                Serializer.Writer.Write(ValueOffset);
+                Serializer.Writer.Write(FrameScale);
+                Serializer.Writer.Write(InvDuration);
+            }
+
+            Serializer.WritePointer((uint)Serializer.BaseStream.Position + 4);
 
             foreach (KeyFrame Key in KeyFrames)
             {

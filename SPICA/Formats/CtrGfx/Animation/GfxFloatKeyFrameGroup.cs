@@ -157,7 +157,15 @@ namespace SPICA.Formats.CtrGfx.Animation
                 FormatFlags |= 8;
             }
 
-            Serializer.WriteValue(this);
+            Serializer.Writer.Write(_StartFrame);
+            Serializer.Writer.Write(_EndFrame);
+
+            Serializer.Writer.Write((byte)PreRepeat);
+            Serializer.Writer.Write((byte)PostRepeat);
+
+            Serializer.Writer.Write(Padding);
+
+            Serializer.Writer.Write((uint)CurveFlags);
 
             if (KeyFrames.Count < 2)
             {
