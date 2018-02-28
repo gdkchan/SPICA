@@ -124,7 +124,7 @@ namespace SPICA.Formats.CtrGfx.Animation
             }
 
             float ValueScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxValue - MinValue);
-            float FrameScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxFrame - MinFrame);
+            float FrameScale  = KeyFrameQuantizationHelper.GetFrameScale(Quantization, MaxFrame - MinFrame);
 
             float ValueOffset = MinValue;
 
