@@ -42,6 +42,10 @@ namespace SPICA.Rendering.Animation
 
                 H3DMaterialParams Params = Materials[i].MaterialParams;
 
+                State.Transforms[0] = Params.TextureCoords[0].GetTransform().ToMatrix4();
+                State.Transforms[1] = Params.TextureCoords[1].GetTransform().ToMatrix4();
+                State.Transforms[2] = Params.TextureCoords[2].GetTransform().ToMatrix4();
+
                 State.Emission  = Params.EmissionColor .ToColor4();
                 State.Ambient   = Params.AmbientColor  .ToColor4();
                 State.Diffuse   = Params.DiffuseColor  .ToColor4();
@@ -54,9 +58,9 @@ namespace SPICA.Rendering.Animation
                 State.Constant4 = Params.Constant4Color.ToColor4();
                 State.Constant5 = Params.Constant5Color.ToColor4();
 
-                State.Transforms[0] = Params.TextureCoords[0].GetTransform().ToMatrix4();
-                State.Transforms[1] = Params.TextureCoords[1].GetTransform().ToMatrix4();
-                State.Transforms[2] = Params.TextureCoords[2].GetTransform().ToMatrix4();
+                State.Texture0Name = Materials[i].Texture0Name;
+                State.Texture1Name = Materials[i].Texture1Name;
+                State.Texture2Name = Materials[i].Texture2Name;
             }
         }
 
@@ -138,6 +142,23 @@ namespace SPICA.Rendering.Animation
                         case H3DTargetType.MaterialTexCoord0Rot: TC[0].Rotation = Value; break;
                         case H3DTargetType.MaterialTexCoord1Rot: TC[1].Rotation = Value; break;
                         case H3DTargetType.MaterialTexCoord2Rot: TC[2].Rotation = Value; break;
+                    }
+                }
+                else if (Elem.PrimitiveType == H3DPrimitiveType.Texture)
+                {
+                    H3DFloatKeyFrameGroup Int = ((H3DAnimFloat)Elem.Content).Value;
+
+                    if (!Int.Exists) continue;
+
+                    int Value = (int)Int.GetFrameValue(Frame);
+
+                    string Name = TextureNames[Value];
+
+                    switch (Elem.TargetType)
+                    {
+                        case H3DTargetType.MaterialMapper0Texture: State.Texture0Name = Name; break;
+                        case H3DTargetType.MaterialMapper1Texture: State.Texture1Name = Name; break;
+                        case H3DTargetType.MaterialMapper2Texture: State.Texture2Name = Name; break;
                     }
                 }
 

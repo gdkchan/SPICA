@@ -583,6 +583,10 @@ namespace SPICA.Rendering
                 GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant4Uniform), MS.Constant4);
                 GL.Uniform4(GL.GetUniformLocation(Shader.Handle, FragmentShaderGenerator.Constant5Uniform), MS.Constant5);
 
+                Mesh.Texture0Name = MS.Texture0Name;
+                Mesh.Texture1Name = MS.Texture1Name;
+                Mesh.Texture2Name = MS.Texture2Name;
+
                 Mesh.Render();
             }
         }

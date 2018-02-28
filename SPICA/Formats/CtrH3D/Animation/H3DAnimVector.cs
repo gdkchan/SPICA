@@ -34,7 +34,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             }
         }
 
-        public static void SetVector(BinaryDeserializer Deserializer, H3DFloatKeyFrameGroup Vector)
+        public static void SetVector(BinaryDeserializer Deserializer, ref H3DFloatKeyFrameGroup Vector)
         {
             H3DAnimVectorFlags Flags = (H3DAnimVectorFlags)Deserializer.Reader.ReadUInt32();
 

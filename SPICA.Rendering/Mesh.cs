@@ -26,6 +26,10 @@ namespace SPICA.Rendering
         private  Vector4     Scales1;
         private  Vector4     PosOffs;
 
+        internal string Texture0Name;
+        internal string Texture1Name;
+        internal string Texture2Name;
+
         public Mesh(Model Parent, H3DMesh BaseMesh)
         {
             this.Parent   = Parent;
@@ -202,33 +206,33 @@ namespace SPICA.Rendering
                 Params.LUTReflecBSamplerName ?? Params.LUTReflecRSamplerName);
 
             //Setup texture units
-            if (Material.Texture0Name != null)
+            if (Texture0Name != null)
             {
                 //Only the texture unit 0 can have a Cube Map texture
                 if (Params.TextureCoords[0].MappingType == H3DTextureMappingType.CameraCubeEnvMap)
                 {
-                    Parent.Renderer.TryBindTexture(3, Material.Texture0Name);
+                    Parent.Renderer.TryBindTexture(3, Texture0Name);
 
                     SetWrapAndFilter(TextureTarget.TextureCubeMap, 0);
                 }
                 else
                 {
-                    Parent.Renderer.TryBindTexture(0, Material.Texture0Name);
+                    Parent.Renderer.TryBindTexture(0, Texture0Name);
 
                     SetWrapAndFilter(TextureTarget.Texture2D, 0);
                 }
             }
 
-            if (Material.Texture1Name != null)
+            if (Texture1Name != null)
             {
-                Parent.Renderer.TryBindTexture(1, Material.Texture1Name);
+                Parent.Renderer.TryBindTexture(1, Texture1Name);
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 1);
             }
 
-            if (Material.Texture2Name != null)
+            if (Texture2Name != null)
             {
-                Parent.Renderer.TryBindTexture(2, Material.Texture2Name);
+                Parent.Renderer.TryBindTexture(2, Texture2Name);
 
                 SetWrapAndFilter(TextureTarget.Texture2D, 2);
             }

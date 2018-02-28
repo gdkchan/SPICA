@@ -19,6 +19,10 @@ namespace SPICA.Rendering.Animation
         public Color4 Constant4;
         public Color4 Constant5;
 
+        public string Texture0Name;
+        public string Texture1Name;
+        public string Texture2Name;
+
         public MaterialState()
         {
             Transforms = new Matrix4[3];

@@ -16,7 +16,7 @@ namespace SPICA.Formats.CtrH3D.Animation
 
         void ICustomSerialization.Deserialize(BinaryDeserializer Deserializer)
         {
-            H3DAnimVector.SetVector(Deserializer, _Value);
+            H3DAnimVector.SetVector(Deserializer, ref _Value);
         }
 
         bool ICustomSerialization.Serialize(BinarySerializer Serializer)

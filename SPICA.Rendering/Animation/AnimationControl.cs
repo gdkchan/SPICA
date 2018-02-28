@@ -34,6 +34,8 @@ namespace SPICA.Rendering.Animation
 
         protected List<H3DAnimationElement> Elements;
 
+        protected List<string> TextureNames;
+
         public AnimationControl()
         {
             Step = 1;
@@ -41,6 +43,8 @@ namespace SPICA.Rendering.Animation
             Indices = new List<int>();
 
             Elements = new List<H3DAnimationElement>();
+
+            TextureNames = new List<string>();
         }
 
         public virtual void SetAnimations(IEnumerable<H3DAnimation> Animations) { }
@@ -54,10 +58,18 @@ namespace SPICA.Rendering.Animation
 
             HashSet<string> UsedNames = new HashSet<string>();
 
+            TextureNames.Clear();
+
             foreach (H3DAnimation Anim in Animations)
             {
                 if (FC < Anim.FramesCount)
                     FC = Anim.FramesCount;
+
+                if (Anim is H3DMaterialAnim MatAnim)
+                {
+                    if (TextureNames.Count < MatAnim.TextureNames.Count)
+                        TextureNames = new List<string>(MatAnim.TextureNames);
+                }
 
                 foreach (H3DAnimationElement Elem in Anim.Elements)
                 {
