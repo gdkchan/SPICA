@@ -103,7 +103,7 @@ namespace SPICA.Formats.CtrH3D.Animation
             }
 
             ValueScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxValue - MinValue);
-            FrameScale  = KeyFrameQuantizationHelper.GetValueScale(Quantization, MaxFrame - MinFrame);
+            FrameScale  = KeyFrameQuantizationHelper.GetFrameScale(Quantization, MaxFrame - MinFrame);
             ValueOffset = MinValue;
             InvDuration = 1f / EndFrame;
 
