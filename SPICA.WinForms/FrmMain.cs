@@ -204,16 +204,14 @@ namespace SPICA.WinForms
             {
                 if ((e.Button & MouseButtons.Left) != 0)
                 {
-                    float X = (float)(((e.X - InitialMov.X) / Width)  * Math.PI);
+                    float X = (float)(((e.X - InitialMov.X) / Width)  * Math.PI * 2);
                     float Y = (float)(((e.Y - InitialMov.Y) / Height) * Math.PI);
 
-                    Transform.Row3.Xyz -= Translation;
-
                     Transform *=
+                        Matrix4.CreateTranslation(-Vector3.UnitZ * Translation.Z) *
+                        Matrix4.CreateFromAxisAngle(Transform.Row1.Xyz, X) *
                         Matrix4.CreateRotationX(Y) *
-                        Matrix4.CreateRotationY(X);
-
-                    Transform.Row3.Xyz += Translation;
+                        Matrix4.CreateTranslation(Vector3.UnitZ * Translation.Z);
                 }
 
                 if ((e.Button & MouseButtons.Right) != 0)
