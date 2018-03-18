@@ -266,8 +266,12 @@ namespace SPICA.WinForms
 
         private void Viewport_Resize(object sender, EventArgs e)
         {
-            Renderer?.Resize(Viewport.Width, Viewport.Height);
-
+            if (Renderer != null)
+            {   
+                Renderer.Resize(Viewport.Width, Viewport.Height);
+                Renderer.Camera.ViewMatrix = Transform;   
+            }
+            
             UpdateViewport();
         }
         #endregion
