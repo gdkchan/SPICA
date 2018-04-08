@@ -135,7 +135,7 @@ namespace SPICA.WinForms
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                e.Effect = DragDropEffects.Copy;
+                e.Effect = ModifierKeys.HasFlag(Keys.Alt) ? DragDropEffects.Copy : DragDropEffects.Move;
             }
         }
         
@@ -415,11 +415,13 @@ namespace SPICA.WinForms
             MdlCenter = Vector3.Zero;
 
             Dimension = 100;
+            
+            Translation = new Vector3(0, 0, -200);
 
             Transform =
                 Matrix4.CreateRotationY((float)Math.PI * 0.25f) *
                 Matrix4.CreateRotationX((float)Math.PI * 0.25f) *
-                Matrix4.CreateTranslation(0, 0, -200);
+                Matrix4.CreateTranslation(Translation);
         }
 
         private void UpdateTransforms()
