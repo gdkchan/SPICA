@@ -24,8 +24,11 @@ namespace SPICA.WinForms.Formats
 
             int OpenFiles = 0;
 
+            using (FrmLoading Form = new FrmLoading(FileNames.Length))
             foreach (string FileName in FileNames)
             {
+                Form.Proceed(FileName);
+                
                 H3DDict<H3DBone> Skeleton = null;
 
                 if (Scene.Models.Count > 0) Skeleton = Scene.Models[0].Skeleton;

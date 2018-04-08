@@ -91,6 +91,7 @@
     <Compile Include="FrmGFTFormat.Designer.cs">
       <DependentUpon>FrmGFTFormat.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmLoading.cs" />
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
