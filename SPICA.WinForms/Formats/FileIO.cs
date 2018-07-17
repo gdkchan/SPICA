@@ -79,12 +79,12 @@ namespace SPICA.WinForms.Formats
                 if (SaveDlg.ShowDialog() == DialogResult.OK)
                 {
                     int MdlIndex  = State.ModelIndex;
-                    int AnimIndex = State.SklAnimIndex;
+                    int[] SelectedAnimations = State.SklAnimIndices;
 
                     switch (SaveDlg.FilterIndex)
                     {
-                        case 1: new DAE(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
-                        case 2: new SMD(Scene, MdlIndex, AnimIndex).Save(SaveDlg.FileName); break;
+                        case 1: new DAE(Scene, MdlIndex, SelectedAnimations).Save(SaveDlg.FileName); break;
+                        case 2: new SMD(Scene, MdlIndex, SelectedAnimations[0]).Save(SaveDlg.FileName); break;
                         case 3: H3D.Save(SaveDlg.FileName, Scene); break;
                     }
                 }

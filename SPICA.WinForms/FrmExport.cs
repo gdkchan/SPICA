@@ -109,7 +109,7 @@ namespace SPICA.WinForms
 
                             switch (Format)
                             {
-                                case 0: new DAE(Data, 0, Index).Save(FileName + ".dae"); break;
+                                case 0: new DAE(Data, 0, new int[] { Index }).Save(FileName + ".dae"); break;
                                 case 1: new SMD(Data, 0, Index).Save(FileName + ".smd"); break;
                             }
                         }
