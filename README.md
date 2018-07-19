@@ -1,17 +1,17 @@
 # SPICA [![Build status](https://ci.appveyor.com/api/projects/status/ar1fyeo109v587xf/branch/master?svg=true)](https://ci.appveyor.com/project/gdkchan/spica/branch/master)
 Experimental H3D tool for serializing/deserializing BCH.
 
-Dependencies:
+### Dependencies:
+- .NET Framework 4.6
+- OpenGL 3.3 at least
 - OpenTK
 - OpenTK.GLControl
+  - Both can be found on NuGet.
+  - _Note: The version of OpenTK.GLControl on NuGet is broken, so it's recommended to build it yourself from source and manually add a reference to the compiled library._
+  - OpenTK git can be found [here](https://github.com/opentk/opentk).
 
-Both can be found on NuGet.
 
-Note: The version of OpenTK.GLControl on NuGet is broken, so it's recommended to build it yourself from source and manually add a reference to the compiled library.
-OpenTK git can be found [here](https://github.com/opentk/opentk).
-
-You will need .NET Framework 4.6 and a GPU capable of OpenGL 3.3 at least.
-
+### Builds
 SPICA can be built on Linux/Mac using [Mono](https://www.mono-project.com/).
 See `README.mono.md` for details.
 
@@ -20,7 +20,7 @@ See `README.mono.md` for details.
 To download the lastest automatic build for Windows, [Click Here](https://ci.appveyor.com/api/projects/gdkchan/spica/artifacts/spica_lastest.zip).
 
 
-# Modder Notes
+# Modder Notes _(pokemon & unity3d)_
 _specifically pokemon fans, although possibly not limited to just that realm. DAE files are kind of a pain, but they are open source and easily manipulated. I needed a simple way to combine N animations into a single dae file. Spica already supported single animation exports, yet i hate blender, so prefer to create the game ready models and animations programatically._
 
 ### what you'll need
@@ -59,17 +59,16 @@ _specifically pokemon fans, although possibly not limited to just that realm. DA
 
 **this version of the codebase will save all the animations as a single animation on export**  
 
-### Step 5. unity
+### Step 5. unity3d
 - import textures first into unity, 
 - then import .dae model
 - check out the animation tab 
 
 
 ### bounty
-
+[![poli.gif](https://s15.postimg.cc/697oxd7t7/poli.gif)](https://postimg.cc/image/mwz6zv2kn/)
 [![poli.png](https://s15.postimg.cc/v2h8xw8sb/poli.png)](https://postimg.cc/image/b7v7brtkn/)
 
-[![poli.gif](https://s15.postimg.cc/697oxd7t7/poli.gif)](https://postimg.cc/image/mwz6zv2kn/)
 
 
 [usum model index]: https://gbatemp.net/threads/pokemon-sun-moon-pokemon-animations-textures-and-models.473906/
@@ -78,5 +77,3 @@ _specifically pokemon fans, although possibly not limited to just that realm. DA
 ## Future
 - make this a cli operation
   - no need for the UI here _(at least for pkmn)_
-- export a text file with animation names and frame range
-  - currently you have to either know the frames or just guess to split the animations back out

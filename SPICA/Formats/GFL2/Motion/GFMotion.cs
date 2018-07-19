@@ -127,5 +127,24 @@ namespace SPICA.Formats.GFL2.Motion
         {
             return VisibilityAnimation?.ToH3DAnimation(this);
         }
+
+        public static string GetMotionName(string key) {
+
+            string name = key;
+
+            switch (key.ToLower())
+            {
+                case "motion_0": name = "idle"; break;
+                case "motion_6": name = "attack-close"; break;
+                case "motion_9": name = "attack-range"; break;
+                case "motion_13": name = "hit"; break;
+                case "motion_17": name = "faint"; break;
+                case "motion_10_1": name = "celebrate"; break;
+                case "motion_1_2": name = "walk"; break;
+                case "motion_3_2": name = "run"; break;
+            }
+
+            return name;
+        }
     }
 }

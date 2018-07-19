@@ -8,6 +8,7 @@ using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
+using SPICA.Formats.GFL2.Motion;
 
 using System;
 using System.Collections.Generic;
@@ -21,13 +22,13 @@ namespace SPICA.Formats.Generic.COLLADA
 {
 
      public struct AnimMergeCache {
-        public string animName;
-        public string elemName;
-        public string type;
-        public bool isRotation;
-        public List<string> animTimes;
-        public List<string> animLerps;
-        public List<string> animPoses;
+        public string AnimName;
+        public string ElemName;
+        public string Type;
+        public bool IsRotation;
+        public List<string> AnimTimes;
+        public List<string> AnimLerps;
+        public List<string> AnimPoses;
     }
 
     [XmlRoot("COLLADA", Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
@@ -458,6 +459,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
             if (!object.Equals(AnimIndices, null) && AnimIndices.Length > 0)
             {
+                this.motionGlossary = new Dictionary<string, int[]>();
                 library_animations = new List<DAEAnimation>();
 
                 string[] AnimElemNames = { "translate", "rotateX", "rotateY", "rotateZ", "scale" };
@@ -476,6 +478,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
                     H3DAnimation SklAnim = Scene.SkeletalAnimations[AnimIndex];
                     int ThisAnimFrames = (int)SklAnim.FramesCount + 1;
+                    motionGlossary.Add(GFMotion.GetMotionName(SklAnim.Name), new int[] { FrameOffset, FrameOffset + ThisAnimFrames - 1 });
 
                     foreach (H3DAnimationElement Elem in SklAnim.Elements)
                     {
@@ -619,22 +622,22 @@ namespace SPICA.Formats.Generic.COLLADA
 
                             if (Combined.ContainsKey(key))
                             {
-                                Combined[key].animTimes.AddRange(AnimTimes);
-                                Combined[key].animLerps.AddRange(AnimLerps);
-                                Combined[key].animPoses.AddRange(AnimPoses);
+                                Combined[key].AnimTimes.AddRange(AnimTimes);
+                                Combined[key].AnimLerps.AddRange(AnimLerps);
+                                Combined[key].AnimPoses.AddRange(AnimPoses);
                             }
                             else
                             {
 
                                 var AnimData = new AnimMergeCache {
-                                    animName = $"mm_{Elem.Name}_{AnimElemNames[i]}",
-                                    elemName = Elem.Name,
-                                    type = AnimElemNames[i],
-                                    isRotation = IsRotation,
+                                    AnimName = $"mm_{Elem.Name}_{AnimElemNames[i]}",
+                                    ElemName = Elem.Name,
+                                    Type = AnimElemNames[i],
+                                    IsRotation = IsRotation,
                                     //WARN: this might* be a problem, so far no issues trying to fluff previously unused bones 
-                                    animTimes = Enumerable.Repeat(AnimTimes[0], FrameOffset).ToList().Concat(AnimTimes.ToList()).ToList(),
-                                    animLerps = Enumerable.Repeat(AnimLerps[0], FrameOffset).ToList().Concat(AnimLerps.ToList()).ToList(),
-                                    animPoses = Enumerable.Repeat(AnimPoses[0], FrameOffset).ToList().Concat(AnimPoses.ToList()).ToList()
+                                    AnimTimes = Enumerable.Repeat(AnimTimes[0], FrameOffset).ToList().Concat(AnimTimes.ToList()).ToList(),
+                                    AnimLerps = Enumerable.Repeat(AnimLerps[0], FrameOffset).ToList().Concat(AnimLerps.ToList()).ToList(),
+                                    AnimPoses = Enumerable.Repeat(AnimPoses[0], FrameOffset).ToList().Concat(AnimPoses.ToList()).ToList()
                                 };
 
                                 Combined.Add($"{Elem.Name}_{AnimElemNames[i]}", AnimData);
@@ -651,15 +654,15 @@ namespace SPICA.Formats.Generic.COLLADA
                 {
                     DAEAnimation Anim = new DAEAnimation();
 
-                    Anim.name = merged.animName;
+                    Anim.name = merged.AnimName;
                     Anim.id = $"{Anim.name}_id";
 
-                    Anim.src.Add(new DAESource($"{Anim.name}_frame", 1, merged.animTimes.ToArray(), "TIME", "float"));
-                    Anim.src.Add(new DAESource($"{Anim.name}_interp", 1, merged.animLerps.ToArray(), "INTERPOLATION", "Name"));
+                    Anim.src.Add(new DAESource($"{Anim.name}_frame", 1, merged.AnimTimes.ToArray(), "TIME", "float"));
+                    Anim.src.Add(new DAESource($"{Anim.name}_interp", 1, merged.AnimLerps.ToArray(), "INTERPOLATION", "Name"));
 
-                    Anim.src.Add(merged.isRotation
-                        ? new DAESource($"{Anim.name}_pose", 1, merged.animPoses.ToArray(), "ANGLE", "float")
-                        : new DAESource($"{Anim.name}_pose", 3, merged.animPoses.ToArray(),
+                    Anim.src.Add(merged.IsRotation
+                        ? new DAESource($"{Anim.name}_pose", 1, merged.AnimPoses.ToArray(), "ANGLE", "float")
+                        : new DAESource($"{Anim.name}_pose", 3, merged.AnimPoses.ToArray(),
                         "X", "float",
                         "Y", "float",
                         "Z", "float"));
@@ -670,15 +673,17 @@ namespace SPICA.Formats.Generic.COLLADA
 
                     Anim.sampler.id = $"{Anim.name}_samp_id";
                     Anim.channel.source = $"#{Anim.sampler.id}";
-                    Anim.channel.target = $"{merged.elemName}_bone_id/{merged.type}";
+                    Anim.channel.target = $"{merged.ElemName}_bone_id/{merged.Type}";
 
-                    if (merged.isRotation) Anim.channel.target += ".ANGLE";
+                    if (merged.IsRotation) Anim.channel.target += ".ANGLE";
 
                     library_animations.Add(Anim);
                 }
                
             } //AnimIndices.Length > 1
         }
+
+        private Dictionary<string, int[]> motionGlossary;
 
         public void Save(string FileName)
         {
@@ -687,6 +692,16 @@ namespace SPICA.Formats.Generic.COLLADA
                 XmlSerializer Serializer = new XmlSerializer(typeof(DAE));
 
                 Serializer.Serialize(FS, this);
+            }
+
+            if (!object.Equals(null, this.motionGlossary))
+            {
+                string frameInfo = "";
+                foreach (KeyValuePair<string, int[]> motion in motionGlossary)
+                {
+                    frameInfo += $"{motion.Key}: {motion.Value[0]} - {motion.Value[1]}\n";
+                }
+                File.WriteAllText(FileName + ".txt", frameInfo);
             }
         }
     }
