@@ -48,7 +48,15 @@ _specifically pokemon fans, although possibly not limited to just that realm. DA
   - `...\puyotools\PuyoTools\bin\Debug\PuyoTools.exe`  
 - _you now have 10k files with all the pkmn data in it an uncompressed for spica_
 
-### Step 4. how to use spica
+### Step 4A. spica CLI
+- git clone
+- build using visual studio 2017
+- run 
+  - `.\SPICA.CLI.exe --pkmn Bulbasaur --texture C:/my/folder --model C:/my/folder`
+
+[![image.png](https://s15.postimg.cc/6edsj7rdn/image.png)](https://postimg.cc/image/aniildumv/)
+
+### Step 4B. spica UI
 - open spica
 - select merge _(folder with plus on it)_
 - choose the 9 files corresponding to the pkmn you want _(shift key)_
@@ -73,7 +81,3 @@ _specifically pokemon fans, although possibly not limited to just that realm. DA
 
 [usum model index]: https://gbatemp.net/threads/pokemon-sun-moon-pokemon-animations-textures-and-models.473906/
 [alternative model index]: https://gbatemp.net/threads/sun-moon-pokemon-model-file-mapping-cheat-list-for-a-0-9-4-archives.478882/
-
-## Future
-- make this a cli operation
-  - no need for the UI here _(at least for pkmn)_

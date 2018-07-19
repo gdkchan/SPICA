@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace SPICA.WinForms
 {
-    static class TextureManager
+    public static class TextureManager
     {
         private static
             Dictionary<int, Bitmap> TextureCache = new

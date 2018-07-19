@@ -20,7 +20,7 @@ using System.Windows.Forms;
 
 namespace SPICA.WinForms.Formats
 {
-    static class FormatIdentifier
+    public static class FormatIdentifier
     {
         public static H3D IdentifyAndOpen(string FileName, H3DDict<H3DBone> Skeleton = null)
         {
