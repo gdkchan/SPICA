@@ -1,7 +1,12 @@
 ﻿using System;
-
+using System.IO;
+using System.Linq;
+using System.Dynamic;
+using Mono.Options;
 using SPICA.Formats.CtrH3D;
+using YamlDotNet.Serialization;
 using System.Collections.Generic;
+
 
 namespace SPICA.CLI
 {
@@ -9,18 +14,32 @@ namespace SPICA.CLI
     {
         static void Main(string[] args)
         {
+            string here = AppDomain.CurrentDomain.BaseDirectory;
+
             Console.WriteLine("SPICA CLI");
 
-            //todo: args. look into Mono.Options again
-            //take in a pokemon name and discover the ~9 file names via a simple map
+            //default args
+            string Pokemon = "bulbasaur";
+            string MapLocation = $"{here}/model_bin_map.yml";
+            string BinLocation = $"{here}/in";
+            string TextureLocation = $"{here}/tex";
+            string ModelLocation = $"{here}/out";
 
-            //fake args (only 4)
-            string Pokemon = "Bulbasaur";
-            string[] files = new string[] { "B:/pokemon/decompressed-0-9-4/00001.bin", "B:/pokemon/decompressed-0-9-4/00002.bin", "B:/pokemon/decompressed-0-9-4/00003.bin", "B:/pokemon/decompressed-0-9-4/00004.bin", "B:/pokemon/decompressed-0-9-4/00005.bin", "B:/pokemon/decompressed-0-9-4/00006.bin", "B:/pokemon/decompressed-0-9-4/00007.bin", "B:/pokemon/decompressed-0-9-4/00008.bin", "B:/pokemon/decompressed-0-9-4/00009.bin" };
-            string TextureLocation = "B:/pokemon/tex";
-            string ModelLocation = "B:/pokemon/dae";
+            var options = new OptionSet() {
+                { "?|h|help", "", _ => HelpText()},
+                { "p=|pokemon=", "", input => Pokemon = input},
+                { "map=|map-file=", "", input => MapLocation = input},
+                { "in=|bin=|bin-dir=", "", input => BinLocation = input},
+                { "tex=|texture=|texture-out=", "", input => TextureLocation = input},
+                { "model=|model-out", "", input => ModelLocation = input},
+            };
+            options.Parse(args);
+
+            Directory.CreateDirectory(TextureLocation);
+            Directory.CreateDirectory(ModelLocation);
 
             Console.WriteLine($"Searching for: {Pokemon}");
+            string[] files = GetFileNames(Pokemon, MapLocation).Select(file => $"{BinLocation}/{file}").ToArray();
 
             Console.Write($"Building Scene with files:\n{string.Join("\n", files)}\n");
             H3D Scene = FileIO.Merge(files);
@@ -28,7 +47,7 @@ namespace SPICA.CLI
             Console.WriteLine($"Exporting {Scene.Textures.Count} textures");
             FileIO.ExportTextures(Scene, TextureLocation);
 
-            int[] motions = GetMotionIndices(Scene, Pokedex.StandardMotion.Values);
+            int[] motions = GetMotionIndices(Scene, MotionLexicon.StandardMotion.Values);
 
             Console.WriteLine($"exporting {ModelLocation}/{Pokemon}.dae model with {motions.Length} motions");
             FileIO.ExportDae(Scene, $"{ModelLocation}/{Pokemon}.dae", motions);
@@ -49,6 +68,22 @@ namespace SPICA.CLI
                 }
             }
             return targets.ToArray();
+        }
+
+        private static string[] GetFileNames(string Pokemon, string MapLocation) {
+            var yaml = new DeserializerBuilder().Build();
+            dynamic expando = yaml.Deserialize<ExpandoObject>(File.ReadAllText(MapLocation));
+            var lookup = expando as IDictionary<string, Object>;
+
+            List<string> files = new List<string>();
+            foreach (var file in (lookup[Pokemon] as List<Object>))
+                files.Add(file.ToString());
+
+            return files.ToArray();
+        }
+
+        private static string HelpText() {
+            return "";
         }
     }
 }

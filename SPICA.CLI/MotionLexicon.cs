@@ -1,12 +1,8 @@
-﻿using System;
-
-using SPICA.Formats.CtrH3D;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace SPICA.CLI
 {
-    class Pokedex
+    class MotionLexicon
     {
         public static Dictionary<string, string> StandardMotion = new Dictionary<string, string>() {
             { "idle", "Motion_0"},
