@@ -51,10 +51,10 @@ _specifically pokemon fans, although possibly not limited to just that realm. DA
 - _you now have 10k files with all the pkmn data in it an uncompressed for spica_
 
 ### Step 4A. SPICA CLI
-- git clone git@github.com:Wambosa/SPICA.git
+- `git clone git@github.com:Wambosa/SPICA.git`
 - build using visual studio 2017
 - run 
-  - `.\SPICA.CLI.exe --pkmn Bulbasaur --texture C:/my/folder --model C:/my/folder`
+  - `.\SPICA.CLI.exe -bin=C:/pkmn/094 -pokemon=charmander`
 
 [![image.png](https://s15.postimg.cc/6edsj7rdn/image.png)](https://postimg.cc/image/aniildumv/)
 
