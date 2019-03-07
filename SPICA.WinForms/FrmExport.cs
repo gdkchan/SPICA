@@ -69,10 +69,10 @@ namespace SPICA.WinForms {
 
             int FileIndex = 0;
 
+            int CountFiles = 0;
             //TODO: Use Parallel loop for more speed and keep UI responsive
             foreach (string File in Files) {
                 H3D Data = FormatIdentifier.IdentifyAndOpen(File);
-
                 if (Data != null) {
                     string BaseName = PrefixNames ? Path.GetFileNameWithoutExtension(File) + "_" : string.Empty;
 
@@ -93,14 +93,19 @@ namespace SPICA.WinForms {
                     if (ExportAnims) {
                         string Filename = Path.GetFileName(File);
                         string ModelFolder = File.Replace(Filename, "");
-                        string AnimationFolder = AnimationFiles[0].Replace(Filename, "");
-                        string[] MergedFiles = new string[] { Path.Combine(ModelFolder, Filename), Path.Combine(AnimationFolder, Filename) };
-                        H3D MergedData = FileIO.Merge(MergedFiles, new Rendering.Renderer(1, 1), Data);
-                        for (int Index = 0; Index < MergedData.SkeletalAnimations.Count; Index++) {
-                            string FileName = BaseName + MergedData.Models[0].Name + "_" + MergedData.SkeletalAnimations[Index].Name;
-                            switch (Format) {
-                                case 0: new DAE(MergedData, 0, Index).Save(FileName + ".dae"); break;
-                                case 1: new SMD(MergedData, 0, Index).Save(FileName + ".smd"); break;
+
+                        foreach (string AnimationFile in AnimationFiles) {
+                            if (AnimationFile.Contains(Filename)) {
+                                string AnimationFolder = AnimationFile.Replace(Filename, "");
+                                string[] MergedFiles = new string[] { Path.Combine(ModelFolder, Filename), Path.Combine(AnimationFolder, Filename) };
+                                H3D MergedData = FileIO.Merge(MergedFiles, new Rendering.Renderer(1, 1), Data);
+                                for (int Index = 0; Index < MergedData.SkeletalAnimations.Count; Index++) {
+                                    string FileName = BaseName + MergedData.Models[0].Name + "_" + MergedData.SkeletalAnimations[Index].Name;
+                                    switch (Format) {
+                                        case 0: new DAE(MergedData, 0, Index).Save(FileName + ".dae"); break;
+                                        case 1: new SMD(MergedData, 0, Index).Save(FileName + ".smd"); break;
+                                    }
+                                }
                             }
                         }
                     }
@@ -119,6 +124,7 @@ namespace SPICA.WinForms {
                 ProgressConv.Value = (int)Progress;
 
                 Application.DoEvents();
+                CountFiles++;
             }
         }
     }
