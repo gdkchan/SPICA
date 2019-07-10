@@ -9,6 +9,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         [XmlAttribute] public uint count;
         [XmlAttribute] public uint stride;
+        [XmlAttribute] public uint offset;
 
         [XmlElement("param")] public List<DAEAccessorParam> param = new List<DAEAccessorParam>();
 

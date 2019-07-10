@@ -86,12 +86,6 @@
     <Compile Include="Texture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SPICA\SPICA.csproj">
-      <Project>{8149ac62-dd21-4b20-9691-f7ae5f47340f}</Project>
-      <Name>SPICA</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -102,6 +96,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\DefaultVertexShader.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SPICA\SPICA.csproj">
+      <Project>{1D835F72-5E1A-4AF6-A857-AF0C1C283605}</Project>
+      <Name>SPICA</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

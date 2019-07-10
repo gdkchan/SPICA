@@ -8,6 +8,7 @@ using SPICA.Formats.CtrH3D.Texture;
 using SPICA.Math3D;
 using SPICA.PICA.Commands;
 using SPICA.PICA.Converters;
+using SPICA.Formats.GFL2.Motion;
 
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,17 @@ using System.Xml.Serialization;
 
 namespace SPICA.Formats.Generic.COLLADA
 {
+
+     public struct AnimMergeCache {
+        public string AnimName;
+        public string ElemName;
+        public string Type;
+        public bool IsRotation;
+        public List<string> AnimTimes;
+        public List<string> AnimLerps;
+        public List<string> AnimPoses;
+    }
+
     [XmlRoot("COLLADA", Namespace = "http://www.collada.org/2005/11/COLLADASchema")]
     public class DAE
     {
@@ -38,7 +50,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public DAE() { }
 
-        public DAE(H3D Scene, int MdlIndex, int AnimIndex = -1)
+        public DAE(H3D Scene, int MdlIndex, int[] AnimIndices = null)
         {
             if (MdlIndex != -1)
             {
@@ -445,186 +457,233 @@ namespace SPICA.Formats.Generic.COLLADA
                 }
             } //MdlIndex != -1
 
-            if (AnimIndex != -1)
+            if (!object.Equals(AnimIndices, null) && AnimIndices.Length > 0)
             {
+                this.motionGlossary = new Dictionary<string, int[]>();
                 library_animations = new List<DAEAnimation>();
 
                 string[] AnimElemNames = { "translate", "rotateX", "rotateY", "rotateZ", "scale" };
 
-                H3DAnimation SklAnim = Scene.SkeletalAnimations[AnimIndex];
-
                 H3DDict<H3DBone> Skeleton = Scene.Models[0].Skeleton;
+                int TotalFrameCount = 0;
+                int FrameOffset = 0;
 
-                int FramesCount = (int)SklAnim.FramesCount + 1;
+                Dictionary<string, AnimMergeCache> Combined = new Dictionary<string, AnimMergeCache>();
 
-                foreach (H3DAnimationElement Elem in SklAnim.Elements)
+                foreach (int AnimIndex in AnimIndices) TotalFrameCount += (int)Scene.SkeletalAnimations[AnimIndex].FramesCount + 1;
+
+                for (int a=0; a < AnimIndices.Length; ++a)
                 {
-                    if (Elem.PrimitiveType != H3DPrimitiveType.Transform &&
-                        Elem.PrimitiveType != H3DPrimitiveType.QuatTransform) continue;
+                    int AnimIndex = AnimIndices[a];
 
-                    H3DBone SklBone = Skeleton.FirstOrDefault(x => x.Name == Elem.Name);
-                    H3DBone Parent = null;
+                    H3DAnimation SklAnim = Scene.SkeletalAnimations[AnimIndex];
+                    int ThisAnimFrames = (int)SklAnim.FramesCount + 1;
+                    motionGlossary.Add(GFMotion.GetMotionName(SklAnim.Name), new int[] { FrameOffset, FrameOffset + ThisAnimFrames - 1 });
 
-                    if (SklBone != null && SklBone.ParentIndex != -1)
+                    foreach (H3DAnimationElement Elem in SklAnim.Elements)
                     {
-                        Parent = Skeleton[SklBone.ParentIndex];
-                    }
+                        if (Elem.PrimitiveType != H3DPrimitiveType.Transform &&
+                            Elem.PrimitiveType != H3DPrimitiveType.QuatTransform) continue;
 
-                    for (int i = 0; i < 5; i++)
-                    {
-                        string[] AnimTimes = new string[FramesCount];
-                        string[] AnimPoses = new string[FramesCount];
-                        string[] AnimLerps = new string[FramesCount];
+                        H3DBone SklBone = Skeleton.FirstOrDefault(x => x.Name == Elem.Name);
+                        H3DBone Parent = null;
 
-                        bool IsRotation = i > 0 && i < 4; //1, 2, 3
-
-                        bool Skip =
-                            Elem.PrimitiveType != H3DPrimitiveType.Transform &&
-                            Elem.PrimitiveType != H3DPrimitiveType.QuatTransform;
-
-                        if (!Skip)
+                        if (SklBone != null && SklBone.ParentIndex != -1)
                         {
-                            if (Elem.Content is H3DAnimTransform Transform)
-                            {
-                                switch (i)
-                                {
-                                    case 0: Skip = !Transform.TranslationExists; break;
-                                    case 1: Skip = !Transform.RotationX.Exists;  break;
-                                    case 2: Skip = !Transform.RotationY.Exists;  break;
-                                    case 3: Skip = !Transform.RotationZ.Exists;  break;
-                                    case 4: Skip = !Transform.ScaleExists;       break;
-                                }
-                            }
-                            else if (Elem.Content is H3DAnimQuatTransform QuatTransform)
-                            {
-                                switch (i)
-                                {
-                                    case 0: Skip = !QuatTransform.HasTranslation; break;
-                                    case 1: Skip = !QuatTransform.HasRotation;    break;
-                                    case 2: Skip = !QuatTransform.HasRotation;    break;
-                                    case 3: Skip = !QuatTransform.HasRotation;    break;
-                                    case 4: Skip = !QuatTransform.HasScale;       break;
-                                }
-                            }
+                            Parent = Skeleton[SklBone.ParentIndex];
                         }
 
-                        if (Skip) continue;
-
-                        for (int Frame = 0; Frame < FramesCount; Frame++)
+                        for (int i = 0; i < 5; i++)
                         {
-                            string StrTrans = string.Empty;
+                            string[] AnimTimes = new string[ThisAnimFrames];
+                            string[] AnimPoses = new string[ThisAnimFrames];
+                            string[] AnimLerps = new string[ThisAnimFrames];
 
-                            H3DAnimationElement PElem = SklAnim.Elements.FirstOrDefault(x => x.Name == Parent?.Name);
+                            bool IsRotation = i > 0 && i < 4; //1, 2, 3
 
-                            Vector3 InvScale = Vector3.One;
+                            bool Skip =
+                                Elem.PrimitiveType != H3DPrimitiveType.Transform &&
+                                Elem.PrimitiveType != H3DPrimitiveType.QuatTransform;
 
-                            if (Elem.Content is H3DAnimTransform Transform)
+                            if (!Skip)
                             {
-                                //Compensate parent bone scale (basically, don't inherit scales)
-                                if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                if (Elem.Content is H3DAnimTransform Transform)
                                 {
-                                    if (PElem != null)
+                                    switch (i)
                                     {
-                                        H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
-
-                                        InvScale /= new Vector3(
-                                            PTrans.ScaleX.Exists ? PTrans.ScaleX.GetFrameValue(Frame) : Parent.Scale.X,
-                                            PTrans.ScaleY.Exists ? PTrans.ScaleY.GetFrameValue(Frame) : Parent.Scale.Y,
-                                            PTrans.ScaleZ.Exists ? PTrans.ScaleZ.GetFrameValue(Frame) : Parent.Scale.Z);
-                                    }
-                                    else
-                                    {
-                                        InvScale /= Parent.Scale;
+                                        case 0: Skip = !Transform.TranslationExists; break;
+                                        case 1: Skip = !Transform.RotationX.Exists; break;
+                                        case 2: Skip = !Transform.RotationY.Exists; break;
+                                        case 3: Skip = !Transform.RotationZ.Exists; break;
+                                        case 4: Skip = !Transform.ScaleExists; break;
                                     }
                                 }
-
-                                switch (i)
+                                else if (Elem.Content is H3DAnimQuatTransform QuatTransform)
                                 {
-                                    //Translation
-                                    case 0:
-                                        StrTrans = DAEUtils.VectorStr(new Vector3(
-                                            Transform.TranslationX.Exists //X
-                                            ? Transform.TranslationX.GetFrameValue(Frame) : SklBone.Translation.X,
-                                            Transform.TranslationY.Exists //Y
-                                            ? Transform.TranslationY.GetFrameValue(Frame) : SklBone.Translation.Y,
-                                            Transform.TranslationZ.Exists //Z
-                                            ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z));
-                                        break;
-
-                                    //Scale
-                                    case 4:
-                                        StrTrans = DAEUtils.VectorStr(InvScale * new Vector3(
-                                            Transform.ScaleX.Exists //X
-                                            ? Transform.ScaleX.GetFrameValue(Frame) : SklBone.Scale.X,
-                                            Transform.ScaleY.Exists //Y
-                                            ? Transform.ScaleY.GetFrameValue(Frame) : SklBone.Scale.Y,
-                                            Transform.ScaleZ.Exists //Z
-                                            ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z));
-                                        break;
-
-                                    //Rotation
-                                    case 1: StrTrans = DAEUtils.RadToDegStr(Transform.RotationX.GetFrameValue(Frame)); break;
-                                    case 2: StrTrans = DAEUtils.RadToDegStr(Transform.RotationY.GetFrameValue(Frame)); break;
-                                    case 3: StrTrans = DAEUtils.RadToDegStr(Transform.RotationZ.GetFrameValue(Frame)); break;
-                                }
-                            }
-                            else if (Elem.Content is H3DAnimQuatTransform QuatTransform)
-                            {
-                                //Compensate parent bone scale (basically, don't inherit scales)
-                                if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
-                                {
-                                    if (PElem != null)
-                                        InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
-                                    else
-                                        InvScale /= Parent.Scale;
-                                }
-
-                                switch (i)
-                                {
-                                    case 0: StrTrans = DAEUtils.VectorStr(QuatTransform.GetTranslationValue(Frame));            break;
-                                    case 1: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().X); break;
-                                    case 2: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().Y); break;
-                                    case 3: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().Z); break;
-                                    case 4: StrTrans = DAEUtils.VectorStr(InvScale * QuatTransform.GetScaleValue(Frame));       break;
+                                    switch (i)
+                                    {
+                                        case 0: Skip = !QuatTransform.HasTranslation; break;
+                                        case 1: Skip = !QuatTransform.HasRotation; break;
+                                        case 2: Skip = !QuatTransform.HasRotation; break;
+                                        case 3: Skip = !QuatTransform.HasRotation; break;
+                                        case 4: Skip = !QuatTransform.HasScale; break;
+                                    }
                                 }
                             }
 
-                            //This is the Time in seconds, so we divide by the target FPS
-                            AnimTimes[Frame] = (Frame / 30f).ToString(CultureInfo.InvariantCulture);
-                            AnimPoses[Frame] = StrTrans;
-                            AnimLerps[Frame] = "LINEAR";
-                        }
+                            if (Skip) continue;
 
-                        DAEAnimation Anim = new DAEAnimation();
+                            for (int Frame = 0; Frame < ThisAnimFrames; Frame++)
+                            {
+                                string StrTrans = string.Empty;
 
-                        Anim.name = $"{SklAnim.Name}_{Elem.Name}_{AnimElemNames[i]}";
-                        Anim.id   = $"{Anim.name}_id";
+                                H3DAnimationElement PElem = SklAnim.Elements.FirstOrDefault(x => x.Name == Parent?.Name);
 
-                        Anim.src.Add(new DAESource($"{Anim.name}_frame",  1, AnimTimes, "TIME",          "float"));
-                        Anim.src.Add(new DAESource($"{Anim.name}_interp", 1, AnimLerps, "INTERPOLATION", "Name"));
+                                Vector3 InvScale = Vector3.One;
 
-                        Anim.src.Add(IsRotation
-                            ? new DAESource($"{Anim.name}_pose", 1, AnimPoses, "ANGLE", "float")
-                            : new DAESource($"{Anim.name}_pose", 3, AnimPoses,
-                            "X", "float",
-                            "Y", "float",
-                            "Z", "float"));
+                                if (Elem.Content is H3DAnimTransform Transform)
+                                {
+                                    //Compensate parent bone scale (basically, don't inherit scales)
+                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                    {
+                                        if (PElem != null)
+                                        {
+                                            H3DAnimTransform PTrans = (H3DAnimTransform)PElem.Content;
 
-                        Anim.sampler.AddInput("INPUT",         $"#{Anim.src[0].id}");
-                        Anim.sampler.AddInput("INTERPOLATION", $"#{Anim.src[1].id}");
-                        Anim.sampler.AddInput("OUTPUT",        $"#{Anim.src[2].id}");
+                                            InvScale /= new Vector3(
+                                                PTrans.ScaleX.Exists ? PTrans.ScaleX.GetFrameValue(Frame) : Parent.Scale.X,
+                                                PTrans.ScaleY.Exists ? PTrans.ScaleY.GetFrameValue(Frame) : Parent.Scale.Y,
+                                                PTrans.ScaleZ.Exists ? PTrans.ScaleZ.GetFrameValue(Frame) : Parent.Scale.Z);
+                                        }
+                                        else
+                                        {
+                                            InvScale /= Parent.Scale;
+                                        }
+                                    }
 
-                        Anim.sampler.id     = $"{Anim.name}_samp_id";
-                        Anim.channel.source = $"#{Anim.sampler.id}";
-                        Anim.channel.target = $"{Elem.Name}_bone_id/{AnimElemNames[i]}";
+                                    switch (i)
+                                    {
+                                        //Translation
+                                        case 0:
+                                            StrTrans = DAEUtils.VectorStr(new Vector3(
+                                                Transform.TranslationX.Exists //X
+                                                ? Transform.TranslationX.GetFrameValue(Frame) : SklBone.Translation.X,
+                                                Transform.TranslationY.Exists //Y
+                                                ? Transform.TranslationY.GetFrameValue(Frame) : SklBone.Translation.Y,
+                                                Transform.TranslationZ.Exists //Z
+                                                ? Transform.TranslationZ.GetFrameValue(Frame) : SklBone.Translation.Z));
+                                            break;
 
-                        if (IsRotation) Anim.channel.target += ".ANGLE";
+                                        //Scale
+                                        case 4:
+                                            StrTrans = DAEUtils.VectorStr(InvScale * new Vector3(
+                                                Transform.ScaleX.Exists //X
+                                                ? Transform.ScaleX.GetFrameValue(Frame) : SklBone.Scale.X,
+                                                Transform.ScaleY.Exists //Y
+                                                ? Transform.ScaleY.GetFrameValue(Frame) : SklBone.Scale.Y,
+                                                Transform.ScaleZ.Exists //Z
+                                                ? Transform.ScaleZ.GetFrameValue(Frame) : SklBone.Scale.Z));
+                                            break;
 
-                        library_animations.Add(Anim);
-                    } //Axis 0-5
-                } //SklAnim.Elements
-            } //AnimIndex != -1
+                                        //Rotation
+                                        case 1: StrTrans = DAEUtils.RadToDegStr(Transform.RotationX.GetFrameValue(Frame)); break;
+                                        case 2: StrTrans = DAEUtils.RadToDegStr(Transform.RotationY.GetFrameValue(Frame)); break;
+                                        case 3: StrTrans = DAEUtils.RadToDegStr(Transform.RotationZ.GetFrameValue(Frame)); break;
+                                    }
+                                }
+                                else if (Elem.Content is H3DAnimQuatTransform QuatTransform)
+                                {
+                                    //Compensate parent bone scale (basically, don't inherit scales)
+                                    if (Parent != null && (SklBone.Flags & H3DBoneFlags.IsSegmentScaleCompensate) != 0)
+                                    {
+                                        if (PElem != null)
+                                            InvScale /= ((H3DAnimQuatTransform)PElem.Content).GetScaleValue(Frame);
+                                        else
+                                            InvScale /= Parent.Scale;
+                                    }
+
+                                    switch (i)
+                                    {
+                                        case 0: StrTrans = DAEUtils.VectorStr(QuatTransform.GetTranslationValue(Frame)); break;
+                                        case 1: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().X); break;
+                                        case 2: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().Y); break;
+                                        case 3: StrTrans = DAEUtils.RadToDegStr(QuatTransform.GetRotationValue(Frame).ToEuler().Z); break;
+                                        case 4: StrTrans = DAEUtils.VectorStr(InvScale * QuatTransform.GetScaleValue(Frame)); break;
+                                    }
+                                }
+
+                                //This is the Time in seconds, so we divide by the target FPS
+                                AnimTimes[Frame] = ((Frame+FrameOffset) / 30f).ToString(CultureInfo.InvariantCulture);
+                                AnimPoses[Frame] = StrTrans;
+                                AnimLerps[Frame] = "LINEAR";
+                            }
+
+                            string key = $"{Elem.Name}_{AnimElemNames[i]}";
+
+                            if (Combined.ContainsKey(key))
+                            {
+                                Combined[key].AnimTimes.AddRange(AnimTimes);
+                                Combined[key].AnimLerps.AddRange(AnimLerps);
+                                Combined[key].AnimPoses.AddRange(AnimPoses);
+                            }
+                            else
+                            {
+
+                                var AnimData = new AnimMergeCache {
+                                    AnimName = $"mm_{Elem.Name}_{AnimElemNames[i]}",
+                                    ElemName = Elem.Name,
+                                    Type = AnimElemNames[i],
+                                    IsRotation = IsRotation,
+                                    //WARN: this might* be a problem, so far no issues trying to fluff previously unused bones 
+                                    AnimTimes = Enumerable.Repeat(AnimTimes[0], FrameOffset).ToList().Concat(AnimTimes.ToList()).ToList(),
+                                    AnimLerps = Enumerable.Repeat(AnimLerps[0], FrameOffset).ToList().Concat(AnimLerps.ToList()).ToList(),
+                                    AnimPoses = Enumerable.Repeat(AnimPoses[0], FrameOffset).ToList().Concat(AnimPoses.ToList()).ToList()
+                                };
+
+                                Combined.Add($"{Elem.Name}_{AnimElemNames[i]}", AnimData);
+                            }
+
+                        } //Axis 0-5
+                    } //SklAnim.Elements
+
+                    FrameOffset += (int)SklAnim.FramesCount + 1;
+                }
+
+                //add animations finally 
+                foreach (AnimMergeCache merged in Combined.Values)
+                {
+                    DAEAnimation Anim = new DAEAnimation();
+
+                    Anim.name = merged.AnimName;
+                    Anim.id = $"{Anim.name}_id";
+
+                    Anim.src.Add(new DAESource($"{Anim.name}_frame", 1, merged.AnimTimes.ToArray(), "TIME", "float"));
+                    Anim.src.Add(new DAESource($"{Anim.name}_interp", 1, merged.AnimLerps.ToArray(), "INTERPOLATION", "Name"));
+
+                    Anim.src.Add(merged.IsRotation
+                        ? new DAESource($"{Anim.name}_pose", 1, merged.AnimPoses.ToArray(), "ANGLE", "float")
+                        : new DAESource($"{Anim.name}_pose", 3, merged.AnimPoses.ToArray(),
+                        "X", "float",
+                        "Y", "float",
+                        "Z", "float"));
+
+                    Anim.sampler.AddInput("INPUT", $"#{Anim.src[0].id}");
+                    Anim.sampler.AddInput("INTERPOLATION", $"#{Anim.src[1].id}");
+                    Anim.sampler.AddInput("OUTPUT", $"#{Anim.src[2].id}");
+
+                    Anim.sampler.id = $"{Anim.name}_samp_id";
+                    Anim.channel.source = $"#{Anim.sampler.id}";
+                    Anim.channel.target = $"{merged.ElemName}_bone_id/{merged.Type}";
+
+                    if (merged.IsRotation) Anim.channel.target += ".ANGLE";
+
+                    library_animations.Add(Anim);
+                }
+               
+            } //AnimIndices.Length > 1
         }
+
+        private Dictionary<string, int[]> motionGlossary;
 
         public void Save(string FileName)
         {
@@ -633,6 +692,16 @@ namespace SPICA.Formats.Generic.COLLADA
                 XmlSerializer Serializer = new XmlSerializer(typeof(DAE));
 
                 Serializer.Serialize(FS, this);
+            }
+
+            if (!object.Equals(null, this.motionGlossary))
+            {
+                string frameInfo = "";
+                foreach (KeyValuePair<string, int[]> motion in motionGlossary)
+                {
+                    frameInfo += $"{motion.Key}: {motion.Value[0]} - {motion.Value[1]}\n";
+                }
+                File.WriteAllText(FileName + ".txt", frameInfo);
             }
         }
     }

@@ -403,7 +403,7 @@ namespace SPICA.WinForms
             FileIO.Save(Scene, new SceneState
             {
                 ModelIndex   = ModelsList.SelectedIndex,
-                SklAnimIndex = SklAnimsList.SelectedIndex,
+                SklAnimIndices = SklAnimsList.SelectedIndices,
                 MatAnimIndex = MatAnimsList.SelectedIndex
             });
         }

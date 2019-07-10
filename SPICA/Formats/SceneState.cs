@@ -6,7 +6,7 @@
         public int LightIndex;
         public int CameraIndex;
         public int FogIndex;
-        public int SklAnimIndex;
+        public int[] SklAnimIndices;
         public int MatAnimIndex;
         public int VisAnimIndex;
         public int LgtAnimIndex;
