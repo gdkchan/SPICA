@@ -12,6 +12,8 @@ namespace SPICA.CLI
 {
     class Program
     {
+        private static OptionSet options;
+
         static void Main(string[] args)
         {
             string here = AppDomain.CurrentDomain.BaseDirectory;
@@ -20,20 +22,28 @@ namespace SPICA.CLI
 
             //default args
             string Pokemon = "bulbasaur";
-            string MapLocation = $"{here}/model_bin_map.yml";
+            string MapLocation = $"{here}/data/model_bin_map.yml";
             string BinLocation = $"{here}/in";
             string TextureLocation = $"{here}/tex";
             string ModelLocation = $"{here}/out";
 
-            var options = new OptionSet() {
-                { "?|h|help", "", _ => HelpText()},
-                { "p=|pokemon=", "", input => Pokemon = input},
+            options = new OptionSet() {
+                { "?|h|help", "show the help", _ => HelpText()},
+                { "p=|pokemon=", "desired pokemon to dump", input => Pokemon = input},
                 { "map=|map-file=", "", input => MapLocation = input},
                 { "in=|bin=|bin-dir=", "", input => BinLocation = input},
                 { "tex=|texture=|texture-out=", "", input => TextureLocation = input},
                 { "model=|model-out", "", input => ModelLocation = input},
             };
-            options.Parse(args);
+
+            var errors = options.Parse(args);
+
+            if (errors.Count > 0) {
+                foreach (var err in errors) {
+                    Console.Error.WriteLine("Unrecognized option {0}", err);
+                }
+                Environment.Exit(1);
+            }
 
             Directory.CreateDirectory(TextureLocation);
             Directory.CreateDirectory(ModelLocation);
@@ -82,8 +92,11 @@ namespace SPICA.CLI
             return files.ToArray();
         }
 
-        private static string HelpText() {
-            return "";
+        private static void HelpText() {
+            options.WriteOptionDescriptions(Console.Out);
+            Console.WriteLine("SPICA Command Line Interface");
+
+            Environment.Exit(1);
         }
     }
 }
