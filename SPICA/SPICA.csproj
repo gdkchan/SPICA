@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SPICA</RootNamespace>
     <AssemblyName>SPICA</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="K4os.Compression.LZ4">
+      <HintPath>..\packages\K4os.Compression.LZ4.1.1.11\lib\net45\K4os.Compression.LZ4.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -345,6 +348,7 @@
     <Compile Include="Formats\GFL2\Shader\GFShader.cs" />
     <Compile Include="Formats\GFL2\Texture\GFTexture.cs" />
     <Compile Include="Formats\GFL2\Texture\GFTextureFormat.cs" />
+    <Compile Include="Formats\GFLX\GFLXPack.cs" />
     <Compile Include="Formats\GFL\GF1MotionPack.cs" />
     <Compile Include="Formats\GFL\Motion\GF1MotBone.cs" />
     <Compile Include="Formats\GFL\Motion\GF1MotBoneTransform.cs" />
@@ -474,5 +478,6 @@
     <Compile Include="Serialization\Serializer\RefValue.cs" />
     <Compile Include="Serialization\Serializer\Section.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

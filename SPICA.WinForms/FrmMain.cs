@@ -4,6 +4,7 @@ using OpenTK.Graphics;
 using SPICA.Formats;
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Animation;
+using SPICA.Formats.GFLX;
 using SPICA.Rendering;
 using SPICA.WinForms.Formats;
 using SPICA.WinForms.GUI;
@@ -14,6 +15,7 @@ using SPICA.WinForms.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -304,6 +306,20 @@ namespace SPICA.WinForms
         {
             ToggleSide();
         }
+
+        private void GFPAKExtractorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "GameFreak Pak|*.gfpak";
+            ofd.Title = "Select  package";
+            if (ofd.ShowDialog() == DialogResult.OK) {
+                 FolderBrowserDialog folder = new FolderBrowserDialog();
+                folder.Description = "Select folder to extract to";
+                if (folder.ShowDialog() == DialogResult.OK) {
+                    ExtractGfpak(ofd.FileName, folder.SelectedPath);
+                }
+            }
+        }
         #endregion
 
         #region Tool buttons and Menus
@@ -371,6 +387,17 @@ namespace SPICA.WinForms
         private void ToolButtonExport_Click(object sender, EventArgs e)
         {
             FileIO.Export(Scene, TexturesList.SelectedIndex);
+        }
+
+        private void ExtractGfpak(string pak, string outPath) {
+            GFLXPack gfpak = new GFLXPack(pak);
+            for (int i = 0; i < gfpak.FileCnt; i++) {
+                using (BinaryWriter bw = new BinaryWriter(new FileStream(outPath + "/" + gfpak.GetName(i) + ".bin", FileMode.CreateNew))) {
+                    byte[] file = gfpak.GetFile(i);
+                    bw.Write(file);
+                    bw.Close();
+                }
+            }
         }
 
         private void Open(bool MergeMode)
@@ -745,5 +772,6 @@ namespace SPICA.WinForms
             AnimGrp.Continue();
         }
         #endregion
+
     }
 }
