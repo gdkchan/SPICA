@@ -39,11 +39,27 @@ namespace SPICA.Formats.GFLX
                     UInt32 zsize = br.ReadUInt32();
                     br.ReadUInt32(); //dummy
                     UInt64 offset = br.ReadUInt64();
-                    Names.Add(offset.ToString("X8"));
                     br.BaseStream.Position = (long)offset;
                     byte[] compData = br.ReadBytes((int)zsize);
                     byte[] decompData = new byte[size];
                     var decoded = LZ4Codec.Decode(compData, 0, compData.Length, decompData, 0, decompData.Length);
+                    string ext = string.Empty;
+                    switch (BitConverter.ToUInt32(decompData, 0))
+                    {
+                        case 0x58544E42:
+                            ext = ".btnx";
+                            break;
+                        case 0x48534E42:
+                            ext = ".bnsh";
+                            break;
+                        case 0x20:
+                            ext = ".gfmdl";
+                            break;
+                        default:
+                            ext = ".bin";
+                            break;
+                    }
+                    Names.Add(offset.ToString("X8") + ext);
                     Files.Add(decompData);
                 }
             }

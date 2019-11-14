@@ -392,7 +392,7 @@ namespace SPICA.WinForms
         private void ExtractGfpak(string pak, string outPath) {
             GFLXPack gfpak = new GFLXPack(pak);
             for (int i = 0; i < gfpak.FileCnt; i++) {
-                using (BinaryWriter bw = new BinaryWriter(new FileStream(outPath + "/" + gfpak.GetName(i) + ".bin", FileMode.CreateNew))) {
+                using (BinaryWriter bw = new BinaryWriter(new FileStream(outPath + "/" + gfpak.GetName(i), FileMode.CreateNew))) {
                     byte[] file = gfpak.GetFile(i);
                     bw.Write(file);
                     bw.Close();
