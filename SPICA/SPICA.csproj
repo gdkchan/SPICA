@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="K4os.Compression.LZ4">
-      <HintPath>..\packages\K4os.Compression.LZ4.1.1.11\lib\net45\K4os.Compression.LZ4.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -43,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compression\LZ4.cs" />
     <Compile Include="Formats\Common\BitUtils.cs" />
     <Compile Include="Formats\Common\CRC32Hash.cs" />
     <Compile Include="Formats\Common\Exceptions.cs" />
@@ -348,6 +346,7 @@
     <Compile Include="Formats\GFL2\Shader\GFShader.cs" />
     <Compile Include="Formats\GFL2\Texture\GFTexture.cs" />
     <Compile Include="Formats\GFL2\Texture\GFTextureFormat.cs" />
+    <Compile Include="Formats\GFLX\GFbmdl.cs" />
     <Compile Include="Formats\GFLX\GFLXPack.cs" />
     <Compile Include="Formats\GFL\GF1MotionPack.cs" />
     <Compile Include="Formats\GFL\Motion\GF1MotBone.cs" />

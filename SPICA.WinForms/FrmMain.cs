@@ -353,6 +353,11 @@ namespace SPICA.WinForms
             ToggleSide();
         }
 
+        private void gFBMDLSwitchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
         private void ToggleGrid()
         {
             bool State = !MenuShowGrid.Checked;
@@ -773,5 +778,9 @@ namespace SPICA.WinForms
         }
         #endregion
 
+        private void ToolButtonImport_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
