@@ -137,7 +137,7 @@ namespace SPICA.WinForms
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                e.Effect = DragDropEffects.Copy;
+                e.Effect = ModifierKeys.HasFlag(Keys.Alt) ? DragDropEffects.Copy : DragDropEffects.Move;
             }
         }
         
@@ -206,16 +206,14 @@ namespace SPICA.WinForms
             {
                 if ((e.Button & MouseButtons.Left) != 0)
                 {
-                    float X = (float)(((e.X - InitialMov.X) / Width)  * Math.PI);
+                    float X = (float)(((e.X - InitialMov.X) / Width)  * Math.PI * 2);
                     float Y = (float)(((e.Y - InitialMov.Y) / Height) * Math.PI);
 
-                    Transform.Row3.Xyz -= Translation;
-
                     Transform *=
+                        Matrix4.CreateTranslation(-Vector3.UnitZ * Translation.Z) *
+                        Matrix4.CreateFromAxisAngle(Transform.Row1.Xyz, X) *
                         Matrix4.CreateRotationX(Y) *
-                        Matrix4.CreateRotationY(X);
-
-                    Transform.Row3.Xyz += Translation;
+                        Matrix4.CreateTranslation(Vector3.UnitZ * Translation.Z);
                 }
 
                 if ((e.Button & MouseButtons.Right) != 0)
@@ -270,8 +268,12 @@ namespace SPICA.WinForms
 
         private void Viewport_Resize(object sender, EventArgs e)
         {
-            Renderer?.Resize(Viewport.Width, Viewport.Height);
-
+            if (Renderer != null)
+            {   
+                Renderer.Resize(Viewport.Width, Viewport.Height);
+                Renderer.Camera.ViewMatrix = Transform;   
+            }
+            
             UpdateViewport();
         }
         #endregion
@@ -445,11 +447,13 @@ namespace SPICA.WinForms
             MdlCenter = Vector3.Zero;
 
             Dimension = 100;
+            
+            Translation = new Vector3(0, 0, -200);
 
             Transform =
                 Matrix4.CreateRotationY((float)Math.PI * 0.25f) *
                 Matrix4.CreateRotationX((float)Math.PI * 0.25f) *
-                Matrix4.CreateTranslation(0, 0, -200);
+                Matrix4.CreateTranslation(Translation);
         }
 
         private void UpdateTransforms()
