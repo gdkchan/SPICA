@@ -14,7 +14,7 @@ SPICA_EXE = SPICA.WinForms/bin/$(CONFIG)/SPICA.WinForms.exe
 
 $(SPICA_EXE): SPICA.sln
 	mkdir -p tmp
-	TMPDIR=$(shell pwd)/tmp $(MSBUILD) /p:Configuration=$(CONFIG) $<
+	TMPDIR=$(pwd)/tmp $(MSBUILD) /p:Configuration=$(CONFIG) $<
 
 install: $(SPICA_EXE)
 	rm -rf spica-install
