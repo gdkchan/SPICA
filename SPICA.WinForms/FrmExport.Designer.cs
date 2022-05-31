@@ -29,8 +29,11 @@
         private void InitializeComponent()
         {
             this.GrpInput = new System.Windows.Forms.GroupBox();
+            this.GrpAnimationInput = new System.Windows.Forms.GroupBox();
             this.BtnBrowseIn = new System.Windows.Forms.Button();
             this.TxtInputFolder = new System.Windows.Forms.TextBox();
+            this.BtnBrowseAnimationIn = new System.Windows.Forms.Button();
+            this.TxtInputAnimationFolder = new System.Windows.Forms.TextBox();
             this.GrpOutput = new System.Windows.Forms.GroupBox();
             this.ChkPrefixNames = new System.Windows.Forms.CheckBox();
             this.ChkExportModels = new System.Windows.Forms.CheckBox();
@@ -42,6 +45,7 @@
             this.BtnConvert = new System.Windows.Forms.Button();
             this.ProgressConv = new System.Windows.Forms.ProgressBar();
             this.GrpInput.SuspendLayout();
+            this.GrpAnimationInput.SuspendLayout();
             this.GrpOutput.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,6 +59,17 @@
             this.GrpInput.TabIndex = 0;
             this.GrpInput.TabStop = false;
             this.GrpInput.Text = "Input folder";
+            // 
+            // GrpAnimationInput
+            // 
+            this.GrpAnimationInput.Controls.Add(this.BtnBrowseAnimationIn);
+            this.GrpAnimationInput.Controls.Add(this.TxtInputAnimationFolder);
+            this.GrpAnimationInput.Location = new System.Drawing.Point(12, 63);
+            this.GrpAnimationInput.Name = "GrpAnimationInput";
+            this.GrpAnimationInput.Size = new System.Drawing.Size(360, 51);
+            this.GrpAnimationInput.TabIndex = 0;
+            this.GrpAnimationInput.TabStop = false;
+            this.GrpAnimationInput.Text = "Input animation folder";
             // 
             // BtnBrowseIn
             // 
@@ -73,6 +88,23 @@
             this.TxtInputFolder.Size = new System.Drawing.Size(310, 22);
             this.TxtInputFolder.TabIndex = 0;
             // 
+            // TxtInputAnimationFolder
+            // 
+            this.TxtInputAnimationFolder.Location = new System.Drawing.Point(6, 22);
+            this.TxtInputAnimationFolder.Name = "TxtInputAnimationFolder";
+            this.TxtInputAnimationFolder.Size = new System.Drawing.Size(310, 22);
+            this.TxtInputAnimationFolder.TabIndex = 0;
+            // 
+            // BtnBrowseAnimationIn
+            // 
+            this.BtnBrowseAnimationIn.Location = new System.Drawing.Point(322, 21);
+            this.BtnBrowseAnimationIn.Name = "BtnBrowseAnimationIn";
+            this.BtnBrowseAnimationIn.Size = new System.Drawing.Size(32, 24);
+            this.BtnBrowseAnimationIn.TabIndex = 1;
+            this.BtnBrowseAnimationIn.Text = "...";
+            this.BtnBrowseAnimationIn.UseVisualStyleBackColor = true;
+            this.BtnBrowseAnimationIn.Click += new System.EventHandler(this.BtnBrowseAnimationIn_Click);
+            // 
             // GrpOutput
             // 
             this.GrpOutput.Controls.Add(this.ChkPrefixNames);
@@ -82,7 +114,7 @@
             this.GrpOutput.Controls.Add(this.CmbFormat);
             this.GrpOutput.Controls.Add(this.BtnBrowseOut);
             this.GrpOutput.Controls.Add(this.TxtOutFolder);
-            this.GrpOutput.Location = new System.Drawing.Point(12, 69);
+            this.GrpOutput.Location = new System.Drawing.Point(12, 114);
             this.GrpOutput.Name = "GrpOutput";
             this.GrpOutput.Size = new System.Drawing.Size(360, 140);
             this.GrpOutput.TabIndex = 0;
@@ -184,6 +216,7 @@
             this.Controls.Add(this.BtnConvert);
             this.Controls.Add(this.GrpOutput);
             this.Controls.Add(this.GrpInput);
+            this.Controls.Add(this.GrpAnimationInput);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
@@ -193,6 +226,8 @@
             this.Load += new System.EventHandler(this.FrmExport_Load);
             this.GrpInput.ResumeLayout(false);
             this.GrpInput.PerformLayout();
+            this.GrpAnimationInput.ResumeLayout(false);
+            this.GrpAnimationInput.PerformLayout();
             this.GrpOutput.ResumeLayout(false);
             this.GrpOutput.PerformLayout();
             this.ResumeLayout(false);
@@ -202,8 +237,11 @@
         #endregion
 
         private System.Windows.Forms.GroupBox GrpInput;
+        private System.Windows.Forms.GroupBox GrpAnimationInput;
         private System.Windows.Forms.Button BtnBrowseIn;
         private System.Windows.Forms.TextBox TxtInputFolder;
+        private System.Windows.Forms.Button BtnBrowseAnimationIn;
+        private System.Windows.Forms.TextBox TxtInputAnimationFolder;
         private System.Windows.Forms.GroupBox GrpOutput;
         private System.Windows.Forms.CheckBox ChkPrefixNames;
         private System.Windows.Forms.CheckBox ChkExportModels;
