@@ -1,39 +1,17 @@
-# GNU Make makefile for building with Mono
-# (see README.mono.md)
+# Optional GNU Make shortcuts for the Windows .NET 8 build.
+DOTNET ?= dotnet
+CONFIG ?= Release
 
-MONO    = mono
-MSBUILD = msbuild
+all:
+	$(DOTNET) build SPICA.sln -c $(CONFIG)
 
-#CONFIG = Debug
-CONFIG = Release
+install:
+	$(DOTNET) publish SPICA.WinForms -c $(CONFIG) -r win-x64 --self-contained true -o publish
 
-SPICA_EXE = SPICA.WinForms/bin/$(CONFIG)/SPICA.WinForms.exe
-
-# Note: The Mono compiler seems to dump some detritus by default in
-# /tmp, so we set TMPDIR to a more suitable location
-
-$(SPICA_EXE): SPICA.sln
-	mkdir -p tmp
-	TMPDIR=$(pwd)/tmp $(MSBUILD) /p:Configuration=$(CONFIG) $<
-
-install: $(SPICA_EXE)
-	rm -rf spica-install
-	mkdir spica-install
-	cp -np */bin/$(CONFIG)/*.dll spica-install
-	cp -np */bin/$(CONFIG)/*.exe spica-install
-	mv -n spica-install/SPICA.WinForms.exe spica-install/SPICA.exe
-
-run: $(SPICA_EXE)
-	$(MONO) $<
-
-run-install: spica-install/SPICA.exe
-	$(MONO) $<
+run:
+	$(DOTNET) run --project SPICA.WinForms -c $(CONFIG)
 
 clean:
-	rm -rf SPICA*/bin SPICA*/obj
-	rm -rf spica-install
-	rm -rf tmp
+	$(DOTNET) clean SPICA.sln -c $(CONFIG)
 
-.PHONY: clean install run run-install
-
-# EOF
+.PHONY: all install run clean

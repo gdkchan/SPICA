@@ -55,7 +55,6 @@ namespace SPICA.Rendering
 
             Resize(Width, Height);
 
-            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
         }
 
         public void Resize(int Width, int Height)

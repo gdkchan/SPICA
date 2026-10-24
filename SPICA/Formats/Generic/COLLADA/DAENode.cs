@@ -21,6 +21,7 @@ namespace SPICA.Formats.Generic.COLLADA
 
         public DAENodeInstance instance_geometry;
         public DAENodeInstance instance_controller;
+        [XmlElement("extra")] public List<DAEExtra> extra = new List<DAEExtra>();
 
         public void SetBoneEuler(Vector3 T, Vector3 R, Vector3 S)
         {
@@ -50,7 +51,7 @@ namespace SPICA.Formats.Generic.COLLADA
     {
         [XmlAttribute] public string url;
 
-        public string skeleton;
+        [XmlElement("skeleton")] public List<string> skeleton = new List<string>();
 
         public DAEBindMaterialTechniqueCommon bind_material = new DAEBindMaterialTechniqueCommon();
     }
@@ -69,5 +70,13 @@ namespace SPICA.Formats.Generic.COLLADA
     {
         [XmlAttribute] public string symbol;
         [XmlAttribute] public string target;
+        [XmlElement("bind_vertex_input")] public List<DAEBindVertexInput> bind_vertex_input = new List<DAEBindVertexInput>();
+    }
+
+    public class DAEBindVertexInput
+    {
+        [XmlAttribute] public string semantic;
+        [XmlAttribute] public string input_semantic = "TEXCOORD";
+        [XmlAttribute] public uint input_set;
     }
 }

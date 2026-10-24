@@ -13,6 +13,7 @@ namespace SPICA.Formats.Generic.COLLADA
         [XmlAttribute] public string name;
 
         public DAEProfileCOMMON profile_COMMON = new DAEProfileCOMMON();
+        [XmlElement("extra")] public List<DAEExtra> extra = new List<DAEExtra>();
     }
 
     public class DAEProfileCOMMON
@@ -121,12 +122,18 @@ namespace SPICA.Formats.Generic.COLLADA
 
     public class DAEPhong
     {
+        public DAEPhongDiffuse emission;
+        public DAEPhongDiffuse ambient;
         public DAEPhongDiffuse diffuse = new DAEPhongDiffuse();
+        public DAEPhongDiffuse specular;
+        public DAEPhongDiffuse transparent;
     }
 
     public class DAEPhongDiffuse
     {
-        public DAEPhongDiffuseTexture texture = new DAEPhongDiffuseTexture();
+        [XmlAttribute] public string opaque;
+        public DAEVector4 color;
+        public DAEPhongDiffuseTexture texture;
     }
 
     public class DAEPhongDiffuseTexture

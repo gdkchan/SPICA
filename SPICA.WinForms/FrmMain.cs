@@ -183,6 +183,7 @@ namespace SPICA.WinForms
         {
             //Note: Setting up OpenGL stuff only works after the control has loaded on the Form.
             Viewport.MakeCurrent();
+            Viewport.Context.SwapInterval = 1;
 
             Renderer = new Renderer(Viewport.Width, Viewport.Height);
 
