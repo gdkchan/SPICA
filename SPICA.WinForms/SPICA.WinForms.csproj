@@ -1,218 +1,83 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B4759AB2-3BF0-4212-996F-965517D2084B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SPICA.WinForms</RootNamespace>
-    <AssemblyName>SPICA.WinForms</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="K4os.Compression.LZ4, Version=1.1.11.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
-      <HintPath>..\packages\K4os.Compression.LZ4.1.1.11\lib\net46\K4os.Compression.LZ4.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\OpenTK.GLControl.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Formats\FileIO.cs" />
-    <Compile Include="Formats\GFPkmnSklAnim.cs" />
-    <Compile Include="Formats\FormatIdentifier.cs" />
-    <Compile Include="Formats\GFBtlSklAnim.cs" />
-    <Compile Include="Formats\GFCharaModel.cs" />
-    <Compile Include="Formats\GFL2OverWorld.cs" />
-    <Compile Include="Formats\GFOWCharaModel.cs" />
-    <Compile Include="Formats\GFOWMapModel.cs" />
-    <Compile Include="Formats\GFPackage.cs" />
-    <Compile Include="Formats\GFPackedTexture.cs" />
-    <Compile Include="Formats\GFPkmnModel.cs" />
-    <Compile Include="FrmExport.cs">
+    <Compile Update="FrmExport.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmExport.Designer.cs">
+    <Compile Update="FrmExport.Designer.cs">
       <DependentUpon>FrmExport.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmGFTFormat.cs">
+    <Compile Update="FrmGFTFormat.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmGFTFormat.Designer.cs">
+    <Compile Update="FrmGFTFormat.Designer.cs">
       <DependentUpon>FrmGFTFormat.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmLoading.cs" />
-    <Compile Include="FrmMain.cs">
+    <Compile Update="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmMain.Designer.cs">
+    <Compile Update="FrmMain.Designer.cs">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Animation\AnimationGroup.cs" />
-    <Compile Include="GUI\SUIAnimSeekBar.cs">
+    <Compile Update="GUI\SUIAnimSeekBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\SUIIconButton.cs">
+    <Compile Update="GUI\SUIIconButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\SUIList.cs">
+    <Compile Update="GUI\SUIList.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="GUI\SUIList.Designer.cs">
+    <Compile Update="GUI\SUIList.Designer.cs">
       <DependentUpon>SUIList.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\SUIVScroll.cs">
+    <Compile Update="GUI\SUIVScroll.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\SUITabControl.cs">
+    <Compile Update="GUI\SUITabControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="GUI\ToolsRenderer.cs" />
-    <Compile Include="GUI\Animation\AnimationType.cs" />
-    <Compile Include="GUI\Viewport\Shader.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GUI\Viewport\AxisLines.cs" />
-    <Compile Include="GUI\Viewport\GridLines.cs" />
-    <Compile Include="TextureManager.cs" />
-    <EmbeddedResource Include="FrmExport.resx">
+    <EmbeddedResource Update="FrmExport.resx">
       <DependentUpon>FrmExport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmGFTFormat.resx">
+    <EmbeddedResource Update="FrmGFTFormat.resx">
       <DependentUpon>FrmGFTFormat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmMain.resx">
+    <EmbeddedResource Update="FrmMain.resx">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\SUIList.resx">
+    <EmbeddedResource Update="GUI\SUIList.resx">
       <DependentUpon>SUIList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <ProjectReference Include="..\SPICA.Rendering\SPICA.Rendering.csproj" />
+    <ProjectReference Include="..\SPICA\SPICA.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
+    <PackageReference Include="OpenTK.GLControl" Version="4.0.2" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SPICA.Rendering\SPICA.Rendering.csproj">
-      <Project>{8adce9f5-2397-4e64-806c-5fa52cfd4215}</Project>
-      <Name>SPICA.Rendering</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SPICA\SPICA.csproj">
-      <Project>{8149ac62-dd21-4b20-9691-f7ae5f47340f}</Project>
-      <Name>SPICA</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\sui_ticked.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\VertexShader.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\FragmentShader.txt" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

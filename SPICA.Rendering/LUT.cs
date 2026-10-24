@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 using SPICA.Formats.CtrH3D.LUT;
 

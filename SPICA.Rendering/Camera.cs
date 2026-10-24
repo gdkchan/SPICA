@@ -1,4 +1,4 @@
-﻿using OpenTK;
+using OpenTK.Mathematics;
 
 using SPICA.Formats.CtrH3D.Camera;
 using SPICA.Rendering.Animation;
@@ -68,12 +68,12 @@ namespace SPICA.Rendering
 
                     if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingUpRotation) != 0)
                     {
-                        Up = Vector3.Transform(new Matrix3(Transform), Up);
+                        Up = Vector3.TransformRow(Up, new Matrix3(Transform));
                     }
 
                     if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetRotation) != 0)
                     {
-                        Target = Vector3.Transform(new Matrix3(Transform), Target);
+                        Target = Vector3.TransformRow(Target, new Matrix3(Transform));
                     }
 
                     if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetTranslation) != 0)
@@ -100,8 +100,8 @@ namespace SPICA.Rendering
 
                     if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetRotation) != 0)
                     {
-                        Up     = Vector3.Transform(new Matrix3(Transform), Up);
-                        Target = Vector3.Transform(new Matrix3(Transform), Target);
+                        Up     = Vector3.TransformRow(Up, new Matrix3(Transform));
+                        Target = Vector3.TransformRow(Target, new Matrix3(Transform));
                     }
 
                     if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetTranslation) != 0)
@@ -119,12 +119,12 @@ namespace SPICA.Rendering
                         Matrix3.CreateRotationY(CamState.ViewRotation.Y);
 
                     Vector3 Up     = Vector3.UnitY;
-                    Vector3 Target = Vector3.Transform(Rotation, new Vector3(0, 0, -1));
+                    Vector3 Target = Vector3.TransformRow(new Vector3(0, 0, -1), Rotation);
 
                     if ((BaseCamera.Flags & H3DCameraFlags.IsInheritingTargetRotation) != 0)
                     {
-                        Up     = Vector3.Transform(new Matrix3(Transform), Up);
-                        Target = Vector3.Transform(new Matrix3(Transform), Target);
+                        Up     = Vector3.TransformRow(Up, new Matrix3(Transform));
+                        Target = Vector3.TransformRow(Target, new Matrix3(Transform));
                     }
 
                     Target += Eye;

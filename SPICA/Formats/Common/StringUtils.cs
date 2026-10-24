@@ -6,6 +6,11 @@ namespace SPICA.Formats.Common
 {
     public static class StringUtils
     {
+        static StringUtils()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        }
+
         //Read
         public static byte[] ReadNullTerminatedByteArray(this BinaryReader Reader)
         {

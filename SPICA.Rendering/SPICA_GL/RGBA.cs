@@ -1,8 +1,8 @@
-﻿using OpenTK.Graphics;
+using OpenTK.Mathematics;
 
 using SPICA.Math3D;
 
-using System.Numerics;
+using Vector4 = System.Numerics.Vector4;
 
 namespace SPICA.Rendering.SPICA_GL
 {

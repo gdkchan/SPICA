@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+using OpenTK.Mathematics;
 
 namespace SPICA.Rendering.Animation
 {

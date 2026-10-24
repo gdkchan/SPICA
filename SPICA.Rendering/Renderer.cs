@@ -1,5 +1,5 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL4;
 
 using SPICA.Formats.CtrH3D;
 using SPICA.Formats.CtrH3D.Light;

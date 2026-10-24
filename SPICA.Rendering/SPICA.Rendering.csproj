@@ -1,107 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{8ADCE9F5-2397-4E64-806C-5FA52CFD4215}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SPICA.Rendering</RootNamespace>
-    <AssemblyName>SPICA.Rendering</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK">
-      <HintPath>..\Libraries\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Animation\AnimationControl.cs" />
-    <Compile Include="Animation\AnimationState.cs" />
-    <Compile Include="Animation\CameraAnimation.cs" />
-    <Compile Include="Animation\CameraState.cs" />
-    <Compile Include="Animation\IAnimationControl.cs" />
-    <Compile Include="Animation\MaterialAnimation.cs" />
-    <Compile Include="Animation\MaterialState.cs" />
-    <Compile Include="Animation\SkeletalAnimation.cs" />
-    <Compile Include="Animation\VisibilityAnimation.cs" />
-    <Compile Include="BoundingBox.cs" />
-    <Compile Include="Camera.cs" />
-    <Compile Include="Light.cs" />
-    <Compile Include="LightType.cs" />
-    <Compile Include="LUT.cs" />
-    <Compile Include="Mesh.cs" />
-    <Compile Include="Model.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
+    <Compile Update="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Renderer.cs" />
-    <Compile Include="Shaders\DefaultShaderIds.cs" />
-    <Compile Include="VertexShader.cs" />
-    <Compile Include="Shaders\FragmentShaderGenerator.cs" />
-    <Compile Include="Shaders\GeometryShaderGenerator.cs" />
-    <Compile Include="Shaders\ShaderException.cs" />
-    <Compile Include="Shaders\ShaderGenerator.cs" />
-    <Compile Include="Shaders\Shader.cs" />
-    <Compile Include="Shaders\ShaderNameBlock.cs" />
-    <Compile Include="Shaders\VertexShaderGenerator.cs" />
-    <Compile Include="SPICA_GL\Matrix.cs" />
-    <Compile Include="SPICA_GL\PICABlendEquation.cs" />
-    <Compile Include="SPICA_GL\PICABlendFunc.cs" />
-    <Compile Include="SPICA_GL\PICAFaceCulling.cs" />
-    <Compile Include="SPICA_GL\PICAStencilOp.cs" />
-    <Compile Include="SPICA_GL\PICATestFunc.cs" />
-    <Compile Include="SPICA_GL\RGBA.cs" />
-    <Compile Include="SPICA_GL\Vector.cs" />
-    <Compile Include="Texture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SPICA\SPICA.csproj">
-      <Project>{8149ac62-dd21-4b20-9691-f7ae5f47340f}</Project>
-      <Name>SPICA</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\SPICA\SPICA.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\FragmentShaderBase.txt" />
+    <PackageReference Include="OpenTK.Graphics" Version="4.9.4" />
+    <PackageReference Include="OpenTK.Mathematics" Version="4.9.4" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DefaultVertexShader.txt" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+using OpenTK.Mathematics;
 
 using SPICA.Formats.CtrH3D.Light;
 using SPICA.PICA.Commands;
@@ -48,7 +47,7 @@ namespace SPICA.Rendering
                 Matrix4.CreateRotationZ(Light.TransformRotation.Z) *
                 Matrix4.CreateTranslation(Light.TransformTranslation.ToVector3());
 
-            Position = Vector4.Transform(Transform, Vector4.UnitW).Xyz;
+            Position = Vector4.TransformColumn(Transform, Vector4.UnitW).Xyz;
 
             Enabled = Light.IsEnabled;
 

@@ -1,5 +1,7 @@
-using OpenTK;
-using OpenTK.Graphics;
+using OpenTK.Mathematics;
+using OpenTK.GLControl;
+using OpenTK.Windowing.Common;
+using OpenTK.Mathematics;
 
 using SPICA.Formats;
 using SPICA.Formats.CtrH3D;
@@ -47,11 +49,18 @@ namespace SPICA.WinForms
         {
             //We need to add the control here cause we need to call the constructor with Graphics Mode.
             //This enables the higher precision Depth Buffer and a Stencil Buffer.
-            Viewport = new GLControl(new GraphicsMode(32, 24, 8), 3, 3, GraphicsContextFlags.ForwardCompatible)
+            Viewport = new GLControl(new GLControlSettings
+            {
+                API = ContextAPI.OpenGL,
+                APIVersion = new Version(3, 3),
+                Profile = ContextProfile.Core,
+                Flags = ContextFlags.ForwardCompatible,
+                DepthBits = 24,
+                StencilBits = 8
+            })
             {
                 Dock  = DockStyle.Fill,
-                Name  = "Viewport",
-                VSync = true
+                Name  = "Viewport"
             };
 
             Viewport.Load       += Viewport_Load;
